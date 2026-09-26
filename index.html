@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#12141a">
+  <meta name="theme-color" content="#0d1117">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>SSC CGL Intelligence OS</title>
@@ -14,18 +14,19 @@
 
   <style>
     :root {
-      --bg-dark: #12141a;
-      --bg-card: #1c1f28;
-      --bg-elevated: #242937;
-      --border-color: #2e3446;
-      --accent-blue: #3b82f6;
-      --accent-blue-hover: #2563eb;
-      --status-green: #22c55e;
-      --status-red: #ef4444;
-      --status-amber: #f59e0b;
-      --status-purple: #a855f7;
-      --text-main: #f3f4f6;
-      --text-muted: #9ca3af;
+      --bg-dark: #0d1117;
+      --bg-card: #161b22;
+      --bg-elevated: #21262d;
+      --border-color: #30363d;
+      --accent-blue: #2f81f7;
+      --accent-blue-hover: #1f6feb;
+      --accent-cyan: #38bdf8;
+      --status-green: #238636;
+      --status-red: #da3633;
+      --status-amber: #d29922;
+      --status-purple: #8957e5;
+      --text-main: #f0f6fc;
+      --text-muted: #8b949e;
       --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       --bottom-nav-height: 64px;
     }
@@ -40,10 +41,9 @@
       user-select: none;
     }
 
-    /* Container Utility */
     .view-container {
       display: none;
-      padding: 14px 14px calc(var(--bottom-nav-height) + 20px) 14px;
+      padding: 14px 14px calc(var(--bottom-nav-height) + 24px) 14px;
       max-width: 900px;
       margin: 0 auto;
     }
@@ -59,13 +59,14 @@
       display: inline-block;
     }
 
-    /* CARDS & BUTTONS */
+    /* CARDS & CONTAINERS */
     .card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: 12px;
       padding: 16px;
       margin-bottom: 14px;
+      position: relative;
     }
     .card-title {
       font-size: 13px;
@@ -100,12 +101,31 @@
     }
     .btn-danger { background: var(--status-red); }
 
+    /* DASHBOARD HERO HEADER */
+    .hero-banner {
+      background: linear-gradient(135deg, #1f293d 0%, #11151c 100%);
+      border: 1px solid #2f81f7;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-banner::after {
+      content: "";
+      position: absolute;
+      top: -30px; right: -30px;
+      width: 120px; height: 120px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
     /* BOTTOM NAVIGATION */
     #bottom-nav {
       position: fixed;
       bottom: 0; left: 0; right: 0;
       height: var(--bottom-nav-height);
-      background: rgba(18, 20, 26, 0.96);
+      background: rgba(13, 17, 23, 0.96);
       backdrop-filter: blur(12px);
       border-top: 1px solid var(--border-color);
       display: flex;
@@ -131,32 +151,32 @@
     .nav-btn.active { color: var(--accent-blue); }
     .nav-btn svg { width: 22px; height: 22px; stroke-width: 2; }
 
-    /* MODALS */
+    /* FULL-SCREEN MODALS */
     .modal-overlay {
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(4px);
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
       z-index: 3500;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 14px;
     }
     .modal-overlay.active { display: flex; }
     .modal-window {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: 14px;
-      padding: 20px;
+      padding: 18px;
       width: 100%;
-      max-width: 500px;
+      max-width: 550px;
       max-height: 90vh;
       overflow-y: auto;
     }
 
-    /* FORM INPUTS */
-    .form-group { margin-bottom: 14px; }
+    /* FORM ELEMENTS */
+    .form-group { margin-bottom: 12px; }
     .form-group label {
       display: block;
       font-size: 12px;
@@ -174,8 +194,8 @@
       font-size: 14px;
     }
 
-    /* 1. EXAM ARENA STYLES */
-    #exam-arena {
+    /* 1. EXAM ARENA */
+    #exam-arena, #dojo-arena-view {
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -184,7 +204,7 @@
       flex-direction: column;
     }
     .arena-header {
-      background: #141720;
+      background: #161b22;
       border-bottom: 1px solid var(--border-color);
       padding: 10px 14px;
       display: flex;
@@ -216,7 +236,7 @@
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
     .sectional-banner {
-      background: #171b26;
+      background: #1c2128;
       border-bottom: 1px solid var(--border-color);
       padding: 8px 14px;
       display: flex;
@@ -275,18 +295,27 @@
     }
     .opt-card.selected {
       border-color: var(--accent-blue);
-      background: rgba(59, 130, 246, 0.15);
+      background: rgba(47, 129, 247, 0.15);
     }
     .opt-card.struck-through {
       opacity: 0.35;
       text-decoration: line-through;
       border-style: dashed;
     }
+    .opt-card.correct-peek {
+      border-color: var(--status-green) !important;
+      background: rgba(35, 134, 54, 0.2) !important;
+    }
+    .opt-card.wrong-peek {
+      border-color: var(--status-red) !important;
+      background: rgba(218, 54, 51, 0.2) !important;
+    }
+
     .arena-footer {
       position: fixed;
       bottom: 0; left: 0; right: 0;
       height: 64px;
-      background: #141720;
+      background: #161b22;
       border-top: 1px solid var(--border-color);
       display: flex;
       align-items: center;
@@ -295,20 +324,20 @@
       z-index: 2100;
     }
 
-    /* AUTHENTIC 6-COLUMN PALETTE DRAWER */
-    #palette-drawer, #dojo-palette-drawer {
+    /* PALETTE DRAWER (FIXED AUTO-GRID TIGHT PACKING) */
+    .palette-drawer-ui {
       position: fixed;
       top: 0; right: -100%; bottom: 0;
       width: 85%;
       max-width: 360px;
-      background: #171b26;
+      background: #161b22;
       border-left: 1px solid var(--border-color);
       z-index: 2500;
       transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       flex-direction: column;
     }
-    #palette-drawer.open, #dojo-palette-drawer.open { right: 0; }
+    .palette-drawer-ui.open { right: 0; }
     .drawer-overlay {
       display: none;
       position: fixed;
@@ -317,37 +346,41 @@
       z-index: 2400;
     }
     .drawer-overlay.active { display: block; }
+    
+    /* CRITICAL FIX FOR PALETTE SPACING: align-content: start + grid-auto-rows */
     .palette-grid {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
+      grid-auto-rows: 40px;
+      align-content: start;
       gap: 8px;
       padding: 14px;
       overflow-y: auto;
       flex: 1;
     }
     .palette-cell {
-      height: 42px;
+      height: 40px;
       border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
       font-size: 13px;
-      background: #2563eb; /* Blue: Unanswered */
+      background: #1f6feb; /* TCS Blue */
       color: #fff;
       cursor: pointer;
       border: 2px solid transparent;
     }
     .palette-cell.answered { background: var(--status-green); }
     .palette-cell.marked { background: var(--status-purple); border-radius: 50%; }
-    .palette-cell.current { border-color: #ffffff; box-shadow: 0 0 8px rgba(255,255,255,0.6); }
+    .palette-cell.current { border-color: #ffffff; box-shadow: 0 0 8px rgba(255,255,255,0.7); }
 
-    /* PAUSE SHIELD OVERLAY */
+    /* PAUSE SHIELD */
     #pause-shield {
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(10, 12, 16, 0.98);
+      background: rgba(13, 17, 23, 0.98);
       z-index: 3000;
       flex-direction: column;
       align-items: center;
@@ -356,10 +389,35 @@
       text-align: center;
     }
 
-    /* PRINT FORMAT */
+    /* MOCK HISTORY ITEMS */
+    .history-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .history-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-bottom: 10px;
+      background: var(--bg-elevated);
+      padding: 8px;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    /* PRINT LAYOUT */
     @media print {
       body { background: white !important; color: black !important; }
-      #bottom-nav, #exam-arena, .btn, .filter-bar, .card { display: none !important; }
+      #bottom-nav, #exam-arena, #dojo-arena-view, .btn, .card { display: none !important; }
       .print-page { display: block !important; column-count: 2; column-gap: 20px; font-size: 12px; }
       .print-question { break-inside: avoid; margin-bottom: 14px; border-bottom: 1px solid #ccc; padding-bottom: 8px; }
     }
@@ -367,7 +425,7 @@
 </head>
 <body>
 
-  <!-- ==================== 1. EXAM ARENA ==================== -->
+  <!-- ==================== 1. EXAM ARENA (TIMED CBT SIMULATOR) ==================== -->
   <div id="exam-arena">
     <div class="arena-header">
       <button class="hud-icon-btn" id="btn-arena-pause">
@@ -375,15 +433,15 @@
       </button>
       <div style="text-align:center;">
         <div id="hud-countdown" class="hud-timer">15:00</div>
-        <div style="font-size:10px; color:var(--text-muted);" id="hud-test-title">Sectional Mock</div>
+        <div style="font-size:10px; color:var(--text-muted);" id="hud-test-title">Sectional Test</div>
       </div>
-      <button class="hud-icon-btn" id="btn-toggle-palette">
+      <button class="hud-icon-btn" id="btn-toggle-exam-palette">
         <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
       </button>
     </div>
 
     <div class="sectional-banner">
-      <span class="badge" style="background:#2563eb;" id="hud-section-badge">SECTION: QUANT</span>
+      <span class="badge" style="background:#1f6feb;" id="hud-section-badge">SECTION: QUANT</span>
       <span id="hud-pacing-status" style="font-family:var(--font-mono); color:var(--text-muted);">0s spent</span>
     </div>
 
@@ -407,23 +465,20 @@
     </div>
   </div>
 
-  <!-- AUTHENTIC TCS EXAM PALETTE DRAWER -->
-  <div class="drawer-overlay" id="drawer-overlay"></div>
-  <div id="palette-drawer">
+  <!-- EXAM PALETTE DRAWER -->
+  <div class="drawer-overlay" id="exam-drawer-overlay"></div>
+  <div class="palette-drawer-ui" id="exam-palette-drawer">
     <div style="padding:14px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
-      <div style="display:flex; gap:12px; font-size:12px; color:#38bdf8;">
-        <span>(?) Symbols</span>
-        <span>(i) Instructions</span>
-      </div>
-      <span class="badge" style="background:#2563eb;" id="drawer-section-label">PART - A</span>
+      <h3 style="font-size:14px; font-weight:700;">Question Palette</h3>
+      <span class="badge" style="background:#1f6feb;" id="exam-drawer-sec-badge">PART - A</span>
     </div>
-    <div style="padding:12px 14px; background:#141720; font-size:12px; display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color);">
-      <span>🟢 Answered: <b id="count-answered">0</b></span>
-      <span>🔵 Unanswered: <b id="count-unanswered">0</b></span>
+    <div style="padding:10px 14px; background:#11151c; font-size:12px; display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color);">
+      <span>🟢 Answered: <b id="exam-count-ans">0</b></span>
+      <span>🔵 Unanswered: <b id="exam-count-unans">0</b></span>
     </div>
-    <div class="palette-grid" id="palette-grid"></div>
+    <div class="palette-grid" id="exam-palette-grid"></div>
     <div style="padding:14px; border-top:1px solid var(--border-color);">
-      <button class="btn btn-danger" style="width:100%; font-size:14px; padding:12px;" id="btn-submit-mock">Submit Test</button>
+      <button class="btn btn-danger" style="width:100%; font-size:14px; padding:12px;" id="btn-submit-exam">Submit Test</button>
     </div>
   </div>
 
@@ -431,22 +486,87 @@
   <div id="pause-shield">
     <h2 style="font-size:22px; font-weight:800; margin-bottom:8px;">TEST PAUSED</h2>
     <p style="font-size:13px; color:var(--text-muted); max-width:280px; margin-bottom:20px;">
-      Timer halted and state persisted safely in IndexedDB.
+      Countdown halted. Session state safely frozen in IndexedDB.
     </p>
-    <button class="btn" style="width:200px;" id="btn-resume-test">Resume Test</button>
-    <button class="btn btn-secondary" style="width:200px; margin-top:10px;" id="btn-pause-exit">Exit to Dashboard</button>
+    <button class="btn" style="width:200px;" id="btn-resume-exam">Resume Test</button>
+    <button class="btn btn-secondary" style="width:200px; margin-top:10px;" id="btn-exit-exam">Exit to Dashboard</button>
   </div>
 
 
-  <!-- ==================== 2. TAB 1: DASHBOARD ==================== -->
+  <!-- ==================== 2. UNTIMED DOJO ARENA (MOCK STYLE) ==================== -->
+  <div id="dojo-arena-view">
+    <div class="arena-header">
+      <button class="hud-icon-btn" onclick="CGL_OS.exitDojoArena()">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      </button>
+      <div style="text-align:center;">
+        <div style="font-size:14px; font-weight:800; color:var(--accent-cyan);" id="dojo-arena-title">QA Practice Dojo</div>
+        <div style="font-size:10px; color:var(--text-muted);">Untimed Active Recall Mode</div>
+      </div>
+      <button class="hud-icon-btn" onclick="CGL_OS.toggleDojoPalette(true)">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+      </button>
+    </div>
+
+    <div class="sectional-banner">
+      <span class="badge" style="background:#238636;" id="dojo-arena-chap-badge">QA_GEOMETRY</span>
+      <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openEditCurrentDojoQuestion()">Edit Question</button>
+    </div>
+
+    <div class="arena-body" id="dojo-arena-body">
+      <div class="question-header">
+        <div class="q-number-pill" id="dojo-arena-qnum">1</div>
+        <span style="font-size:12px; color:var(--text-muted);" id="dojo-arena-total-tag">Question 1 of 25</span>
+      </div>
+
+      <div class="q-text-canvas" id="dojo-arena-qtext"></div>
+      <div id="dojo-arena-options"></div>
+
+      <div id="dojo-arena-feedback" style="display:none; padding:10px; border-radius:8px; margin:12px 0; font-size:13px; font-weight:700;"></div>
+
+      <button class="btn btn-secondary" style="width:100%; margin-top:10px; font-size:13px;" onclick="CGL_OS.toggleDojoMethod()">
+        Reveal Method & Solution
+      </button>
+
+      <div id="dojo-arena-method-box" style="display:none; margin-top:12px; padding:12px; background:#1c2433; border-left:3px solid var(--accent-blue); border-radius:4px; font-size:13px; line-height:1.6;"></div>
+
+      <div class="form-group" style="margin-top:14px;">
+        <label>Personal Solving Cue / Annotation (Auto-Saves)</label>
+        <textarea id="dojo-arena-annotation" class="form-control" style="height:60px;" placeholder="Personal formula cue or shortcut..." oninput="CGL_OS.autoSaveDojoAnnotation(this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="arena-footer">
+      <button class="btn btn-secondary" style="padding:8px 14px;" onclick="CGL_OS.navDojoArena(-1)">Previous</button>
+      <button class="btn btn-secondary" style="padding:8px 14px;" onclick="CGL_OS.toggleDojoPalette(true)">Palette</button>
+      <button class="btn" style="padding:8px 18px;" onclick="CGL_OS.navDojoArena(1)">Next Question</button>
+    </div>
+  </div>
+
+  <!-- DOJO PALETTE DRAWER -->
+  <div class="drawer-overlay" id="dojo-drawer-overlay" onclick="CGL_OS.toggleDojoPalette(false)"></div>
+  <div class="palette-drawer-ui" id="dojo-palette-drawer">
+    <div style="padding:14px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+      <h3 style="font-size:14px; font-weight:700;">Dojo Bank Navigator</h3>
+      <span class="badge" style="background:#238636;" id="dojo-palette-count-badge">0 Qs</span>
+    </div>
+    <div class="palette-grid" id="dojo-palette-grid"></div>
+  </div>
+
+
+  <!-- ==================== 3. TAB 1: DASHBOARD ==================== -->
   <div id="tab-dashboard" class="view-container active">
-    <div class="card" style="background:linear-gradient(135deg, #1e2638, #161a24); border-color:#3b82f6;">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
+    <!-- Hero Candidate Header -->
+    <div class="hero-banner">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
         <div>
-          <h2 style="font-size:18px; font-weight:800;">SSC CGL 2026 Master OS</h2>
-          <p style="font-size:12px; color:var(--text-muted); margin-top:2px;">Intelligence & Forensic Telemetry</p>
+          <span class="badge" style="background:#238636; margin-bottom:6px;">SSC CGL 2026 CANDIDATE</span>
+          <h2 style="font-size:20px; font-weight:800; color:#fff;">Welcome back, Ankit</h2>
+          <p style="font-size:12px; color:var(--accent-cyan); margin-top:2px;">Target: Tier 1 & Tier 2 Master Preparation</p>
         </div>
-        <button class="btn" id="btn-quick-launch" style="padding:8px 14px; font-size:12px;">Launch Mock</button>
+        <button class="btn" id="btn-dash-launch-mock" style="padding:8px 14px; font-size:12px; box-shadow:0 0 12px rgba(47,129,247,0.5);">
+          Launch Mock
+        </button>
       </div>
     </div>
 
@@ -470,39 +590,40 @@
       </div>
     </div>
 
-    <!-- Syllabus Taxonomy Real Drill-Down -->
+    <!-- Testbook-Style Mock History -->
+    <div class="card">
+      <div class="card-title">
+        <span>Recent Mock History & Scorecards</span>
+        <span class="badge" style="background:#1f6feb;" id="history-count-badge">0 Tests</span>
+      </div>
+      <div id="mock-history-container">
+        <p style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">No mocks submitted yet. Launch your first mock above.</p>
+      </div>
+    </div>
+
+    <!-- Dynamic Syllabus Taxonomy Drill-Down -->
     <div class="card">
       <div class="card-title">
         <span>Syllabus Taxonomy Deep Dive</span>
-        <span class="badge" style="background:#2563eb;" id="drill-level-tag">LEVEL: SUBJECT</span>
+        <span class="badge" style="background:#1f6feb;" id="drill-level-tag">LEVEL: SUBJECT</span>
       </div>
-      <div id="drilldown-breadcrumb" style="font-size:12px; color:var(--accent-blue); margin-bottom:10px; cursor:pointer;">Global</div>
+      <div id="drilldown-breadcrumb" style="font-size:12px; color:var(--accent-cyan); margin-bottom:10px; cursor:pointer;">Global</div>
       <div id="drilldown-list"></div>
     </div>
   </div>
 
 
-  <!-- ==================== 3. TAB 2: ACTIVE RECALL DOJO ==================== -->
+  <!-- ==================== 4. TAB 2: ACTIVE RECALL DOJO LIST ==================== -->
   <div id="tab-dojo" class="view-container">
-    <!-- Top Action & Filter Bar -->
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <select id="dojo-subject-filter" class="form-control" style="width:58%;" onchange="CGL_OS.changeDojoSubject(this.value)">
-        <option value="ALL">All Subjects</option>
-        <option value="QA">Quantitative (QA)</option>
-        <option value="REAS">Reasoning (REAS)</option>
-        <option value="ENG">English (ENG)</option>
-        <option value="GA">General Awareness (GA)</option>
-      </select>
-      <div style="display:flex; gap:6px;">
-        <button class="btn btn-secondary" style="padding:8px 10px;" onclick="CGL_OS.toggleDojoPalette(true)">
-          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
-        </button>
-        <button class="btn" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openEditQuestionModal(null)">+ Add</button>
-      </div>
+    <div class="card" style="background:linear-gradient(135deg, #1b2838, #11151c); border-color:#238636;">
+      <h2 style="font-size:18px; font-weight:800;">Question Dojo & Practice Hub</h2>
+      <p style="font-size:12px; color:var(--text-muted); margin-top:2px;">
+        Exam-like untimed recall cards, KaTeX formulas, and instant method reveals.
+      </p>
     </div>
 
-    <!-- High-Yield Formula Reference -->
-    <div class="card" style="border-color:#38bdf8; margin-bottom:14px;">
+    <!-- Formula Reference -->
+    <div class="card" style="border-color:#38bdf8;">
       <div class="card-title" style="color:#38bdf8; margin-bottom:0;">
         <span>High-Yield Reference Cues</span>
         <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.toggleFormulaSheet()">Toggle</button>
@@ -510,59 +631,35 @@
       <div id="formula-sheet-content" style="display:none; font-size:13px; line-height:1.6; margin-top:10px;"></div>
     </div>
 
-    <!-- Single Question Dojo Arena -->
-    <div class="card" id="dojo-arena-card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <div style="display:flex; gap:6px; align-items:center;">
-          <span class="badge" style="background:#2563eb;" id="dojo-q-chapter">QA_GEOMETRY</span>
-          <span style="font-size:11px; color:var(--text-muted);" id="dojo-q-index">Q 1 of 1</span>
-        </div>
-        <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.openEditCurrentDojoQuestion()">
-          Edit Question
+    <!-- Launch Practice Subject Modules -->
+    <div class="card">
+      <div class="card-title">Launch Untimed Practice Modules</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <button class="btn btn-secondary" style="font-size:12px; padding:12px;" onclick="CGL_OS.startDojoArena('QA')">
+          Quantitative (QA)
+        </button>
+        <button class="btn btn-secondary" style="font-size:12px; padding:12px;" onclick="CGL_OS.startDojoArena('REAS')">
+          Reasoning (REAS)
+        </button>
+        <button class="btn btn-secondary" style="font-size:12px; padding:12px;" onclick="CGL_OS.startDojoArena('ENG')">
+          English (ENG)
+        </button>
+        <button class="btn btn-secondary" style="font-size:12px; padding:12px;" onclick="CGL_OS.startDojoArena('GA')">
+          General Awareness (GA)
         </button>
       </div>
-
-      <div id="dojo-q-text" style="font-size:15px; line-height:1.6; margin-bottom:16px;"></div>
-      <div id="dojo-options-container"></div>
-
-      <div id="dojo-feedback-banner" style="display:none; padding:10px; border-radius:8px; margin:12px 0; font-size:13px; font-weight:700;"></div>
-
-      <button class="btn btn-secondary" style="width:100%; margin-top:10px; font-size:13px;" onclick="CGL_OS.toggleDojoMethod()">
-        Reveal Method & Solution
+      <button class="btn" style="width:100%; margin-top:10px; font-size:13px;" onclick="CGL_OS.startDojoArena('ALL')">
+        Practice Entire Question Bank (All Subjects)
       </button>
-
-      <div id="dojo-method-box" style="display:none; margin-top:12px; padding:12px; background:#172339; border-left:3px solid var(--accent-blue); border-radius:4px; font-size:13px; line-height:1.6;"></div>
-
-      <div class="form-group" style="margin-top:14px;">
-        <label>Personal Solving Cue / Annotation</label>
-        <textarea id="dojo-annotation-input" class="form-control" style="height:60px;" placeholder="Type solving shortcut or formula cue..." onblur="CGL_OS.saveDojoAnnotation(this.value)"></textarea>
-      </div>
-
-      <!-- Navigation Footer -->
-      <div style="display:flex; justify-content:space-between; margin-top:14px; gap:8px;">
-        <button class="btn btn-secondary" style="flex:1;" onclick="CGL_OS.navDojoQuestion(-1)">Previous</button>
-        <button class="btn btn-secondary" style="padding:10px 14px;" onclick="CGL_OS.toggleDojoPalette(true)">Palette</button>
-        <button class="btn" style="flex:1;" onclick="CGL_OS.navDojoQuestion(1)">Next</button>
-      </div>
     </div>
   </div>
 
-  <!-- DOJO QUESTION PALETTE DRAWER -->
-  <div class="drawer-overlay" id="dojo-drawer-overlay" onclick="CGL_OS.toggleDojoPalette(false)"></div>
-  <div id="dojo-palette-drawer">
-    <div style="padding:14px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
-      <h3 style="font-size:14px; font-weight:700;">Dojo Bank Navigator</h3>
-      <span class="badge" style="background:#2563eb;" id="dojo-palette-count">0 Qs</span>
-    </div>
-    <div class="palette-grid" id="dojo-palette-grid"></div>
-  </div>
 
-
-  <!-- ==================== 4. TAB 3: COMMAND BUS & DB STUDIO ==================== -->
+  <!-- ==================== 5. TAB 3: COMMAND BUS & DB STUDIO ==================== -->
   <div id="tab-console" class="view-container">
     <div class="card">
       <div class="card-title">JSON Command Terminal</div>
-      <textarea class="form-control" id="console-payload" style="height:150px; font-family:var(--font-mono); font-size:12px; color:#38bdf8;" placeholder='Paste command payload here...'></textarea>
+      <textarea class="form-control" id="console-payload" style="height:140px; font-family:var(--font-mono); font-size:12px; color:#38bdf8;" placeholder='Paste command payload here...'></textarea>
       <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
         <button class="btn" onclick="CGL_OS.executeConsoleCommand()">Execute Command</button>
         <button class="btn btn-secondary" onclick="document.getElementById('console-payload').value=''">Clear Console</button>
@@ -570,7 +667,6 @@
       </div>
     </div>
 
-    <!-- Direct Database Management Studio -->
     <div class="card">
       <div class="card-title">
         <span>Direct DB Studio</span>
@@ -584,7 +680,6 @@
       <div id="db-inspector-list" style="max-height:220px; overflow-y:auto; font-size:12px;"></div>
     </div>
 
-    <!-- Dangerous Actions Card -->
     <div class="card" style="border-color:#5a1e1e;">
       <div class="card-title" style="color:var(--status-red);">Danger Zone Operations</div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
@@ -595,15 +690,15 @@
   </div>
 
 
-  <!-- ==================== 5. TAB 4: ERROR VAULT & EXTRACTIONS ==================== -->
+  <!-- ==================== 6. TAB 4: ERROR VAULT & EXTRACTIONS ==================== -->
   <div id="tab-vault" class="view-container">
-    <div class="card">
-      <div class="card-title">Spaced-Repetition Error Vault</div>
+    <div class="card" style="border-color:#5a1e1e;">
+      <div class="card-title" style="color:#f87171;">Spaced-Repetition Error Vault</div>
       <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
-        Failed questions from tests logged with diagnostic tags.
+        Questions failed during full mocks. Leitner spaced-repetition flags recurring traps.
       </p>
-      <button class="btn" style="width:100%; margin-bottom:12px;" onclick="CGL_OS.launchVaultSprint()">
-        Launch Trap-Breaker Sprint
+      <button class="btn btn-danger" style="width:100%; margin-bottom:12px;" onclick="CGL_OS.launchVaultSprint()">
+        Launch Trap-Breaker Sprint (Failed Qs Only)
       </button>
       <div id="vault-list-container"></div>
     </div>
@@ -621,9 +716,52 @@
   </div>
 
 
-  <!-- ==================== 6. MODALS ==================== -->
+  <!-- ==================== 7. FULL-SCREEN TESTBOOK-STYLE SOLUTION ANALYZER ==================== -->
+  <div class="modal-overlay" id="modal-mock-review">
+    <div class="modal-window" style="max-width:700px; max-height:92vh;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+        <div>
+          <h3 style="font-size:16px; font-weight:800;" id="review-modal-title">Testbook Solution Analysis</h3>
+          <span style="font-size:11px; color:var(--text-muted);" id="review-modal-date">Submitted on Date</span>
+        </div>
+        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-mock-review').classList.remove('active')">✕ Close</button>
+      </div>
 
-  <!-- CUSTOM MOCK BUILDER MODAL -->
+      <!-- Scorecard Summary -->
+      <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:14px; text-align:center;">
+        <div style="background:var(--bg-elevated); padding:8px; border-radius:6px;">
+          <div style="font-size:10px; color:var(--text-muted);">SCORE</div>
+          <div style="font-size:18px; font-weight:800;" id="rev-score">0</div>
+        </div>
+        <div style="background:var(--bg-elevated); padding:8px; border-radius:6px;">
+          <div style="font-size:10px; color:var(--text-muted);">ACCURACY</div>
+          <div style="font-size:18px; font-weight:800; color:var(--status-green);" id="rev-acc">0%</div>
+        </div>
+        <div style="background:var(--bg-elevated); padding:8px; border-radius:6px;">
+          <div style="font-size:10px; color:var(--text-muted);">CORRECT</div>
+          <div style="font-size:18px; font-weight:800; color:var(--status-green);" id="rev-cor">0</div>
+        </div>
+        <div style="background:var(--bg-elevated); padding:8px; border-radius:6px;">
+          <div style="font-size:10px; color:var(--text-muted);">INCORRECT</div>
+          <div style="font-size:18px; font-weight:800; color:var(--status-red);" id="rev-inc">0</div>
+        </div>
+      </div>
+
+      <!-- Filter Controls -->
+      <div style="display:flex; gap:6px; margin-bottom:12px; overflow-x:auto;">
+        <button class="btn btn-secondary" style="font-size:11px; padding:6px 10px;" onclick="CGL_OS.filterReviewQuestions('ALL')">All Qs</button>
+        <button class="btn btn-danger" style="font-size:11px; padding:6px 10px;" onclick="CGL_OS.filterReviewQuestions('INCORRECT')">Incorrect Only</button>
+        <button class="btn btn-secondary" style="font-size:11px; padding:6px 10px; color:var(--status-green);" onclick="CGL_OS.filterReviewQuestions('CORRECT')">Correct</button>
+        <button class="btn btn-secondary" style="font-size:11px; padding:6px 10px;" onclick="CGL_OS.filterReviewQuestions('UNANSWERED')">Unattempted</button>
+      </div>
+
+      <!-- Question Review List -->
+      <div id="review-questions-list"></div>
+    </div>
+  </div>
+
+
+  <!-- ==================== 8. CUSTOM MOCK BUILDER MODAL ==================== -->
   <div class="modal-overlay" id="modal-mock-builder">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -632,7 +770,7 @@
       </div>
 
       <div class="form-group">
-        <label>Blueprint Preset</label>
+        <label>Exam Blueprint Preset</label>
         <select id="builder-blueprint-preset" class="form-control" onchange="CGL_OS.applyBlueprintPreset(this.value)">
           <option value="CUSTOM">Custom Blueprint</option>
           <option value="TIER1_FULL">Tier 1 Full Mock (4 Sections × 15 Mins)</option>
@@ -645,7 +783,7 @@
         <label>Subject Scope</label>
         <select id="builder-subject" class="form-control">
           <option value="ALL">All Subjects (Full Exam)</option>
-          <option value="QA">Quantitative Aptitude Only</option>
+          <option value="QA">Quantitative Aptitude</option>
           <option value="REAS">General Intelligence & Reasoning</option>
           <option value="ENG">English Comprehension</option>
           <option value="GA">General Awareness</option>
@@ -664,18 +802,10 @@
       </div>
 
       <div class="form-group">
-        <label>Enforce Strict Sectional Lock</label>
+        <label>Sectional Clock Auto-Lock</label>
         <select id="builder-sectional-lock" class="form-control">
           <option value="YES">Yes (Lock & Auto-Switch on Expiry)</option>
           <option value="NO">No (Free Section Switching)</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>Marking Scheme</label>
-        <select id="builder-marking" class="form-control">
-          <option value="TIER_1">+2.00 / -0.50 (SSC CGL Tier 1)</option>
-          <option value="TIER_2">+3.00 / -1.00 (SSC CGL Tier 2)</option>
         </select>
       </div>
 
@@ -734,7 +864,7 @@
       </div>
 
       <div class="form-group">
-        <label>Correct Option Index</label>
+        <label>Correct Option</label>
         <select id="edit-q-correct" class="form-control">
           <option value="0">Option 1</option>
           <option value="1">Option 2</option>
@@ -756,7 +886,7 @@
   </div>
 
 
-  <!-- ==================== 7. BOTTOM NAVIGATION ==================== -->
+  <!-- ==================== 9. BOTTOM NAVIGATION ==================== -->
   <nav id="bottom-nav">
     <button class="nav-btn active" onclick="CGL_OS.switchTab('tab-dashboard', this)">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
@@ -779,7 +909,7 @@
   <div id="print-sheet-root" style="display:none;" class="print-page"></div>
 
 
-  <!-- ==================== 8. MASTER JAVASCRIPT ENGINE ==================== -->
+  <!-- ==================== 10. JAVASCRIPT MASTER RUNTIME ==================== -->
   <script>
     const CGL_OS = (() => {
       const DB_NAME = "cgl_os_db";
@@ -791,18 +921,19 @@
       let examTimerInterval = null;
       let questionTimerInterval = null;
 
-      // Dojo Variables
-      let dojoQuestions = [];
-      let dojoActiveIndex = 0;
+      // Active Dojo Practice Variables
+      let dojoExam = null;
 
-      // High-Yield Formula Sheet Data
+      // Active Review Session Variable
+      let activeReviewAttempt = null;
+
+      // Reference Data
       const FORMULA_SHEET_DATA = `
 • <strong>Pythagorean Triplets:</strong> $(3,4,5), (5,12,13), (7,24,25), (8,15,17), (9,40,41), (11,60,61), (12,35,37)$<br>
 • <strong>Algebra Identities:</strong> If $x + \\frac{1}{x} = k$, then $x^2 + \\frac{1}{x^2} = k^2 - 2$ and $x^3 + \\frac{1}{x^3} = k^3 - 3k$.<br>
-• <strong>Triangle Inradius:</strong> For right-angled triangle, $r = \\frac{a + b - c}{2}$, Circumradius $R = \\frac{c}{2}$.
+• <strong>Circle Inradius:</strong> For right $\\triangle$, $r = \\frac{a + b - c}{2}$, Circumradius $R = \\frac{c}{2}$.
       `;
 
-      // Verified Initial Questions
       const SEED_QUESTIONS = [
         {
           id: "q_qa_geo_001",
@@ -856,47 +987,37 @@
         }
       ];
 
-      // Canonical Taxonomy Structure
       const TAXONOMY = {
         QA: {
           name: "Quantitative Aptitude",
-          weight: 25,
           chapters: ["QA_NUM_SYS", "QA_PERCENTAGE", "QA_PROFIT_LOSS", "QA_SI_CI", "QA_RATIO_PROP", "QA_TIME_WORK", "QA_SPEED_DIST", "QA_ALGEBRA", "QA_GEOMETRY", "QA_MENSURATION", "QA_TRIGONOMETRY"]
         },
         REAS: {
           name: "General Intelligence & Reasoning",
-          weight: 25,
           chapters: ["REAS_ANALOGY", "REAS_SERIES", "REAS_CODING", "REAS_BLOOD_REL", "REAS_SYLLOGISM", "REAS_ORDER_RANK", "REAS_FIGURES", "REAS_DICE_CUBE"]
         },
         ENG: {
           name: "English Comprehension",
-          weight: 25,
           chapters: ["ENG_SYN_ANT", "ENG_OWS", "ENG_IDIOMS", "ENG_SPOTTING", "ENG_IMPROVE", "ENG_ACTIVE_PASS", "ENG_DIRECT_INDR", "ENG_CLOZE_TEST", "ENG_READING_COMP"]
         },
         GA: {
           name: "General Awareness",
-          weight: 25,
           chapters: ["GA_POLITY", "GA_HISTORY_MOD", "GA_HISTORY_ANC", "GA_GEOGRAPHY_IN", "GA_ECONOMY", "GA_PHYSICS", "GA_CHEMISTRY", "GA_BIOLOGY", "GA_CA_ANNUAL"]
         }
       };
 
       /* ----------------------------------------------------------------
-       * 1. SYNCHRONOUS KATEX & MARKDOWN FORMATTER
+       * 1. KATEX & FORMATTER
        * ---------------------------------------------------------------- */
       function formatRichText(str) {
         if (!str) return "";
         let out = String(str);
-
-        // Bold markdown: **text** -> <strong>text</strong>
         out = out.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 
-        // KaTeX Math Rendering
         if (window.katex) {
-          // Block equations $$...$$
           out = out.replace(/\$\$([\s\S]*?)\$\$/g, (m, f) => {
             try { return katex.renderToString(f, { displayMode: true, throwOnError: false }); } catch(e) { return m; }
           });
-          // Inline equations $...$
           out = out.replace(/\$([^\$\n]+?)\$/g, (m, f) => {
             try { return katex.renderToString(f, { displayMode: false, throwOnError: false }); } catch(e) { return m; }
           });
@@ -979,7 +1100,7 @@
       }
 
       /* ----------------------------------------------------------------
-       * 3. CUSTOM MOCK GENERATOR & BUILDER
+       * 3. TIMED EXAM ARENA RUNTIME
        * ---------------------------------------------------------------- */
       function openCustomMockModal() {
         document.getElementById("modal-mock-builder").classList.add("active");
@@ -991,19 +1112,16 @@
           document.getElementById("builder-count").value = 100;
           document.getElementById("builder-duration").value = 15;
           document.getElementById("builder-sectional-lock").value = "YES";
-          document.getElementById("builder-marking").value = "TIER_1";
         } else if (val === "TIER2_SEC1") {
           document.getElementById("builder-subject").value = "ALL";
           document.getElementById("builder-count").value = 60;
           document.getElementById("builder-duration").value = 60;
           document.getElementById("builder-sectional-lock").value = "NO";
-          document.getElementById("builder-marking").value = "TIER_2";
         } else if (val === "QA_BLITZ") {
           document.getElementById("builder-subject").value = "QA";
           document.getElementById("builder-count").value = 15;
           document.getElementById("builder-duration").value = 10;
           document.getElementById("builder-sectional-lock").value = "NO";
-          document.getElementById("builder-marking").value = "TIER_1";
         }
       }
 
@@ -1013,17 +1131,15 @@
         const count = parseInt(document.getElementById("builder-count").value) || 25;
         const durMin = parseInt(document.getElementById("builder-duration").value) || 15;
         const isLock = document.getElementById("builder-sectional-lock").value === "YES";
-        const marking = document.getElementById("builder-marking").value;
 
         const allQuestions = await getAllRecords("store_questions");
         let pool = sub === "ALL" ? allQuestions : allQuestions.filter(q => q.subject === sub);
 
         if (pool.length === 0) {
-          alert("No questions found matching criteria in database.");
+          alert("No questions found matching criteria.");
           return;
         }
 
-        // Divide into authentic sections
         let sections = [];
         if (sub === "ALL") {
           const subjects = ["REAS", "GA", "QA", "ENG"];
@@ -1060,7 +1176,8 @@
 
         activeExam = {
           sessionId: "mock_" + Date.now(),
-          markingScheme: marking,
+          timestamp: Date.now(),
+          title: sub === "ALL" ? "SSC CGL Full Mock" : `${sub} Sectional Mock`,
           isSectionLocked: isLock,
           sections: sections,
           activeSectionIndex: 0,
@@ -1087,9 +1204,6 @@
         startExamTimers();
       }
 
-      /* ----------------------------------------------------------------
-       * 4. EXAM ARENA RUNTIME & SECTION LOCKING
-       * ---------------------------------------------------------------- */
       function startExamTimers() {
         clearInterval(examTimerInterval);
         clearInterval(questionTimerInterval);
@@ -1103,13 +1217,9 @@
           const clockEl = document.getElementById("hud-countdown");
           clockEl.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 
-          if (activeExam.sectionRemainingSec < 180) {
-            clockEl.className = "hud-timer crimson";
-          } else if (activeExam.sectionRemainingSec < 300) {
-            clockEl.className = "hud-timer amber";
-          } else {
-            clockEl.className = "hud-timer";
-          }
+          if (activeExam.sectionRemainingSec < 180) clockEl.className = "hud-timer crimson";
+          else if (activeExam.sectionRemainingSec < 300) clockEl.className = "hud-timer amber";
+          else clockEl.className = "hud-timer";
 
           if (activeExam.sectionRemainingSec <= 0) {
             if (activeExam.isSectionLocked && activeExam.activeSectionIndex < activeExam.sections.length - 1) {
@@ -1118,7 +1228,7 @@
               activeExam.sectionRemainingSec = nextSec.durationSec;
               const nextIdx = activeExam.questions.findIndex(q => q.sectionIndex === activeExam.activeSectionIndex);
               if (nextIdx !== -1) activeExam.currentQuestionIndex = nextIdx;
-              alert(`Time expired! Transitioned to: ${nextSec.name}`);
+              alert(`Time expired! Switched to: ${nextSec.name}`);
               renderActiveExamQuestion();
             } else {
               submitExamSession();
@@ -1226,10 +1336,9 @@
         renderActiveExamQuestion();
       });
 
-      // 6-Column Exam Palette Toggle
       function toggleExamPalette(forceOpen = null) {
-        const drawer = document.getElementById("palette-drawer");
-        const overlay = document.getElementById("drawer-overlay");
+        const drawer = document.getElementById("exam-palette-drawer");
+        const overlay = document.getElementById("exam-drawer-overlay");
         const open = forceOpen !== null ? forceOpen : !drawer.classList.contains("open");
 
         if (open) {
@@ -1242,11 +1351,11 @@
         }
       }
 
-      document.getElementById("btn-toggle-palette").addEventListener("click", () => toggleExamPalette());
-      document.getElementById("drawer-overlay").addEventListener("click", () => toggleExamPalette(false));
+      document.getElementById("btn-toggle-exam-palette").addEventListener("click", () => toggleExamPalette());
+      document.getElementById("exam-drawer-overlay").addEventListener("click", () => toggleExamPalette(false));
 
       function renderExamPaletteGrid() {
-        const grid = document.getElementById("palette-grid");
+        const grid = document.getElementById("exam-palette-grid");
         grid.innerHTML = "";
 
         let ans = 0, unans = 0;
@@ -1274,11 +1383,11 @@
           grid.appendChild(cell);
         });
 
-        document.getElementById("count-answered").innerText = ans;
-        document.getElementById("count-unanswered").innerText = unans;
+        document.getElementById("exam-count-ans").innerText = ans;
+        document.getElementById("exam-count-unans").innerText = unans;
       }
 
-      // Pause Mechanics
+      // Exam Pause
       document.getElementById("btn-arena-pause").addEventListener("click", async () => {
         activeExam.isPaused = true;
         clearInterval(examTimerInterval);
@@ -1287,21 +1396,20 @@
         document.getElementById("pause-shield").style.display = "flex";
       });
 
-      document.getElementById("btn-resume-test").addEventListener("click", () => {
+      document.getElementById("btn-resume-exam").addEventListener("click", () => {
         document.getElementById("pause-shield").style.display = "none";
         activeExam.isPaused = false;
         startExamTimers();
       });
 
-      document.getElementById("btn-pause-exit").addEventListener("click", () => {
+      document.getElementById("btn-exit-exam").addEventListener("click", () => {
         document.getElementById("pause-shield").style.display = "none";
         document.getElementById("exam-arena").style.display = "none";
         renderDashboard();
       });
 
-      // Submit Exam
-      document.getElementById("btn-submit-mock").addEventListener("click", () => {
-        if (confirm("Confirm submit of this test session?")) {
+      document.getElementById("btn-submit-exam").addEventListener("click", () => {
+        if (confirm("Confirm test submission?")) {
           toggleExamPalette(false);
           submitExamSession();
         }
@@ -1312,23 +1420,23 @@
         clearInterval(questionTimerInterval);
 
         let correct = 0, incorrect = 0, traps = 0, totalMarks = 0;
-        const markPos = activeExam.markingScheme === "TIER_2" ? 3.0 : 2.0;
-        const markNeg = activeExam.markingScheme === "TIER_2" ? -1.0 : -0.5;
 
         for (const q of activeExam.questions) {
           const resp = activeExam.userResponses[q.id];
           if (resp.selectedOption !== null) {
             if (resp.selectedOption === q.correctIndex) {
-              totalMarks += markPos;
+              totalMarks += 2.0;
               correct++;
             } else {
-              totalMarks += markNeg;
+              totalMarks -= 0.5;
               incorrect++;
 
               await putRecord("store_vault", {
                 questionId: q.id,
                 chapter: q.chapter,
+                subject: q.subject,
                 errorTag: resp.timeSpentSec > 90 ? "CALCULATION_SLIP" : "READING_TRAP",
+                leitnerBox: 1,
                 lastAttempted: Date.now()
               });
 
@@ -1344,13 +1452,238 @@
         activeExam.q4Traps = traps;
 
         await putRecord("store_attempts", activeExam);
-        alert(`Test Submitted!\nScore: ${totalMarks.toFixed(2)}\nCorrect: ${correct}\nIncorrect: ${incorrect}\nQ-IV Traps: ${traps}`);
         document.getElementById("exam-arena").style.display = "none";
+
+        // Instantly launch Solution Analyzer
         renderDashboard();
+        openMockReview(activeExam.sessionId);
       }
 
       /* ----------------------------------------------------------------
-       * 5. TAB 1: DYNAMIC HIERARCHICAL DASHBOARD
+       * 4. UNTIMED ACTIVE RECALL DOJO ARENA
+       * ---------------------------------------------------------------- */
+      async function startDojoArena(subject = "ALL") {
+        const allQuestions = await getAllRecords("store_questions");
+        const pool = subject === "ALL" ? allQuestions : allQuestions.filter(q => q.subject === subject);
+
+        if (pool.length === 0) {
+          alert(`No questions found in question bank for ${subject}.`);
+          return;
+        }
+
+        dojoExam = {
+          subject: subject,
+          title: subject === "ALL" ? "Complete Question Bank Dojo" : `${subject} Active Recall Dojo`,
+          questions: pool,
+          currentIndex: 0,
+          userResponses: {}
+        };
+
+        dojoExam.questions.forEach(q => {
+          dojoExam.userResponses[q.id] = {
+            selectedOption: null,
+            status: "unanswered",
+            revealed: false
+          };
+        });
+
+        document.getElementById("dojo-arena-view").style.display = "flex";
+        renderDojoArenaQuestion();
+      }
+
+      function exitDojoArena() {
+        document.getElementById("dojo-arena-view").style.display = "none";
+      }
+
+      function renderDojoArenaQuestion() {
+        const q = dojoExam.questions[dojoExam.currentIndex];
+        const resp = dojoExam.userResponses[q.id];
+
+        document.getElementById("dojo-arena-title").innerText = dojoExam.title;
+        document.getElementById("dojo-arena-chap-badge").innerText = q.chapter;
+        document.getElementById("dojo-arena-qnum").innerText = dojoExam.currentIndex + 1;
+        document.getElementById("dojo-arena-total-tag").innerText = `Question ${dojoExam.currentIndex + 1} of ${dojoExam.questions.length}`;
+        document.getElementById("dojo-arena-qtext").innerHTML = formatRichText(q.questionText);
+
+        const fb = document.getElementById("dojo-arena-feedback");
+        fb.style.display = "none";
+
+        const mb = document.getElementById("dojo-arena-method-box");
+        mb.style.display = resp.revealed ? "block" : "none";
+        mb.innerHTML = `<strong>Solution & Method:</strong><br>${formatRichText(q.explanation || 'No method registered.')}`;
+
+        document.getElementById("dojo-arena-annotation").value = q.annotation || "";
+
+        const optContainer = document.getElementById("dojo-arena-options");
+        optContainer.innerHTML = "";
+
+        q.options.forEach((optText, idx) => {
+          const card = document.createElement("div");
+          card.className = "opt-card" + (resp.selectedOption === idx ? " selected" : "");
+
+          if (resp.selectedOption !== null) {
+            if (idx === q.correctIndex) card.classList.add("correct-peek");
+            else if (resp.selectedOption === idx) card.classList.add("wrong-peek");
+          }
+
+          card.innerHTML = `
+            <span style="font-weight:700; color:var(--text-muted); font-size:13px;">${idx + 1}.</span>
+            <div style="flex:1;">${formatRichText(optText)}</div>
+          `;
+
+          card.addEventListener("click", () => {
+            resp.selectedOption = idx;
+            resp.status = "answered";
+            if (navigator.vibrate) navigator.vibrate(idx === q.correctIndex ? 25 : [40, 40]);
+
+            fb.style.display = "block";
+            if (idx === q.correctIndex) {
+              fb.style.background = "rgba(35, 134, 54, 0.2)";
+              fb.style.color = "var(--status-green)";
+              fb.innerText = "✓ Correct Answer!";
+            } else {
+              fb.style.background = "rgba(218, 54, 51, 0.2)";
+              fb.style.color = "var(--status-red)";
+              fb.innerText = `✗ Incorrect. Correct is Option ${q.correctIndex + 1}.`;
+            }
+            renderDojoArenaQuestion();
+          });
+
+          optContainer.appendChild(card);
+        });
+      }
+
+      function navDojoArena(step) {
+        const next = dojoExam.currentIndex + step;
+        if (next >= 0 && next < dojoExam.questions.length) {
+          dojoExam.currentIndex = next;
+          renderDojoArenaQuestion();
+        }
+      }
+
+      function toggleDojoMethod() {
+        const q = dojoExam.questions[dojoExam.currentIndex];
+        const resp = dojoExam.userResponses[q.id];
+        resp.revealed = !resp.revealed;
+        const mb = document.getElementById("dojo-arena-method-box");
+        mb.style.display = resp.revealed ? "block" : "none";
+      }
+
+      async function autoSaveDojoAnnotation(val) {
+        if (!dojoExam) return;
+        const q = dojoExam.questions[dojoExam.currentIndex];
+        q.annotation = val;
+        await putRecord("store_questions", q);
+      }
+
+      function toggleDojoPalette(open) {
+        const drawer = document.getElementById("dojo-palette-drawer");
+        const overlay = document.getElementById("dojo-drawer-overlay");
+
+        if (open) {
+          renderDojoPaletteGrid();
+          drawer.classList.add("open");
+          overlay.classList.add("active");
+        } else {
+          drawer.classList.remove("open");
+          overlay.classList.remove("active");
+        }
+      }
+
+      function renderDojoPaletteGrid() {
+        const grid = document.getElementById("dojo-palette-grid");
+        grid.innerHTML = "";
+        document.getElementById("dojo-palette-count-badge").innerText = `${dojoExam.questions.length} Qs`;
+
+        dojoExam.questions.forEach((q, idx) => {
+          const resp = dojoExam.userResponses[q.id];
+          const cell = document.createElement("div");
+          cell.className = "palette-cell" +
+            (resp.status === "answered" ? " answered" : "") +
+            (idx === dojoExam.currentIndex ? " current" : "");
+
+          cell.innerText = idx + 1;
+          cell.addEventListener("click", () => {
+            dojoExam.currentIndex = idx;
+            toggleDojoPalette(false);
+            renderDojoArenaQuestion();
+          });
+
+          grid.appendChild(cell);
+        });
+      }
+
+      /* ----------------------------------------------------------------
+       * 5. TESTBOOK-STYLE MOCK SOLUTION ANALYZER
+       * ---------------------------------------------------------------- */
+      async function openMockReview(sessionId) {
+        const attempts = await getAllRecords("store_attempts");
+        const att = attempts.find(a => a.sessionId === sessionId);
+        if (!att) return;
+
+        activeReviewAttempt = att;
+        document.getElementById("review-modal-title").innerText = att.title || "SSC CGL Mock Analysis";
+        document.getElementById("review-modal-date").innerText = new Date(att.timestamp || Date.now()).toLocaleString();
+        document.getElementById("rev-score").innerText = (att.finalScore || 0).toFixed(2);
+
+        const totalAtt = (att.correctCount || 0) + (att.incorrectCount || 0);
+        document.getElementById("rev-acc").innerText = totalAtt > 0 ? `${Math.round((att.correctCount / totalAtt) * 100)}%` : "0%";
+        document.getElementById("rev-cor").innerText = att.correctCount || 0;
+        document.getElementById("rev-inc").innerText = att.incorrectCount || 0;
+
+        filterReviewQuestions("ALL");
+        document.getElementById("modal-mock-review").classList.add("active");
+      }
+
+      function filterReviewQuestions(filter) {
+        const list = document.getElementById("review-questions-list");
+        list.innerHTML = "";
+
+        activeReviewAttempt.questions.forEach((q, idx) => {
+          const resp = activeReviewAttempt.userResponses[q.id] || {};
+          const isAtt = resp.selectedOption !== null && resp.selectedOption !== undefined;
+          const isCor = resp.selectedOption === q.correctIndex;
+
+          if (filter === "INCORRECT" && (!isAtt || isCor)) return;
+          if (filter === "CORRECT" && !isCor) return;
+          if (filter === "UNANSWERED" && isAtt) return;
+
+          const card = document.createElement("div");
+          card.className = "card";
+          card.style.marginBottom = "10px";
+          card.style.borderColor = isCor ? "var(--status-green)" : (isAtt ? "var(--status-red)" : "var(--border-color)");
+
+          let statusBadge = isCor ? `<span class="badge" style="background:#238636;">Correct (+2)</span>`
+            : (isAtt ? `<span class="badge" style="background:#da3633;">Incorrect (-0.5)</span>`
+            : `<span class="badge" style="background:#21262d;">Unattempted (0)</span>`);
+
+          card.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <div><b>Q${idx + 1}.</b> <span class="badge" style="background:#1f6feb;">${q.chapter}</span></div>
+              <div>${statusBadge}</div>
+            </div>
+            <div style="font-size:14px; line-height:1.5; margin-bottom:10px;">${formatRichText(q.questionText)}</div>
+            <div style="font-size:13px; margin-bottom:8px;">
+              ${q.options.map((opt, oIdx) => `
+                <div style="padding:6px 10px; border-radius:6px; margin:4px 0; font-size:13px;
+                  background:${oIdx === q.correctIndex ? 'rgba(35, 134, 54, 0.25)' : (oIdx === resp.selectedOption ? 'rgba(218, 54, 51, 0.25)' : 'var(--bg-elevated)')};
+                  border:1px solid ${oIdx === q.correctIndex ? 'var(--status-green)' : (oIdx === resp.selectedOption ? 'var(--status-red)' : 'transparent')};">
+                  <b>${oIdx + 1}.</b> ${formatRichText(opt)}
+                  ${oIdx === q.correctIndex ? ' (Correct Answer)' : ''}
+                  ${oIdx === resp.selectedOption && !isCor ? ' (Your Choice)' : ''}
+                </div>
+              `).join('')}
+            </div>
+            <div style="font-size:12px; color:var(--text-muted); background:#11151c; padding:8px; border-radius:6px; margin-top:8px;">
+              <b>Method:</b><br>${formatRichText(q.explanation || 'No explanation.')}
+            </div>
+          `;
+          list.appendChild(card);
+        });
+      }
+
+      /* ----------------------------------------------------------------
+       * 6. TAB 1: DASHBOARD & DYNAMIC HISTORY RENDERING
        * ---------------------------------------------------------------- */
       async function renderDashboard() {
         const attempts = await getAllRecords("store_attempts");
@@ -1378,7 +1711,53 @@
           document.getElementById("kpi-traps-hit").innerText = traps;
         }
 
+        renderHistoryCards(completed);
         renderDrilldownSubjectLevel();
+      }
+
+      function renderHistoryCards(completed) {
+        const container = document.getElementById("mock-history-container");
+        document.getElementById("history-count-badge").innerText = `${completed.length} Tests`;
+
+        if (completed.length === 0) {
+          container.innerHTML = `<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">No mocks submitted yet. Launch your first mock above.</p>`;
+          return;
+        }
+
+        container.innerHTML = "";
+        completed.slice().reverse().forEach(att => {
+          const totalQ = att.questions ? att.questions.length : 0;
+          const card = document.createElement("div");
+          card.className = "history-card";
+          card.innerHTML = `
+            <div class="history-header">
+              <div>
+                <b style="font-size:14px;">${att.title || 'SSC CGL Mock'}</b>
+                <div style="font-size:11px; color:var(--text-muted);">${new Date(att.timestamp || Date.now()).toLocaleDateString()}</div>
+              </div>
+              <button class="btn btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openMockReview('${att.sessionId}')">
+                Review Solutions
+              </button>
+            </div>
+            <div class="history-stats">
+              <div>
+                <div style="font-size:10px; color:var(--text-muted);">SCORE</div>
+                <b style="font-size:14px; color:#fff;">${(att.finalScore || 0).toFixed(2)}</b>
+              </div>
+              <div>
+                <div style="font-size:10px; color:var(--text-muted);">ACCURACY</div>
+                <b style="font-size:14px; color:var(--status-green);">
+                  ${((att.correctCount || 0) + (att.incorrectCount || 0)) > 0 ? Math.round(((att.correctCount || 0) / ((att.correctCount || 0) + (att.incorrectCount || 0))) * 100) : 0}%
+                </b>
+              </div>
+              <div>
+                <div style="font-size:10px; color:var(--text-muted);">TRAPS HIT</div>
+                <b style="font-size:14px; color:var(--status-red);">${att.q4Traps || 0}</b>
+              </div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
       }
 
       async function renderDrilldownSubjectLevel() {
@@ -1396,15 +1775,17 @@
           let subAtt = 0, subCor = 0;
 
           completed.forEach(c => {
-            c.questions.forEach(q => {
-              if (q.subject === subKey) {
-                const resp = c.userResponses[q.id];
-                if (resp && resp.selectedOption !== null) {
-                  subAtt++;
-                  if (resp.selectedOption === q.correctIndex) subCor++;
+            if (c.questions) {
+              c.questions.forEach(q => {
+                if (q.subject === subKey) {
+                  const resp = c.userResponses[q.id];
+                  if (resp && resp.selectedOption !== null) {
+                    subAtt++;
+                    if (resp.selectedOption === q.correctIndex) subCor++;
+                  }
                 }
-              }
-            });
+              });
+            }
           });
 
           const div = document.createElement("div");
@@ -1419,7 +1800,7 @@
                 <div style="font-size:11px; color:var(--text-muted);">${sub.chapters.length} Standard Chapters</div>
               </div>
               <div style="text-align:right;">
-                <span class="badge" style="background:#1e293b; color:#38bdf8;">
+                <span class="badge" style="background:#21262d; color:#38bdf8;">
                   ${subAtt > 0 ? `Acc: ${Math.round((subCor / subAtt) * 100)}%` : "Unattempted"}
                 </span>
               </div>
@@ -1445,16 +1826,18 @@
         sub.chapters.forEach(chap => {
           let chapAtt = 0, chapCor = 0, chapSec = 0;
           completed.forEach(c => {
-            c.questions.forEach(q => {
-              if (q.chapter === chap) {
-                const resp = c.userResponses[q.id];
-                if (resp && resp.selectedOption !== null) {
-                  chapAtt++;
-                  chapSec += (resp.timeSpentSec || 0);
-                  if (resp.selectedOption === q.correctIndex) chapCor++;
+            if (c.questions) {
+              c.questions.forEach(q => {
+                if (q.chapter === chap) {
+                  const resp = c.userResponses[q.id];
+                  if (resp && resp.selectedOption !== null) {
+                    chapAtt++;
+                    chapSec += (resp.timeSpentSec || 0);
+                    if (resp.selectedOption === q.correctIndex) chapCor++;
+                  }
                 }
-              }
-            });
+              });
+            }
           });
 
           const totalInBank = allQuestions.filter(q => q.chapter === chap).length;
@@ -1472,7 +1855,7 @@
                 </div>
               </div>
               <div style="text-align:right;">
-                <span class="badge" style="background:${chapAtt > 0 ? '#14532d' : '#27272a'}; color:${chapAtt > 0 ? '#4ade80' : '#a1a1aa'};">
+                <span class="badge" style="background:${chapAtt > 0 ? '#1b4d2e' : '#21262d'}; color:${chapAtt > 0 ? '#4ade80' : '#8b949e'};">
                   ${chapAtt > 0 ? `Acc: ${Math.round((chapCor / chapAtt) * 100)}%` : "Unattempted"}
                 </span>
               </div>
@@ -1483,125 +1866,7 @@
       }
 
       /* ----------------------------------------------------------------
-       * 6. TAB 2: INTERACTIVE DOJO ARENA & QUESTION PALETTE
-       * ---------------------------------------------------------------- */
-      async function refreshDojo(filterSub = "ALL") {
-        const all = await getAllRecords("store_questions");
-        dojoQuestions = filterSub === "ALL" ? all : all.filter(q => q.subject === filterSub);
-        dojoActiveIndex = 0;
-
-        document.getElementById("formula-sheet-content").innerHTML = formatRichText(FORMULA_SHEET_DATA);
-        renderDojoQuestion();
-      }
-
-      function changeDojoSubject(val) {
-        refreshDojo(val);
-      }
-
-      function renderDojoQuestion() {
-        const arena = document.getElementById("dojo-arena-card");
-        if (dojoQuestions.length === 0) {
-          arena.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted);">No questions available in selected subject filter.</div>`;
-          return;
-        }
-
-        const q = dojoQuestions[dojoActiveIndex];
-        document.getElementById("dojo-q-chapter").innerText = q.chapter;
-        document.getElementById("dojo-q-index").innerText = `Q ${dojoActiveIndex + 1} of ${dojoQuestions.length}`;
-        document.getElementById("dojo-q-text").innerHTML = formatRichText(q.questionText);
-
-        const banner = document.getElementById("dojo-feedback-banner");
-        banner.style.display = "none";
-
-        const method = document.getElementById("dojo-method-box");
-        method.style.display = "none";
-        method.innerHTML = `<strong>Method & Explanation:</strong><br>${formatRichText(q.explanation || 'No explanation recorded.')}`;
-
-        document.getElementById("dojo-annotation-input").value = q.annotation || "";
-
-        const optContainer = document.getElementById("dojo-options-container");
-        optContainer.innerHTML = "";
-
-        q.options.forEach((opt, idx) => {
-          const optCard = document.createElement("div");
-          optCard.className = "opt-card";
-          optCard.innerHTML = `
-            <span style="font-weight:700; color:var(--text-muted); font-size:13px;">${idx + 1}.</span>
-            <div style="flex:1;">${formatRichText(opt)}</div>
-          `;
-
-          optCard.addEventListener("click", () => {
-            if (navigator.vibrate) navigator.vibrate(idx === q.correctIndex ? 25 : [40, 40]);
-            banner.style.display = "block";
-            if (idx === q.correctIndex) {
-              banner.style.background = "rgba(34, 197, 94, 0.15)";
-              banner.style.color = "var(--status-green)";
-              banner.innerText = "✓ Correct Answer!";
-            } else {
-              banner.style.background = "rgba(239, 68, 68, 0.15)";
-              banner.style.color = "var(--status-red)";
-              banner.innerText = `✗ Incorrect. Correct is Option ${q.correctIndex + 1}.`;
-            }
-          });
-
-          optContainer.appendChild(optCard);
-        });
-      }
-
-      function navDojoQuestion(step) {
-        const next = dojoActiveIndex + step;
-        if (next >= 0 && next < dojoQuestions.length) {
-          dojoActiveIndex = next;
-          renderDojoQuestion();
-        }
-      }
-
-      function toggleDojoMethod() {
-        const el = document.getElementById("dojo-method-box");
-        el.style.display = el.style.display === "none" ? "block" : "none";
-      }
-
-      async function saveDojoAnnotation(val) {
-        if (dojoQuestions.length === 0) return;
-        const q = dojoQuestions[dojoActiveIndex];
-        q.annotation = val;
-        await putRecord("store_questions", q);
-      }
-
-      function toggleDojoPalette(open) {
-        const drawer = document.getElementById("dojo-palette-drawer");
-        const overlay = document.getElementById("dojo-drawer-overlay");
-
-        if (open) {
-          renderDojoPaletteGrid();
-          drawer.classList.add("open");
-          overlay.classList.add("active");
-        } else {
-          drawer.classList.remove("open");
-          overlay.classList.remove("active");
-        }
-      }
-
-      function renderDojoPaletteGrid() {
-        const grid = document.getElementById("dojo-palette-grid");
-        grid.innerHTML = "";
-        document.getElementById("dojo-palette-count").innerText = `${dojoQuestions.length} Qs`;
-
-        dojoQuestions.forEach((q, idx) => {
-          const cell = document.createElement("div");
-          cell.className = "palette-cell" + (idx === dojoActiveIndex ? " current" : "");
-          cell.innerText = idx + 1;
-          cell.addEventListener("click", () => {
-            dojoActiveIndex = idx;
-            toggleDojoPalette(false);
-            renderDojoQuestion();
-          });
-          grid.appendChild(cell);
-        });
-      }
-
-      /* ----------------------------------------------------------------
-       * 7. QUESTION EDITOR MODAL (IN-PLACE GUI UPDATES)
+       * 7. QUESTION EDITOR MODAL
        * ---------------------------------------------------------------- */
       function openEditQuestionModal(qData) {
         const isNew = !qData;
@@ -1624,8 +1889,8 @@
       }
 
       function openEditCurrentDojoQuestion() {
-        if (dojoQuestions.length === 0) return;
-        openEditQuestionModal(dojoQuestions[dojoActiveIndex]);
+        if (!dojoExam) return;
+        openEditQuestionModal(dojoExam.questions[dojoExam.currentIndex]);
       }
 
       async function saveQuestionEditor() {
@@ -1646,29 +1911,31 @@
           tags: ["UserSaved"]
         };
 
-        if (!qObj.questionText || !qObj.options[0]) {
-          alert("Question text and at least Option 1 are required.");
-          return;
-        }
-
         await putRecord("store_questions", qObj);
         document.getElementById("modal-question-editor").classList.remove("active");
-        refreshDojo(document.getElementById("dojo-subject-filter").value);
+        if (dojoExam) {
+          dojoExam.questions[dojoExam.currentIndex] = qObj;
+          renderDojoArenaQuestion();
+        }
         refreshDbInspector();
       }
 
       async function deleteCurrentEditingQuestion() {
         const id = document.getElementById("edit-q-id").value;
-        if (confirm(`Permanently delete question ${id}?`)) {
+        if (confirm(`Delete question ${id}?`)) {
           await deleteRecordFromStore("store_questions", id);
           document.getElementById("modal-question-editor").classList.remove("active");
-          refreshDojo(document.getElementById("dojo-subject-filter").value);
+          if (dojoExam) {
+            dojoExam.questions = dojoExam.questions.filter(q => q.id !== id);
+            if (dojoExam.currentIndex >= dojoExam.questions.length) dojoExam.currentIndex = 0;
+            renderDojoArenaQuestion();
+          }
           refreshDbInspector();
         }
       }
 
       /* ----------------------------------------------------------------
-       * 8. TAB 3: COMMAND CONSOLE & DANGER ZONE
+       * 8. TAB 3: COMMAND BUS & DIRECT STUDIO
        * ---------------------------------------------------------------- */
       async function executeConsoleCommand() {
         const raw = document.getElementById("console-payload").value.trim();
@@ -1684,8 +1951,6 @@
           } else if (cmd.action === "HOTPATCH_CONFIG") {
             await putRecord("store_config", { key: cmd.target, value: cmd.payload });
             alert(`Patched config: ${cmd.target}`);
-          } else {
-            alert("Unknown command action.");
           }
           refreshDbInspector();
         } catch(e) {
@@ -1729,7 +1994,7 @@
           row.style.borderBottom = "1px solid var(--border-color)";
           row.innerHTML = `
             <span style="font-family:var(--font-mono);">${key}</span>
-            <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.editDbRecordModal('${storeName}', '${key}')">Edit</button>
+            <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.editDbRecordModal('${storeName}', '${key}')">Inspect</button>
           `;
           list.appendChild(row);
         });
@@ -1748,7 +2013,7 @@
       }
 
       async function wipeTestAttempts() {
-        if (confirm("Are you sure you want to permanently clear test attempts and statistics?")) {
+        if (confirm("Permanently clear mock test history?")) {
           const tx = db.transaction(["store_attempts"], "readwrite");
           tx.objectStore("store_attempts").clear();
           await new Promise(r => tx.oncomplete = r);
@@ -1759,7 +2024,7 @@
       }
 
       async function factoryResetAll() {
-        if (confirm("WARNING: This will wipe your questions, attempts, and vault completely! Proceed?")) {
+        if (confirm("WARNING: Complete factory reset will erase all questions and history!")) {
           const tx = db.transaction(["store_questions", "store_attempts", "store_vault", "store_config"], "readwrite");
           tx.objectStore("store_questions").clear();
           tx.objectStore("store_attempts").clear();
@@ -1767,15 +2032,14 @@
           tx.objectStore("store_config").clear();
           await new Promise(r => tx.oncomplete = r);
           await seedData();
-          alert("Factory reset complete. Seed data restored.");
+          alert("Factory reset complete.");
           renderDashboard();
-          refreshDojo();
           refreshDbInspector();
         }
       }
 
       /* ----------------------------------------------------------------
-       * 9. TAB 4: VAULT & PHYSICAL PRINT EXTRACTIONS
+       * 9. TAB 4: ERROR VAULT & TRAP-BREAKER SPRINT
        * ---------------------------------------------------------------- */
       async function renderVault() {
         const vault = await getAllRecords("store_vault");
@@ -1784,7 +2048,7 @@
         container.innerHTML = "";
 
         if (vault.length === 0) {
-          container.innerHTML = `<div style="font-size:12px; color:var(--text-muted);">No errors logged in the Error Vault yet.</div>`;
+          container.innerHTML = `<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">Error Vault is clear. No failed questions logged.</div>`;
           return;
         }
 
@@ -1794,27 +2058,64 @@
 
           const div = document.createElement("div");
           div.className = "card";
-          div.style.borderColor = "#5a1e1e";
+          div.style.borderColor = "#da3633";
           div.style.marginBottom = "8px";
           div.innerHTML = `
             <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-              <span class="badge" style="background:#ef4444;">${v.errorTag}</span>
-              <span style="font-size:11px; color:var(--text-muted);">${q.chapter}</span>
+              <span class="badge" style="background:#da3633;">${v.errorTag || 'ERROR'}</span>
+              <span style="font-size:11px; color:var(--text-muted);">${q.chapter || v.chapter || 'UNTAGGED'}</span>
             </div>
             <div style="font-size:13px; line-height:1.5;">${formatRichText(q.questionText)}</div>
-            <div style="font-size:11px; color:#38bdf8; margin-top:6px;">Correct: Option ${q.correctIndex + 1}</div>
+            <div style="font-size:11px; color:var(--accent-cyan); margin-top:6px;">Correct: Option ${q.correctIndex + 1}</div>
           `;
           container.appendChild(div);
         });
       }
 
+      // TRAP BREAKER SPRINT: Launches directly with Vault questions
       async function launchVaultSprint() {
         const vault = await getAllRecords("store_vault");
-        if (vault.length === 0) {
-          alert("Error Vault is currently empty.");
+        const questions = await getAllRecords("store_questions");
+        const failedQs = questions.filter(q => vault.some(v => v.questionId === q.id));
+
+        if (failedQs.length === 0) {
+          alert("No questions currently logged in your Error Vault!");
           return;
         }
-        openCustomMockModal();
+
+        activeExam = {
+          sessionId: "vault_sprint_" + Date.now(),
+          timestamp: Date.now(),
+          title: "Error Vault Trap-Breaker Sprint",
+          isSectionLocked: false,
+          sections: [{
+            id: "SEC_VAULT",
+            name: "Error Vault Traps",
+            durationSec: failedQs.length * 60,
+            questions: failedQs
+          }],
+          activeSectionIndex: 0,
+          currentQuestionIndex: 0,
+          questions: failedQs.map((q, idx) => ({ ...q, sectionIndex: 0, sectionName: "Error Vault", localNumber: idx + 1 })),
+          sectionRemainingSec: failedQs.length * 60,
+          currentQTimeSpentSec: 0,
+          userResponses: {},
+          isPaused: false
+        };
+
+        activeExam.questions.forEach(q => {
+          activeExam.userResponses[q.id] = {
+            selectedOption: null,
+            status: "unanswered",
+            switches: 0,
+            timeSpentSec: 0,
+            struck: []
+          };
+        });
+
+        document.getElementById("exam-arena").style.display = "flex";
+        renderActiveExamQuestion();
+        startExamTimers();
       }
 
       async function spoolAndroidPrint() {
@@ -1859,7 +2160,7 @@
           const q = questions.find(item => item.id === v.questionId);
           if (q) {
             md += `### ${q.chapter} - ${q.id}\n`;
-            md += `**Tag:** #${v.errorTag}\n\n`;
+            md += `**Tag:** #${v.errorTag || 'ERROR'}\n\n`;
             md += `> ${q.questionText}\n\n`;
             md += `**Solution:**\n${q.explanation}\n\n---\n\n`;
           }
@@ -1873,7 +2174,7 @@
       }
 
       /* ----------------------------------------------------------------
-       * 10. SYSTEM NAVIGATION & BOOTSTRAP
+       * 10. SYSTEM NAVIGATION & INITIALIZATION
        * ---------------------------------------------------------------- */
       function switchTab(tId, btn) {
         document.querySelectorAll(".view-container").forEach(el => el.classList.remove("active"));
@@ -1883,7 +2184,6 @@
         if (btn) btn.classList.add("active");
 
         if (tId === "tab-dashboard") renderDashboard();
-        if (tId === "tab-dojo") refreshDojo(document.getElementById("dojo-subject-filter").value);
         if (tId === "tab-console") refreshDbInspector();
         if (tId === "tab-vault") renderVault();
       }
@@ -1893,13 +2193,12 @@
         el.style.display = el.style.display === "none" ? "block" : "none";
       }
 
-      // Boot engine
       window.addEventListener("DOMContentLoaded", async () => {
         await initDB();
         renderDashboard();
 
-        // Wire Launch Mock button
-        document.getElementById("btn-quick-launch").addEventListener("click", openCustomMockModal);
+        document.getElementById("formula-sheet-content").innerHTML = formatRichText(FORMULA_SHEET_DATA);
+        document.getElementById("btn-dash-launch-mock").addEventListener("click", openCustomMockModal);
       });
 
       return {
@@ -1907,15 +2206,18 @@
         openCustomMockModal,
         applyBlueprintPreset,
         launchConfiguredMock,
-        changeDojoSubject,
-        navDojoQuestion,
+        startDojoArena,
+        exitDojoArena,
+        navDojoArena,
         toggleDojoMethod,
-        saveDojoAnnotation,
+        autoSaveDojoAnnotation,
         toggleDojoPalette,
         openEditQuestionModal,
         openEditCurrentDojoQuestion,
         saveQuestionEditor,
         deleteCurrentEditingQuestion,
+        openMockReview,
+        filterReviewQuestions,
         toggleFormulaSheet,
         executeConsoleCommand,
         loadSamplePayload,
