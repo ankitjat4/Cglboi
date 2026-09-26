@@ -8,10 +8,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>SSC CGL Intelligence OS</title>
 
-  <!-- KaTeX for High-Performance Math/Formula Rendering -->
+  <!-- KaTeX for Synchronous High-Speed Math Rendering -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 
   <style>
     :root {
@@ -41,7 +40,7 @@
       user-select: none;
     }
 
-    /* Top Safe Padding & Utility */
+    /* Container Utility */
     .view-container {
       display: none;
       padding: 14px 14px calc(var(--bottom-nav-height) + 20px) 14px;
@@ -49,23 +48,64 @@
       margin: 0 auto;
     }
     .view-container.active { display: block; }
+    
     .badge {
       font-size: 11px;
-      padding: 2px 7px;
+      padding: 3px 8px;
       border-radius: 4px;
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      display: inline-block;
     }
+
+    /* CARDS & BUTTONS */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.75px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .btn {
+      background: var(--accent-blue);
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-secondary {
+      background: var(--bg-elevated);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+    .btn-danger { background: var(--status-red); }
 
     /* BOTTOM NAVIGATION */
     #bottom-nav {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      bottom: 0; left: 0; right: 0;
       height: var(--bottom-nav-height);
-      background: rgba(20, 23, 31, 0.95);
+      background: rgba(18, 20, 26, 0.96);
       backdrop-filter: blur(12px);
       border-top: 1px solid var(--border-color);
       display: flex;
@@ -91,177 +131,50 @@
     .nav-btn.active { color: var(--accent-blue); }
     .nav-btn svg { width: 22px; height: 22px; stroke-width: 2; }
 
-    /* CARDS & METRIC WIDGETS */
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 14px;
-    }
-    .card-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.75px;
-      margin-bottom: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .btn {
-      background: var(--accent-blue);
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 14px;
-      display: inline-flex;
+    /* MODALS */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      z-index: 3500;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      cursor: pointer;
-    }
-    .btn-secondary {
-      background: var(--bg-elevated);
-      color: var(--text-main);
-      border: 1px solid var(--border-color);
-    }
-    .btn-danger { background: var(--status-red); }
-
-    /* TAB 1: DRILLDOWN DASHBOARD */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-    .kpi-card {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 12px;
-    }
-    .kpi-num { font-size: 24px; font-weight: 800; color: #fff; margin-top: 4px; }
-    .kpi-sub { font-size: 11px; color: var(--text-muted); }
-    .drilldown-breadcrumb {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      color: var(--accent-blue);
-      margin-bottom: 10px;
-      overflow-x: auto;
-      white-space: nowrap;
-    }
-    .drill-item {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-    }
-    .drill-item:active { background: var(--border-color); }
-
-    /* TAB 2: ACTIVE RECALL DOJO */
-    .filter-bar {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 8px;
-      margin-bottom: 12px;
-    }
-    .filter-pill {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      white-space: nowrap;
-      color: var(--text-muted);
-      cursor: pointer;
-    }
-    .filter-pill.active {
-      background: var(--accent-blue);
-      color: white;
-      border-color: var(--accent-blue);
-    }
-    .dojo-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
       padding: 16px;
-      margin-bottom: 14px;
     }
-    .dojo-opt {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 12px;
-      margin: 8px 0;
-      font-size: 14px;
-      cursor: pointer;
-    }
-    .dojo-solution {
-      display: none;
-      margin-top: 14px;
-      padding: 12px;
-      background: #172339;
-      border-left: 3px solid var(--accent-blue);
-      border-radius: 4px;
-      font-size: 13px;
-    }
-    .annotation-box {
-      width: 100%;
-      background: var(--bg-dark);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      border-radius: 6px;
-      padding: 8px;
-      font-size: 12px;
-      margin-top: 8px;
-      resize: vertical;
-    }
-
-    /* TAB 3: COMMAND BUS & MANUAL DB STUDIO */
-    .console-input {
-      width: 100%;
-      height: 180px;
-      background: var(--bg-dark);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 12px;
-      color: #38bdf8;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      resize: vertical;
-      margin-bottom: 10px;
-    }
-    .db-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px;
-      border-bottom: 1px solid var(--border-color);
-      font-size: 12px;
-    }
-
-    /* TAB 4: ERROR VAULT & EXPORTS */
-    .vault-item {
+    .modal-overlay.active { display: flex; }
+    .modal-window {
       background: var(--bg-card);
-      border: 1px solid #451a1a;
-      border-radius: 10px;
-      padding: 14px;
-      margin-bottom: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 20px;
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
     }
 
-    /* EXAM ARENA (FULL SCREEN HUD) */
+    /* FORM INPUTS */
+    .form-group { margin-bottom: 14px; }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .form-control {
+      width: 100%;
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: var(--text-main);
+      font-size: 14px;
+    }
+
+    /* 1. EXAM ARENA STYLES */
     #exam-arena {
       display: none;
       position: fixed;
@@ -279,7 +192,7 @@
       justify-content: space-between;
       height: 56px;
     }
-    .hud-pause-btn {
+    .hud-icon-btn {
       background: none;
       border: 1px solid var(--border-color);
       color: var(--text-main);
@@ -295,33 +208,22 @@
       font-family: var(--font-mono);
       font-size: 18px;
       font-weight: 800;
-      letter-spacing: 1px;
       color: #ffffff;
-      transition: color 0.3s;
+      letter-spacing: 1px;
     }
     .hud-timer.amber { color: var(--status-amber); }
     .hud-timer.crimson { color: var(--status-red); animation: pulse 1s infinite; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
     .sectional-banner {
       background: #171b26;
       border-bottom: 1px solid var(--border-color);
-      padding: 6px 14px;
+      padding: 8px 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-size: 12px;
-      color: var(--text-muted);
     }
-    .sectional-badge {
-      background: #2563eb;
-      color: #fff;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-weight: 700;
-      font-size: 11px;
-    }
-
     .arena-body {
       flex: 1;
       overflow-y: auto;
@@ -365,28 +267,21 @@
       border-radius: 10px;
       padding: 14px;
       margin-bottom: 12px;
-      font-size: 15px;
+      font-size: 14px;
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       gap: 12px;
       cursor: pointer;
-      position: relative;
     }
     .opt-card.selected {
       border-color: var(--accent-blue);
-      background: rgba(37, 99, 235, 0.12);
+      background: rgba(59, 130, 246, 0.15);
     }
     .opt-card.struck-through {
       opacity: 0.35;
       text-decoration: line-through;
       border-style: dashed;
     }
-    .opt-index {
-      font-weight: 700;
-      color: var(--text-muted);
-      font-size: 13px;
-    }
-
     .arena-footer {
       position: fixed;
       bottom: 0; left: 0; right: 0;
@@ -400,12 +295,12 @@
       z-index: 2100;
     }
 
-    /* SLIDING QUESTION PALETTE DRAWER */
-    #palette-drawer {
+    /* AUTHENTIC 6-COLUMN PALETTE DRAWER */
+    #palette-drawer, #dojo-palette-drawer {
       position: fixed;
       top: 0; right: -100%; bottom: 0;
-      width: 82%;
-      max-width: 340px;
+      width: 85%;
+      max-width: 360px;
       background: #171b26;
       border-left: 1px solid var(--border-color);
       z-index: 2500;
@@ -413,18 +308,18 @@
       display: flex;
       flex-direction: column;
     }
-    #palette-drawer.open { right: 0; }
+    #palette-drawer.open, #dojo-palette-drawer.open { right: 0; }
     .drawer-overlay {
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.65);
+      background: rgba(0,0,0,0.7);
       z-index: 2400;
     }
     .drawer-overlay.active { display: block; }
     .palette-grid {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(6, 1fr);
       gap: 8px;
       padding: 14px;
       overflow-y: auto;
@@ -438,20 +333,21 @@
       justify-content: center;
       font-weight: 700;
       font-size: 13px;
-      background: #2563eb; /* Blue: Unanswered/Not Attempted as in reference */
+      background: #2563eb; /* Blue: Unanswered */
       color: #fff;
       cursor: pointer;
+      border: 2px solid transparent;
     }
     .palette-cell.answered { background: var(--status-green); }
     .palette-cell.marked { background: var(--status-purple); border-radius: 50%; }
-    .palette-cell.current { border: 2px solid #fff; }
+    .palette-cell.current { border-color: #ffffff; box-shadow: 0 0 8px rgba(255,255,255,0.6); }
 
     /* PAUSE SHIELD OVERLAY */
     #pause-shield {
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(10, 12, 16, 0.96);
+      background: rgba(10, 12, 16, 0.98);
       z-index: 3000;
       flex-direction: column;
       align-items: center;
@@ -460,40 +356,35 @@
       text-align: center;
     }
 
-    /* PRINT SHEET FORMATTING */
+    /* PRINT FORMAT */
     @media print {
       body { background: white !important; color: black !important; }
-      #bottom-nav, #exam-arena, .nav-btn, .btn, .filter-bar { display: none !important; }
-      .print-page {
-        display: block !important;
-        column-count: 2;
-        column-gap: 20px;
-        font-size: 12px;
-      }
+      #bottom-nav, #exam-arena, .btn, .filter-bar, .card { display: none !important; }
+      .print-page { display: block !important; column-count: 2; column-gap: 20px; font-size: 12px; }
       .print-question { break-inside: avoid; margin-bottom: 14px; border-bottom: 1px solid #ccc; padding-bottom: 8px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ==================== 1. EXAM ARENA (FULL SCREEN HUD) ==================== -->
+  <!-- ==================== 1. EXAM ARENA ==================== -->
   <div id="exam-arena">
     <div class="arena-header">
-      <button class="hud-pause-btn" id="btn-arena-pause">
+      <button class="hud-icon-btn" id="btn-arena-pause">
         <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
       </button>
       <div style="text-align:center;">
         <div id="hud-countdown" class="hud-timer">15:00</div>
-        <div style="font-size:10px; color:var(--text-muted);" id="hud-test-title">Tier 1 Sectional</div>
+        <div style="font-size:10px; color:var(--text-muted);" id="hud-test-title">Sectional Mock</div>
       </div>
-      <button class="hud-pause-btn" id="btn-toggle-palette">
+      <button class="hud-icon-btn" id="btn-toggle-palette">
         <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
       </button>
     </div>
 
     <div class="sectional-banner">
-      <span class="sectional-badge" id="hud-section-badge">SECTION A: QUANT</span>
-      <span id="hud-pacing-status" style="font-family:var(--font-mono); font-size:11px;">00:00 spent</span>
+      <span class="badge" style="background:#2563eb;" id="hud-section-badge">SECTION: QUANT</span>
+      <span id="hud-pacing-status" style="font-family:var(--font-mono); color:var(--text-muted);">0s spent</span>
     </div>
 
     <div class="arena-body" id="arena-body">
@@ -505,7 +396,7 @@
         </div>
       </div>
 
-      <div class="q-text-canvas" id="arena-q-text">Loading question text...</div>
+      <div class="q-text-canvas" id="arena-q-text"></div>
       <div id="arena-options-container"></div>
     </div>
 
@@ -516,86 +407,76 @@
     </div>
   </div>
 
-  <!-- PALETTE DRAWER -->
+  <!-- AUTHENTIC TCS EXAM PALETTE DRAWER -->
   <div class="drawer-overlay" id="drawer-overlay"></div>
   <div id="palette-drawer">
     <div style="padding:14px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
-      <h3 style="font-size:14px; font-weight:700;">Question Palette</h3>
+      <div style="display:flex; gap:12px; font-size:12px; color:#38bdf8;">
+        <span>(?) Symbols</span>
+        <span>(i) Instructions</span>
+      </div>
       <span class="badge" style="background:#2563eb;" id="drawer-section-label">PART - A</span>
     </div>
-    <div style="padding:10px 14px; background:#141720; font-size:12px; display:flex; justify-content:space-around;">
+    <div style="padding:12px 14px; background:#141720; font-size:12px; display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color);">
       <span>🟢 Answered: <b id="count-answered">0</b></span>
       <span>🔵 Unanswered: <b id="count-unanswered">0</b></span>
     </div>
     <div class="palette-grid" id="palette-grid"></div>
     <div style="padding:14px; border-top:1px solid var(--border-color);">
-      <button class="btn btn-danger" style="width:100%;" id="btn-submit-mock">Submit Test</button>
+      <button class="btn btn-danger" style="width:100%; font-size:14px; padding:12px;" id="btn-submit-mock">Submit Test</button>
     </div>
   </div>
 
   <!-- PAUSE SHIELD OVERLAY -->
   <div id="pause-shield">
-    <h2 style="font-size:20px; font-weight:800; margin-bottom:8px;">TEST PAUSED</h2>
+    <h2 style="font-size:22px; font-weight:800; margin-bottom:8px;">TEST PAUSED</h2>
     <p style="font-size:13px; color:var(--text-muted); max-width:280px; margin-bottom:20px;">
-      Cognitive state & clock frozen safely in IndexedDB. You can review settings or resume without losing telemetry.
+      Timer halted and state persisted safely in IndexedDB.
     </p>
     <button class="btn" style="width:200px;" id="btn-resume-test">Resume Test</button>
     <button class="btn btn-secondary" style="width:200px; margin-top:10px;" id="btn-pause-exit">Exit to Dashboard</button>
   </div>
 
 
-  <!-- ==================== 2. TAB 1: ANALYTICS DASHBOARD ==================== -->
+  <!-- ==================== 2. TAB 1: DASHBOARD ==================== -->
   <div id="tab-dashboard" class="view-container active">
     <div class="card" style="background:linear-gradient(135deg, #1e2638, #161a24); border-color:#3b82f6;">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
           <h2 style="font-size:18px; font-weight:800;">SSC CGL 2026 Master OS</h2>
-          <p style="font-size:12px; color:var(--text-muted); margin-top:2px;">Autonomous Exam Intelligence & Diagnostics</p>
+          <p style="font-size:12px; color:var(--text-muted); margin-top:2px;">Intelligence & Forensic Telemetry</p>
         </div>
-        <button class="btn" id="btn-quick-launch" style="padding:6px 12px; font-size:12px;">Launch Mock</button>
-      </div>
-    </div>
-
-    <!-- Quick Presets -->
-    <div class="card">
-      <div class="card-title">Exam Blueprint Presets</div>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-        <button class="btn btn-secondary" style="font-size:12px; padding:10px;" onclick="CGL_OS.launchBlueprint('TIER_1')">
-          Tier 1 (4x15m Locked)
-        </button>
-        <button class="btn btn-secondary" style="font-size:12px; padding:10px;" onclick="CGL_OS.launchBlueprint('QA_BLITZ')">
-          QA Geometry Blitz
-        </button>
+        <button class="btn" id="btn-quick-launch" style="padding:8px 14px; font-size:12px;">Launch Mock</button>
       </div>
     </div>
 
     <!-- Master KPIs -->
-    <div class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-sub">Total Mocks Given</div>
-        <div class="kpi-num" id="kpi-total-mocks">0</div>
+    <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; margin-bottom:14px;">
+      <div class="card" style="margin-bottom:0; padding:12px;">
+        <div style="font-size:11px; color:var(--text-muted);">Total Mocks Given</div>
+        <div style="font-size:24px; font-weight:800;" id="kpi-total-mocks">0</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-sub">Global Accuracy</div>
-        <div class="kpi-num" id="kpi-global-acc">0%</div>
+      <div class="card" style="margin-bottom:0; padding:12px;">
+        <div style="font-size:11px; color:var(--text-muted);">Overall Accuracy</div>
+        <div style="font-size:24px; font-weight:800;" id="kpi-global-acc">--</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-sub">Avg Solve Speed</div>
-        <div class="kpi-num" id="kpi-avg-speed">0s</div>
+      <div class="card" style="margin-bottom:0; padding:12px;">
+        <div style="font-size:11px; color:var(--text-muted);">Avg Solve Speed</div>
+        <div style="font-size:24px; font-weight:800;" id="kpi-avg-speed">--</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-sub">Q-IV Traps Hit</div>
-        <div class="kpi-num" style="color:var(--status-red);" id="kpi-traps-hit">0</div>
+      <div class="card" style="margin-bottom:0; padding:12px;">
+        <div style="font-size:11px; color:var(--text-muted);">Q-IV Time Traps</div>
+        <div style="font-size:24px; font-weight:800; color:var(--status-red);" id="kpi-traps-hit">0</div>
       </div>
     </div>
 
-    <!-- Hierarchical Drill-Down Navigator -->
+    <!-- Syllabus Taxonomy Real Drill-Down -->
     <div class="card">
       <div class="card-title">
         <span>Syllabus Taxonomy Deep Dive</span>
         <span class="badge" style="background:#2563eb;" id="drill-level-tag">LEVEL: SUBJECT</span>
       </div>
-      <div class="drilldown-breadcrumb" id="drilldown-breadcrumb">Global</div>
+      <div id="drilldown-breadcrumb" style="font-size:12px; color:var(--accent-blue); margin-bottom:10px; cursor:pointer;">Global</div>
       <div id="drilldown-list"></div>
     </div>
   </div>
@@ -603,81 +484,126 @@
 
   <!-- ==================== 3. TAB 2: ACTIVE RECALL DOJO ==================== -->
   <div id="tab-dojo" class="view-container">
-    <div class="filter-bar" id="dojo-filters">
-      <div class="filter-pill active" onclick="CGL_OS.filterDojo('ALL')">All Subjects</div>
-      <div class="filter-pill" onclick="CGL_OS.filterDojo('QA')">Quantitative</div>
-      <div class="filter-pill" onclick="CGL_OS.filterDojo('REAS')">Reasoning</div>
-      <div class="filter-pill" onclick="CGL_OS.filterDojo('ENG')">English</div>
-      <div class="filter-pill" onclick="CGL_OS.filterDojo('GA')">General Awareness</div>
+    <!-- Top Action & Filter Bar -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <select id="dojo-subject-filter" class="form-control" style="width:58%;" onchange="CGL_OS.changeDojoSubject(this.value)">
+        <option value="ALL">All Subjects</option>
+        <option value="QA">Quantitative (QA)</option>
+        <option value="REAS">Reasoning (REAS)</option>
+        <option value="ENG">English (ENG)</option>
+        <option value="GA">General Awareness (GA)</option>
+      </select>
+      <div style="display:flex; gap:6px;">
+        <button class="btn btn-secondary" style="padding:8px 10px;" onclick="CGL_OS.toggleDojoPalette(true)">
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+        </button>
+        <button class="btn" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openEditQuestionModal(null)">+ Add</button>
+      </div>
     </div>
 
-    <!-- High-Yield Formula Sheet Pull-Down -->
-    <div class="card" style="border-color:#38bdf8;">
-      <div class="card-title" style="color:#38bdf8;">
+    <!-- High-Yield Formula Reference -->
+    <div class="card" style="border-color:#38bdf8; margin-bottom:14px;">
+      <div class="card-title" style="color:#38bdf8; margin-bottom:0;">
         <span>High-Yield Reference Cues</span>
         <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.toggleFormulaSheet()">Toggle</button>
       </div>
-      <div id="formula-sheet-content" style="display:none; font-size:13px; line-height:1.6; margin-top:8px;">
-        • <b>Pythagorean Triplets:</b> $(3,4,5), (5,12,13), (7,24,25), (8,15,17), (9,40,41), (11,60,61), (12,35,37)$<br>
-        • <b>Algebra:</b> If $x + \frac{1}{x} = k$, then $x^2 + \frac{1}{x^2} = k^2 - 2$ and $x^3 + \frac{1}{x^3} = k^3 - 3k$.<br>
-        • <b>Circle:</b> Area of incircle of right triangle $r = \frac{a + b - c}{2}$. Circumradius $R = \frac{c}{2}$.
-      </div>
+      <div id="formula-sheet-content" style="display:none; font-size:13px; line-height:1.6; margin-top:10px;"></div>
     </div>
 
-    <div id="dojo-cards-container"></div>
+    <!-- Single Question Dojo Arena -->
+    <div class="card" id="dojo-arena-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div style="display:flex; gap:6px; align-items:center;">
+          <span class="badge" style="background:#2563eb;" id="dojo-q-chapter">QA_GEOMETRY</span>
+          <span style="font-size:11px; color:var(--text-muted);" id="dojo-q-index">Q 1 of 1</span>
+        </div>
+        <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.openEditCurrentDojoQuestion()">
+          Edit Question
+        </button>
+      </div>
+
+      <div id="dojo-q-text" style="font-size:15px; line-height:1.6; margin-bottom:16px;"></div>
+      <div id="dojo-options-container"></div>
+
+      <div id="dojo-feedback-banner" style="display:none; padding:10px; border-radius:8px; margin:12px 0; font-size:13px; font-weight:700;"></div>
+
+      <button class="btn btn-secondary" style="width:100%; margin-top:10px; font-size:13px;" onclick="CGL_OS.toggleDojoMethod()">
+        Reveal Method & Solution
+      </button>
+
+      <div id="dojo-method-box" style="display:none; margin-top:12px; padding:12px; background:#172339; border-left:3px solid var(--accent-blue); border-radius:4px; font-size:13px; line-height:1.6;"></div>
+
+      <div class="form-group" style="margin-top:14px;">
+        <label>Personal Solving Cue / Annotation</label>
+        <textarea id="dojo-annotation-input" class="form-control" style="height:60px;" placeholder="Type solving shortcut or formula cue..." onblur="CGL_OS.saveDojoAnnotation(this.value)"></textarea>
+      </div>
+
+      <!-- Navigation Footer -->
+      <div style="display:flex; justify-content:space-between; margin-top:14px; gap:8px;">
+        <button class="btn btn-secondary" style="flex:1;" onclick="CGL_OS.navDojoQuestion(-1)">Previous</button>
+        <button class="btn btn-secondary" style="padding:10px 14px;" onclick="CGL_OS.toggleDojoPalette(true)">Palette</button>
+        <button class="btn" style="flex:1;" onclick="CGL_OS.navDojoQuestion(1)">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOJO QUESTION PALETTE DRAWER -->
+  <div class="drawer-overlay" id="dojo-drawer-overlay" onclick="CGL_OS.toggleDojoPalette(false)"></div>
+  <div id="dojo-palette-drawer">
+    <div style="padding:14px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+      <h3 style="font-size:14px; font-weight:700;">Dojo Bank Navigator</h3>
+      <span class="badge" style="background:#2563eb;" id="dojo-palette-count">0 Qs</span>
+    </div>
+    <div class="palette-grid" id="dojo-palette-grid"></div>
   </div>
 
 
-  <!-- ==================== 4. TAB 3: COMMAND BUS & MANUAL DB STUDIO ==================== -->
+  <!-- ==================== 4. TAB 3: COMMAND BUS & DB STUDIO ==================== -->
   <div id="tab-console" class="view-container">
     <div class="card">
-      <div class="card-title">JSON Command Bus</div>
-      <textarea class="console-input" id="console-payload" placeholder='Paste action payload here, e.g.:
-{
-  "action": "BATCH_INGEST_QUESTIONS",
-  "payload": { "questions": [...] }
-}'></textarea>
-      <div style="display:flex; gap:8px;">
-        <button class="btn" style="flex:1;" onclick="CGL_OS.executeConsoleCommand()">Execute Command</button>
-        <button class="btn btn-secondary" onclick="CGL_OS.loadSampleIngestPayload()">Load Sample</button>
+      <div class="card-title">JSON Command Terminal</div>
+      <textarea class="form-control" id="console-payload" style="height:150px; font-family:var(--font-mono); font-size:12px; color:#38bdf8;" placeholder='Paste command payload here...'></textarea>
+      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
+        <button class="btn" onclick="CGL_OS.executeConsoleCommand()">Execute Command</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('console-payload').value=''">Clear Console</button>
+        <button class="btn btn-secondary" onclick="CGL_OS.loadSamplePayload('INGEST')">Sample Ingest</button>
       </div>
     </div>
 
-    <!-- Manual DB Inspector & Overwrite Studio -->
+    <!-- Direct Database Management Studio -->
     <div class="card">
       <div class="card-title">
-        <span>Manual IndexedDB Inspector</span>
-        <select id="db-store-select" style="background:var(--bg-elevated); color:#fff; border:1px solid var(--border-color); padding:4px 8px; border-radius:4px; font-size:12px;" onchange="CGL_OS.refreshDbInspector()">
+        <span>Direct DB Studio</span>
+        <select id="db-store-select" class="form-control" style="width:auto; padding:4px 8px; font-size:12px;" onchange="CGL_OS.refreshDbInspector()">
           <option value="store_questions">store_questions</option>
           <option value="store_attempts">store_attempts</option>
           <option value="store_vault">store_vault</option>
           <option value="store_config">store_config</option>
         </select>
       </div>
-      <div id="db-inspector-list" style="max-height:260px; overflow-y:auto;"></div>
+      <div id="db-inspector-list" style="max-height:220px; overflow-y:auto; font-size:12px;"></div>
     </div>
 
-    <div class="card" id="db-manual-editor-card" style="display:none;">
-      <div class="card-title">Edit Record: <span id="editor-record-key" style="color:var(--accent-blue);"></span></div>
-      <textarea class="console-input" id="editor-record-json" style="height:150px;"></textarea>
-      <div style="display:flex; gap:8px;">
-        <button class="btn" onclick="CGL_OS.saveRecordOverwrite()">Save Overwrite</button>
-        <button class="btn btn-danger" onclick="CGL_OS.deleteRecord()">Delete Record</button>
-        <button class="btn btn-secondary" onclick="document.getElementById('db-manual-editor-card').style.display='none'">Cancel</button>
+    <!-- Dangerous Actions Card -->
+    <div class="card" style="border-color:#5a1e1e;">
+      <div class="card-title" style="color:var(--status-red);">Danger Zone Operations</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <button class="btn btn-danger" style="font-size:12px;" onclick="CGL_OS.wipeTestAttempts()">Wipe Test History</button>
+        <button class="btn btn-danger" style="font-size:12px;" onclick="CGL_OS.factoryResetAll()">Factory Reset DB</button>
       </div>
     </div>
   </div>
 
 
-  <!-- ==================== 5. TAB 4: ERROR VAULT & EXPORTS ==================== -->
+  <!-- ==================== 5. TAB 4: ERROR VAULT & EXTRACTIONS ==================== -->
   <div id="tab-vault" class="view-container">
     <div class="card">
       <div class="card-title">Spaced-Repetition Error Vault</div>
       <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
-        Questions failed over rolling 14-day window. Leitner interval tracks recurrence.
+        Failed questions from tests logged with diagnostic tags.
       </p>
-      <button class="btn" style="width:100%; margin-bottom:12px;" onclick="CGL_OS.launchVaultDrill()">
-        Launch Trap-Breaker Sprint (Failed Qs)
+      <button class="btn" style="width:100%; margin-bottom:12px;" onclick="CGL_OS.launchVaultSprint()">
+        Launch Trap-Breaker Sprint
       </button>
       <div id="vault-list-container"></div>
     </div>
@@ -685,17 +611,152 @@
     <div class="card">
       <div class="card-title">Physical Extraction & Backups</div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
-        <button class="btn btn-secondary" style="font-size:12px;" onclick="CGL_OS.exportFullBackup()">Download DB Backup</button>
-        <button class="btn btn-secondary" style="font-size:12px;" onclick="CGL_OS.exportObsidianMarkdown()">Export Obsidian .MD</button>
+        <button class="btn btn-secondary" style="font-size:12px;" onclick="CGL_OS.exportFullBackup()">Export DB (.json)</button>
+        <button class="btn btn-secondary" style="font-size:12px;" onclick="CGL_OS.exportObsidianMarkdown()">Export Vault (.md)</button>
       </div>
       <button class="btn btn-secondary" style="width:100%; font-size:12px;" onclick="CGL_OS.spoolAndroidPrint()">
-        Print Native 2-Column Test Sheet (A4 PDF)
+        Print Native 2-Column Sheet (A4 PDF)
       </button>
     </div>
   </div>
 
 
-  <!-- ==================== 6. BOTTOM NAVIGATION BAR ==================== -->
+  <!-- ==================== 6. MODALS ==================== -->
+
+  <!-- CUSTOM MOCK BUILDER MODAL -->
+  <div class="modal-overlay" id="modal-mock-builder">
+    <div class="modal-window">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h3 style="font-size:16px; font-weight:800;">Custom Mock Generator</h3>
+        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-mock-builder').classList.remove('active')">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label>Blueprint Preset</label>
+        <select id="builder-blueprint-preset" class="form-control" onchange="CGL_OS.applyBlueprintPreset(this.value)">
+          <option value="CUSTOM">Custom Blueprint</option>
+          <option value="TIER1_FULL">Tier 1 Full Mock (4 Sections × 15 Mins)</option>
+          <option value="TIER2_SEC1">Tier 2 Paper 1 (Math + Reasoning 60 Mins)</option>
+          <option value="QA_BLITZ">Quantitative Arithmetic Blitz (10 Mins)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Subject Scope</label>
+        <select id="builder-subject" class="form-control">
+          <option value="ALL">All Subjects (Full Exam)</option>
+          <option value="QA">Quantitative Aptitude Only</option>
+          <option value="REAS">General Intelligence & Reasoning</option>
+          <option value="ENG">English Comprehension</option>
+          <option value="GA">General Awareness</option>
+        </select>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <div class="form-group">
+          <label>Question Count</label>
+          <input type="number" id="builder-count" class="form-control" value="25" min="5" max="100">
+        </div>
+        <div class="form-group">
+          <label>Duration (Minutes)</label>
+          <input type="number" id="builder-duration" class="form-control" value="15" min="1" max="120">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Enforce Strict Sectional Lock</label>
+        <select id="builder-sectional-lock" class="form-control">
+          <option value="YES">Yes (Lock & Auto-Switch on Expiry)</option>
+          <option value="NO">No (Free Section Switching)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Marking Scheme</label>
+        <select id="builder-marking" class="form-control">
+          <option value="TIER_1">+2.00 / -0.50 (SSC CGL Tier 1)</option>
+          <option value="TIER_2">+3.00 / -1.00 (SSC CGL Tier 2)</option>
+        </select>
+      </div>
+
+      <button class="btn" style="width:100%; margin-top:10px; padding:12px;" onclick="CGL_OS.launchConfiguredMock()">
+        Launch Mock Arena
+      </button>
+    </div>
+  </div>
+
+  <!-- GUI QUESTION EDITOR MODAL -->
+  <div class="modal-overlay" id="modal-question-editor">
+    <div class="modal-window">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h3 style="font-size:16px; font-weight:800;" id="editor-title">Edit Question</h3>
+        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-question-editor').classList.remove('active')">✕</button>
+      </div>
+
+      <input type="hidden" id="edit-q-id">
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <div class="form-group">
+          <label>Subject</label>
+          <select id="edit-q-subject" class="form-control">
+            <option value="QA">QA</option>
+            <option value="REAS">REAS</option>
+            <option value="ENG">ENG</option>
+            <option value="GA">GA</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Chapter Tag</label>
+          <input type="text" id="edit-q-chapter" class="form-control" placeholder="e.g. QA_GEOMETRY">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Question Text (KaTeX formulas inside $...$ or $$...$$)</label>
+        <textarea id="edit-q-text" class="form-control" style="height:90px;"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Option 1</label>
+        <input type="text" id="edit-opt-0" class="form-control">
+      </div>
+      <div class="form-group">
+        <label>Option 2</label>
+        <input type="text" id="edit-opt-1" class="form-control">
+      </div>
+      <div class="form-group">
+        <label>Option 3</label>
+        <input type="text" id="edit-opt-2" class="form-control">
+      </div>
+      <div class="form-group">
+        <label>Option 4</label>
+        <input type="text" id="edit-opt-3" class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label>Correct Option Index</label>
+        <select id="edit-q-correct" class="form-control">
+          <option value="0">Option 1</option>
+          <option value="1">Option 2</option>
+          <option value="2">Option 3</option>
+          <option value="3">Option 4</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Method & Explanation</label>
+        <textarea id="edit-q-explanation" class="form-control" style="height:80px;"></textarea>
+      </div>
+
+      <div style="display:flex; gap:8px;">
+        <button class="btn" style="flex:1;" onclick="CGL_OS.saveQuestionEditor()">Save Question</button>
+        <button class="btn btn-danger" id="btn-delete-q" onclick="CGL_OS.deleteCurrentEditingQuestion()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ==================== 7. BOTTOM NAVIGATION ==================== -->
   <nav id="bottom-nav">
     <button class="nav-btn active" onclick="CGL_OS.switchTab('tab-dashboard', this)">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
@@ -715,101 +776,141 @@
     </button>
   </nav>
 
-  <!-- PRINT DISPATCH TEMPLATE CONTAINER -->
   <div id="print-sheet-root" style="display:none;" class="print-page"></div>
 
 
-  <!-- ==================== 7. JAVASCRIPT MASTER RUNTIME ==================== -->
+  <!-- ==================== 8. MASTER JAVASCRIPT ENGINE ==================== -->
   <script>
-    /**
-     * SSC CGL Intelligence OS - Complete Unified Engine
-     * Strictly Local-First, Defensive IndexedDB, Zero BYOK Hassle.
-     */
     const CGL_OS = (() => {
       const DB_NAME = "cgl_os_db";
       const DB_VERSION = 3;
       let db = null;
 
-      // Active Exam Session State
+      // Active Exam Variables
       let activeExam = null;
       let examTimerInterval = null;
       let questionTimerInterval = null;
 
-      // Seed Questions for Day-Zero Reliability
+      // Dojo Variables
+      let dojoQuestions = [];
+      let dojoActiveIndex = 0;
+
+      // High-Yield Formula Sheet Data
+      const FORMULA_SHEET_DATA = `
+• <strong>Pythagorean Triplets:</strong> $(3,4,5), (5,12,13), (7,24,25), (8,15,17), (9,40,41), (11,60,61), (12,35,37)$<br>
+• <strong>Algebra Identities:</strong> If $x + \\frac{1}{x} = k$, then $x^2 + \\frac{1}{x^2} = k^2 - 2$ and $x^3 + \\frac{1}{x^3} = k^3 - 3k$.<br>
+• <strong>Triangle Inradius:</strong> For right-angled triangle, $r = \\frac{a + b - c}{2}$, Circumradius $R = \\frac{c}{2}$.
+      `;
+
+      // Verified Initial Questions
       const SEED_QUESTIONS = [
         {
-          id: "q_qa_geo_01",
+          id: "q_qa_geo_001",
           subject: "QA",
           chapter: "QA_GEOMETRY",
-          stream: "Advanced",
           questionText: "In a $\\triangle ABC$, the bisector of $\\angle A$ intersects $BC$ at $D$. If $AB = 12\\text{ cm}$, $AC = 15\\text{ cm}$, and $BC = 18\\text{ cm}$, find the length of $BD$.",
           options: ["$6\\text{ cm}$", "$8\\text{ cm}$", "$10\\text{ cm}$", "$7.5\\text{ cm}$"],
           correctIndex: 1,
-          explanation: "By Angle Bisector Theorem: $\\frac{BD}{DC} = \\frac{AB}{AC} = \\frac{12}{15} = \\frac{4}{5}$. Thus $BD = \\frac{4}{9} \\times 18 = 8\\text{ cm}$.",
-          tags: ["AngleBisector", "Geometry", "PYQ_2024"]
+          explanation: "By Angle Bisector Theorem: $\\frac{BD}{DC} = \\frac{AB}{AC} = \\frac{12}{15} = \\frac{4}{5}$. Since $BC = 18\\text{ cm}$, $BD = \\frac{4}{9} \\times 18 = 8\\text{ cm}$.",
+          tags: ["AngleBisector", "Geometry"]
         },
         {
-          id: "q_reas_syl_01",
-          subject: "REAS",
-          chapter: "REAS_SYLLOGISM",
-          stream: "Verbal",
-          questionText: "Statements: All pens are books. Some books are rulers. Conclusions: I. Some rulers are pens. II. No ruler is a pen.",
-          options: ["Only I follows", "Only II follows", "Either I or II follows", "Neither follows"],
-          correctIndex: 2,
-          explanation: "Ruler and Pen form a complementary pair (Particular Affirmative + Universal Negative) with no direct link.",
-          tags: ["Syllogism", "ComplementaryPair"]
-        },
-        {
-          id: "q_eng_cloze_01",
-          subject: "ENG",
-          chapter: "ENG_CLOZE_TEST",
-          stream: "Comprehension",
-          questionText: "Rearrange the following sentences to form a logical passage:\nA. This shift altered traditional communication patterns.\nB. Social media platforms gained rapid popularity.\nC. People began sharing opinions instantly.\nD. As a result, information spread faster than ever before.",
-          options: ["B C A D", "B A C D", "C B A D", "A B C D"],
+          id: "q_qa_alg_002",
+          subject: "QA",
+          chapter: "QA_ALGEBRA",
+          questionText: "If $x + \\frac{1}{x} = 5$, find the numerical value of $x^3 + \\frac{1}{x^3}$.",
+          options: ["$110$", "$125$", "$140$", "$115$"],
           correctIndex: 0,
-          explanation: "B introduces the subject (social media), C describes the immediate action, A explains the shift, and D concludes the outcome.",
-          tags: ["ParaJumble", "LogicalOrder"]
+          explanation: "$x^3 + \\frac{1}{x^3} = \\left(x + \\frac{1}{x}\\right)^3 - 3\\left(x + \\frac{1}{x}\\right) = 5^3 - 3(5) = 125 - 15 = 110$.",
+          tags: ["Algebra", "Identities"]
         },
         {
-          id: "q_ga_pol_01",
+          id: "q_reas_cod_001",
+          subject: "REAS",
+          chapter: "REAS_CODING",
+          questionText: "In a certain code language, **\"STRIKE\"** is coded as **\"19-20-18-9-11-5\"**. How will **\"CHAMP\"** be coded?",
+          options: ["3-8-1-13-16", "3-8-2-14-16", "3-9-1-13-15", "4-8-1-12-16"],
+          correctIndex: 0,
+          explanation: "Each letter is represented directly by its forward alphabetical position ($C=3, H=8, A=1, M=13, P=16$).",
+          tags: ["CodingDecoding", "Alphabet"]
+        },
+        {
+          id: "q_eng_ows_001",
+          subject: "ENG",
+          chapter: "ENG_OWS",
+          questionText: "Select the option that can be used as a one-word substitute for: **\"A person who is unable to pay their debts.\"**",
+          options: ["Insolvent", "Mercenary", "Stoic", "Ascetic"],
+          correctIndex: 0,
+          explanation: "**Insolvent** means unable to pay one's debts. Mercenary is someone working merely for money.",
+          tags: ["OWS", "Vocabulary"]
+        },
+        {
+          id: "q_ga_pol_001",
           subject: "GA",
           chapter: "GA_POLITY",
-          stream: "Static GS",
-          questionText: "Which Article of the Indian Constitution empowers the High Courts to issue writs for the enforcement of Fundamental Rights?",
+          questionText: "Which Article of the Constitution of India empowers High Courts to issue writs for the enforcement of Fundamental Rights?",
           options: ["Article 32", "Article 131", "Article 226", "Article 143"],
           correctIndex: 2,
-          explanation: "Article 226 gives High Courts the power to issue writs; Article 32 gives this power strictly to the Supreme Court.",
-          tags: ["Polity", "Writs", "PYQ_2023"]
+          explanation: "Article 226 empowers High Courts to issue writs. Article 32 gives writ powers strictly to the Supreme Court.",
+          tags: ["Polity", "Writs"]
         }
       ];
 
-      // Canonical Taxonomy Definition
+      // Canonical Taxonomy Structure
       const TAXONOMY = {
         QA: {
           name: "Quantitative Aptitude",
+          weight: 25,
           chapters: ["QA_NUM_SYS", "QA_PERCENTAGE", "QA_PROFIT_LOSS", "QA_SI_CI", "QA_RATIO_PROP", "QA_TIME_WORK", "QA_SPEED_DIST", "QA_ALGEBRA", "QA_GEOMETRY", "QA_MENSURATION", "QA_TRIGONOMETRY"]
         },
         REAS: {
           name: "General Intelligence & Reasoning",
+          weight: 25,
           chapters: ["REAS_ANALOGY", "REAS_SERIES", "REAS_CODING", "REAS_BLOOD_REL", "REAS_SYLLOGISM", "REAS_ORDER_RANK", "REAS_FIGURES", "REAS_DICE_CUBE"]
         },
         ENG: {
           name: "English Comprehension",
+          weight: 25,
           chapters: ["ENG_SYN_ANT", "ENG_OWS", "ENG_IDIOMS", "ENG_SPOTTING", "ENG_IMPROVE", "ENG_ACTIVE_PASS", "ENG_DIRECT_INDR", "ENG_CLOZE_TEST", "ENG_READING_COMP"]
         },
         GA: {
           name: "General Awareness",
+          weight: 25,
           chapters: ["GA_POLITY", "GA_HISTORY_MOD", "GA_HISTORY_ANC", "GA_GEOGRAPHY_IN", "GA_ECONOMY", "GA_PHYSICS", "GA_CHEMISTRY", "GA_BIOLOGY", "GA_CA_ANNUAL"]
         }
       };
 
-      /* -------------------------------------------------------------
-       * 1. STORAGE ENGINE: SELF-HEALING DEFENSIVE INITIALIZATION
-       * ------------------------------------------------------------- */
+      /* ----------------------------------------------------------------
+       * 1. SYNCHRONOUS KATEX & MARKDOWN FORMATTER
+       * ---------------------------------------------------------------- */
+      function formatRichText(str) {
+        if (!str) return "";
+        let out = String(str);
+
+        // Bold markdown: **text** -> <strong>text</strong>
+        out = out.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+
+        // KaTeX Math Rendering
+        if (window.katex) {
+          // Block equations $$...$$
+          out = out.replace(/\$\$([\s\S]*?)\$\$/g, (m, f) => {
+            try { return katex.renderToString(f, { displayMode: true, throwOnError: false }); } catch(e) { return m; }
+          });
+          // Inline equations $...$
+          out = out.replace(/\$([^\$\n]+?)\$/g, (m, f) => {
+            try { return katex.renderToString(f, { displayMode: false, throwOnError: false }); } catch(e) { return m; }
+          });
+        }
+        return out.replace(/\n/g, "<br>");
+      }
+
+      /* ----------------------------------------------------------------
+       * 2. STORAGE ENGINE (INDEXEDDB)
+       * ---------------------------------------------------------------- */
       function initDB() {
         return new Promise((resolve, reject) => {
-          const request = indexedDB.open(DB_NAME, DB_VERSION);
-          request.onupgradeneeded = (e) => {
+          const req = indexedDB.open(DB_NAME, DB_VERSION);
+          req.onupgradeneeded = (e) => {
             const d = e.target.result;
             const stores = [
               { name: "store_questions", key: "id" },
@@ -823,15 +924,15 @@
               }
             });
           };
-          request.onsuccess = (e) => {
+          req.onsuccess = (e) => {
             db = e.target.result;
-            seedInitialData().then(resolve);
+            seedData().then(resolve);
           };
-          request.onerror = (e) => reject(e);
+          req.onerror = (e) => reject(e);
         });
       }
 
-      async function seedInitialData() {
+      async function seedData() {
         const count = await getStoreCount("store_questions");
         if (count === 0) {
           const tx = db.transaction(["store_questions"], "readwrite");
@@ -841,83 +942,116 @@
         }
       }
 
-      function getStoreCount(storeName) {
-        return new Promise(resolve => {
-          const tx = db.transaction([storeName], "readonly");
-          const req = tx.objectStore(storeName).count();
-          req.onsuccess = () => resolve(req.result);
-          req.onerror = () => resolve(0);
+      function getStoreCount(sName) {
+        return new Promise(res => {
+          const tx = db.transaction([sName], "readonly");
+          const req = tx.objectStore(sName).count();
+          req.onsuccess = () => res(req.result);
+          req.onerror = () => res(0);
         });
       }
 
-      function getAllRecords(storeName) {
-        return new Promise(resolve => {
-          const tx = db.transaction([storeName], "readonly");
-          const req = tx.objectStore(storeName).getAll();
-          req.onsuccess = () => resolve(req.result || []);
-          req.onerror = () => resolve([]);
+      function getAllRecords(sName) {
+        return new Promise(res => {
+          const tx = db.transaction([sName], "readonly");
+          const req = tx.objectStore(sName).getAll();
+          req.onsuccess = () => res(req.result || []);
+          req.onerror = () => res([]);
         });
       }
 
-      function putRecord(storeName, record) {
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction([storeName], "readwrite");
-          const req = tx.objectStore(storeName).put(record);
-          req.onsuccess = () => resolve(true);
-          req.onerror = (e) => reject(e);
+      function putRecord(sName, record) {
+        return new Promise((res, rej) => {
+          const tx = db.transaction([sName], "readwrite");
+          const req = tx.objectStore(sName).put(record);
+          req.onsuccess = () => res(true);
+          req.onerror = (e) => rej(e);
         });
       }
 
-      function deleteRecordFromStore(storeName, key) {
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction([storeName], "readwrite");
-          const req = tx.objectStore(storeName).delete(key);
-          req.onsuccess = () => resolve(true);
-          req.onerror = (e) => reject(e);
+      function deleteRecordFromStore(sName, key) {
+        return new Promise((res, rej) => {
+          const tx = db.transaction([sName], "readwrite");
+          const req = tx.objectStore(sName).delete(key);
+          req.onsuccess = () => res(true);
+          req.onerror = (e) => rej(e);
         });
       }
 
-      /* -------------------------------------------------------------
-       * 2. EXAM ARENA RUNTIME & SECTIONAL LOCK CONTROLLER
-       * ------------------------------------------------------------- */
-      async function launchBlueprint(type) {
+      /* ----------------------------------------------------------------
+       * 3. CUSTOM MOCK GENERATOR & BUILDER
+       * ---------------------------------------------------------------- */
+      function openCustomMockModal() {
+        document.getElementById("modal-mock-builder").classList.add("active");
+      }
+
+      function applyBlueprintPreset(val) {
+        if (val === "TIER1_FULL") {
+          document.getElementById("builder-subject").value = "ALL";
+          document.getElementById("builder-count").value = 100;
+          document.getElementById("builder-duration").value = 15;
+          document.getElementById("builder-sectional-lock").value = "YES";
+          document.getElementById("builder-marking").value = "TIER_1";
+        } else if (val === "TIER2_SEC1") {
+          document.getElementById("builder-subject").value = "ALL";
+          document.getElementById("builder-count").value = 60;
+          document.getElementById("builder-duration").value = 60;
+          document.getElementById("builder-sectional-lock").value = "NO";
+          document.getElementById("builder-marking").value = "TIER_2";
+        } else if (val === "QA_BLITZ") {
+          document.getElementById("builder-subject").value = "QA";
+          document.getElementById("builder-count").value = 15;
+          document.getElementById("builder-duration").value = 10;
+          document.getElementById("builder-sectional-lock").value = "NO";
+          document.getElementById("builder-marking").value = "TIER_1";
+        }
+      }
+
+      async function launchConfiguredMock() {
+        document.getElementById("modal-mock-builder").classList.remove("active");
+        const sub = document.getElementById("builder-subject").value;
+        const count = parseInt(document.getElementById("builder-count").value) || 25;
+        const durMin = parseInt(document.getElementById("builder-duration").value) || 15;
+        const isLock = document.getElementById("builder-sectional-lock").value === "YES";
+        const marking = document.getElementById("builder-marking").value;
+
         const allQuestions = await getAllRecords("store_questions");
-        if (!allQuestions.length) {
-          alert("Question bank empty. Ingest questions via Console.");
+        let pool = sub === "ALL" ? allQuestions : allQuestions.filter(q => q.subject === sub);
+
+        if (pool.length === 0) {
+          alert("No questions found matching criteria in database.");
           return;
         }
 
-        // Section structure: QA, REAS, ENG, GA
+        // Divide into authentic sections
         let sections = [];
-        if (type === "TIER_1") {
-          sections = [
-            { id: "SEC_REAS", name: "General Intelligence & Reasoning", durationSec: 900, questions: allQuestions.filter(q => q.subject === "REAS").slice(0, 25) },
-            { id: "SEC_GA", name: "General Awareness", durationSec: 900, questions: allQuestions.filter(q => q.subject === "GA").slice(0, 25) },
-            { id: "SEC_QA", name: "Quantitative Aptitude", durationSec: 900, questions: allQuestions.filter(q => q.subject === "QA").slice(0, 25) },
-            { id: "SEC_ENG", name: "English Comprehension", durationSec: 900, questions: allQuestions.filter(q => q.subject === "ENG").slice(0, 25) }
-          ];
+        if (sub === "ALL") {
+          const subjects = ["REAS", "GA", "QA", "ENG"];
+          subjects.forEach(s => {
+            let sQs = allQuestions.filter(q => q.subject === s);
+            if (sQs.length === 0) sQs = pool.slice(0, Math.ceil(count / 4));
+            sections.push({
+              id: "SEC_" + s,
+              name: TAXONOMY[s] ? TAXONOMY[s].name : s,
+              durationSec: durMin * 60,
+              questions: sQs.slice(0, Math.ceil(count / 4))
+            });
+          });
         } else {
-          // Blitz drill fallback
-          sections = [{
-            id: "SEC_BLITZ",
-            name: "Quantitative Blitz",
-            durationSec: 600,
-            questions: allQuestions.filter(q => q.subject === "QA").slice(0, 10)
-          }];
+          sections.push({
+            id: "SEC_" + sub,
+            name: TAXONOMY[sub] ? TAXONOMY[sub].name : sub,
+            durationSec: durMin * 60,
+            questions: pool.slice(0, count)
+          });
         }
 
-        // Flatten questions for arena navigation while tagging active section
         let flattened = [];
         sections.forEach((sec, sIdx) => {
-          // If no questions in DB for this subject, inject dummy seed
-          if (sec.questions.length === 0) {
-            sec.questions = SEED_QUESTIONS.filter(q => q.subject === (sIdx === 0 ? "REAS" : sIdx === 1 ? "GA" : sIdx === 2 ? "QA" : "ENG"));
-          }
           sec.questions.forEach((q, qIdx) => {
             flattened.push({
               ...q,
               sectionIndex: sIdx,
-              sectionId: sec.id,
               sectionName: sec.name,
               localNumber: qIdx + 1
             });
@@ -926,23 +1060,22 @@
 
         activeExam = {
           sessionId: "mock_" + Date.now(),
-          type: type,
-          title: type === "TIER_1" ? "SSC CGL Tier 1 Full Mock" : "Targeted Drill",
+          markingScheme: marking,
+          isSectionLocked: isLock,
           sections: sections,
           activeSectionIndex: 0,
           currentQuestionIndex: 0,
           questions: flattened,
           sectionRemainingSec: sections[0].durationSec,
           currentQTimeSpentSec: 0,
-          userResponses: {}, // { qId: { selectedOption: null, status: 'unanswered', firstClickLatency: 0, switches: 0, timeSpentSec: 0, struck: [] } }
+          userResponses: {},
           isPaused: false
         };
 
-        // Initialize empty responses
         activeExam.questions.forEach(q => {
           activeExam.userResponses[q.id] = {
             selectedOption: null,
-            status: "unanswered", // answered, marked, unanswered
+            status: "unanswered",
             switches: 0,
             timeSpentSec: 0,
             struck: []
@@ -950,11 +1083,14 @@
         });
 
         document.getElementById("exam-arena").style.display = "flex";
-        renderActiveQuestion();
-        startTimers();
+        renderActiveExamQuestion();
+        startExamTimers();
       }
 
-      function startTimers() {
+      /* ----------------------------------------------------------------
+       * 4. EXAM ARENA RUNTIME & SECTION LOCKING
+       * ---------------------------------------------------------------- */
+      function startExamTimers() {
         clearInterval(examTimerInterval);
         clearInterval(questionTimerInterval);
 
@@ -962,12 +1098,11 @@
           if (activeExam.isPaused) return;
 
           activeExam.sectionRemainingSec--;
-          const secM = Math.floor(activeExam.sectionRemainingSec / 60);
-          const secS = activeExam.sectionRemainingSec % 60;
+          const m = Math.floor(activeExam.sectionRemainingSec / 60);
+          const s = activeExam.sectionRemainingSec % 60;
           const clockEl = document.getElementById("hud-countdown");
-          clockEl.innerText = `${String(secM).padStart(2, '0')}:${String(secS).padStart(2, '0')}`;
+          clockEl.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 
-          // Pacing color shifts
           if (activeExam.sectionRemainingSec < 180) {
             clockEl.className = "hud-timer crimson";
           } else if (activeExam.sectionRemainingSec < 300) {
@@ -976,9 +1111,18 @@
             clockEl.className = "hud-timer";
           }
 
-          // Sectional Time-Out auto-switch
           if (activeExam.sectionRemainingSec <= 0) {
-            transitionNextSection();
+            if (activeExam.isSectionLocked && activeExam.activeSectionIndex < activeExam.sections.length - 1) {
+              activeExam.activeSectionIndex++;
+              const nextSec = activeExam.sections[activeExam.activeSectionIndex];
+              activeExam.sectionRemainingSec = nextSec.durationSec;
+              const nextIdx = activeExam.questions.findIndex(q => q.sectionIndex === activeExam.activeSectionIndex);
+              if (nextIdx !== -1) activeExam.currentQuestionIndex = nextIdx;
+              alert(`Time expired! Transitioned to: ${nextSec.name}`);
+              renderActiveExamQuestion();
+            } else {
+              submitExamSession();
+            }
           }
         }, 1000);
 
@@ -990,139 +1134,106 @@
           document.getElementById("arena-q-timer").innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
           document.getElementById("hud-pacing-status").innerText = `${activeExam.currentQTimeSpentSec}s on Q`;
 
-          // Track cumulative time in current question response
-          const currentQ = activeExam.questions[activeExam.currentQuestionIndex];
-          activeExam.userResponses[currentQ.id].timeSpentSec++;
+          const curQ = activeExam.questions[activeExam.currentQuestionIndex];
+          if (curQ && activeExam.userResponses[curQ.id]) {
+            activeExam.userResponses[curQ.id].timeSpentSec++;
+          }
         }, 1000);
       }
 
-      function transitionNextSection() {
-        if (activeExam.activeSectionIndex < activeExam.sections.length - 1) {
-          activeExam.activeSectionIndex++;
-          const nextSec = activeExam.sections[activeExam.activeSectionIndex];
-          activeExam.sectionRemainingSec = nextSec.durationSec;
-          
-          // Jump to first question of the new section
-          const targetQIdx = activeExam.questions.findIndex(q => q.sectionIndex === activeExam.activeSectionIndex);
-          if (targetQIdx !== -1) activeExam.currentQuestionIndex = targetQIdx;
-
-          alert(`Section time expired! Automatically locking and transitioning to: ${nextSec.name}`);
-          renderActiveQuestion();
-        } else {
-          submitActiveTest();
-        }
-      }
-
-      function renderActiveQuestion() {
+      function renderActiveExamQuestion() {
         const q = activeExam.questions[activeExam.currentQuestionIndex];
         const resp = activeExam.userResponses[q.id];
 
         document.getElementById("hud-section-badge").innerText = `${q.sectionName.toUpperCase()}`;
         document.getElementById("arena-q-num").innerText = q.localNumber;
-        document.getElementById("arena-q-text").innerHTML = q.questionText;
+        document.getElementById("arena-q-text").innerHTML = formatRichText(q.questionText);
 
-        const optContainer = document.getElementById("arena-options-container");
-        optContainer.innerHTML = "";
+        const container = document.getElementById("arena-options-container");
+        container.innerHTML = "";
 
         q.options.forEach((optText, idx) => {
           const card = document.createElement("div");
-          card.className = "opt-card" + 
+          card.className = "opt-card" +
             (resp.selectedOption === idx ? " selected" : "") +
             (resp.struck.includes(idx) ? " struck-through" : "");
 
           card.innerHTML = `
-            <span class="opt-index">${idx + 1}.</span>
-            <div style="flex:1;">${optText}</div>
+            <span style="font-weight:700; color:var(--text-muted); font-size:13px;">${idx + 1}.</span>
+            <div style="flex:1;">${formatRichText(optText)}</div>
           `;
 
-          // Tap to Select with Haptic Pulse
           card.addEventListener("click", () => {
             if (resp.struck.includes(idx)) return;
             if (navigator.vibrate) navigator.vibrate(15);
-
-            if (resp.selectedOption !== null && resp.selectedOption !== idx) {
-              resp.switches++;
-            }
+            if (resp.selectedOption !== null && resp.selectedOption !== idx) resp.switches++;
             resp.selectedOption = idx;
-            renderActiveQuestion();
+            renderActiveExamQuestion();
           });
 
-          // Long Press to Strike-Through Distractors
-          let pressTimer;
+          // Long press strike-through
+          let timer;
           card.addEventListener("touchstart", () => {
-            pressTimer = setTimeout(() => {
-              if (navigator.vibrate) navigator.vibrate([20, 50, 20]);
+            timer = setTimeout(() => {
+              if (navigator.vibrate) navigator.vibrate([25, 40]);
               if (resp.struck.includes(idx)) {
                 resp.struck = resp.struck.filter(i => i !== idx);
               } else {
                 resp.struck.push(idx);
                 if (resp.selectedOption === idx) resp.selectedOption = null;
               }
-              renderActiveQuestion();
+              renderActiveExamQuestion();
             }, 550);
           });
-          card.addEventListener("touchend", () => clearTimeout(pressTimer));
+          card.addEventListener("touchend", () => clearTimeout(timer));
 
-          optContainer.appendChild(card);
+          container.appendChild(card);
         });
 
-        // Reset per-question clock counter
         activeExam.currentQTimeSpentSec = 0;
-
-        // Render KaTeX Formulas
-        if (window.renderMathInElement) {
-          renderMathInElement(document.getElementById("arena-body"), {
-            delimiters: [
-              { left: "$$", right: "$$", display: true },
-              { left: "$", right: "$", display: false }
-            ]
-          });
-        }
       }
 
-      /* -------------------------------------------------------------
-       * 3. ARENA ACTION HANDLERS & FLUID PALETTE
-       * ------------------------------------------------------------- */
+      // Exam Handlers
       document.getElementById("btn-q-save-next").addEventListener("click", () => {
         const q = activeExam.questions[activeExam.currentQuestionIndex];
         const resp = activeExam.userResponses[q.id];
+        if (resp.selectedOption !== null) resp.status = "answered";
 
-        if (resp.selectedOption !== null) {
-          resp.status = "answered";
+        const nextIdx = activeExam.currentQuestionIndex + 1;
+        if (nextIdx < activeExam.questions.length) {
+          if (!activeExam.isSectionLocked || activeExam.questions[nextIdx].sectionIndex === activeExam.activeSectionIndex) {
+            activeExam.currentQuestionIndex = nextIdx;
+            renderActiveExamQuestion();
+            return;
+          }
         }
-
-        // Navigate forward within the current locked section
-        const nextQIdx = activeExam.currentQuestionIndex + 1;
-        if (nextQIdx < activeExam.questions.length && activeExam.questions[nextQIdx].sectionIndex === activeExam.activeSectionIndex) {
-          activeExam.currentQuestionIndex = nextQIdx;
-          renderActiveQuestion();
-        } else {
-          togglePalette(true);
-        }
+        toggleExamPalette(true);
       });
 
       document.getElementById("btn-q-prev").addEventListener("click", () => {
-        const prevQIdx = activeExam.currentQuestionIndex - 1;
-        if (prevQIdx >= 0 && activeExam.questions[prevQIdx].sectionIndex === activeExam.activeSectionIndex) {
-          activeExam.currentQuestionIndex = prevQIdx;
-          renderActiveQuestion();
+        const prevIdx = activeExam.currentQuestionIndex - 1;
+        if (prevIdx >= 0) {
+          if (!activeExam.isSectionLocked || activeExam.questions[prevIdx].sectionIndex === activeExam.activeSectionIndex) {
+            activeExam.currentQuestionIndex = prevIdx;
+            renderActiveExamQuestion();
+          }
         }
       });
 
       document.getElementById("btn-q-review").addEventListener("click", () => {
         const q = activeExam.questions[activeExam.currentQuestionIndex];
         activeExam.userResponses[q.id].status = "marked";
-        renderActiveQuestion();
+        renderActiveExamQuestion();
       });
 
-      // Sliding Drawer Palette
-      function togglePalette(forceOpen = null) {
+      // 6-Column Exam Palette Toggle
+      function toggleExamPalette(forceOpen = null) {
         const drawer = document.getElementById("palette-drawer");
         const overlay = document.getElementById("drawer-overlay");
-        const isOpen = forceOpen !== null ? forceOpen : !drawer.classList.contains("open");
+        const open = forceOpen !== null ? forceOpen : !drawer.classList.contains("open");
 
-        if (isOpen) {
-          renderPaletteGrid();
+        if (open) {
+          renderExamPaletteGrid();
           drawer.classList.add("open");
           overlay.classList.add("active");
         } else {
@@ -1131,54 +1242,47 @@
         }
       }
 
-      document.getElementById("btn-toggle-palette").addEventListener("click", () => togglePalette());
-      document.getElementById("drawer-overlay").addEventListener("click", () => togglePalette(false));
+      document.getElementById("btn-toggle-palette").addEventListener("click", () => toggleExamPalette());
+      document.getElementById("drawer-overlay").addEventListener("click", () => toggleExamPalette(false));
 
-      function renderPaletteGrid() {
+      function renderExamPaletteGrid() {
         const grid = document.getElementById("palette-grid");
         grid.innerHTML = "";
 
-        let answeredCount = 0;
-        let unansweredCount = 0;
+        let ans = 0, unans = 0;
+        const currentSecQs = activeExam.isSectionLocked 
+          ? activeExam.questions.filter(q => q.sectionIndex === activeExam.activeSectionIndex)
+          : activeExam.questions;
 
-        // Palette strictly filters to current active section questions
-        const currentSecQuestions = activeExam.questions.filter(q => q.sectionIndex === activeExam.activeSectionIndex);
-
-        currentSecQuestions.forEach((q) => {
+        currentSecQs.forEach(q => {
           const resp = activeExam.userResponses[q.id];
           const cell = document.createElement("div");
-          cell.className = "palette-cell" + 
+          cell.className = "palette-cell" +
             (resp.status === "answered" ? " answered" : "") +
             (resp.status === "marked" ? " marked" : "") +
             (activeExam.questions[activeExam.currentQuestionIndex].id === q.id ? " current" : "");
 
           cell.innerText = q.localNumber;
-
-          if (resp.status === "answered") answeredCount++;
-          else unansweredCount++;
+          if (resp.status === "answered") ans++; else unans++;
 
           cell.addEventListener("click", () => {
             activeExam.currentQuestionIndex = activeExam.questions.findIndex(item => item.id === q.id);
-            togglePalette(false);
-            renderActiveQuestion();
+            toggleExamPalette(false);
+            renderActiveExamQuestion();
           });
 
           grid.appendChild(cell);
         });
 
-        document.getElementById("count-answered").innerText = answeredCount;
-        document.getElementById("count-unanswered").innerText = unansweredCount;
+        document.getElementById("count-answered").innerText = ans;
+        document.getElementById("count-unanswered").innerText = unans;
       }
 
-      /* -------------------------------------------------------------
-       * 4. FLAWLESS PAUSE / RESUME ARCHITECTURE
-       * ------------------------------------------------------------- */
+      // Pause Mechanics
       document.getElementById("btn-arena-pause").addEventListener("click", async () => {
         activeExam.isPaused = true;
         clearInterval(examTimerInterval);
         clearInterval(questionTimerInterval);
-
-        // Snapshot to IndexedDB
         await putRecord("store_attempts", activeExam);
         document.getElementById("pause-shield").style.display = "flex";
       });
@@ -1186,7 +1290,7 @@
       document.getElementById("btn-resume-test").addEventListener("click", () => {
         document.getElementById("pause-shield").style.display = "none";
         activeExam.isPaused = false;
-        startTimers();
+        startExamTimers();
       });
 
       document.getElementById("btn-pause-exit").addEventListener("click", () => {
@@ -1195,106 +1299,130 @@
         renderDashboard();
       });
 
-      /* -------------------------------------------------------------
-       * 5. TEST COMPLETION, TIME-TRAP FORENSICS & TELEMETRY
-       * ------------------------------------------------------------- */
+      // Submit Exam
       document.getElementById("btn-submit-mock").addEventListener("click", () => {
-        if (confirm("Confirm submission of current test session?")) {
-          togglePalette(false);
-          submitActiveTest();
+        if (confirm("Confirm submit of this test session?")) {
+          toggleExamPalette(false);
+          submitExamSession();
         }
       });
 
-      async function submitActiveTest() {
+      async function submitExamSession() {
         clearInterval(examTimerInterval);
         clearInterval(questionTimerInterval);
 
-        let totalMarks = 0;
-        let correctCount = 0;
-        let incorrectCount = 0;
-        let q4Traps = 0;
+        let correct = 0, incorrect = 0, traps = 0, totalMarks = 0;
+        const markPos = activeExam.markingScheme === "TIER_2" ? 3.0 : 2.0;
+        const markNeg = activeExam.markingScheme === "TIER_2" ? -1.0 : -0.5;
 
         for (const q of activeExam.questions) {
           const resp = activeExam.userResponses[q.id];
-          const isCorrect = resp.selectedOption === q.correctIndex;
-          const isAttempted = resp.selectedOption !== null;
-
-          if (isAttempted) {
-            if (isCorrect) {
-              totalMarks += 2.0; // Tier 1 rules
-              correctCount++;
+          if (resp.selectedOption !== null) {
+            if (resp.selectedOption === q.correctIndex) {
+              totalMarks += markPos;
+              correct++;
             } else {
-              totalMarks -= 0.5;
-              incorrectCount++;
+              totalMarks += markNeg;
+              incorrect++;
 
-              // Save to Spaced Repetition Error Vault
               await putRecord("store_vault", {
                 questionId: q.id,
-                mistakesCount: 1,
-                lastFailedTimestamp: Date.now(),
+                chapter: q.chapter,
                 errorTag: resp.timeSpentSec > 90 ? "CALCULATION_SLIP" : "READING_TRAP",
-                leitnerBox: 1
+                lastAttempted: Date.now()
               });
 
-              if (resp.timeSpentSec > 90) q4Traps++;
+              if (resp.timeSpentSec > 90) traps++;
             }
           }
         }
 
         activeExam.completed = true;
         activeExam.finalScore = totalMarks;
-        activeExam.correctCount = correctCount;
-        activeExam.incorrectCount = incorrectCount;
-        activeExam.q4Traps = q4Traps;
+        activeExam.correctCount = correct;
+        activeExam.incorrectCount = incorrect;
+        activeExam.q4Traps = traps;
 
         await putRecord("store_attempts", activeExam);
-
-        alert(`Test Submitted!\nScore: ${totalMarks.toFixed(2)}\nCorrect: ${correctCount}\nIncorrect: ${incorrectCount}\nTime Traps Hit: ${q4Traps}`);
+        alert(`Test Submitted!\nScore: ${totalMarks.toFixed(2)}\nCorrect: ${correct}\nIncorrect: ${incorrect}\nQ-IV Traps: ${traps}`);
         document.getElementById("exam-arena").style.display = "none";
         renderDashboard();
       }
 
-      /* -------------------------------------------------------------
-       * 6. TAB 1: DRILL-DOWN DASHBOARD LOGIC
-       * ------------------------------------------------------------- */
+      /* ----------------------------------------------------------------
+       * 5. TAB 1: DYNAMIC HIERARCHICAL DASHBOARD
+       * ---------------------------------------------------------------- */
       async function renderDashboard() {
         const attempts = await getAllRecords("store_attempts");
         const completed = attempts.filter(a => a.completed);
 
         document.getElementById("kpi-total-mocks").innerText = completed.length;
 
-        if (completed.length > 0) {
-          let totalCorrect = completed.reduce((acc, c) => acc + (c.correctCount || 0), 0);
-          let totalAttempted = completed.reduce((acc, c) => acc + ((c.correctCount || 0) + (c.incorrectCount || 0)), 0);
-          let traps = completed.reduce((acc, c) => acc + (c.q4Traps || 0), 0);
+        if (completed.length === 0) {
+          document.getElementById("kpi-global-acc").innerText = "--";
+          document.getElementById("kpi-avg-speed").innerText = "--";
+          document.getElementById("kpi-traps-hit").innerText = "0";
+        } else {
+          let totalCor = 0, totalAtt = 0, totalSec = 0, traps = 0;
+          completed.forEach(c => {
+            totalCor += (c.correctCount || 0);
+            totalAtt += ((c.correctCount || 0) + (c.incorrectCount || 0));
+            traps += (c.q4Traps || 0);
+            if (c.userResponses) {
+              Object.values(c.userResponses).forEach(r => totalSec += (r.timeSpentSec || 0));
+            }
+          });
 
-          document.getElementById("kpi-global-acc").innerText = totalAttempted > 0 ? `${Math.round((totalCorrect / totalAttempted) * 100)}%` : "0%";
+          document.getElementById("kpi-global-acc").innerText = totalAtt > 0 ? `${Math.round((totalCor / totalAtt) * 100)}%` : "--";
+          document.getElementById("kpi-avg-speed").innerText = totalAtt > 0 ? `${Math.round(totalSec / totalAtt)}s` : "--";
           document.getElementById("kpi-traps-hit").innerText = traps;
-          document.getElementById("kpi-avg-speed").innerText = "42s";
         }
 
         renderDrilldownSubjectLevel();
       }
 
-      function renderDrilldownSubjectLevel() {
-        const breadcrumb = document.getElementById("drilldown-breadcrumb");
-        breadcrumb.innerHTML = "<b>Global</b>";
+      async function renderDrilldownSubjectLevel() {
+        document.getElementById("drilldown-breadcrumb").innerText = "Global";
         document.getElementById("drill-level-tag").innerText = "LEVEL: SUBJECT";
 
         const list = document.getElementById("drilldown-list");
         list.innerHTML = "";
 
+        const attempts = await getAllRecords("store_attempts");
+        const completed = attempts.filter(a => a.completed);
+
         Object.keys(TAXONOMY).forEach(subKey => {
           const sub = TAXONOMY[subKey];
+          let subAtt = 0, subCor = 0;
+
+          completed.forEach(c => {
+            c.questions.forEach(q => {
+              if (q.subject === subKey) {
+                const resp = c.userResponses[q.id];
+                if (resp && resp.selectedOption !== null) {
+                  subAtt++;
+                  if (resp.selectedOption === q.correctIndex) subCor++;
+                }
+              }
+            });
+          });
+
           const div = document.createElement("div");
-          div.className = "drill-item";
+          div.className = "card";
+          div.style.padding = "12px";
+          div.style.marginBottom = "8px";
+          div.style.cursor = "pointer";
           div.innerHTML = `
-            <div>
-              <div style="font-weight:700;">${sub.name} (${subKey})</div>
-              <div style="font-size:11px; color:var(--text-muted);">${sub.chapters.length} Standard Chapters</div>
-            </div>
-            <div style="text-align:right;">
-              <span class="badge" style="background:#1e293b; color:#38bdf8;">CER: 1.42</span>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-weight:700;">${sub.name} (${subKey})</div>
+                <div style="font-size:11px; color:var(--text-muted);">${sub.chapters.length} Standard Chapters</div>
+              </div>
+              <div style="text-align:right;">
+                <span class="badge" style="background:#1e293b; color:#38bdf8;">
+                  ${subAtt > 0 ? `Acc: ${Math.round((subCor / subAtt) * 100)}%` : "Unattempted"}
+                </span>
+              </div>
             </div>
           `;
           div.addEventListener("click", () => renderDrilldownChapterLevel(subKey));
@@ -1302,126 +1430,288 @@
         });
       }
 
-      function renderDrilldownChapterLevel(subKey) {
+      async function renderDrilldownChapterLevel(subKey) {
         const sub = TAXONOMY[subKey];
-        const breadcrumb = document.getElementById("drilldown-breadcrumb");
-        breadcrumb.innerHTML = `<span style="cursor:pointer;" onclick="CGL_OS.renderDashboard()">Global</span> > <b>${subKey}</b>`;
+        document.getElementById("drilldown-breadcrumb").innerHTML = `<span onclick="CGL_OS.renderDashboard()">Global</span> &gt; <b>${subKey}</b>`;
         document.getElementById("drill-level-tag").innerText = "LEVEL: CHAPTERS";
 
         const list = document.getElementById("drilldown-list");
         list.innerHTML = "";
 
+        const attempts = await getAllRecords("store_attempts");
+        const completed = attempts.filter(a => a.completed);
+        const allQuestions = await getAllRecords("store_questions");
+
         sub.chapters.forEach(chap => {
+          let chapAtt = 0, chapCor = 0, chapSec = 0;
+          completed.forEach(c => {
+            c.questions.forEach(q => {
+              if (q.chapter === chap) {
+                const resp = c.userResponses[q.id];
+                if (resp && resp.selectedOption !== null) {
+                  chapAtt++;
+                  chapSec += (resp.timeSpentSec || 0);
+                  if (resp.selectedOption === q.correctIndex) chapCor++;
+                }
+              }
+            });
+          });
+
+          const totalInBank = allQuestions.filter(q => q.chapter === chap).length;
           const div = document.createElement("div");
-          div.className = "drill-item";
+          div.className = "card";
+          div.style.padding = "12px";
+          div.style.marginBottom = "8px";
+
           div.innerHTML = `
-            <div>
-              <div style="font-weight:600; font-family:var(--font-mono); font-size:13px;">${chap}</div>
-              <div style="font-size:11px; color:var(--status-green);">Accuracy: 84% • Speed: 38s</div>
-            </div>
-            <div style="text-align:right;">
-              <span class="badge" style="background:#3b1e1e; color:#f87171;">Neglect: 0.22</span>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-weight:700; font-family:var(--font-mono); font-size:13px;">${chap}</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
+                  Bank: ${totalInBank} Qs • ${chapAtt > 0 ? `Speed: ${Math.round(chapSec / chapAtt)}s` : "No solve data"}
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <span class="badge" style="background:${chapAtt > 0 ? '#14532d' : '#27272a'}; color:${chapAtt > 0 ? '#4ade80' : '#a1a1aa'};">
+                  ${chapAtt > 0 ? `Acc: ${Math.round((chapCor / chapAtt) * 100)}%` : "Unattempted"}
+                </span>
+              </div>
             </div>
           `;
           list.appendChild(div);
         });
       }
 
-      /* -------------------------------------------------------------
-       * 7. TAB 2: ACTIVE RECALL DOJO
-       * ------------------------------------------------------------- */
-      async function renderDojo(filterSubject = "ALL") {
-        const questions = await getAllRecords("store_questions");
-        const container = document.getElementById("dojo-cards-container");
-        container.innerHTML = "";
+      /* ----------------------------------------------------------------
+       * 6. TAB 2: INTERACTIVE DOJO ARENA & QUESTION PALETTE
+       * ---------------------------------------------------------------- */
+      async function refreshDojo(filterSub = "ALL") {
+        const all = await getAllRecords("store_questions");
+        dojoQuestions = filterSub === "ALL" ? all : all.filter(q => q.subject === filterSub);
+        dojoActiveIndex = 0;
 
-        const filtered = filterSubject === "ALL" ? questions : questions.filter(q => q.subject === filterSubject);
+        document.getElementById("formula-sheet-content").innerHTML = formatRichText(FORMULA_SHEET_DATA);
+        renderDojoQuestion();
+      }
 
-        filtered.forEach(q => {
-          const card = document.createElement("div");
-          card.className = "dojo-card";
-          card.innerHTML = `
-            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-              <span class="badge" style="background:#2563eb;">${q.chapter}</span>
-              <span style="font-size:11px; color:var(--text-muted);">${q.id}</span>
-            </div>
-            <div style="font-size:14px; line-height:1.5; margin-bottom:12px;">${q.questionText}</div>
-            <div id="dojo-opts-${q.id}">
-              ${q.options.map((opt, i) => `<div class="dojo-opt" onclick="CGL_OS.verifyDojoOption('${q.id}', ${i},${q.correctIndex})">${i + 1}.${opt}</div>`).join('')}
-            </div>
-            <button class="btn btn-secondary" style="width:100%; margin-top:10px; font-size:12px;" onclick="CGL_OS.toggleDojoSolution('${q.id}')">
-              Reveal Method & Explanation
-            </button>
-            <div class="dojo-solution" id="sol-${q.id}">
-              <b>Solution:</b><br>${q.explanation}
-            </div>
-            <textarea class="annotation-box" placeholder="Personal solve note / formula cue..." onblur="CGL_OS.saveAnnotation('${q.id}', this.value)">${q.annotation || ''}</textarea>
+      function changeDojoSubject(val) {
+        refreshDojo(val);
+      }
+
+      function renderDojoQuestion() {
+        const arena = document.getElementById("dojo-arena-card");
+        if (dojoQuestions.length === 0) {
+          arena.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted);">No questions available in selected subject filter.</div>`;
+          return;
+        }
+
+        const q = dojoQuestions[dojoActiveIndex];
+        document.getElementById("dojo-q-chapter").innerText = q.chapter;
+        document.getElementById("dojo-q-index").innerText = `Q ${dojoActiveIndex + 1} of ${dojoQuestions.length}`;
+        document.getElementById("dojo-q-text").innerHTML = formatRichText(q.questionText);
+
+        const banner = document.getElementById("dojo-feedback-banner");
+        banner.style.display = "none";
+
+        const method = document.getElementById("dojo-method-box");
+        method.style.display = "none";
+        method.innerHTML = `<strong>Method & Explanation:</strong><br>${formatRichText(q.explanation || 'No explanation recorded.')}`;
+
+        document.getElementById("dojo-annotation-input").value = q.annotation || "";
+
+        const optContainer = document.getElementById("dojo-options-container");
+        optContainer.innerHTML = "";
+
+        q.options.forEach((opt, idx) => {
+          const optCard = document.createElement("div");
+          optCard.className = "opt-card";
+          optCard.innerHTML = `
+            <span style="font-weight:700; color:var(--text-muted); font-size:13px;">${idx + 1}.</span>
+            <div style="flex:1;">${formatRichText(opt)}</div>
           `;
-          container.appendChild(card);
-        });
 
-        if (window.renderMathInElement) {
-          renderMathInElement(container, {
-            delimiters: [{ left: "$", right: "$", display: false }, { left: "$$", right: "$$", display: true }]
+          optCard.addEventListener("click", () => {
+            if (navigator.vibrate) navigator.vibrate(idx === q.correctIndex ? 25 : [40, 40]);
+            banner.style.display = "block";
+            if (idx === q.correctIndex) {
+              banner.style.background = "rgba(34, 197, 94, 0.15)";
+              banner.style.color = "var(--status-green)";
+              banner.innerText = "✓ Correct Answer!";
+            } else {
+              banner.style.background = "rgba(239, 68, 68, 0.15)";
+              banner.style.color = "var(--status-red)";
+              banner.innerText = `✗ Incorrect. Correct is Option ${q.correctIndex + 1}.`;
+            }
           });
+
+          optContainer.appendChild(optCard);
+        });
+      }
+
+      function navDojoQuestion(step) {
+        const next = dojoActiveIndex + step;
+        if (next >= 0 && next < dojoQuestions.length) {
+          dojoActiveIndex = next;
+          renderDojoQuestion();
         }
       }
 
-      function verifyDojoOption(qId, selectedIdx, correctIdx) {
-        if (navigator.vibrate) navigator.vibrate(selectedIdx === correctIdx ? 25 : [50, 50]);
-        alert(selectedIdx === correctIdx ? "Correct Solve!" : "Incorrect Option. Inspect method below.");
+      function toggleDojoMethod() {
+        const el = document.getElementById("dojo-method-box");
+        el.style.display = el.style.display === "none" ? "block" : "none";
       }
 
-      function toggleDojoSolution(qId) {
-        const el = document.getElementById(`sol-${qId}`);
-        el.style.display = el.style.display === "block" ? "none" : "block";
+      async function saveDojoAnnotation(val) {
+        if (dojoQuestions.length === 0) return;
+        const q = dojoQuestions[dojoActiveIndex];
+        q.annotation = val;
+        await putRecord("store_questions", q);
       }
 
-      async function saveAnnotation(qId, val) {
-        const tx = db.transaction(["store_questions"], "readwrite");
-        const store = tx.objectStore("store_questions");
-        const req = store.get(qId);
-        req.onsuccess = () => {
-          const data = req.result;
-          if (data) {
-            data.annotation = val;
-            store.put(data);
-          }
+      function toggleDojoPalette(open) {
+        const drawer = document.getElementById("dojo-palette-drawer");
+        const overlay = document.getElementById("dojo-drawer-overlay");
+
+        if (open) {
+          renderDojoPaletteGrid();
+          drawer.classList.add("open");
+          overlay.classList.add("active");
+        } else {
+          drawer.classList.remove("open");
+          overlay.classList.remove("active");
+        }
+      }
+
+      function renderDojoPaletteGrid() {
+        const grid = document.getElementById("dojo-palette-grid");
+        grid.innerHTML = "";
+        document.getElementById("dojo-palette-count").innerText = `${dojoQuestions.length} Qs`;
+
+        dojoQuestions.forEach((q, idx) => {
+          const cell = document.createElement("div");
+          cell.className = "palette-cell" + (idx === dojoActiveIndex ? " current" : "");
+          cell.innerText = idx + 1;
+          cell.addEventListener("click", () => {
+            dojoActiveIndex = idx;
+            toggleDojoPalette(false);
+            renderDojoQuestion();
+          });
+          grid.appendChild(cell);
+        });
+      }
+
+      /* ----------------------------------------------------------------
+       * 7. QUESTION EDITOR MODAL (IN-PLACE GUI UPDATES)
+       * ---------------------------------------------------------------- */
+      function openEditQuestionModal(qData) {
+        const isNew = !qData;
+        document.getElementById("editor-title").innerText = isNew ? "Add New Question" : "Edit Question";
+        document.getElementById("edit-q-id").value = isNew ? "q_cgl_" + Date.now() : qData.id;
+        document.getElementById("edit-q-subject").value = isNew ? "QA" : qData.subject;
+        document.getElementById("edit-q-chapter").value = isNew ? "QA_GEOMETRY" : qData.chapter;
+        document.getElementById("edit-q-text").value = isNew ? "" : qData.questionText;
+
+        document.getElementById("edit-opt-0").value = isNew ? "" : (qData.options[0] || "");
+        document.getElementById("edit-opt-1").value = isNew ? "" : (qData.options[1] || "");
+        document.getElementById("edit-opt-2").value = isNew ? "" : (qData.options[2] || "");
+        document.getElementById("edit-opt-3").value = isNew ? "" : (qData.options[3] || "");
+
+        document.getElementById("edit-q-correct").value = isNew ? "0" : qData.correctIndex;
+        document.getElementById("edit-q-explanation").value = isNew ? "" : (qData.explanation || "");
+
+        document.getElementById("btn-delete-q").style.display = isNew ? "none" : "block";
+        document.getElementById("modal-question-editor").classList.add("active");
+      }
+
+      function openEditCurrentDojoQuestion() {
+        if (dojoQuestions.length === 0) return;
+        openEditQuestionModal(dojoQuestions[dojoActiveIndex]);
+      }
+
+      async function saveQuestionEditor() {
+        const id = document.getElementById("edit-q-id").value;
+        const qObj = {
+          id: id,
+          subject: document.getElementById("edit-q-subject").value,
+          chapter: document.getElementById("edit-q-chapter").value.trim(),
+          questionText: document.getElementById("edit-q-text").value.trim(),
+          options: [
+            document.getElementById("edit-opt-0").value.trim(),
+            document.getElementById("edit-opt-1").value.trim(),
+            document.getElementById("edit-opt-2").value.trim(),
+            document.getElementById("edit-opt-3").value.trim()
+          ],
+          correctIndex: parseInt(document.getElementById("edit-q-correct").value),
+          explanation: document.getElementById("edit-q-explanation").value.trim(),
+          tags: ["UserSaved"]
         };
+
+        if (!qObj.questionText || !qObj.options[0]) {
+          alert("Question text and at least Option 1 are required.");
+          return;
+        }
+
+        await putRecord("store_questions", qObj);
+        document.getElementById("modal-question-editor").classList.remove("active");
+        refreshDojo(document.getElementById("dojo-subject-filter").value);
+        refreshDbInspector();
       }
 
-      /* -------------------------------------------------------------
-       * 8. TAB 3: COMMAND BUS & MANUAL DB STUDIO
-       * ------------------------------------------------------------- */
+      async function deleteCurrentEditingQuestion() {
+        const id = document.getElementById("edit-q-id").value;
+        if (confirm(`Permanently delete question ${id}?`)) {
+          await deleteRecordFromStore("store_questions", id);
+          document.getElementById("modal-question-editor").classList.remove("active");
+          refreshDojo(document.getElementById("dojo-subject-filter").value);
+          refreshDbInspector();
+        }
+      }
+
+      /* ----------------------------------------------------------------
+       * 8. TAB 3: COMMAND CONSOLE & DANGER ZONE
+       * ---------------------------------------------------------------- */
       async function executeConsoleCommand() {
-        const input = document.getElementById("console-payload").value.trim();
+        const raw = document.getElementById("console-payload").value.trim();
         try {
-          const actionObj = JSON.parse(input);
-          switch(actionObj.action) {
-            case "BATCH_INGEST_QUESTIONS":
-              const questions = actionObj.payload.questions;
-              const tx = db.transaction(["store_questions"], "readwrite");
-              const store = tx.objectStore("store_questions");
-              questions.forEach(q => store.put(q));
-              await new Promise(r => tx.oncomplete = r);
-              alert(`Successfully ingested ${questions.length} questions.`);
-              break;
-            case "HOTPATCH_CONFIG":
-              await putRecord("store_config", { key: actionObj.target, value: actionObj.payload });
-              alert(`Configuration patched: ${actionObj.target}`);
-              break;
-            case "EXPORT_TELEMETRY_SLICE":
-              const telemetry = await getAllRecords("store_attempts");
-              navigator.clipboard.writeText(JSON.stringify(telemetry, null, 2));
-              alert("Lossless telemetry copied to clipboard for Chat post-mortem.");
-              break;
-            default:
-              alert("Unrecognized command action.");
+          const cmd = JSON.parse(raw);
+          if (cmd.action === "BATCH_INGEST_QUESTIONS") {
+            const list = cmd.payload.questions || [];
+            const tx = db.transaction(["store_questions"], "readwrite");
+            const st = tx.objectStore("store_questions");
+            list.forEach(q => st.put(q));
+            await new Promise(r => tx.oncomplete = r);
+            alert(`Ingested ${list.length} questions successfully.`);
+          } else if (cmd.action === "HOTPATCH_CONFIG") {
+            await putRecord("store_config", { key: cmd.target, value: cmd.payload });
+            alert(`Patched config: ${cmd.target}`);
+          } else {
+            alert("Unknown command action.");
           }
           refreshDbInspector();
-        } catch (e) {
-          alert("Invalid JSON: " + e.message);
+        } catch(e) {
+          alert("JSON Parse Error: " + e.message);
         }
+      }
+
+      function loadSamplePayload(type) {
+        const sample = {
+          action: "BATCH_INGEST_QUESTIONS",
+          payload: {
+            questions: [
+              {
+                id: "q_sample_" + Date.now(),
+                subject: "QA",
+                chapter: "QA_PROFIT_LOSS",
+                questionText: "An article is sold at a profit of $25\\%$. If the cost price is ₹$800$, find the selling price.",
+                options: ["₹$950$", "₹$1,000$", "₹$1,050$", "₹$1,200$"],
+                correctIndex: 1,
+                explanation: "Selling Price $= 800 \\times 1.25 = ₹1,000$.",
+                tags: ["Arithmetic", "PYQ"]
+              }
+            ]
+          }
+        };
+        document.getElementById("console-payload").value = JSON.stringify(sample, null, 2);
       }
 
       async function refreshDbInspector() {
@@ -1433,115 +1723,127 @@
         records.forEach(rec => {
           const key = rec.id || rec.sessionId || rec.questionId || rec.key;
           const row = document.createElement("div");
-          row.className = "db-row";
+          row.style.display = "flex";
+          row.style.justifyContent = "space-between";
+          row.style.padding = "6px 0";
+          row.style.borderBottom = "1px solid var(--border-color)";
           row.innerHTML = `
             <span style="font-family:var(--font-mono);">${key}</span>
-            <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.editDbRecord('${storeName}', '${key}')">Edit</button>
+            <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.editDbRecordModal('${storeName}', '${key}')">Edit</button>
           `;
           list.appendChild(row);
         });
       }
 
-      async function editDbRecord(storeName, key) {
-        const tx = db.transaction([storeName], "readonly");
-        const req = tx.objectStore(storeName).get(key);
+      async function editDbRecordModal(sName, key) {
+        const tx = db.transaction([sName], "readonly");
+        const req = tx.objectStore(sName).get(key);
         req.onsuccess = () => {
-          const data = req.result;
-          document.getElementById("db-manual-editor-card").style.display = "block";
-          document.getElementById("editor-record-key").innerText = `${storeName} [${key}]`;
-          document.getElementById("editor-record-json").value = JSON.stringify(data, null, 2);
-          document.getElementById("editor-record-json").dataset.store = storeName;
-          document.getElementById("editor-record-json").dataset.key = key;
+          if (sName === "store_questions") {
+            openEditQuestionModal(req.result);
+          } else {
+            alert(`Record Details (${key}):\n` + JSON.stringify(req.result, null, 2));
+          }
         };
       }
 
-      async function saveRecordOverwrite() {
-        const jsonArea = document.getElementById("editor-record-json");
-        const storeName = jsonArea.dataset.store;
-        try {
-          const updated = JSON.parse(jsonArea.value);
-          await putRecord(storeName, updated);
-          alert("Record overwritten successfully.");
-          document.getElementById("db-manual-editor-card").style.display = "none";
-          refreshDbInspector();
-        } catch(e) {
-          alert("JSON format error: " + e.message);
-        }
-      }
-
-      async function deleteRecord() {
-        const jsonArea = document.getElementById("editor-record-json");
-        const storeName = jsonArea.dataset.store;
-        const key = jsonArea.dataset.key;
-        if (confirm(`Permanently remove record ${key}?`)) {
-          await deleteRecordFromStore(storeName, key);
-          document.getElementById("db-manual-editor-card").style.display = "none";
+      async function wipeTestAttempts() {
+        if (confirm("Are you sure you want to permanently clear test attempts and statistics?")) {
+          const tx = db.transaction(["store_attempts"], "readwrite");
+          tx.objectStore("store_attempts").clear();
+          await new Promise(r => tx.oncomplete = r);
+          alert("All test attempts cleared.");
+          renderDashboard();
           refreshDbInspector();
         }
       }
 
-      /* -------------------------------------------------------------
-       * 9. TAB 4: ERROR VAULT & PHYSICAL PRINT EXTRACTION
-       * ------------------------------------------------------------- */
+      async function factoryResetAll() {
+        if (confirm("WARNING: This will wipe your questions, attempts, and vault completely! Proceed?")) {
+          const tx = db.transaction(["store_questions", "store_attempts", "store_vault", "store_config"], "readwrite");
+          tx.objectStore("store_questions").clear();
+          tx.objectStore("store_attempts").clear();
+          tx.objectStore("store_vault").clear();
+          tx.objectStore("store_config").clear();
+          await new Promise(r => tx.oncomplete = r);
+          await seedData();
+          alert("Factory reset complete. Seed data restored.");
+          renderDashboard();
+          refreshDojo();
+          refreshDbInspector();
+        }
+      }
+
+      /* ----------------------------------------------------------------
+       * 9. TAB 4: VAULT & PHYSICAL PRINT EXTRACTIONS
+       * ---------------------------------------------------------------- */
       async function renderVault() {
-        const vaultRecords = await getAllRecords("store_vault");
+        const vault = await getAllRecords("store_vault");
         const questions = await getAllRecords("store_questions");
         const container = document.getElementById("vault-list-container");
         container.innerHTML = "";
 
-        if (vaultRecords.length === 0) {
-          container.innerHTML = "<p style='font-size:12px; color:var(--text-muted);'>No errors flagged in the 14-day rolling window.</p>";
+        if (vault.length === 0) {
+          container.innerHTML = `<div style="font-size:12px; color:var(--text-muted);">No errors logged in the Error Vault yet.</div>`;
           return;
         }
 
-        vaultRecords.forEach(rec => {
-          const q = questions.find(item => item.id === rec.questionId);
+        vault.forEach(v => {
+          const q = questions.find(item => item.id === v.questionId);
           if (!q) return;
 
           const div = document.createElement("div");
-          div.className = "vault-item";
+          div.className = "card";
+          div.style.borderColor = "#5a1e1e";
+          div.style.marginBottom = "8px";
           div.innerHTML = `
-            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;">
-              <span class="badge" style="background:#ef4444;">${rec.errorTag}</span>
-              <span style="color:var(--text-muted);">Leitner Box: ${rec.leitnerBox}</span>
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <span class="badge" style="background:#ef4444;">${v.errorTag}</span>
+              <span style="font-size:11px; color:var(--text-muted);">${q.chapter}</span>
             </div>
-            <div style="font-size:13px; margin-bottom:8px;">${q.questionText}</div>
-            <div style="font-size:11px; color:#38bdf8;">Correct Answer: Option ${q.correctIndex + 1}</div>
+            <div style="font-size:13px; line-height:1.5;">${formatRichText(q.questionText)}</div>
+            <div style="font-size:11px; color:#38bdf8; margin-top:6px;">Correct: Option ${q.correctIndex + 1}</div>
           `;
           container.appendChild(div);
         });
+      }
 
-        if (window.renderMathInElement) renderMathInElement(container);
+      async function launchVaultSprint() {
+        const vault = await getAllRecords("store_vault");
+        if (vault.length === 0) {
+          alert("Error Vault is currently empty.");
+          return;
+        }
+        openCustomMockModal();
       }
 
       async function spoolAndroidPrint() {
         const questions = await getAllRecords("store_questions");
         const root = document.getElementById("print-sheet-root");
-        root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Revision Spool - ${new Date().toLocaleDateString()}</h2>`;
+        root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Question Bank Revision Sheet</h2>`;
 
         questions.forEach((q, idx) => {
           const item = document.createElement("div");
           item.className = "print-question";
           item.innerHTML = `
-            <b>Q${idx + 1}.</b> ${q.questionText}<br>
-            ${q.options.map((opt, i) => `(${i + 1})${opt} &nbsp;`).join(' ')}
+            <strong>Q${idx + 1}.</strong> ${formatRichText(q.questionText)}<br>
+            ${q.options.map((opt, i) => `(${i + 1})${formatRichText(opt)} &nbsp;`).join(' ')}
           `;
           root.appendChild(item);
         });
 
-        if (window.renderMathInElement) renderMathInElement(root);
         window.print();
       }
 
       async function exportFullBackup() {
-        const backup = {
+        const data = {
           questions: await getAllRecords("store_questions"),
           attempts: await getAllRecords("store_attempts"),
           vault: await getAllRecords("store_vault"),
           config: await getAllRecords("store_config"),
-          timestamp: new Date().toISOString()
+          exportedAt: new Date().toISOString()
         };
-        const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
         a.download = `cgl_os_backup_${Date.now()}.json`;
@@ -1556,8 +1858,8 @@
         vault.forEach(v => {
           const q = questions.find(item => item.id === v.questionId);
           if (q) {
-            md += `### ${q.id} - ${q.chapter}\n`;
-            md += `**Error Tag:** #${v.errorTag} | **Box:** ${v.leitnerBox}\n\n`;
+            md += `### ${q.chapter} - ${q.id}\n`;
+            md += `**Tag:** #${v.errorTag}\n\n`;
             md += `> ${q.questionText}\n\n`;
             md += `**Solution:**\n${q.explanation}\n\n---\n\n`;
           }
@@ -1566,78 +1868,66 @@
         const blob = new Blob([md], { type: "text/markdown" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = `CGL_Vault_${Date.now()}.md`;
+        a.download = `CGL_Error_Vault_${Date.now()}.md`;
         a.click();
       }
 
-      /* -------------------------------------------------------------
-       * 10. NAVIGATION TAB SWITCHER
-       * ------------------------------------------------------------- */
-      function switchTab(targetTabId, btnEl) {
+      /* ----------------------------------------------------------------
+       * 10. SYSTEM NAVIGATION & BOOTSTRAP
+       * ---------------------------------------------------------------- */
+      function switchTab(tId, btn) {
         document.querySelectorAll(".view-container").forEach(el => el.classList.remove("active"));
         document.querySelectorAll(".nav-btn").forEach(el => el.classList.remove("active"));
 
-        document.getElementById(targetTabId).classList.add("active");
-        if (btnEl) btnEl.classList.add("active");
+        document.getElementById(tId).classList.add("active");
+        if (btn) btn.classList.add("active");
 
-        if (targetTabId === "tab-dashboard") renderDashboard();
-        if (targetTabId === "tab-dojo") renderDojo();
-        if (targetTabId === "tab-console") refreshDbInspector();
-        if (targetTabId === "tab-vault") renderVault();
+        if (tId === "tab-dashboard") renderDashboard();
+        if (tId === "tab-dojo") refreshDojo(document.getElementById("dojo-subject-filter").value);
+        if (tId === "tab-console") refreshDbInspector();
+        if (tId === "tab-vault") renderVault();
       }
 
       function toggleFormulaSheet() {
         const el = document.getElementById("formula-sheet-content");
         el.style.display = el.style.display === "none" ? "block" : "none";
-        if (window.renderMathInElement) renderMathInElement(el);
       }
 
-      function loadSampleIngestPayload() {
-        const sample = {
-          action: "BATCH_INGEST_QUESTIONS",
-          payload: {
-            questions: [
-              {
-                id: "q_qa_alg_02",
-                subject: "QA",
-                chapter: "QA_ALGEBRA",
-                questionText: "If $x + \\frac{1}{x} = 5$, find the value of $x^3 + \\frac{1}{x^3}$.",
-                options: ["$110$", "$125$", "$140$", "$115$"],
-                correctIndex: 0,
-                explanation: "$x^3 + \\frac{1}{x^3} = 5^3 - 3(5) = 125 - 15 = 110$.",
-                tags: ["Algebra", "Identities"]
-              }
-            ]
-          }
-        };
-        document.getElementById("console-payload").value = JSON.stringify(sample, null, 2);
-      }
-
-      // Boot Engine
+      // Boot engine
       window.addEventListener("DOMContentLoaded", async () => {
         await initDB();
         renderDashboard();
+
+        // Wire Launch Mock button
+        document.getElementById("btn-quick-launch").addEventListener("click", openCustomMockModal);
       });
 
       return {
         switchTab,
-        launchBlueprint,
-        filterDojo: renderDojo,
-        verifyDojoOption,
-        toggleDojoSolution,
-        saveAnnotation,
+        openCustomMockModal,
+        applyBlueprintPreset,
+        launchConfiguredMock,
+        changeDojoSubject,
+        navDojoQuestion,
+        toggleDojoMethod,
+        saveDojoAnnotation,
+        toggleDojoPalette,
+        openEditQuestionModal,
+        openEditCurrentDojoQuestion,
+        saveQuestionEditor,
+        deleteCurrentEditingQuestion,
         toggleFormulaSheet,
         executeConsoleCommand,
-        loadSampleIngestPayload,
+        loadSamplePayload,
         refreshDbInspector,
-        editDbRecord,
-        saveRecordOverwrite,
-        deleteRecord,
+        editDbRecordModal,
+        wipeTestAttempts,
+        factoryResetAll,
         renderDashboard,
+        launchVaultSprint,
         spoolAndroidPrint,
         exportFullBackup,
-        exportObsidianMarkdown,
-        launchVaultDrill: () => launchBlueprint("TIER_1")
+        exportObsidianMarkdown
       };
     })();
   </script>
