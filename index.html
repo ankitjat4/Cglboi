@@ -8,23 +8,23 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>SSC CGL Intelligence OS</title>
 
-  <!-- KaTeX for Synchronous High-Speed Math Rendering -->
+  <!-- KaTeX for High-Speed Mathematical Typesetting -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 
   <style>
     :root {
-      --bg-dark: #0d1117;
-      --bg-card: #161b22;
-      --bg-elevated: #21262d;
-      --border-color: #30363d;
-      --accent-blue: #2f81f7;
+      --bg-dark: #0a0d12;
+      --bg-card: #131720;
+      --bg-elevated: #1c2230;
+      --border-color: #273042;
+      --accent-blue: #388bfd;
       --accent-blue-hover: #1f6feb;
       --accent-cyan: #38bdf8;
       --status-green: #238636;
       --status-red: #da3633;
       --status-amber: #d29922;
-      --status-purple: #8957e5;
+      --status-purple: #a371f7;
       --text-main: #f0f6fc;
       --text-muted: #8b949e;
       --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -59,7 +59,6 @@
       display: inline-block;
     }
 
-    /* CARDS & CONTAINERS */
     .card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -103,8 +102,8 @@
 
     /* DASHBOARD HERO HEADER */
     .hero-banner {
-      background: linear-gradient(135deg, #1f293d 0%, #11151c 100%);
-      border: 1px solid #2f81f7;
+      background: linear-gradient(135deg, #161e2e 0%, #0d121c 100%);
+      border: 1px solid #388bfd;
       border-radius: 14px;
       padding: 18px;
       margin-bottom: 14px;
@@ -115,8 +114,8 @@
       content: "";
       position: absolute;
       top: -30px; right: -30px;
-      width: 120px; height: 120px;
-      background: radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, transparent 70%);
+      width: 130px; height: 130px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.22) 0%, transparent 70%);
       border-radius: 50%;
     }
 
@@ -125,7 +124,7 @@
       position: fixed;
       bottom: 0; left: 0; right: 0;
       height: var(--bottom-nav-height);
-      background: rgba(13, 17, 23, 0.96);
+      background: rgba(10, 13, 18, 0.96);
       backdrop-filter: blur(12px);
       border-top: 1px solid var(--border-color);
       display: flex;
@@ -151,13 +150,13 @@
     .nav-btn.active { color: var(--accent-blue); }
     .nav-btn svg { width: 22px; height: 22px; stroke-width: 2; }
 
-    /* FULL-SCREEN MODALS */
+    /* MODALS */
     .modal-overlay {
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(5px);
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(6px);
       z-index: 3500;
       align-items: center;
       justify-content: center;
@@ -170,12 +169,11 @@
       border-radius: 14px;
       padding: 18px;
       width: 100%;
-      max-width: 550px;
+      max-width: 580px;
       max-height: 90vh;
       overflow-y: auto;
     }
 
-    /* FORM ELEMENTS */
     .form-group { margin-bottom: 12px; }
     .form-group label {
       display: block;
@@ -194,7 +192,7 @@
       font-size: 14px;
     }
 
-    /* 1. EXAM ARENA */
+    /* FULL SCREEN SIMULATOR ARENAS */
     #exam-arena, #dojo-arena-view {
       display: none;
       position: fixed;
@@ -204,7 +202,7 @@
       flex-direction: column;
     }
     .arena-header {
-      background: #161b22;
+      background: #131720;
       border-bottom: 1px solid var(--border-color);
       padding: 10px 14px;
       display: flex;
@@ -236,7 +234,7 @@
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
     .sectional-banner {
-      background: #1c2128;
+      background: #171d29;
       border-bottom: 1px solid var(--border-color);
       padding: 8px 14px;
       display: flex;
@@ -295,7 +293,7 @@
     }
     .opt-card.selected {
       border-color: var(--accent-blue);
-      background: rgba(47, 129, 247, 0.15);
+      background: rgba(56, 139, 253, 0.15);
     }
     .opt-card.struck-through {
       opacity: 0.35;
@@ -304,18 +302,18 @@
     }
     .opt-card.correct-peek {
       border-color: var(--status-green) !important;
-      background: rgba(35, 134, 54, 0.2) !important;
+      background: rgba(35, 134, 54, 0.22) !important;
     }
     .opt-card.wrong-peek {
       border-color: var(--status-red) !important;
-      background: rgba(218, 54, 51, 0.2) !important;
+      background: rgba(218, 54, 51, 0.22) !important;
     }
 
     .arena-footer {
       position: fixed;
       bottom: 0; left: 0; right: 0;
       height: 64px;
-      background: #161b22;
+      background: #131720;
       border-top: 1px solid var(--border-color);
       display: flex;
       align-items: center;
@@ -324,13 +322,13 @@
       z-index: 2100;
     }
 
-    /* PALETTE DRAWER (FIXED AUTO-GRID TIGHT PACKING) */
+    /* PALETTE DRAWER (TIGHT PACKING 6-COLUMN GRID) */
     .palette-drawer-ui {
       position: fixed;
       top: 0; right: -100%; bottom: 0;
       width: 85%;
       max-width: 360px;
-      background: #161b22;
+      background: #131720;
       border-left: 1px solid var(--border-color);
       z-index: 2500;
       transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -342,12 +340,11 @@
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.7);
+      background: rgba(0,0,0,0.75);
       z-index: 2400;
     }
     .drawer-overlay.active { display: block; }
     
-    /* CRITICAL FIX FOR PALETTE SPACING: align-content: start + grid-auto-rows */
     .palette-grid {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
@@ -366,7 +363,7 @@
       justify-content: center;
       font-weight: 700;
       font-size: 13px;
-      background: #1f6feb; /* TCS Blue */
+      background: #1f6feb;
       color: #fff;
       cursor: pointer;
       border: 2px solid transparent;
@@ -380,7 +377,7 @@
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(13, 17, 23, 0.98);
+      background: rgba(10, 13, 18, 0.98);
       z-index: 3000;
       flex-direction: column;
       align-items: center;
@@ -425,7 +422,7 @@
 </head>
 <body>
 
-  <!-- ==================== 1. EXAM ARENA (TIMED CBT SIMULATOR) ==================== -->
+  <!-- ==================== 1. TIMED EXAM ARENA ==================== -->
   <div id="exam-arena">
     <div class="arena-header">
       <button class="hud-icon-btn" id="btn-arena-pause">
@@ -433,7 +430,7 @@
       </button>
       <div style="text-align:center;">
         <div id="hud-countdown" class="hud-timer">15:00</div>
-        <div style="font-size:10px; color:var(--text-muted);" id="hud-test-title">Sectional Test</div>
+        <div style="font-size:10px; color:var(--text-muted);" id="hud-test-title">SSC CGL Mock</div>
       </div>
       <button class="hud-icon-btn" id="btn-toggle-exam-palette">
         <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
@@ -472,7 +469,7 @@
       <h3 style="font-size:14px; font-weight:700;">Question Palette</h3>
       <span class="badge" style="background:#1f6feb;" id="exam-drawer-sec-badge">PART - A</span>
     </div>
-    <div style="padding:10px 14px; background:#11151c; font-size:12px; display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color);">
+    <div style="padding:10px 14px; background:#0d1117; font-size:12px; display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color);">
       <span>🟢 Answered: <b id="exam-count-ans">0</b></span>
       <span>🔵 Unanswered: <b id="exam-count-unans">0</b></span>
     </div>
@@ -486,21 +483,21 @@
   <div id="pause-shield">
     <h2 style="font-size:22px; font-weight:800; margin-bottom:8px;">TEST PAUSED</h2>
     <p style="font-size:13px; color:var(--text-muted); max-width:280px; margin-bottom:20px;">
-      Countdown halted. Session state safely frozen in IndexedDB.
+      Timer halted. Telemetry & question index frozen in IndexedDB.
     </p>
     <button class="btn" style="width:200px;" id="btn-resume-exam">Resume Test</button>
     <button class="btn btn-secondary" style="width:200px; margin-top:10px;" id="btn-exit-exam">Exit to Dashboard</button>
   </div>
 
 
-  <!-- ==================== 2. UNTIMED DOJO ARENA (MOCK STYLE) ==================== -->
+  <!-- ==================== 2. UNTIMED DOJO ARENA ==================== -->
   <div id="dojo-arena-view">
     <div class="arena-header">
       <button class="hud-icon-btn" onclick="CGL_OS.exitDojoArena()">
         <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
       </button>
       <div style="text-align:center;">
-        <div style="font-size:14px; font-weight:800; color:var(--accent-cyan);" id="dojo-arena-title">QA Practice Dojo</div>
+        <div style="font-size:14px; font-weight:800; color:var(--accent-cyan);" id="dojo-arena-title">Dojo Practice</div>
         <div style="font-size:10px; color:var(--text-muted);">Untimed Active Recall Mode</div>
       </div>
       <button class="hud-icon-btn" onclick="CGL_OS.toggleDojoPalette(true)">
@@ -509,14 +506,20 @@
     </div>
 
     <div class="sectional-banner">
-      <span class="badge" style="background:#238636;" id="dojo-arena-chap-badge">QA_GEOMETRY</span>
+      <div style="display:flex; gap:6px; align-items:center;">
+        <span class="badge" style="background:#238636;" id="dojo-arena-chap-badge">QA_PERCENTAGE</span>
+        <span class="badge" style="background:#1c2230; color:#38bdf8;" id="dojo-arena-method-badge">Successive Change</span>
+      </div>
       <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openEditCurrentDojoQuestion()">Edit Question</button>
     </div>
+
+    <!-- Inline Method Theory Pill -->
+    <div id="dojo-theory-banner" style="display:none; background:#161f30; padding:10px 14px; border-bottom:1px solid var(--border-color); font-size:12px; line-height:1.5;"></div>
 
     <div class="arena-body" id="dojo-arena-body">
       <div class="question-header">
         <div class="q-number-pill" id="dojo-arena-qnum">1</div>
-        <span style="font-size:12px; color:var(--text-muted);" id="dojo-arena-total-tag">Question 1 of 25</span>
+        <span style="font-size:12px; color:var(--text-muted);" id="dojo-arena-total-tag">Question 1 of 10</span>
       </div>
 
       <div class="q-text-canvas" id="dojo-arena-qtext"></div>
@@ -531,8 +534,8 @@
       <div id="dojo-arena-method-box" style="display:none; margin-top:12px; padding:12px; background:#1c2433; border-left:3px solid var(--accent-blue); border-radius:4px; font-size:13px; line-height:1.6;"></div>
 
       <div class="form-group" style="margin-top:14px;">
-        <label>Personal Solving Cue / Annotation (Auto-Saves)</label>
-        <textarea id="dojo-arena-annotation" class="form-control" style="height:60px;" placeholder="Personal formula cue or shortcut..." oninput="CGL_OS.autoSaveDojoAnnotation(this.value)"></textarea>
+        <label>Personal Solving Cue / Annotation (Auto-Saves to Device)</label>
+        <textarea id="dojo-arena-annotation" class="form-control" style="height:60px;" placeholder="Personal note, shortcut, or formula reminder..." oninput="CGL_OS.autoSaveDojoAnnotation(this.value)"></textarea>
       </div>
     </div>
 
@@ -556,7 +559,7 @@
 
   <!-- ==================== 3. TAB 1: DASHBOARD ==================== -->
   <div id="tab-dashboard" class="view-container active">
-    <!-- Hero Candidate Header -->
+    <!-- Candidate Hero Header -->
     <div class="hero-banner">
       <div style="display:flex; justify-content:space-between; align-items:flex-start;">
         <div>
@@ -564,7 +567,7 @@
           <h2 style="font-size:20px; font-weight:800; color:#fff;">Welcome back, Ankit</h2>
           <p style="font-size:12px; color:var(--accent-cyan); margin-top:2px;">Target: Tier 1 & Tier 2 Master Preparation</p>
         </div>
-        <button class="btn" id="btn-dash-launch-mock" style="padding:8px 14px; font-size:12px; box-shadow:0 0 12px rgba(47,129,247,0.5);">
+        <button class="btn" id="btn-dash-launch-mock" style="padding:8px 14px; font-size:12px; box-shadow:0 0 12px rgba(56,139,253,0.5);">
           Launch Mock
         </button>
       </div>
@@ -585,7 +588,7 @@
         <div style="font-size:24px; font-weight:800;" id="kpi-avg-speed">--</div>
       </div>
       <div class="card" style="margin-bottom:0; padding:12px;">
-        <div style="font-size:11px; color:var(--text-muted);">Q-IV Time Traps</div>
+        <div style="font-size:11px; color:var(--text-muted);">Q-IV Traps Hit</div>
         <div style="font-size:24px; font-weight:800; color:var(--status-red);" id="kpi-traps-hit">0</div>
       </div>
     </div>
@@ -613,52 +616,62 @@
   </div>
 
 
-  <!-- ==================== 4. TAB 2: ACTIVE RECALL DOJO LIST ==================== -->
+  <!-- ==================== 4. TAB 2: ACTIVE RECALL DOJO & FORMULA HUB ==================== -->
   <div id="tab-dojo" class="view-container">
-    <div class="card" style="background:linear-gradient(135deg, #1b2838, #11151c); border-color:#238636;">
-      <h2 style="font-size:18px; font-weight:800;">Question Dojo & Practice Hub</h2>
+    <div class="card" style="background:linear-gradient(135deg, #162438, #0d121c); border-color:#238636;">
+      <h2 style="font-size:18px; font-weight:800;">Question Dojo & Formula Hub</h2>
       <p style="font-size:12px; color:var(--text-muted); margin-top:2px;">
-        Exam-like untimed recall cards, KaTeX formulas, and instant method reveals.
+        Categorized by Subject, Chapter, Subtopic & Solving Method.
       </p>
     </div>
 
-    <!-- Formula Reference -->
+    <!-- Master Formula Hub Card -->
     <div class="card" style="border-color:#38bdf8;">
-      <div class="card-title" style="color:#38bdf8; margin-bottom:0;">
-        <span>High-Yield Reference Cues</span>
-        <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.toggleFormulaSheet()">Toggle</button>
+      <div class="card-title" style="color:#38bdf8;">
+        <span>Formula & Concept Vault</span>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openFormulaEditorModal()">+ Add Formula</button>
+          <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.toggleFormulaSheet()">Toggle</button>
+        </div>
       </div>
       <div id="formula-sheet-content" style="display:none; font-size:13px; line-height:1.6; margin-top:10px;"></div>
     </div>
 
-    <!-- Launch Practice Subject Modules -->
+    <!-- Hierarchical Taxonomy Dojo Navigator -->
     <div class="card">
-      <div class="card-title">Launch Untimed Practice Modules</div>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-        <button class="btn btn-secondary" style="font-size:12px; padding:12px;" onclick="CGL_OS.startDojoArena('QA')">
-          Quantitative (QA)
-        </button>
-        <button class="btn btn-secondary" style="font-size:12px; padding:12px;" onclick="CGL_OS.startDojoArena('REAS')">
-          Reasoning (REAS)
-        </button>
-        <button class="btn btn-secondary" style="font-size:12px; padding:12px;" onclick="CGL_OS.startDojoArena('ENG')">
-          English (ENG)
-        </button>
-        <button class="btn btn-secondary" style="font-size:12px; padding:12px;" onclick="CGL_OS.startDojoArena('GA')">
-          General Awareness (GA)
-        </button>
+      <div class="card-title">Select Module & Method to Practice</div>
+      
+      <div class="form-group">
+        <label>Subject</label>
+        <select id="dojo-nav-subject" class="form-control" onchange="CGL_OS.updateDojoChapters()">
+          <option value="QA">Quantitative Aptitude (QA)</option>
+          <option value="REAS">General Intelligence & Reasoning (REAS)</option>
+          <option value="ENG">English Comprehension (ENG)</option>
+          <option value="GA">General Awareness (GA)</option>
+        </select>
       </div>
-      <button class="btn" style="width:100%; margin-top:10px; font-size:13px;" onclick="CGL_OS.startDojoArena('ALL')">
-        Practice Entire Question Bank (All Subjects)
+
+      <div class="form-group">
+        <label>Chapter</label>
+        <select id="dojo-nav-chapter" class="form-control" onchange="CGL_OS.updateDojoMethods()"></select>
+      </div>
+
+      <div class="form-group">
+        <label>Subtopic / Method Type</label>
+        <select id="dojo-nav-method" class="form-control"></select>
+      </div>
+
+      <button class="btn" style="width:100%; margin-top:8px;" onclick="CGL_OS.launchFilteredDojo()">
+        Launch Untimed Dojo Session
       </button>
     </div>
   </div>
 
 
-  <!-- ==================== 5. TAB 3: COMMAND BUS & DB STUDIO ==================== -->
+  <!-- ==================== 5. TAB 3: COMMAND TERMINAL & DB STUDIO ==================== -->
   <div id="tab-console" class="view-container">
     <div class="card">
-      <div class="card-title">JSON Command Terminal</div>
+      <div class="card-title">JSON Command Bus</div>
       <textarea class="form-control" id="console-payload" style="height:140px; font-family:var(--font-mono); font-size:12px; color:#38bdf8;" placeholder='Paste command payload here...'></textarea>
       <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
         <button class="btn" onclick="CGL_OS.executeConsoleCommand()">Execute Command</button>
@@ -674,6 +687,7 @@
           <option value="store_questions">store_questions</option>
           <option value="store_attempts">store_attempts</option>
           <option value="store_vault">store_vault</option>
+          <option value="store_formulas">store_formulas</option>
           <option value="store_config">store_config</option>
         </select>
       </div>
@@ -693,9 +707,12 @@
   <!-- ==================== 6. TAB 4: ERROR VAULT & EXTRACTIONS ==================== -->
   <div id="tab-vault" class="view-container">
     <div class="card" style="border-color:#5a1e1e;">
-      <div class="card-title" style="color:#f87171;">Spaced-Repetition Error Vault</div>
+      <div class="card-title" style="color:#f87171;">
+        <span>Authentic Spaced-Repetition Error Vault</span>
+        <span class="badge" style="background:#da3633;" id="vault-count-badge">0 Traps</span>
+      </div>
       <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
-        Questions failed during full mocks. Leitner spaced-repetition flags recurring traps.
+        Zero fake data. Questions enter here only when answered incorrectly in mocks. Retrying and solving moves them to higher Leitner review intervals.
       </p>
       <button class="btn btn-danger" style="width:100%; margin-bottom:12px;" onclick="CGL_OS.launchVaultSprint()">
         Launch Trap-Breaker Sprint (Failed Qs Only)
@@ -716,19 +733,19 @@
   </div>
 
 
-  <!-- ==================== 7. FULL-SCREEN TESTBOOK-STYLE SOLUTION ANALYZER ==================== -->
+  <!-- ==================== 7. TESTBOOK MOCK SOLUTION ANALYZER ==================== -->
   <div class="modal-overlay" id="modal-mock-review">
     <div class="modal-window" style="max-width:700px; max-height:92vh;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
         <div>
-          <h3 style="font-size:16px; font-weight:800;" id="review-modal-title">Testbook Solution Analysis</h3>
+          <h3 style="font-size:16px; font-weight:800;" id="review-modal-title">Mock Forensic Review</h3>
           <span style="font-size:11px; color:var(--text-muted);" id="review-modal-date">Submitted on Date</span>
         </div>
         <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-mock-review').classList.remove('active')">✕ Close</button>
       </div>
 
-      <!-- Scorecard Summary -->
-      <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:14px; text-align:center;">
+      <!-- Core Scorecard -->
+      <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:10px; text-align:center;">
         <div style="background:var(--bg-elevated); padding:8px; border-radius:6px;">
           <div style="font-size:10px; color:var(--text-muted);">SCORE</div>
           <div style="font-size:18px; font-weight:800;" id="rev-score">0</div>
@@ -747,7 +764,23 @@
         </div>
       </div>
 
-      <!-- Filter Controls -->
+      <!-- Deep Cognitive Telemetry Bar -->
+      <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:14px; text-align:center;">
+        <div style="background:#1a1523; border:1px solid #3d2d52; padding:6px; border-radius:6px;">
+          <div style="font-size:9px; color:var(--status-purple);">PENALTY DRAG</div>
+          <div style="font-size:13px; font-weight:700; color:#f87171;" id="rev-penalty">-0.00</div>
+        </div>
+        <div style="background:#1a1523; border:1px solid #3d2d52; padding:6px; border-radius:6px;">
+          <div style="font-size:9px; color:var(--status-purple);">2ND GUESS DELTA</div>
+          <div style="font-size:13px; font-weight:700; color:#38bdf8;" id="rev-switch-delta">0 Net</div>
+        </div>
+        <div style="background:#1a1523; border:1px solid #3d2d52; padding:6px; border-radius:6px;">
+          <div style="font-size:9px; color:var(--status-purple);">Q-IV TIME TRAPS</div>
+          <div style="font-size:13px; font-weight:700; color:var(--status-red);" id="rev-traps">0</div>
+        </div>
+      </div>
+
+      <!-- Question Filter Pills -->
       <div style="display:flex; gap:6px; margin-bottom:12px; overflow-x:auto;">
         <button class="btn btn-secondary" style="font-size:11px; padding:6px 10px;" onclick="CGL_OS.filterReviewQuestions('ALL')">All Qs</button>
         <button class="btn btn-danger" style="font-size:11px; padding:6px 10px;" onclick="CGL_OS.filterReviewQuestions('INCORRECT')">Incorrect Only</button>
@@ -815,7 +848,47 @@
     </div>
   </div>
 
-  <!-- GUI QUESTION EDITOR MODAL -->
+
+  <!-- ==================== 9. FORMULA EDITOR MODAL ==================== -->
+  <div class="modal-overlay" id="modal-formula-editor">
+    <div class="modal-window">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h3 style="font-size:16px; font-weight:800;">Add Formula or Concept Card</h3>
+        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-formula-editor').classList.remove('active')">✕</button>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <div class="form-group">
+          <label>Subject</label>
+          <select id="form-formula-sub" class="form-control">
+            <option value="QA">QA</option>
+            <option value="REAS">REAS</option>
+            <option value="ENG">ENG</option>
+            <option value="GA">GA</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Chapter Tag</label>
+          <input type="text" id="form-formula-chap" class="form-control" placeholder="e.g. QA_PERCENTAGE">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Method / Subtopic Title</label>
+        <input type="text" id="form-formula-method" class="form-control" placeholder="e.g. Successive Percentage Formula">
+      </div>
+
+      <div class="form-group">
+        <label>Formula & Concept Content (LaTeX inside $...$ or $$...$$)</label>
+        <textarea id="form-formula-text" class="form-control" style="height:110px;" placeholder="Net change = $a + b + \frac{ab}{100}$%"></textarea>
+      </div>
+
+      <button class="btn" style="width:100%;" onclick="CGL_OS.saveFormulaCard()">Save to Concept Vault</button>
+    </div>
+  </div>
+
+
+  <!-- ==================== 10. GUI QUESTION EDITOR MODAL ==================== -->
   <div class="modal-overlay" id="modal-question-editor">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -841,8 +914,19 @@
         </div>
       </div>
 
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <div class="form-group">
+          <label>Subtopic</label>
+          <input type="text" id="edit-q-subtopic" class="form-control" placeholder="e.g. Triangles">
+        </div>
+        <div class="form-group">
+          <label>Method Type</label>
+          <input type="text" id="edit-q-method" class="form-control" placeholder="e.g. Angle Bisector Theorem">
+        </div>
+      </div>
+
       <div class="form-group">
-        <label>Question Text (KaTeX formulas inside $...$ or $$...$$)</label>
+        <label>Question Text (KaTeX math in $...$ or $$...$$)</label>
         <textarea id="edit-q-text" class="form-control" style="height:90px;"></textarea>
       </div>
 
@@ -886,7 +970,7 @@
   </div>
 
 
-  <!-- ==================== 9. BOTTOM NAVIGATION ==================== -->
+  <!-- ==================== 11. BOTTOM NAVIGATION ==================== -->
   <nav id="bottom-nav">
     <button class="nav-btn active" onclick="CGL_OS.switchTab('tab-dashboard', this)">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
@@ -909,36 +993,26 @@
   <div id="print-sheet-root" style="display:none;" class="print-page"></div>
 
 
-  <!-- ==================== 10. JAVASCRIPT MASTER RUNTIME ==================== -->
+  <!-- ==================== 12. RUNTIME ENGINE ==================== -->
   <script>
     const CGL_OS = (() => {
       const DB_NAME = "cgl_os_db";
-      const DB_VERSION = 3;
+      const DB_VERSION = 4;
       let db = null;
 
-      // Active Exam Variables
       let activeExam = null;
       let examTimerInterval = null;
       let questionTimerInterval = null;
-
-      // Active Dojo Practice Variables
       let dojoExam = null;
-
-      // Active Review Session Variable
       let activeReviewAttempt = null;
-
-      // Reference Data
-      const FORMULA_SHEET_DATA = `
-• <strong>Pythagorean Triplets:</strong> $(3,4,5), (5,12,13), (7,24,25), (8,15,17), (9,40,41), (11,60,61), (12,35,37)$<br>
-• <strong>Algebra Identities:</strong> If $x + \\frac{1}{x} = k$, then $x^2 + \\frac{1}{x^2} = k^2 - 2$ and $x^3 + \\frac{1}{x^3} = k^3 - 3k$.<br>
-• <strong>Circle Inradius:</strong> For right $\\triangle$, $r = \\frac{a + b - c}{2}$, Circumradius $R = \\frac{c}{2}$.
-      `;
 
       const SEED_QUESTIONS = [
         {
           id: "q_qa_geo_001",
           subject: "QA",
           chapter: "QA_GEOMETRY",
+          subtopic: "Triangles",
+          method: "Angle Bisector Theorem",
           questionText: "In a $\\triangle ABC$, the bisector of $\\angle A$ intersects $BC$ at $D$. If $AB = 12\\text{ cm}$, $AC = 15\\text{ cm}$, and $BC = 18\\text{ cm}$, find the length of $BD$.",
           options: ["$6\\text{ cm}$", "$8\\text{ cm}$", "$10\\text{ cm}$", "$7.5\\text{ cm}$"],
           correctIndex: 1,
@@ -949,6 +1023,8 @@
           id: "q_qa_alg_002",
           subject: "QA",
           chapter: "QA_ALGEBRA",
+          subtopic: "Symmetric Expressions",
+          method: "k^3 - 3k Expansion",
           questionText: "If $x + \\frac{1}{x} = 5$, find the numerical value of $x^3 + \\frac{1}{x^3}$.",
           options: ["$110$", "$125$", "$140$", "$115$"],
           correctIndex: 0,
@@ -956,19 +1032,35 @@
           tags: ["Algebra", "Identities"]
         },
         {
+          id: "q_qa_perc_001",
+          subject: "QA",
+          chapter: "QA_PERCENTAGE",
+          subtopic: "Successive Changes",
+          method: "Formula vs Ratio Approach",
+          questionText: "The length of a rectangle is increased by $20\\%$ and its breadth is decreased by $10\\%$. Find the net percentage change in its area.",
+          options: ["$8\\%\\text{ increase}$", "$10\\%\\text{ increase}$", "$8\\%\\text{ decrease}$", "$12\\%\\text{ increase}$"],
+          correctIndex: 0,
+          explanation: "Net change $= a + b + \\frac{ab}{100} = 20 - 10 - \\frac{200}{100} = +8\\%$.",
+          tags: ["Percentage", "Successive"]
+        },
+        {
           id: "q_reas_cod_001",
           subject: "REAS",
           chapter: "REAS_CODING",
+          subtopic: "Letter to Number",
+          method: "Forward Alphabet Rank",
           questionText: "In a certain code language, **\"STRIKE\"** is coded as **\"19-20-18-9-11-5\"**. How will **\"CHAMP\"** be coded?",
           options: ["3-8-1-13-16", "3-8-2-14-16", "3-9-1-13-15", "4-8-1-12-16"],
           correctIndex: 0,
-          explanation: "Each letter is represented directly by its forward alphabetical position ($C=3, H=8, A=1, M=13, P=16$).",
+          explanation: "Each letter is represented directly by its forward alphabet rank ($C=3, H=8, A=1, M=13, P=16$).",
           tags: ["CodingDecoding", "Alphabet"]
         },
         {
           id: "q_eng_ows_001",
           subject: "ENG",
           chapter: "ENG_OWS",
+          subtopic: "Personal Traits",
+          method: "Financial Vocabulary",
           questionText: "Select the option that can be used as a one-word substitute for: **\"A person who is unable to pay their debts.\"**",
           options: ["Insolvent", "Mercenary", "Stoic", "Ascetic"],
           correctIndex: 0,
@@ -979,11 +1071,37 @@
           id: "q_ga_pol_001",
           subject: "GA",
           chapter: "GA_POLITY",
+          subtopic: "Judiciary",
+          method: "Constitutional Articles",
           questionText: "Which Article of the Constitution of India empowers High Courts to issue writs for the enforcement of Fundamental Rights?",
           options: ["Article 32", "Article 131", "Article 226", "Article 143"],
           correctIndex: 2,
           explanation: "Article 226 empowers High Courts to issue writs. Article 32 gives writ powers strictly to the Supreme Court.",
           tags: ["Polity", "Writs"]
+        }
+      ];
+
+      const SEED_FORMULAS = [
+        {
+          id: "f_qa_perc_01",
+          subject: "QA",
+          chapter: "QA_PERCENTAGE",
+          method: "Successive Percentage Formula",
+          content: "Net percentage change for two successive shifts $a\\%$ and $b\\%$:<br>$$\\text{Net } \\% = a + b + \\frac{ab}{100}$$"
+        },
+        {
+          id: "f_qa_alg_01",
+          subject: "QA",
+          chapter: "QA_ALGEBRA",
+          method: "Symmetric Inverse Identity",
+          content: "If $x + \\frac{1}{x} = k$, then:<br>• $x^2 + \\frac{1}{x^2} = k^2 - 2$<br>• $x^3 + \\frac{1}{x^3} = k^3 - 3k$<br>• $x^4 + \\frac{1}{x^4} = (k^2 - 2)^2 - 2$"
+        },
+        {
+          id: "f_qa_geo_01",
+          subject: "QA",
+          chapter: "QA_GEOMETRY",
+          method: "Internal Angle Bisector",
+          content: "In $\\triangle ABC$ with angle bisector $AD$ on side $BC$:<br>$$\\frac{BD}{DC} = \\frac{AB}{AC}$$"
         }
       ];
 
@@ -1006,9 +1124,9 @@
         }
       };
 
-      /* ----------------------------------------------------------------
-       * 1. KATEX & FORMATTER
-       * ---------------------------------------------------------------- */
+      /* -------------------------------------------------------------
+       * 1. KATEX & MARKDOWN FORMATTER
+       * ------------------------------------------------------------- */
       function formatRichText(str) {
         if (!str) return "";
         let out = String(str);
@@ -1025,9 +1143,9 @@
         return out.replace(/\n/g, "<br>");
       }
 
-      /* ----------------------------------------------------------------
-       * 2. STORAGE ENGINE (INDEXEDDB)
-       * ---------------------------------------------------------------- */
+      /* -------------------------------------------------------------
+       * 2. STORAGE ENGINE (INDEXEDDB VERSION 4)
+       * ------------------------------------------------------------- */
       function initDB() {
         return new Promise((resolve, reject) => {
           const req = indexedDB.open(DB_NAME, DB_VERSION);
@@ -1037,6 +1155,7 @@
               { name: "store_questions", key: "id" },
               { name: "store_attempts", key: "sessionId" },
               { name: "store_vault", key: "questionId" },
+              { name: "store_formulas", key: "id" },
               { name: "store_config", key: "key" }
             ];
             stores.forEach(s => {
@@ -1054,11 +1173,19 @@
       }
 
       async function seedData() {
-        const count = await getStoreCount("store_questions");
-        if (count === 0) {
+        const qCount = await getStoreCount("store_questions");
+        if (qCount === 0) {
           const tx = db.transaction(["store_questions"], "readwrite");
           const store = tx.objectStore("store_questions");
           SEED_QUESTIONS.forEach(q => store.put(q));
+          await new Promise(r => tx.oncomplete = r);
+        }
+
+        const fCount = await getStoreCount("store_formulas");
+        if (fCount === 0) {
+          const tx = db.transaction(["store_formulas"], "readwrite");
+          const store = tx.objectStore("store_formulas");
+          SEED_FORMULAS.forEach(f => store.put(f));
           await new Promise(r => tx.oncomplete = r);
         }
       }
@@ -1099,9 +1226,9 @@
         });
       }
 
-      /* ----------------------------------------------------------------
-       * 3. TIMED EXAM ARENA RUNTIME
-       * ---------------------------------------------------------------- */
+      /* -------------------------------------------------------------
+       * 3. TIMED ARENA CONTROLLER
+       * ------------------------------------------------------------- */
       function openCustomMockModal() {
         document.getElementById("modal-mock-builder").classList.add("active");
       }
@@ -1192,6 +1319,7 @@
         activeExam.questions.forEach(q => {
           activeExam.userResponses[q.id] = {
             selectedOption: null,
+            initialOption: null,
             status: "unanswered",
             switches: 0,
             timeSpentSec: 0,
@@ -1228,7 +1356,7 @@
               activeExam.sectionRemainingSec = nextSec.durationSec;
               const nextIdx = activeExam.questions.findIndex(q => q.sectionIndex === activeExam.activeSectionIndex);
               if (nextIdx !== -1) activeExam.currentQuestionIndex = nextIdx;
-              alert(`Time expired! Switched to: ${nextSec.name}`);
+              alert(`Section time expired! Automatically moved to: ${nextSec.name}`);
               renderActiveExamQuestion();
             } else {
               submitExamSession();
@@ -1276,12 +1404,14 @@
           card.addEventListener("click", () => {
             if (resp.struck.includes(idx)) return;
             if (navigator.vibrate) navigator.vibrate(15);
+
+            if (resp.initialOption === null) resp.initialOption = idx;
             if (resp.selectedOption !== null && resp.selectedOption !== idx) resp.switches++;
+
             resp.selectedOption = idx;
             renderActiveExamQuestion();
           });
 
-          // Long press strike-through
           let timer;
           card.addEventListener("touchstart", () => {
             timer = setTimeout(() => {
@@ -1303,7 +1433,6 @@
         activeExam.currentQTimeSpentSec = 0;
       }
 
-      // Exam Handlers
       document.getElementById("btn-q-save-next").addEventListener("click", () => {
         const q = activeExam.questions[activeExam.currentQuestionIndex];
         const resp = activeExam.userResponses[q.id];
@@ -1387,7 +1516,6 @@
         document.getElementById("exam-count-unans").innerText = unans;
       }
 
-      // Exam Pause
       document.getElementById("btn-arena-pause").addEventListener("click", async () => {
         activeExam.isPaused = true;
         clearInterval(examTimerInterval);
@@ -1409,7 +1537,7 @@
       });
 
       document.getElementById("btn-submit-exam").addEventListener("click", () => {
-        if (confirm("Confirm test submission?")) {
+        if (confirm("Confirm submission of current mock test?")) {
           toggleExamPalette(false);
           submitExamSession();
         }
@@ -1420,6 +1548,8 @@
         clearInterval(questionTimerInterval);
 
         let correct = 0, incorrect = 0, traps = 0, totalMarks = 0;
+        let penaltyDrag = 0;
+        let switchDelta = 0;
 
         for (const q of activeExam.questions) {
           const resp = activeExam.userResponses[q.id];
@@ -1427,10 +1557,19 @@
             if (resp.selectedOption === q.correctIndex) {
               totalMarks += 2.0;
               correct++;
+              if (resp.initialOption !== null && resp.initialOption !== q.correctIndex) {
+                switchDelta++; // Switch from wrong to right
+              }
             } else {
               totalMarks -= 0.5;
+              penaltyDrag += 0.5;
               incorrect++;
 
+              if (resp.initialOption === q.correctIndex) {
+                switchDelta--; // Switch from right to wrong
+              }
+
+              // Ingest strictly failed question into Spaced-Repetition Error Vault
               await putRecord("store_vault", {
                 questionId: q.id,
                 chapter: q.chapter,
@@ -1450,30 +1589,80 @@
         activeExam.correctCount = correct;
         activeExam.incorrectCount = incorrect;
         activeExam.q4Traps = traps;
+        activeExam.penaltyDrag = penaltyDrag;
+        activeExam.switchDelta = switchDelta;
 
         await putRecord("store_attempts", activeExam);
         document.getElementById("exam-arena").style.display = "none";
 
-        // Instantly launch Solution Analyzer
         renderDashboard();
         openMockReview(activeExam.sessionId);
       }
 
-      /* ----------------------------------------------------------------
-       * 4. UNTIMED ACTIVE RECALL DOJO ARENA
-       * ---------------------------------------------------------------- */
-      async function startDojoArena(subject = "ALL") {
-        const allQuestions = await getAllRecords("store_questions");
-        const pool = subject === "ALL" ? allQuestions : allQuestions.filter(q => q.subject === subject);
+      /* -------------------------------------------------------------
+       * 4. HIERARCHICAL DOJO WITH METHOD TAXONOMY
+       * ------------------------------------------------------------- */
+      async function updateDojoChapters() {
+        const sub = document.getElementById("dojo-nav-subject").value;
+        const chapSelect = document.getElementById("dojo-nav-chapter");
+        chapSelect.innerHTML = "";
+
+        const allQs = await getAllRecords("store_questions");
+        const availableChaps = [...new Set(allQs.filter(q => q.subject === sub).map(q => q.chapter))];
+
+        const chaps = availableChaps.length > 0 ? availableChaps : (TAXONOMY[sub] ? TAXONOMY[sub].chapters : []);
+        chaps.forEach(c => {
+          const opt = document.createElement("option");
+          opt.value = c;
+          opt.innerText = c;
+          chapSelect.appendChild(opt);
+        });
+
+        updateDojoMethods();
+      }
+
+      async function updateDojoMethods() {
+        const chap = document.getElementById("dojo-nav-chapter").value;
+        const methodSelect = document.getElementById("dojo-nav-method");
+        methodSelect.innerHTML = `<option value="ALL">All Methods & Types in Chapter</option>`;
+
+        const allQs = await getAllRecords("store_questions");
+        const methods = [...new Set(allQs.filter(q => q.chapter === chap && q.method).map(q => q.method))];
+
+        methods.forEach(m => {
+          const opt = document.createElement("option");
+          opt.value = m;
+          opt.innerText = m;
+          methodSelect.appendChild(opt);
+        });
+      }
+
+      async function launchFilteredDojo() {
+        const sub = document.getElementById("dojo-nav-subject").value;
+        const chap = document.getElementById("dojo-nav-chapter").value;
+        const method = document.getElementById("dojo-nav-method").value;
+
+        const allQs = await getAllRecords("store_questions");
+        let pool = allQs.filter(q => q.subject === sub && q.chapter === chap);
+        if (method !== "ALL") {
+          pool = pool.filter(q => q.method === method);
+        }
 
         if (pool.length === 0) {
-          alert(`No questions found in question bank for ${subject}.`);
+          alert("No questions found for this specific chapter/method in database.");
           return;
         }
 
+        // Pull theory formula card if exists
+        const allFormulas = await getAllRecords("store_formulas");
+        const matchedFormula = allFormulas.find(f => f.chapter === chap || (method !== "ALL" && f.method === method));
+
         dojoExam = {
-          subject: subject,
-          title: subject === "ALL" ? "Complete Question Bank Dojo" : `${subject} Active Recall Dojo`,
+          subject: sub,
+          chapter: chap,
+          method: method,
+          title: method !== "ALL" ? `${chap} • ${method}` : `${chap} Dojo`,
+          formulaBrief: matchedFormula ? matchedFormula.content : null,
           questions: pool,
           currentIndex: 0,
           userResponses: {}
@@ -1501,9 +1690,18 @@
 
         document.getElementById("dojo-arena-title").innerText = dojoExam.title;
         document.getElementById("dojo-arena-chap-badge").innerText = q.chapter;
+        document.getElementById("dojo-arena-method-badge").innerText = q.method || q.subtopic || "General";
         document.getElementById("dojo-arena-qnum").innerText = dojoExam.currentIndex + 1;
         document.getElementById("dojo-arena-total-tag").innerText = `Question ${dojoExam.currentIndex + 1} of ${dojoExam.questions.length}`;
         document.getElementById("dojo-arena-qtext").innerHTML = formatRichText(q.questionText);
+
+        const theoryBanner = document.getElementById("dojo-theory-banner");
+        if (dojoExam.formulaBrief) {
+          theoryBanner.style.display = "block";
+          theoryBanner.innerHTML = `<strong>Method Brief:</strong> ${formatRichText(dojoExam.formulaBrief)}`;
+        } else {
+          theoryBanner.style.display = "none";
+        }
 
         const fb = document.getElementById("dojo-arena-feedback");
         fb.style.display = "none";
@@ -1538,11 +1736,11 @@
 
             fb.style.display = "block";
             if (idx === q.correctIndex) {
-              fb.style.background = "rgba(35, 134, 54, 0.2)";
+              fb.style.background = "rgba(35, 134, 54, 0.22)";
               fb.style.color = "var(--status-green)";
               fb.innerText = "✓ Correct Answer!";
             } else {
-              fb.style.background = "rgba(218, 54, 51, 0.2)";
+              fb.style.background = "rgba(218, 54, 51, 0.22)";
               fb.style.color = "var(--status-red)";
               fb.innerText = `✗ Incorrect. Correct is Option ${q.correctIndex + 1}.`;
             }
@@ -1613,9 +1811,9 @@
         });
       }
 
-      /* ----------------------------------------------------------------
-       * 5. TESTBOOK-STYLE MOCK SOLUTION ANALYZER
-       * ---------------------------------------------------------------- */
+      /* -------------------------------------------------------------
+       * 5. TESTBOOK-GRADE MOCK FORENSIC ANALYZER
+       * ------------------------------------------------------------- */
       async function openMockReview(sessionId) {
         const attempts = await getAllRecords("store_attempts");
         const att = attempts.find(a => a.sessionId === sessionId);
@@ -1630,6 +1828,10 @@
         document.getElementById("rev-acc").innerText = totalAtt > 0 ? `${Math.round((att.correctCount / totalAtt) * 100)}%` : "0%";
         document.getElementById("rev-cor").innerText = att.correctCount || 0;
         document.getElementById("rev-inc").innerText = att.incorrectCount || 0;
+
+        document.getElementById("rev-penalty").innerText = `-${(att.penaltyDrag || 0).toFixed(2)}`;
+        document.getElementById("rev-switch-delta").innerText = `${att.switchDelta > 0 ? '+' : ''}${att.switchDelta || 0} Net`;
+        document.getElementById("rev-traps").innerText = att.q4Traps || 0;
 
         filterReviewQuestions("ALL");
         document.getElementById("modal-mock-review").classList.add("active");
@@ -1674,17 +1876,17 @@
                 </div>
               `).join('')}
             </div>
-            <div style="font-size:12px; color:var(--text-muted); background:#11151c; padding:8px; border-radius:6px; margin-top:8px;">
-              <b>Method:</b><br>${formatRichText(q.explanation || 'No explanation.')}
+            <div style="font-size:12px; color:var(--text-muted); background:#0d1117; padding:8px; border-radius:6px; margin-top:8px;">
+              <b>Method & Explanation:</b><br>${formatRichText(q.explanation || 'No explanation recorded.')}
             </div>
           `;
           list.appendChild(card);
         });
       }
 
-      /* ----------------------------------------------------------------
-       * 6. TAB 1: DASHBOARD & DYNAMIC HISTORY RENDERING
-       * ---------------------------------------------------------------- */
+      /* -------------------------------------------------------------
+       * 6. TAB 1: DASHBOARD
+       * ------------------------------------------------------------- */
       async function renderDashboard() {
         const attempts = await getAllRecords("store_attempts");
         const completed = attempts.filter(a => a.completed);
@@ -1726,7 +1928,6 @@
 
         container.innerHTML = "";
         completed.slice().reverse().forEach(att => {
-          const totalQ = att.questions ? att.questions.length : 0;
           const card = document.createElement("div");
           card.className = "history-card";
           card.innerHTML = `
@@ -1865,15 +2066,76 @@
         });
       }
 
-      /* ----------------------------------------------------------------
-       * 7. QUESTION EDITOR MODAL
-       * ---------------------------------------------------------------- */
+      /* -------------------------------------------------------------
+       * 7. FORMULA HUB & MODAL
+       * ------------------------------------------------------------- */
+      async function renderFormulaSheet() {
+        const formulas = await getAllRecords("store_formulas");
+        const container = document.getElementById("formula-sheet-content");
+        container.innerHTML = "";
+
+        formulas.forEach(f => {
+          const div = document.createElement("div");
+          div.style.padding = "8px";
+          div.style.borderBottom = "1px solid var(--border-color)";
+          div.innerHTML = `
+            <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--accent-cyan); margin-bottom:4px;">
+              <b>${f.chapter}</b>
+              <span>${f.method || ''}</span>
+            </div>
+            <div>${formatRichText(f.content)}</div>
+          `;
+          container.appendChild(div);
+        });
+      }
+
+      function toggleFormulaSheet() {
+        const el = document.getElementById("formula-sheet-content");
+        const isOpen = el.style.display === "block";
+        el.style.display = isOpen ? "none" : "block";
+        if (!isOpen) renderFormulaSheet();
+      }
+
+      function openFormulaEditorModal() {
+        document.getElementById("modal-formula-editor").classList.add("active");
+      }
+
+      async function saveFormulaCard() {
+        const sub = document.getElementById("form-formula-sub").value;
+        const chap = document.getElementById("form-formula-chap").value.trim();
+        const method = document.getElementById("form-formula-method").value.trim();
+        const content = document.getElementById("form-formula-text").value.trim();
+
+        if (!chap || !content) {
+          alert("Chapter tag and Formula content are required.");
+          return;
+        }
+
+        const obj = {
+          id: "f_" + Date.now(),
+          subject: sub,
+          chapter: chap,
+          method: method,
+          content: content
+        };
+
+        await putRecord("store_formulas", obj);
+        document.getElementById("modal-formula-editor").classList.remove("active");
+        renderFormulaSheet();
+        alert("Formula saved into Concept Vault!");
+      }
+
+      /* -------------------------------------------------------------
+       * 8. QUESTION EDITOR MODAL
+       * ------------------------------------------------------------- */
       function openEditQuestionModal(qData) {
         const isNew = !qData;
         document.getElementById("editor-title").innerText = isNew ? "Add New Question" : "Edit Question";
         document.getElementById("edit-q-id").value = isNew ? "q_cgl_" + Date.now() : qData.id;
         document.getElementById("edit-q-subject").value = isNew ? "QA" : qData.subject;
         document.getElementById("edit-q-chapter").value = isNew ? "QA_GEOMETRY" : qData.chapter;
+        document.getElementById("edit-q-subtopic").value = isNew ? "" : (qData.subtopic || "");
+        document.getElementById("edit-q-method").value = isNew ? "" : (qData.method || "");
         document.getElementById("edit-q-text").value = isNew ? "" : qData.questionText;
 
         document.getElementById("edit-opt-0").value = isNew ? "" : (qData.options[0] || "");
@@ -1899,6 +2161,8 @@
           id: id,
           subject: document.getElementById("edit-q-subject").value,
           chapter: document.getElementById("edit-q-chapter").value.trim(),
+          subtopic: document.getElementById("edit-q-subtopic").value.trim(),
+          method: document.getElementById("edit-q-method").value.trim(),
           questionText: document.getElementById("edit-q-text").value.trim(),
           options: [
             document.getElementById("edit-opt-0").value.trim(),
@@ -1934,9 +2198,9 @@
         }
       }
 
-      /* ----------------------------------------------------------------
-       * 8. TAB 3: COMMAND BUS & DIRECT STUDIO
-       * ---------------------------------------------------------------- */
+      /* -------------------------------------------------------------
+       * 9. TAB 3: COMMAND TERMINAL & DB STUDIO
+       * ------------------------------------------------------------- */
       async function executeConsoleCommand() {
         const raw = document.getElementById("console-payload").value.trim();
         try {
@@ -1964,14 +2228,16 @@
           payload: {
             questions: [
               {
-                id: "q_sample_" + Date.now(),
+                id: "q_qa_prop_" + Date.now(),
                 subject: "QA",
                 chapter: "QA_PROFIT_LOSS",
-                questionText: "An article is sold at a profit of $25\\%$. If the cost price is ₹$800$, find the selling price.",
-                options: ["₹$950$", "₹$1,000$", "₹$1,050$", "₹$1,200$"],
+                subtopic: "Faulty Weight Balance",
+                method: "Cost Price vs Stated Weight Ratio",
+                questionText: "A dishonest dealer professes to sell his goods at cost price, but uses a false weight of $900\\text{ g}$ for a kilogram. Find his gain percentage.",
+                options: ["$10\\%$", "$11\\frac{1}{9}\\%$", "$9\\frac{1}{11}\\%$", "$12.5\\%$"],
                 correctIndex: 1,
-                explanation: "Selling Price $= 800 \\times 1.25 = ₹1,000$.",
-                tags: ["Arithmetic", "PYQ"]
+                explanation: "Profit $\\% = \\frac{\\text{Error}}{\\text{True Value} - \\text{Error}} \\times 100 = \\frac{100}{900} \\times 100 = 11\\frac{1}{9}\\%$.",
+                tags: ["ProfitLoss", "DishonestDealer"]
               }
             ]
           }
@@ -2024,11 +2290,12 @@
       }
 
       async function factoryResetAll() {
-        if (confirm("WARNING: Complete factory reset will erase all questions and history!")) {
-          const tx = db.transaction(["store_questions", "store_attempts", "store_vault", "store_config"], "readwrite");
+        if (confirm("WARNING: Complete factory reset will wipe all questions, error vaults, and attempts!")) {
+          const tx = db.transaction(["store_questions", "store_attempts", "store_vault", "store_formulas", "store_config"], "readwrite");
           tx.objectStore("store_questions").clear();
           tx.objectStore("store_attempts").clear();
           tx.objectStore("store_vault").clear();
+          tx.objectStore("store_formulas").clear();
           tx.objectStore("store_config").clear();
           await new Promise(r => tx.oncomplete = r);
           await seedData();
@@ -2038,17 +2305,18 @@
         }
       }
 
-      /* ----------------------------------------------------------------
-       * 9. TAB 4: ERROR VAULT & TRAP-BREAKER SPRINT
-       * ---------------------------------------------------------------- */
+      /* -------------------------------------------------------------
+       * 10. AUTHENTIC SPHERICAL SPACED-REPETITION ERROR VAULT
+       * ------------------------------------------------------------- */
       async function renderVault() {
         const vault = await getAllRecords("store_vault");
         const questions = await getAllRecords("store_questions");
         const container = document.getElementById("vault-list-container");
+        document.getElementById("vault-count-badge").innerText = `${vault.length} Traps`;
         container.innerHTML = "";
 
         if (vault.length === 0) {
-          container.innerHTML = `<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">Error Vault is clear. No failed questions logged.</div>`;
+          container.innerHTML = `<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">Error Vault is clear! Failed questions will log here after tests.</div>`;
           return;
         }
 
@@ -2063,30 +2331,52 @@
           div.innerHTML = `
             <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
               <span class="badge" style="background:#da3633;">${v.errorTag || 'ERROR'}</span>
-              <span style="font-size:11px; color:var(--text-muted);">${q.chapter || v.chapter || 'UNTAGGED'}</span>
+              <span class="badge" style="background:#21262d; color:#a371f7;">Leitner Box ${v.leitnerBox || 1}</span>
             </div>
             <div style="font-size:13px; line-height:1.5;">${formatRichText(q.questionText)}</div>
-            <div style="font-size:11px; color:var(--accent-cyan); margin-top:6px;">Correct: Option ${q.correctIndex + 1}</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+              <span style="font-size:11px; color:var(--accent-cyan);">Correct: Option ${q.correctIndex + 1}</span>
+              <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.resolveVaultTrap('${v.questionId}')">Mark Resolved (Level Up)</button>
+            </div>
           `;
           container.appendChild(div);
         });
       }
 
-      // TRAP BREAKER SPRINT: Launches directly with Vault questions
+      async function resolveVaultTrap(qId) {
+        const tx = db.transaction(["store_vault"], "readwrite");
+        const store = tx.objectStore("store_vault");
+        const req = store.get(qId);
+        req.onsuccess = async () => {
+          const rec = req.result;
+          if (rec) {
+            rec.leitnerBox = (rec.leitnerBox || 1) + 1;
+            if (rec.leitnerBox > 3) {
+              await deleteRecordFromStore("store_vault", qId);
+              alert("Mastered! Question graduated out of Error Vault.");
+            } else {
+              await putRecord("store_vault", rec);
+              alert(`Promoted to Leitner Box ${rec.leitnerBox}! Review scheduled.`);
+            }
+            renderVault();
+          }
+        };
+      }
+
       async function launchVaultSprint() {
         const vault = await getAllRecords("store_vault");
         const questions = await getAllRecords("store_questions");
         const failedQs = questions.filter(q => vault.some(v => v.questionId === q.id));
 
         if (failedQs.length === 0) {
-          alert("No questions currently logged in your Error Vault!");
+          alert("Error Vault is empty! No failed questions logged.");
           return;
         }
 
         activeExam = {
           sessionId: "vault_sprint_" + Date.now(),
           timestamp: Date.now(),
-          title: "Error Vault Trap-Breaker Sprint",
+          title: "Trap-Breaker Sprint",
           isSectionLocked: false,
           sections: [{
             id: "SEC_VAULT",
@@ -2106,6 +2396,7 @@
         activeExam.questions.forEach(q => {
           activeExam.userResponses[q.id] = {
             selectedOption: null,
+            initialOption: null,
             status: "unanswered",
             switches: 0,
             timeSpentSec: 0,
@@ -2121,7 +2412,7 @@
       async function spoolAndroidPrint() {
         const questions = await getAllRecords("store_questions");
         const root = document.getElementById("print-sheet-root");
-        root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Question Bank Revision Sheet</h2>`;
+        root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Revision Spool - ${new Date().toLocaleDateString()}</h2>`;
 
         questions.forEach((q, idx) => {
           const item = document.createElement("div");
@@ -2141,6 +2432,7 @@
           questions: await getAllRecords("store_questions"),
           attempts: await getAllRecords("store_attempts"),
           vault: await getAllRecords("store_vault"),
+          formulas: await getAllRecords("store_formulas"),
           config: await getAllRecords("store_config"),
           exportedAt: new Date().toISOString()
         };
@@ -2160,7 +2452,7 @@
           const q = questions.find(item => item.id === v.questionId);
           if (q) {
             md += `### ${q.chapter} - ${q.id}\n`;
-            md += `**Tag:** #${v.errorTag || 'ERROR'}\n\n`;
+            md += `**Tag:** #${v.errorTag || 'ERROR'} | **Leitner Box:** ${v.leitnerBox || 1}\n\n`;
             md += `> ${q.questionText}\n\n`;
             md += `**Solution:**\n${q.explanation}\n\n---\n\n`;
           }
@@ -2173,9 +2465,9 @@
         a.click();
       }
 
-      /* ----------------------------------------------------------------
-       * 10. SYSTEM NAVIGATION & INITIALIZATION
-       * ---------------------------------------------------------------- */
+      /* -------------------------------------------------------------
+       * 11. NAVIGATION & INITIALIZATION
+       * ------------------------------------------------------------- */
       function switchTab(tId, btn) {
         document.querySelectorAll(".view-container").forEach(el => el.classList.remove("active"));
         document.querySelectorAll(".nav-btn").forEach(el => el.classList.remove("active"));
@@ -2184,21 +2476,17 @@
         if (btn) btn.classList.add("active");
 
         if (tId === "tab-dashboard") renderDashboard();
+        if (tId === "tab-dojo") { updateDojoChapters(); renderFormulaSheet(); }
         if (tId === "tab-console") refreshDbInspector();
         if (tId === "tab-vault") renderVault();
-      }
-
-      function toggleFormulaSheet() {
-        const el = document.getElementById("formula-sheet-content");
-        el.style.display = el.style.display === "none" ? "block" : "none";
       }
 
       window.addEventListener("DOMContentLoaded", async () => {
         await initDB();
         renderDashboard();
 
-        document.getElementById("formula-sheet-content").innerHTML = formatRichText(FORMULA_SHEET_DATA);
         document.getElementById("btn-dash-launch-mock").addEventListener("click", openCustomMockModal);
+        updateDojoChapters();
       });
 
       return {
@@ -2206,19 +2494,23 @@
         openCustomMockModal,
         applyBlueprintPreset,
         launchConfiguredMock,
-        startDojoArena,
+        updateDojoChapters,
+        updateDojoMethods,
+        launchFilteredDojo,
         exitDojoArena,
         navDojoArena,
         toggleDojoMethod,
         autoSaveDojoAnnotation,
         toggleDojoPalette,
+        openFormulaEditorModal,
+        saveFormulaCard,
+        toggleFormulaSheet,
         openEditQuestionModal,
         openEditCurrentDojoQuestion,
         saveQuestionEditor,
         deleteCurrentEditingQuestion,
         openMockReview,
         filterReviewQuestions,
-        toggleFormulaSheet,
         executeConsoleCommand,
         loadSamplePayload,
         refreshDbInspector,
@@ -2226,6 +2518,8 @@
         wipeTestAttempts,
         factoryResetAll,
         renderDashboard,
+        renderVault,
+        resolveVaultTrap,
         launchVaultSprint,
         spoolAndroidPrint,
         exportFullBackup,
