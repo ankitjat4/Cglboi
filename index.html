@@ -6,7 +6,7 @@
   <title>SSC CGL Intelligence OS</title>
   
   <!-- PWA Metadata & Embedded Manifest for Android WebAPK Generation -->
-  <meta name="theme-color" content="#1e3a5f">
+  <meta name="theme-color" content="#0f172a">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -91,6 +91,9 @@
 </head>
 <body class="bg-slate-900 text-slate-100 flex flex-col min-h-screen overflow-x-hidden antialiased">
 
+  <!-- Dynamic Widget Insertion Anchor (Top Global) -->
+  <div id="dynamic-top-banner-area"></div>
+
   <!-- Top Global Header -->
   <header class="bg-[#111e33] border-b border-slate-700/80 px-3 sm:px-6 py-2.5 flex-none shadow-md z-30">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
@@ -101,26 +104,23 @@
         <div>
           <div class="flex items-center space-x-2">
             <h1 class="text-sm sm:text-base font-bold tracking-wide text-white">ANKIT'S CGL WAR ROOM</h1>
-            <span class="hidden sm:inline-block px-2 py-0.5 text-[10px] uppercase font-bold rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Micro-Kernel Active</span>
+            <span class="hidden sm:inline-block px-2 py-0.5 text-[10px] uppercase font-bold rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Micro-Kernel v2.0 Active</span>
           </div>
-          <p class="text-[11px] text-slate-400">Target: SSC CGL 2026 • Local-First Immutable Storage</p>
+          <p class="text-[11px] text-slate-400">Target: SSC CGL 2026 • Local-First Programmable Engine</p>
         </div>
       </div>
 
       <!-- Action items: Install WebAPK, Copy Handshake, Storage Lock Indicator -->
       <div class="flex items-center space-x-2 sm:space-x-3">
-        <!-- Install WebAPK Button (Appears when Chrome triggers prompt) -->
         <button id="btn-install-pwa" onclick="triggerPwaInstall()" class="hidden px-2.5 py-1.5 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold rounded text-xs shadow-md active:scale-95 flex items-center gap-1">
           <span>📲</span> <span class="hidden sm:inline">Install App</span>
         </button>
 
-        <!-- Quick AI Handshake Copy -->
         <button onclick="copySystemHandshake()" class="px-2.5 py-1.5 bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/40 rounded text-xs font-semibold flex items-center gap-1.5 active:scale-95 transition" title="Copy system schema definition for new Gemini chat">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
           <span class="hidden md:inline">Handshake</span>
         </button>
 
-        <!-- Persistent Storage Indicator -->
         <div id="storage-status-badge" class="px-2.5 py-1 rounded bg-slate-800 border border-slate-700 text-[11px] text-slate-300 flex items-center gap-1.5">
           <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
           <span class="hidden sm:inline" id="storage-status-text">Flash Locked</span>
@@ -131,7 +131,7 @@
 
   <!-- Navigation View Tabs -->
   <nav class="bg-slate-800/90 border-b border-slate-700/80 px-3 sm:px-6 flex-none z-20">
-    <div class="max-w-7xl mx-auto flex items-center justify-between overflow-x-auto" id="dynamic-nav-tabs">
+    <div class="max-w-7xl mx-auto flex items-center justify-between overflow-x-auto" id="dynamic-nav-container">
       <div class="flex space-x-1 sm:space-x-2 py-1.5" id="nav-tabs-list">
         <button onclick="switchView('view-arena')" id="tab-btn-arena" class="px-3.5 py-1.5 rounded-md text-xs sm:text-sm font-semibold transition border border-transparent text-white bg-blue-600 shadow">
           ⚔️ Test Arena
@@ -146,6 +146,9 @@
           🗄️ Question Bank & Vault
         </button>
       </div>
+
+      <!-- Injected Custom Nav Tools Anchor -->
+      <div id="dynamic-nav-tools" class="flex items-center space-x-2"></div>
     </div>
   </nav>
 
@@ -157,18 +160,25 @@
     <!-- ========================================== -->
     <div id="view-arena" class="flex-1 flex flex-col space-y-3">
       
-      <!-- Sub-Bar: Active Exam Info & Clock -->
+      <!-- Sub-Bar: Active Exam Info, Timer & Pause Controller -->
       <div class="bg-slate-800 border border-slate-700 rounded-lg p-2.5 sm:px-4 flex items-center justify-between shadow-sm">
         <div class="flex items-center space-x-3">
           <span class="text-xs sm:text-sm font-bold text-amber-400" id="arena-exam-name">SSC CGL Tier 1 Practice Drill</span>
           <span class="hidden sm:inline text-xs text-slate-400">| +2.00 / -0.50 Mark Scheme</span>
         </div>
 
-        <div class="flex items-center space-x-3">
+        <div class="flex items-center space-x-2 sm:space-x-3">
+          <!-- Active Timer Display -->
           <div class="bg-slate-950 border border-amber-500/50 px-3 py-1 rounded text-right flex items-center space-x-2">
             <span class="text-[10px] uppercase text-slate-400 hidden sm:inline">Time Left:</span>
             <span id="arena-timer" class="font-mono-num font-bold text-base sm:text-lg text-amber-400">60:00</span>
           </div>
+
+          <!-- Pause / Resume Toggle Button -->
+          <button onclick="toggleExamPause()" id="btn-timer-pause" class="px-2.5 py-1.5 bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/40 rounded text-xs font-bold transition flex items-center gap-1 active:scale-95">
+            <span id="pause-icon">⏸️</span>
+            <span class="hidden sm:inline" id="pause-text">Pause</span>
+          </button>
 
           <!-- Mobile Palette Drawer Trigger -->
           <button onclick="toggleMobilePalette()" class="lg:hidden px-2.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-semibold flex items-center gap-1 shadow">
@@ -179,11 +189,15 @@
 
       <!-- Section Navigation Buttons -->
       <div class="flex items-center space-x-1.5 overflow-x-auto pb-1" id="arena-section-tabs">
-        <!-- Rendered dynamically -->
+        <button onclick="filterArenaBySubject('ALL')" class="px-3 py-1 rounded text-xs font-bold bg-blue-600 text-white">ALL</button>
+        <button onclick="filterArenaBySubject('QA')" class="px-3 py-1 rounded text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700">Quantitative</button>
+        <button onclick="filterArenaBySubject('REAS')" class="px-3 py-1 rounded text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700">Reasoning</button>
+        <button onclick="filterArenaBySubject('ENG')" class="px-3 py-1 rounded text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700">English</button>
+        <button onclick="filterArenaBySubject('GA')" class="px-3 py-1 rounded text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700">General Awareness</button>
       </div>
 
       <!-- Arena Layout: Left Question Card, Right Question Palette -->
-      <div class="flex-1 flex flex-col lg:flex-row gap-3 min-h-[480px]">
+      <div class="flex-1 flex flex-col lg:flex-row gap-3 min-h-[480px] relative">
         
         <!-- Left: Question Display Canvas -->
         <section class="flex-1 bg-slate-800 border border-slate-700 rounded-lg flex flex-col overflow-hidden shadow-md">
@@ -234,7 +248,6 @@
 
         <!-- Right: Question Matrix & Stats (Desktop Sidebar) -->
         <aside class="hidden lg:flex flex-col w-80 bg-slate-800 border border-slate-700 rounded-lg overflow-hidden shadow-md flex-none">
-          <!-- Palette Status Counters -->
           <div class="p-3 border-b border-slate-700 bg-slate-850/60 text-xs">
             <div class="grid grid-cols-2 gap-2 text-[11px]">
               <div class="flex items-center space-x-2">
@@ -256,26 +269,41 @@
             </div>
           </div>
 
-          <!-- Palette Filter Tabs -->
           <div class="px-3 py-2 bg-slate-900 border-b border-slate-700 text-[11px] font-bold text-slate-300 flex items-center justify-between">
             <span id="arena-palette-title">QUESTION PALETTE</span>
             <span class="text-amber-400 font-mono-num" id="arena-palette-ratio">0/25</span>
           </div>
 
-          <!-- Buttons Matrix -->
           <div class="flex-1 p-3 overflow-y-auto">
             <div class="grid grid-cols-5 gap-2" id="arena-palette-grid">
               <!-- Rendered dynamically -->
             </div>
           </div>
 
-          <!-- Submit Button -->
           <div class="p-3 bg-slate-850 border-t border-slate-700">
             <button onclick="promptSubmitExam()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider rounded shadow transition active:scale-98">
               Submit Test & Run Telemetry
             </button>
           </div>
         </aside>
+
+        <!-- Exam Paused Full Screen Obscurity Shield -->
+        <div id="arena-pause-shield" class="absolute inset-0 bg-slate-950/95 backdrop-blur-md rounded-lg z-40 hidden flex flex-col items-center justify-center space-y-4 p-6 text-center">
+          <div class="w-16 h-16 rounded-full bg-amber-500/20 border border-amber-400/50 flex items-center justify-center text-3xl text-amber-400">
+            ⏸️
+          </div>
+          <h2 class="text-xl font-bold text-white tracking-wide">EXAMINATION PAUSED</h2>
+          <p class="text-xs text-slate-400 max-w-sm">
+            Timer halted. Question view obscured to prevent unfair deliberation advantage. Tap below when ready to continue.
+          </p>
+          <div class="text-xs font-mono text-amber-400 bg-slate-900 px-4 py-1.5 rounded border border-slate-800">
+            Remaining Time Frozen At: <span id="pause-frozen-clock" class="font-bold">60:00</span>
+          </div>
+          <button onclick="toggleExamPause()" class="px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs uppercase tracking-wider rounded shadow-lg transition active:scale-95">
+            ▶️ Resume Examination
+          </button>
+        </div>
+
       </div>
     </div>
 
@@ -286,8 +314,6 @@
       
       <!-- Top Action Tiles -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-        
-        <!-- Tile 1: AI Handshake Generator -->
         <div class="bg-slate-800 border border-slate-700 rounded-lg p-4 space-y-2">
           <div class="flex items-center justify-between">
             <h3 class="font-bold text-sm text-amber-400 flex items-center gap-1.5">
@@ -296,39 +322,37 @@
             <span class="text-[10px] text-slate-400 font-mono">NEW CHAT SYNC</span>
           </div>
           <p class="text-xs text-slate-300 leading-relaxed">
-            Click below to copy your database schema, taxonomy keys, and current session context into your clipboard. Drop it into a new Gemini chat to immediately calibrate it.
+            Copies your complete database schema, taxonomy keys, and current weak chapters to clipboard. Drop it into a new Gemini chat to immediately calibrate it.
           </p>
           <button onclick="copySystemHandshake()" class="w-full py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded transition active:scale-95 shadow">
             Copy System Handshake
           </button>
         </div>
 
-        <!-- Tile 2: Telemetry Tap Exporter -->
         <div class="bg-slate-800 border border-slate-700 rounded-lg p-4 space-y-2">
           <div class="flex items-center justify-between">
             <h3 class="font-bold text-sm text-blue-400 flex items-center gap-1.5">
-              <span>🔬</span> Arbitrary Telemetry Tap
+              <span>🔬</span> Lossless Telemetry Tap
             </h3>
             <span class="text-[10px] text-slate-400 font-mono">POST-MORTEM</span>
           </div>
           <p class="text-xs text-slate-300 leading-relaxed">
-            Extracts lossless interaction logs (hesitations, swaps, time-traps) from your latest test. Paste it to Gemini for a clinical audit and custom recovery drill.
+            Extracts millisecond hesitations, option swaps, and time-traps from your latest test for clinical diagnostic analysis in chat.
           </p>
           <button onclick="copyTelemetrySlice()" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded transition active:scale-95 shadow">
             Copy Telemetry Slice
           </button>
         </div>
 
-        <!-- Tile 3: Master Snapshot Backup -->
         <div class="bg-slate-800 border border-slate-700 rounded-lg p-4 space-y-2">
           <div class="flex items-center justify-between">
             <h3 class="font-bold text-sm text-emerald-400 flex items-center gap-1.5">
-              <span>💾</span> Full Snapshot Backup
+              <span>💾</span> Master Snapshot Backup
             </h3>
             <span class="text-[10px] text-slate-400 font-mono">OFFLINE LOCK</span>
           </div>
           <p class="text-xs text-slate-300 leading-relaxed">
-            Exports your complete IndexedDB (all questions, test records, annotations, and plugins) into a single downloadable JSON backup file.
+            Exports your complete IndexedDB (all questions, test records, plugins, and custom routines) into a single downloadable JSON backup file.
           </p>
           <div class="flex gap-2">
             <button onclick="downloadMasterSnapshot()" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded transition">
@@ -346,17 +370,15 @@
         <div class="flex items-center justify-between">
           <div>
             <h2 class="text-sm font-bold text-white flex items-center gap-2">
-              <span>⚡</span> Universal Command & Ingestion Bus
+              <span>⚡</span> Universal Micro-Kernel Command Bus
             </h2>
-            <p class="text-xs text-slate-400">Paste any JSON Action Block generated in our chat (`BATCH_INGEST_QUESTIONS`, `REGISTER_VIEW`, `HOTPATCH_CONFIG`, etc.)</p>
+            <p class="text-xs text-slate-400">Supports `BATCH_INGEST_QUESTIONS`, `INSTALL_RUNTIME_PLUGIN`, `REGISTER_DYNAMIC_WIDGET`, `TRIGGER_CUSTOM_DRILL`, `HOTPATCH_CONFIG`</p>
           </div>
           <button onclick="clearConsoleInput()" class="text-xs text-slate-400 hover:text-slate-200">Clear</button>
         </div>
 
-        <!-- Console Textarea -->
-        <textarea id="console-input-area" placeholder='Paste executable action JSON here...&#10;{&#10;  "action": "BATCH_INGEST_QUESTIONS",&#10;  "payload": { ... }&#10;}' class="flex-1 min-h-[160px] bg-slate-950 border border-slate-700 rounded-lg p-3 font-mono text-xs text-emerald-400 focus:outline-none focus:border-blue-500"></textarea>
+        <textarea id="console-input-area" placeholder='Paste executable action JSON here...&#10;{&#10;  "action": "INSTALL_RUNTIME_PLUGIN",&#10;  "payload": { ... }&#10;}' class="flex-1 min-h-[160px] bg-slate-950 border border-slate-700 rounded-lg p-3 font-mono text-xs text-emerald-400 focus:outline-none focus:border-blue-500"></textarea>
 
-        <!-- Command Execution Bar -->
         <div class="flex items-center justify-between">
           <div id="console-feedback-msg" class="text-xs font-mono text-slate-400">Status: Engine Ready.</div>
           <button onclick="executeConsoleCommand()" class="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs rounded shadow-lg transition active:scale-95">
@@ -370,8 +392,6 @@
     <!-- VIEW 3: NEGLECT & LONGITUDINAL DIAGNOSTICS -->
     <!-- ========================================== -->
     <div id="view-analytics" class="hidden flex-1 flex flex-col space-y-4 overflow-y-auto">
-      
-      <!-- Top Longitudinal Stat Cards -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div class="bg-slate-800 border border-slate-700 rounded-lg p-3 text-center">
           <div class="text-[11px] font-semibold text-slate-400 uppercase">Total Tests Taken</div>
@@ -391,7 +411,6 @@
         </div>
       </div>
 
-      <!-- Chapter Neglect Matrix Table -->
       <div class="bg-slate-800 border border-slate-700 rounded-lg p-4 space-y-3">
         <div class="flex items-center justify-between">
           <div>
@@ -424,7 +443,7 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- VIEW 4: QUESTION BANK & ERROR VAULT        -->
+    <!-- VIEW 4: QUESTION BANK & INTERACTIVE VAULT  -->
     <!-- ========================================== -->
     <div id="view-vault" class="hidden flex-1 flex flex-col space-y-4 overflow-y-auto">
       
@@ -443,19 +462,67 @@
             <option value="GA">General Awareness</option>
           </select>
           <button onclick="launchErrorVaultDrill()" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded transition shadow">
-            ⚔️ Drill Mistake Vault
+            ⚔️ Drill Full Vault
           </button>
         </div>
       </div>
 
-      <!-- Question Cards List -->
-      <div class="space-y-3 flex-1 overflow-y-auto pr-1" id="vault-questions-container">
-        <!-- Rendered dynamically -->
+      <!-- Question Cards Grid (Clickable Cards) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 flex-1 overflow-y-auto pr-1" id="vault-questions-container">
+        <!-- Rendered dynamically with click listeners -->
       </div>
     </div>
 
     <!-- ========================================== -->
-    <!-- VIEW 5: DYNAMIC IN-APP REVIEW & ANNOTATION -->
+    <!-- MODAL: QUESTION FORENSIC & DETAIL VIEWER   -->
+    <!-- ========================================== -->
+    <div id="question-forensic-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-6">
+      <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">
+        <div class="bg-slate-850 px-4 py-3 border-b border-slate-700 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded bg-blue-600/30 text-blue-400 border border-blue-500/40 text-xs font-bold" id="forensic-modal-chapter">Chapter</span>
+            <span class="text-xs font-mono text-slate-400" id="forensic-modal-id">QID</span>
+          </div>
+          <button onclick="closeForensicModal()" class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+        </div>
+        
+        <div class="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4" id="forensic-modal-content">
+          <div class="text-sm sm:text-base text-slate-100 leading-relaxed" id="forensic-modal-text"></div>
+          
+          <div class="space-y-2 pt-2" id="forensic-modal-options"></div>
+
+          <div class="bg-slate-950 border border-slate-800 rounded-lg p-3 space-y-2 text-xs">
+            <div class="text-emerald-400 font-bold flex items-center gap-1.5">
+              <span>💡</span> Official Solution & Conceptual Breakdown
+            </div>
+            <div class="text-slate-300 leading-relaxed" id="forensic-modal-explanation"></div>
+          </div>
+
+          <!-- Tags & Personal Annotation -->
+          <div class="space-y-1">
+            <span class="text-[11px] font-semibold text-slate-400">Attached Concept Tags:</span>
+            <div class="flex flex-wrap gap-1.5" id="forensic-modal-tags"></div>
+          </div>
+        </div>
+
+        <div class="p-3 bg-slate-850 border-t border-slate-700 flex justify-between items-center">
+          <button onclick="drillSingleQuestion()" class="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded text-xs font-bold shadow flex items-center gap-1.5">
+            <span>⚔️</span> Drill This Question Now
+          </button>
+          <div class="flex space-x-2">
+            <button onclick="deleteCurrentVaultQuestion()" class="px-3 py-1.5 bg-rose-600/20 hover:bg-rose-600/40 text-rose-300 border border-rose-500/30 rounded text-xs font-semibold">
+              Delete
+            </button>
+            <button onclick="closeForensicModal()" class="px-4 py-1.5 bg-slate-700 hover:bg-slate-600 text-white rounded text-xs font-semibold">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL: POST-EXAM REVIEW & ANNOTATION       -->
     <!-- ========================================== -->
     <div id="view-review-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-6">
       <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">
@@ -463,9 +530,7 @@
           <h3 class="font-bold text-sm text-white" id="review-modal-title">Test Performance & Solution Audit</h3>
           <button onclick="closeReviewModal()" class="text-slate-400 hover:text-white text-lg">&times;</button>
         </div>
-        <div class="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4" id="review-modal-content">
-          <!-- Rendered dynamically with post-exam questions and editable annotation boxes -->
-        </div>
+        <div class="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4" id="review-modal-content"></div>
         <div class="p-3 bg-slate-850 border-t border-slate-700 flex justify-between items-center">
           <button onclick="copyTelemetrySlice()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-semibold">
             📋 Copy Telemetry For Chat
@@ -487,9 +552,7 @@
         <button onclick="toggleMobilePalette()" class="text-slate-400 font-bold text-xl">&times;</button>
       </div>
       <div class="flex-1 overflow-y-auto">
-        <div class="grid grid-cols-5 gap-2" id="mobile-palette-grid">
-          <!-- Cloned buttons -->
-        </div>
+        <div class="grid grid-cols-5 gap-2" id="mobile-palette-grid"></div>
       </div>
       <button onclick="toggleMobilePalette()" class="w-full py-2 bg-blue-600 text-white rounded font-bold text-xs">
         Return to Question
@@ -500,12 +563,15 @@
   <!-- Hidden Printable Audit Container (Used by Android Print Spooler -> Save as PDF) -->
   <div id="printable-audit-section" class="hidden"></div>
 
+  <!-- Dynamic Floating Widgets Insertion Anchor -->
+  <div id="dynamic-floating-widget-anchor"></div>
+
   <!-- ======================================================== -->
   <!-- CORE JAVASCRIPT MICRO-KERNEL ENGINE                      -->
   <!-- ======================================================== -->
   <script>
     // --------------------------------------------------------
-    // 1. PWA & ANDROID STORAGE PERSISTENCE HANDLERS
+    // 1. PWA & STORAGE PERSISTENCE HANDLERS
     // --------------------------------------------------------
     let deferredInstallPrompt = null;
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -534,10 +600,10 @@
     }
 
     // --------------------------------------------------------
-    // 2. INDEXEDDB REPOSITORY & INITIAL SEED DATA
+    // 2. INDEXEDDB REPOSITORY & PLUGIN REGISTRY
     // --------------------------------------------------------
     const DB_NAME = "cgl_os_db";
-    const DB_VERSION = 1;
+    const DB_VERSION = 2;
     let db = null;
 
     function openDatabase() {
@@ -560,6 +626,9 @@
           if (!d.objectStoreNames.contains("store_vault")) {
             d.createObjectStore("store_vault", { keyPath: "questionId" });
           }
+          if (!d.objectStoreNames.contains("store_plugins")) {
+            d.createObjectStore("store_plugins", { keyPath: "pluginId" });
+          }
         };
         request.onsuccess = (e) => {
           db = e.target.result;
@@ -569,7 +638,7 @@
       });
     }
 
-    // Canonical Seed Questions for initial CGL execution
+    // Initial Seed Questions
     const SEED_QUESTIONS = [
       {
         id: "q_qa_pl_001",
@@ -634,14 +703,14 @@
 
       cStore.put({
         key: "system_info",
-        dbVersion: 1,
+        dbVersion: 2,
         userName: "Ankit",
         installedAt: new Date().toISOString()
       });
     }
 
     // --------------------------------------------------------
-    // 3. EXAM SIMULATOR & LOSSLESS TELEMETRY ENGINE
+    // 3. EXAM SIMULATOR, PAUSE CONTROLLER & SECTION FILTERING
     // --------------------------------------------------------
     const STATUS = { NOT_VISITED: 0, NOT_ANSWERED: 1, ANSWERED: 2, REVIEW: 3, ANS_REVIEW: 4 };
 
@@ -658,10 +727,17 @@
       optionSwitches: [],
       notes: [],
       timeLeftSec: 60 * 60,
-      timerInterval: null
+      timerInterval: null,
+      isPaused: false,
+      activeSectionFilter: "ALL"
     };
 
-    async function loadArenaTest() {
+    async function loadArenaTest(customQuestions = null, customTitle = null) {
+      if (customQuestions) {
+        initializeSessionWithQuestions(customQuestions, customTitle || "Targeted Drill");
+        return;
+      }
+
       const tx = db.transaction(["store_questions"], "readonly");
       const qStore = tx.objectStore("store_questions");
       const req = qStore.getAll();
@@ -671,23 +747,73 @@
         if (!questions || questions.length === 0) {
           questions = SEED_QUESTIONS;
         }
-
-        activeSession.questions = questions;
-        const total = questions.length;
-        activeSession.userChoices = new Array(total).fill(null);
-        activeSession.questionStatuses = new Array(total).fill(STATUS.NOT_VISITED);
-        activeSession.timeSpentMs = new Array(total).fill(0);
-        activeSession.firstClickMs = new Array(total).fill(null);
-        activeSession.optionSwitches = new Array(total).fill(0);
-        activeSession.notes = new Array(total).fill("");
-        activeSession.currentIndex = 0;
-        activeSession.questionStatuses[0] = STATUS.NOT_ANSWERED;
-        activeSession.mountTimeMs = Date.now();
-
-        renderArenaQuestion();
-        renderArenaPalette();
-        startArenaTimer();
+        initializeSessionWithQuestions(questions, "SSC CGL Tier 1 Practice Drill");
       };
+    }
+
+    function initializeSessionWithQuestions(questions, title) {
+      activeSession.questions = questions;
+      activeSession.title = title;
+      document.getElementById('arena-exam-name').textContent = title;
+      
+      const total = questions.length;
+      activeSession.userChoices = new Array(total).fill(null);
+      activeSession.questionStatuses = new Array(total).fill(STATUS.NOT_VISITED);
+      activeSession.timeSpentMs = new Array(total).fill(0);
+      activeSession.firstClickMs = new Array(total).fill(null);
+      activeSession.optionSwitches = new Array(total).fill(0);
+      activeSession.notes = new Array(total).fill("");
+      activeSession.currentIndex = 0;
+      activeSession.questionStatuses[0] = STATUS.NOT_ANSWERED;
+      activeSession.mountTimeMs = Date.now();
+      activeSession.isPaused = false;
+      document.getElementById('arena-pause-shield').classList.add('hidden');
+
+      renderArenaQuestion();
+      renderArenaPalette();
+      startArenaTimer();
+    }
+
+    function toggleExamPause() {
+      activeSession.isPaused = !activeSession.isPaused;
+      const shield = document.getElementById('arena-pause-shield');
+      const pauseIcon = document.getElementById('pause-icon');
+      const pauseText = document.getElementById('pause-text');
+      const frozenClock = document.getElementById('pause-frozen-clock');
+
+      if (activeSession.isPaused) {
+        clearInterval(activeSession.timerInterval);
+        recordTimeDelta();
+        shield.classList.remove('hidden');
+        pauseIcon.textContent = "▶️";
+        pauseText.textContent = "Resume";
+        const m = Math.floor(activeSession.timeLeftSec / 60);
+        const s = activeSession.timeLeftSec % 60;
+        frozenClock.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      } else {
+        shield.classList.add('hidden');
+        pauseIcon.textContent = "⏸️";
+        pauseText.textContent = "Pause";
+        activeSession.mountTimeMs = Date.now();
+        startArenaTimer();
+      }
+    }
+
+    function filterArenaBySubject(subject) {
+      activeSession.activeSectionFilter = subject;
+      const tabs = document.getElementById('arena-section-tabs').children;
+      Array.from(tabs).forEach(tab => {
+        const isMatch = tab.textContent.includes(subject) || (subject === 'ALL' && tab.textContent === 'ALL');
+        tab.className = `px-3 py-1 rounded text-xs ${isMatch ? 'font-bold bg-blue-600 text-white' : 'font-medium bg-slate-800 text-slate-300 hover:bg-slate-700'}`;
+      });
+
+      renderArenaPalette();
+      // Jump to first matching question
+      const firstMatch = activeSession.questions.findIndex(q => subject === 'ALL' || q.subject === subject);
+      if (firstMatch !== -1) {
+        recordTimeDelta();
+        navigateArena(firstMatch);
+      }
     }
 
     function renderArenaQuestion() {
@@ -723,7 +849,6 @@
 
       document.getElementById('btn-arena-prev').disabled = idx === 0;
 
-      // Render KaTeX formulas
       if (window.renderMathInElement) {
         renderMathInElement(document.getElementById('arena-question-body'), {
           delimiters: [
@@ -739,6 +864,7 @@
     }
 
     function selectArenaOption(optIdx) {
+      if (activeSession.isPaused) return;
       const idx = activeSession.currentIndex;
       const prevChoice = activeSession.userChoices[idx];
 
@@ -754,6 +880,7 @@
     }
 
     function arenaSaveAndNext() {
+      if (activeSession.isPaused) return;
       const idx = activeSession.currentIndex;
       if (activeSession.userChoices[idx] !== null) {
         activeSession.questionStatuses[idx] = STATUS.ANSWERED;
@@ -765,6 +892,7 @@
     }
 
     function arenaMarkForReview() {
+      if (activeSession.isPaused) return;
       const idx = activeSession.currentIndex;
       if (activeSession.userChoices[idx] !== null) {
         activeSession.questionStatuses[idx] = STATUS.ANS_REVIEW;
@@ -776,6 +904,7 @@
     }
 
     function arenaClearResponse() {
+      if (activeSession.isPaused) return;
       const idx = activeSession.currentIndex;
       activeSession.userChoices[idx] = null;
       activeSession.questionStatuses[idx] = STATUS.NOT_ANSWERED;
@@ -783,6 +912,7 @@
     }
 
     function arenaPrevious() {
+      if (activeSession.isPaused) return;
       if (activeSession.currentIndex > 0) {
         recordTimeDelta();
         navigateArena(activeSession.currentIndex - 1);
@@ -812,7 +942,11 @@
     function renderArenaPalette() {
       const grid = document.getElementById('arena-palette-grid');
       grid.innerHTML = '';
+      const filter = activeSession.activeSectionFilter;
+
       activeSession.questions.forEach((q, i) => {
+        if (filter !== 'ALL' && q.subject !== filter) return;
+
         const btn = document.createElement('button');
         const st = activeSession.questionStatuses[i];
         let shapeClass = "status-not-visited";
@@ -835,17 +969,12 @@
         grid.appendChild(btn);
       });
 
-      // Clone into mobile bottom sheet
       const mobGrid = document.getElementById('mobile-palette-grid');
       if (mobGrid) {
         mobGrid.innerHTML = '';
-        Array.from(grid.children).forEach((c, idx) => {
+        Array.from(grid.children).forEach(c => {
           const clone = c.cloneNode(true);
-          clone.onclick = () => {
-            recordTimeDelta();
-            navigateArena(idx);
-            toggleMobilePalette(false);
-          };
+          clone.onclick = c.onclick;
           mobGrid.appendChild(clone);
         });
       }
@@ -891,8 +1020,20 @@
       }
     }
 
+    // Keyboard Shortcuts
+    window.addEventListener('keydown', (e) => {
+      if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+      const key = e.key.toUpperCase();
+      if (['1', '2', '3', '4'].includes(key)) selectArenaOption(parseInt(key) - 1);
+      if (['A', 'B', 'C', 'D'].includes(key)) selectArenaOption(key.charCodeAt(0) - 65);
+      if (e.key === 'Enter') arenaSaveAndNext();
+      if (key === 'R') arenaMarkForReview();
+      if (e.key === 'Backspace') arenaClearResponse();
+      if (key === 'P') toggleExamPause();
+    });
+
     // --------------------------------------------------------
-    // 4. SUBMIT EXAM & WRITE LOSSLESS TELEMETRY SNAPSHOT
+    // 4. SUBMIT EXAM & WRITE TELEMETRY SNAPSHOT
     // --------------------------------------------------------
     async function promptSubmitExam() {
       recordTimeDelta();
@@ -934,11 +1075,9 @@
         questions: questionRecords
       };
 
-      // Save into IndexedDB store_attempts
       const tx = db.transaction(["store_attempts", "store_vault"], "readwrite");
       tx.objectStore("store_attempts").put(sessionSnapshot);
 
-      // Add incorrect questions to Error Vault store
       const vStore = tx.objectStore("store_vault");
       questionRecords.forEach(qr => {
         if (!qr.isCorrect && qr.userChoice !== null) {
@@ -976,9 +1115,8 @@
             <div><strong>Official Key:</strong> Option ${['A','B','C','D'][qr.correctIndex]} (${q.options[qr.correctIndex]})</div>
             <div><strong>Explanation:</strong> ${q.explanation || 'Direct syllabus definition.'}</div>
           </div>
-          <!-- Retroactive Annotation Box -->
           <div class="pt-1">
-            <input type="text" value="${qr.notes}" onchange="updateQuestionAnnotation('${snapshot.sessionId}', ${i}, this.value)" placeholder="Write mistake note (e.g. silly calculation slip, forgot formula)..." class="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-amber-300 focus:outline-none focus:border-amber-500">
+            <input type="text" value="${qr.notes}" onchange="updateQuestionAnnotation('${snapshot.sessionId}', ${i}, this.value)" placeholder="Write mistake note (e.g. calculation slip, forgot formula)..." class="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-amber-300 focus:outline-none focus:border-amber-500">
           </div>
         `;
         container.appendChild(card);
@@ -1013,7 +1151,7 @@
     }
 
     // --------------------------------------------------------
-    // 5. THE UNIVERSAL COMMAND CONSOLE & CHAT HANDSHAKE
+    // 5. UNIVERSAL MICRO-KERNEL ACTION DISPATCHER & PLUGIN ENGINE
     // --------------------------------------------------------
     function executeConsoleCommand() {
       const input = document.getElementById('console-input-area').value.trim();
@@ -1024,10 +1162,10 @@
         const payload = JSON.parse(input);
         dispatchAction(payload);
         feedback.className = "text-xs font-mono text-emerald-400";
-        feedback.textContent = `Success: Action [${payload.action}] committed.`;
+        feedback.textContent = `Success: Action [${payload.action}] executed successfully.`;
       } catch (err) {
         feedback.className = "text-xs font-mono text-rose-400";
-        feedback.textContent = `Error: ${err.message}`;
+        feedback.textContent = `Execution Error: ${err.message}`;
       }
     }
 
@@ -1042,15 +1180,78 @@
           const qStore = txQ.objectStore("store_questions");
           actionObj.payload.questions.forEach(q => qStore.put(q));
           txQ.oncomplete = () => {
-            alert(`Ingested ${actionObj.payload.questions.length} questions into Question Bank!`);
+            alert(`✅ Ingested ${actionObj.payload.questions.length} questions into Question Bank!`);
             filterVaultQuestions();
+          };
+          break;
+
+        case "INSTALL_RUNTIME_PLUGIN":
+          // Dynamically executes JavaScript and persists to store_plugins
+          try {
+            const plugin = actionObj.payload;
+            const txP = db.transaction(["store_plugins"], "readwrite");
+            txP.objectStore("store_plugins").put(plugin);
+            
+            // Execute plugin code with full micro-kernel context
+            executePluginCode(plugin.code);
+            alert(`⚡ Plugin [${plugin.name || plugin.pluginId}] installed and active!`);
+          } catch (e) {
+            alert(`Plugin execution failed: ${e.message}`);
+          }
+          break;
+
+        case "REGISTER_DYNAMIC_WIDGET":
+          // Dynamically inserts HTML/CSS widget into target container
+          try {
+            const w = actionObj.payload;
+            const container = document.getElementById(w.targetContainerId) || document.getElementById('dynamic-floating-widget-anchor');
+            if (container) {
+              const div = document.createElement('div');
+              div.id = w.widgetId;
+              div.className = w.className || "";
+              div.innerHTML = w.html;
+              container.appendChild(div);
+              if (w.script) {
+                new Function('ctx', w.script)({ db, activeSession, switchView });
+              }
+              alert(`🧩 Widget [${w.widgetId}] mounted successfully!`);
+            }
+          } catch (e) {
+            alert(`Widget mount error: ${e.message}`);
+          }
+          break;
+
+        case "TRIGGER_CUSTOM_DRILL":
+          // Launches a custom drill test on the fly with custom duration & filter
+          const txD = db.transaction(["store_questions"], "readonly");
+          txD.objectStore("store_questions").getAll().onsuccess = (e) => {
+            const allQ = e.target.result;
+            const filter = actionObj.payload.filter || {};
+            const count = actionObj.payload.count || 10;
+            const matching = allQ.filter(q => {
+              if (filter.subject && q.subject !== filter.subject) return false;
+              if (filter.chapter && q.chapter !== filter.chapter) return false;
+              return true;
+            });
+
+            if (matching.length === 0) {
+              alert("No questions matched the drill filter!");
+              return;
+            }
+
+            const chosen = matching.slice(0, count);
+            switchView('view-arena');
+            loadArenaTest(chosen, actionObj.payload.title || "Custom Sprint");
+            if (actionObj.payload.durationSec) {
+              activeSession.timeLeftSec = actionObj.payload.durationSec;
+            }
           };
           break;
 
         case "HOTPATCH_CONFIG":
           const txC = db.transaction(["store_config"], "readwrite");
           txC.objectStore("store_config").put({ key: actionObj.target, data: actionObj.payload });
-          alert(`Configuration for [${actionObj.target}] hotpatched successfully!`);
+          alert(`Configuration for [${actionObj.target}] hotpatched!`);
           break;
 
         case "EXECUTE_TRANSIENT_ROUTINE":
@@ -1062,6 +1263,38 @@
       }
     }
 
+    function executePluginCode(codeString) {
+      const pluginRunner = new Function('ctx', codeString);
+      pluginRunner({
+        db,
+        activeSession,
+        switchView,
+        renderArenaQuestion,
+        navigateArena,
+        refreshDiagnosticsView,
+        filterVaultQuestions,
+        openQuestionForensicModal
+      });
+    }
+
+    async function loadAndRunStoredPlugins() {
+      const tx = db.transaction(["store_plugins"], "readonly");
+      const req = tx.objectStore("store_plugins").getAll();
+      req.onsuccess = () => {
+        const plugins = req.result || [];
+        plugins.forEach(p => {
+          if (p.autoRun !== false && p.code) {
+            try {
+              executePluginCode(p.code);
+              console.log(`Auto-ran plugin: ${p.pluginId}`);
+            } catch (err) {
+              console.error(`Auto-run error in plugin ${p.pluginId}:`, err);
+            }
+          }
+        });
+      };
+    }
+
     // PDF Printable Routine Handler (Direct to Android Print Spooler)
     async function handleTransientRoutine(payload) {
       if (payload.outputMode === "ANDROID_PRINTABLE_SHEET") {
@@ -1071,13 +1304,13 @@
 
         req.onsuccess = () => {
           const all = req.result;
-          const filtered = all.filter(q => !payload.filter.chapter || q.chapter === payload.filter.chapter);
+          const filtered = all.filter(q => !payload.filter || !payload.filter.chapter || q.chapter === payload.filter.chapter);
           
           const printSection = document.getElementById('printable-audit-section');
           printSection.innerHTML = `
             <div class="p-6 bg-white text-slate-900 space-y-4">
               <h1 class="text-xl font-bold text-center border-b pb-2">${payload.title || 'Targeted Audit Sheet'}</h1>
-              <div class="text-xs text-slate-500">Generated for Ankit • Canonical Chapter: ${payload.filter.chapter || 'ALL'}</div>
+              <div class="text-xs text-slate-500">Generated for Ankit • Chapter: ${payload.filter?.chapter || 'ALL'}</div>
               <div class="space-y-4">
                 ${filtered.map((q, i) => `
                   <div class="p-3 border rounded space-y-1">
@@ -1116,12 +1349,12 @@
     // --------------------------------------------------------
     async function copySystemHandshake() {
       const handshake = {
-        protocol: "ANKIT_CGL_HANDSHAKE_v1",
-        runtime: "Android_Chrome_PWA",
+        protocol: "ANKIT_CGL_HANDSHAKE_v2",
+        runtime: "Android_Chrome_PWA_MicroKernel_v2",
         database: DB_NAME,
-        registeredStores: ["store_questions", "store_attempts", "store_config", "store_vault"],
+        registeredStores: ["store_questions", "store_attempts", "store_config", "store_vault", "store_plugins"],
         taxonomyHeaders: ["QA_ARITHMETIC", "QA_ADVANCED", "REAS_VERBAL", "REAS_NON_VERBAL", "ENG_VOCAB", "ENG_GRAMMAR", "GA_STATIC", "GA_CURRENT"],
-        commandHeaders: ["BATCH_INGEST_QUESTIONS", "HOTPATCH_CONFIG", "EXECUTE_TRANSIENT_ROUTINE", "REGISTER_VIEW"],
+        commandHeaders: ["BATCH_INGEST_QUESTIONS", "INSTALL_RUNTIME_PLUGIN", "REGISTER_DYNAMIC_WIDGET", "TRIGGER_CUSTOM_DRILL", "HOTPATCH_CONFIG", "EXECUTE_TRANSIENT_ROUTINE"],
         userProfile: { name: "Ankit", targetExam: "SSC CGL 2026 Tier 1 & Tier 2" }
       };
 
@@ -1166,7 +1399,7 @@
 
     function downloadMasterSnapshot() {
       const exportData = {};
-      const stores = ["store_questions", "store_attempts", "store_config", "store_vault"];
+      const stores = ["store_questions", "store_attempts", "store_config", "store_vault", "store_plugins"];
       const tx = db.transaction(stores, "readonly");
 
       let pending = stores.length;
@@ -1193,7 +1426,7 @@
       reader.onload = async (e) => {
         try {
           const data = JSON.parse(e.target.result);
-          const tx = db.transaction(["store_questions", "store_attempts", "store_config", "store_vault"], "readwrite");
+          const tx = db.transaction(["store_questions", "store_attempts", "store_config", "store_vault", "store_plugins"], "readwrite");
           
           for (const sName in data) {
             const store = tx.objectStore(sName);
@@ -1209,8 +1442,10 @@
     }
 
     // --------------------------------------------------------
-    // 7. DIAGNOSTICS & QUESTION BANK VIEW CONTROLS
+    // 7. QUESTION BANK CLICKABLE CARDS & FORENSIC INSPECTOR
     // --------------------------------------------------------
+    let activeInspectedQuestion = null;
+
     function switchView(viewId) {
       ['view-arena', 'view-console', 'view-analytics', 'view-vault'].forEach(id => {
         const el = document.getElementById(id);
@@ -1229,6 +1464,134 @@
 
       if (viewId === 'view-analytics') refreshDiagnosticsView();
       if (viewId === 'view-vault') filterVaultQuestions();
+    }
+
+    async function filterVaultQuestions() {
+      const search = document.getElementById('vault-search-box').value.toLowerCase();
+      const subject = document.getElementById('vault-filter-subject').value;
+      const container = document.getElementById('vault-questions-container');
+      container.innerHTML = '';
+
+      const tx = db.transaction(["store_questions"], "readonly");
+      const store = tx.objectStore("store_questions");
+      const req = store.getAll();
+
+      req.onsuccess = () => {
+        const questions = req.result;
+        const filtered = questions.filter(q => {
+          const matchSub = (subject === 'ALL' || q.subject === subject);
+          const matchText = q.questionText.toLowerCase().includes(search) || q.chapter.toLowerCase().includes(search);
+          return matchSub && matchText;
+        });
+
+        filtered.forEach((q) => {
+          const card = document.createElement('div');
+          card.className = "p-3.5 bg-slate-800 hover:bg-slate-750 border border-slate-700 hover:border-blue-500/60 rounded-lg text-xs space-y-2 cursor-pointer transition transform hover:-translate-y-0.5 shadow group";
+          card.onclick = () => openQuestionForensicModal(q.id);
+
+          card.innerHTML = `
+            <div class="flex items-center justify-between font-bold">
+              <span class="text-amber-400 group-hover:text-amber-300">${q.chapter}</span>
+              <span class="text-[10px] text-slate-500 font-mono">${q.id}</span>
+            </div>
+            <div class="text-slate-200 line-clamp-2">${q.questionText}</div>
+            <div class="flex items-center justify-between text-[11px] pt-1 border-t border-slate-700/60">
+              <span class="text-slate-400">Key: <strong class="text-emerald-400">Opt ${['A','B','C','D'][q.correctIndex]}</strong></span>
+              <span class="text-blue-400 group-hover:underline flex items-center gap-1 font-semibold">Inspect & Drill &rarr;</span>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+
+        if (window.renderMathInElement) {
+          renderMathInElement(container, {
+            delimiters: [{left: '$', right: '$', display: false}],
+            throwOnError: false
+          });
+        }
+      };
+    }
+
+    function openQuestionForensicModal(questionId) {
+      const tx = db.transaction(["store_questions"], "readonly");
+      const store = tx.objectStore("store_questions");
+      const req = store.get(questionId);
+
+      req.onsuccess = () => {
+        const q = req.result;
+        if (!q) return;
+        activeInspectedQuestion = q;
+
+        document.getElementById('forensic-modal-chapter').textContent = q.chapter;
+        document.getElementById('forensic-modal-id').textContent = q.id;
+        document.getElementById('forensic-modal-text').innerHTML = q.questionText;
+
+        const optBox = document.getElementById('forensic-modal-options');
+        optBox.innerHTML = '';
+        const letters = ['A', 'B', 'C', 'D'];
+        q.options.forEach((opt, idx) => {
+          const isCorr = idx === q.correctIndex;
+          const optDiv = document.createElement('div');
+          optDiv.className = `p-2.5 rounded border text-xs flex items-center justify-between ${
+            isCorr ? 'bg-emerald-500/10 border-emerald-500/50 text-emerald-300 font-bold' : 'bg-slate-950 border-slate-800 text-slate-300'
+          }`;
+          optDiv.innerHTML = `
+            <span><strong>${letters[idx]}.</strong> ${opt}</span>
+            ${isCorr ? '<span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px]">CORRECT KEY</span>' : ''}
+          `;
+          optBox.appendChild(optDiv);
+        });
+
+        document.getElementById('forensic-modal-explanation').innerHTML = q.explanation || "Direct definition / standard formula.";
+
+        const tagsContainer = document.getElementById('forensic-modal-tags');
+        tagsContainer.innerHTML = '';
+        (q.tags || ['PYQ_Pattern']).forEach(t => {
+          const tSpan = document.createElement('span');
+          tSpan.className = "px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 text-[10px]";
+          tSpan.textContent = `#${t}`;
+          tagsContainer.appendChild(tSpan);
+        });
+
+        document.getElementById('question-forensic-modal').classList.remove('hidden');
+
+        if (window.renderMathInElement) {
+          renderMathInElement(document.getElementById('forensic-modal-content'), {
+            delimiters: [{left: '$', right: '$', display: false}],
+            throwOnError: false
+          });
+        }
+      };
+    }
+
+    function closeForensicModal() {
+      document.getElementById('question-forensic-modal').classList.add('hidden');
+      activeInspectedQuestion = null;
+    }
+
+    function drillSingleQuestion() {
+      if (!activeInspectedQuestion) return;
+      closeForensicModal();
+      switchView('view-arena');
+      loadArenaTest([activeInspectedQuestion], `Targeted Single Drill: ${activeInspectedQuestion.chapter}`);
+      activeSession.timeLeftSec = 120; // 2 minutes for single question sprint
+    }
+
+    function deleteCurrentVaultQuestion() {
+      if (!activeInspectedQuestion) return;
+      if (confirm(`Delete question [${activeInspectedQuestion.id}] from your local Question Bank?`)) {
+        const tx = db.transaction(["store_questions"], "readwrite");
+        tx.objectStore("store_questions").delete(activeInspectedQuestion.id);
+        tx.oncomplete = () => {
+          closeForensicModal();
+          filterVaultQuestions();
+        };
+      }
+    }
+
+    function launchErrorVaultDrill() {
+      switchView('view-arena');
+      loadArenaTest();
     }
 
     async function refreshDiagnosticsView() {
@@ -1260,7 +1623,6 @@
           const c = chapterMap[ch];
           const acc = ((c.correct / c.solved) * 100).toFixed(0);
           const avgSec = (c.timeSpentMs / c.solved / 1000).toFixed(1);
-          // Simplified Neglect Index formula
           const nc = Math.max(0, (1 - (c.solved / 20))).toFixed(2);
           if (nc > 0.6) neglectCount++;
 
@@ -1281,58 +1643,13 @@
       };
     }
 
-    async function filterVaultQuestions() {
-      const search = document.getElementById('vault-search-box').value.toLowerCase();
-      const subject = document.getElementById('vault-filter-subject').value;
-      const container = document.getElementById('vault-questions-container');
-      container.innerHTML = '';
-
-      const tx = db.transaction(["store_questions"], "readonly");
-      const store = tx.objectStore("store_questions");
-      const req = store.getAll();
-
-      req.onsuccess = () => {
-        const questions = req.result;
-        const filtered = questions.filter(q => {
-          const matchSub = (subject === 'ALL' || q.subject === subject);
-          const matchText = q.questionText.toLowerCase().includes(search) || q.chapter.toLowerCase().includes(search);
-          return matchSub && matchText;
-        });
-
-        filtered.forEach((q, i) => {
-          const card = document.createElement('div');
-          card.className = "p-3.5 bg-slate-800 border border-slate-700 rounded-lg text-xs space-y-2";
-          card.innerHTML = `
-            <div class="flex items-center justify-between font-bold text-slate-400">
-              <span class="text-amber-400">${q.chapter}</span>
-              <span class="text-slate-500 font-mono">${q.id}</span>
-            </div>
-            <div class="text-slate-100 font-medium">${q.questionText}</div>
-            <div class="text-slate-400"><strong>Key:</strong> Option ${['A','B','C','D'][q.correctIndex]} (${q.options[q.correctIndex]})</div>
-          `;
-          container.appendChild(card);
-        });
-
-        if (window.renderMathInElement) {
-          renderMathInElement(container, {
-            delimiters: [{left: '$', right: '$', display: false}],
-            throwOnError: false
-          });
-        }
-      };
-    }
-
-    function launchErrorVaultDrill() {
-      switchView('view-arena');
-      loadArenaTest();
-    }
-
     // --------------------------------------------------------
     // 8. LIFECYCLE INITIALIZER
     // --------------------------------------------------------
     window.addEventListener('DOMContentLoaded', async () => {
       await openDatabase();
       await seedInitialData();
+      await loadAndRunStoredPlugins();
       await loadArenaTest();
     });
   </script>
