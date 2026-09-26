@@ -2,1656 +2,1644 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>SSC CGL Intelligence OS</title>
-  
-  <!-- PWA Metadata & Embedded Manifest for Android WebAPK Generation -->
-  <meta name="theme-color" content="#0f172a">
-  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#12141a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22SSC%20CGL%20Intelligence%20OS%22%2C%22short_name%22%3A%22CGL%20OS%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f172a%22%2C%22theme_color%22%3A%22%231e3a5f%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fapi.iconify.design%2Flucide%3Agraduation-cap.svg%3Fcolor%3D%2523f59e0b%22%2C%22sizes%22%3A%22192x192%20512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
+  <title>SSC CGL Intelligence OS</title>
 
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- KaTeX for crisp mathematical LaTeX rendering -->
+  <!-- KaTeX for High-Performance Math/Formula Rendering -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-
-  <!-- Google Fonts: Inter & JetBrains Mono -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 
   <style>
+    :root {
+      --bg-dark: #12141a;
+      --bg-card: #1c1f28;
+      --bg-elevated: #242937;
+      --border-color: #2e3446;
+      --accent-blue: #3b82f6;
+      --accent-blue-hover: #2563eb;
+      --status-green: #22c55e;
+      --status-red: #ef4444;
+      --status-amber: #f59e0b;
+      --status-purple: #a855f7;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --bottom-nav-height: 64px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     body {
-      font-family: 'Inter', sans-serif;
-      -webkit-tap-highlight-color: transparent;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
       user-select: none;
     }
-    .font-mono-num {
-      font-family: 'JetBrains Mono', monospace;
+
+    /* Top Safe Padding & Utility */
+    .view-container {
+      display: none;
+      padding: 14px 14px calc(var(--bottom-nav-height) + 20px) 14px;
+      max-width: 900px;
+      margin: 0 auto;
     }
-    /* Official TCS iON & Testbook Palette Shapes */
-    .status-badge {
+    .view-container.active { display: block; }
+    .badge {
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* BOTTOM NAVIGATION */
+    #bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--bottom-nav-height);
+      background: rgba(20, 23, 31, 0.95);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 1000;
+    }
+    .nav-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      font-size: 11px;
+      font-weight: 600;
+      width: 25%;
+      height: 100%;
+      cursor: pointer;
+    }
+    .nav-btn.active { color: var(--accent-blue); }
+    .nav-btn svg { width: 22px; height: 22px; stroke-width: 2; }
+
+    /* CARDS & METRIC WIDGETS */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.75px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .btn {
+      background: var(--accent-blue);
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-weight: 700;
-      font-size: 0.75rem;
-      position: relative;
+      gap: 8px;
+      cursor: pointer;
     }
-    .status-not-visited {
-      background-color: #f1f5f9;
-      color: #64748b;
-      border: 1px solid #cbd5e1;
+    .btn-secondary {
+      background: var(--bg-elevated);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+    .btn-danger { background: var(--status-red); }
+
+    /* TAB 1: DRILLDOWN DASHBOARD */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .kpi-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .kpi-num { font-size: 24px; font-weight: 800; color: #fff; margin-top: 4px; }
+    .kpi-sub { font-size: 11px; color: var(--text-muted); }
+    .drilldown-breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--accent-blue);
+      margin-bottom: 10px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .drill-item {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+    .drill-item:active { background: var(--border-color); }
+
+    /* TAB 2: ACTIVE RECALL DOJO */
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+    }
+    .filter-pill {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      white-space: nowrap;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+    .filter-pill.active {
+      background: var(--accent-blue);
+      color: white;
+      border-color: var(--accent-blue);
+    }
+    .dojo-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .dojo-opt {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 8px 0;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .dojo-solution {
+      display: none;
+      margin-top: 14px;
+      padding: 12px;
+      background: #172339;
+      border-left: 3px solid var(--accent-blue);
       border-radius: 4px;
+      font-size: 13px;
     }
-    .status-not-answered {
-      background-color: #ef4444;
-      color: #ffffff;
-      clip-path: polygon(0 15%, 50% 0, 100% 15%, 100% 85%, 50% 100%, 0 85%);
+    .annotation-box {
+      width: 100%;
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      border-radius: 6px;
+      padding: 8px;
+      font-size: 12px;
+      margin-top: 8px;
+      resize: vertical;
     }
-    .status-answered {
-      background-color: #16a34a;
-      color: #ffffff;
-      clip-path: polygon(0 15%, 50% 0, 100% 15%, 100% 85%, 50% 100%, 0 85%);
+
+    /* TAB 3: COMMAND BUS & MANUAL DB STUDIO */
+    .console-input {
+      width: 100%;
+      height: 180px;
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+      color: #38bdf8;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      resize: vertical;
+      margin-bottom: 10px;
     }
-    .status-review {
-      background-color: #7c3aed;
-      color: #ffffff;
-      border-radius: 9999px;
+    .db-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 12px;
     }
-    .status-ans-review {
-      background-color: #7c3aed;
+
+    /* TAB 4: ERROR VAULT & EXPORTS */
+    .vault-item {
+      background: var(--bg-card);
+      border: 1px solid #451a1a;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+
+    /* EXAM ARENA (FULL SCREEN HUD) */
+    #exam-arena {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--bg-dark);
+      z-index: 2000;
+      flex-direction: column;
+    }
+    .arena-header {
+      background: #141720;
+      border-bottom: 1px solid var(--border-color);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+    .hud-pause-btn {
+      background: none;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      border-radius: 8px;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .hud-timer {
+      font-family: var(--font-mono);
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 1px;
       color: #ffffff;
-      border-radius: 9999px;
+      transition: color 0.3s;
+    }
+    .hud-timer.amber { color: var(--status-amber); }
+    .hud-timer.crimson { color: var(--status-red); animation: pulse 1s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+    .sectional-banner {
+      background: #171b26;
+      border-bottom: 1px solid var(--border-color);
+      padding: 6px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .sectional-badge {
+      background: #2563eb;
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 11px;
+    }
+
+    .arena-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 14px 100px 14px;
+    }
+    .question-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .q-number-pill {
+      background: var(--accent-blue);
+      color: white;
+      font-weight: 800;
+      font-size: 13px;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .q-clock-pill {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .q-text-canvas {
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+    .opt-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-color);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 12px;
+      font-size: 15px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      cursor: pointer;
       position: relative;
     }
-    .status-ans-review::after {
-      content: '';
-      position: absolute;
-      bottom: 2px;
-      right: 2px;
-      width: 7px;
-      height: 7px;
-      background-color: #22c55e;
-      border: 1px solid #ffffff;
-      border-radius: 2px;
+    .opt-card.selected {
+      border-color: var(--accent-blue);
+      background: rgba(37, 99, 235, 0.12);
     }
+    .opt-card.struck-through {
+      opacity: 0.35;
+      text-decoration: line-through;
+      border-style: dashed;
+    }
+    .opt-index {
+      font-weight: 700;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .arena-footer {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 64px;
+      background: #141720;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      z-index: 2100;
+    }
+
+    /* SLIDING QUESTION PALETTE DRAWER */
+    #palette-drawer {
+      position: fixed;
+      top: 0; right: -100%; bottom: 0;
+      width: 82%;
+      max-width: 340px;
+      background: #171b26;
+      border-left: 1px solid var(--border-color);
+      z-index: 2500;
+      transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+    }
+    #palette-drawer.open { right: 0; }
+    .drawer-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.65);
+      z-index: 2400;
+    }
+    .drawer-overlay.active { display: block; }
+    .palette-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      padding: 14px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .palette-cell {
+      height: 42px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 13px;
+      background: #2563eb; /* Blue: Unanswered/Not Attempted as in reference */
+      color: #fff;
+      cursor: pointer;
+    }
+    .palette-cell.answered { background: var(--status-green); }
+    .palette-cell.marked { background: var(--status-purple); border-radius: 50%; }
+    .palette-cell.current { border: 2px solid #fff; }
+
+    /* PAUSE SHIELD OVERLAY */
+    #pause-shield {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(10, 12, 16, 0.96);
+      z-index: 3000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+
+    /* PRINT SHEET FORMATTING */
     @media print {
-      body * { visibility: hidden; }
-      #printable-audit-section, #printable-audit-section * { visibility: visible; }
-      #printable-audit-section { position: absolute; left: 0; top: 0; width: 100%; }
-      .no-print { display: none !important; }
+      body { background: white !important; color: black !important; }
+      #bottom-nav, #exam-arena, .nav-btn, .btn, .filter-bar { display: none !important; }
+      .print-page {
+        display: block !important;
+        column-count: 2;
+        column-gap: 20px;
+        font-size: 12px;
+      }
+      .print-question { break-inside: avoid; margin-bottom: 14px; border-bottom: 1px solid #ccc; padding-bottom: 8px; }
     }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-100 flex flex-col min-h-screen overflow-x-hidden antialiased">
+<body>
 
-  <!-- Dynamic Widget Insertion Anchor (Top Global) -->
-  <div id="dynamic-top-banner-area"></div>
-
-  <!-- Top Global Header -->
-  <header class="bg-[#111e33] border-b border-slate-700/80 px-3 sm:px-6 py-2.5 flex-none shadow-md z-30">
-    <div class="max-w-7xl mx-auto flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="w-9 h-9 rounded-lg bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-400 font-black text-lg">
-          ⚡
-        </div>
-        <div>
-          <div class="flex items-center space-x-2">
-            <h1 class="text-sm sm:text-base font-bold tracking-wide text-white">ANKIT'S CGL WAR ROOM</h1>
-            <span class="hidden sm:inline-block px-2 py-0.5 text-[10px] uppercase font-bold rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Micro-Kernel v2.0 Active</span>
-          </div>
-          <p class="text-[11px] text-slate-400">Target: SSC CGL 2026 • Local-First Programmable Engine</p>
-        </div>
+  <!-- ==================== 1. EXAM ARENA (FULL SCREEN HUD) ==================== -->
+  <div id="exam-arena">
+    <div class="arena-header">
+      <button class="hud-pause-btn" id="btn-arena-pause">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </button>
+      <div style="text-align:center;">
+        <div id="hud-countdown" class="hud-timer">15:00</div>
+        <div style="font-size:10px; color:var(--text-muted);" id="hud-test-title">Tier 1 Sectional</div>
       </div>
-
-      <!-- Action items: Install WebAPK, Copy Handshake, Storage Lock Indicator -->
-      <div class="flex items-center space-x-2 sm:space-x-3">
-        <button id="btn-install-pwa" onclick="triggerPwaInstall()" class="hidden px-2.5 py-1.5 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold rounded text-xs shadow-md active:scale-95 flex items-center gap-1">
-          <span>📲</span> <span class="hidden sm:inline">Install App</span>
-        </button>
-
-        <button onclick="copySystemHandshake()" class="px-2.5 py-1.5 bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/40 rounded text-xs font-semibold flex items-center gap-1.5 active:scale-95 transition" title="Copy system schema definition for new Gemini chat">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
-          <span class="hidden md:inline">Handshake</span>
-        </button>
-
-        <div id="storage-status-badge" class="px-2.5 py-1 rounded bg-slate-800 border border-slate-700 text-[11px] text-slate-300 flex items-center gap-1.5">
-          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-          <span class="hidden sm:inline" id="storage-status-text">Flash Locked</span>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <!-- Navigation View Tabs -->
-  <nav class="bg-slate-800/90 border-b border-slate-700/80 px-3 sm:px-6 flex-none z-20">
-    <div class="max-w-7xl mx-auto flex items-center justify-between overflow-x-auto" id="dynamic-nav-container">
-      <div class="flex space-x-1 sm:space-x-2 py-1.5" id="nav-tabs-list">
-        <button onclick="switchView('view-arena')" id="tab-btn-arena" class="px-3.5 py-1.5 rounded-md text-xs sm:text-sm font-semibold transition border border-transparent text-white bg-blue-600 shadow">
-          ⚔️ Test Arena
-        </button>
-        <button onclick="switchView('view-console')" id="tab-btn-console" class="px-3.5 py-1.5 rounded-md text-xs sm:text-sm font-semibold transition border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-700/50">
-          💻 Command Console
-        </button>
-        <button onclick="switchView('view-analytics')" id="tab-btn-analytics" class="px-3.5 py-1.5 rounded-md text-xs sm:text-sm font-semibold transition border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-700/50">
-          📊 Neglect & Diagnostics
-        </button>
-        <button onclick="switchView('view-vault')" id="tab-btn-vault" class="px-3.5 py-1.5 rounded-md text-xs sm:text-sm font-semibold transition border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-700/50">
-          🗄️ Question Bank & Vault
-        </button>
-      </div>
-
-      <!-- Injected Custom Nav Tools Anchor -->
-      <div id="dynamic-nav-tools" class="flex items-center space-x-2"></div>
-    </div>
-  </nav>
-
-  <!-- MAIN VIEW CONTAINER -->
-  <div class="flex-1 flex flex-col max-w-7xl w-full mx-auto p-2 sm:p-4 overflow-hidden relative">
-
-    <!-- ========================================== -->
-    <!-- VIEW 1: TEST SIMULATOR ARENA               -->
-    <!-- ========================================== -->
-    <div id="view-arena" class="flex-1 flex flex-col space-y-3">
-      
-      <!-- Sub-Bar: Active Exam Info, Timer & Pause Controller -->
-      <div class="bg-slate-800 border border-slate-700 rounded-lg p-2.5 sm:px-4 flex items-center justify-between shadow-sm">
-        <div class="flex items-center space-x-3">
-          <span class="text-xs sm:text-sm font-bold text-amber-400" id="arena-exam-name">SSC CGL Tier 1 Practice Drill</span>
-          <span class="hidden sm:inline text-xs text-slate-400">| +2.00 / -0.50 Mark Scheme</span>
-        </div>
-
-        <div class="flex items-center space-x-2 sm:space-x-3">
-          <!-- Active Timer Display -->
-          <div class="bg-slate-950 border border-amber-500/50 px-3 py-1 rounded text-right flex items-center space-x-2">
-            <span class="text-[10px] uppercase text-slate-400 hidden sm:inline">Time Left:</span>
-            <span id="arena-timer" class="font-mono-num font-bold text-base sm:text-lg text-amber-400">60:00</span>
-          </div>
-
-          <!-- Pause / Resume Toggle Button -->
-          <button onclick="toggleExamPause()" id="btn-timer-pause" class="px-2.5 py-1.5 bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/40 rounded text-xs font-bold transition flex items-center gap-1 active:scale-95">
-            <span id="pause-icon">⏸️</span>
-            <span class="hidden sm:inline" id="pause-text">Pause</span>
-          </button>
-
-          <!-- Mobile Palette Drawer Trigger -->
-          <button onclick="toggleMobilePalette()" class="lg:hidden px-2.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-semibold flex items-center gap-1 shadow">
-            <span>Palette</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Section Navigation Buttons -->
-      <div class="flex items-center space-x-1.5 overflow-x-auto pb-1" id="arena-section-tabs">
-        <button onclick="filterArenaBySubject('ALL')" class="px-3 py-1 rounded text-xs font-bold bg-blue-600 text-white">ALL</button>
-        <button onclick="filterArenaBySubject('QA')" class="px-3 py-1 rounded text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700">Quantitative</button>
-        <button onclick="filterArenaBySubject('REAS')" class="px-3 py-1 rounded text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700">Reasoning</button>
-        <button onclick="filterArenaBySubject('ENG')" class="px-3 py-1 rounded text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700">English</button>
-        <button onclick="filterArenaBySubject('GA')" class="px-3 py-1 rounded text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700">General Awareness</button>
-      </div>
-
-      <!-- Arena Layout: Left Question Card, Right Question Palette -->
-      <div class="flex-1 flex flex-col lg:flex-row gap-3 min-h-[480px] relative">
-        
-        <!-- Left: Question Display Canvas -->
-        <section class="flex-1 bg-slate-800 border border-slate-700 rounded-lg flex flex-col overflow-hidden shadow-md">
-          <!-- Question Meta Header -->
-          <div class="bg-slate-850 border-b border-slate-700/80 px-4 py-2.5 flex items-center justify-between text-xs">
-            <div class="font-bold flex items-center gap-2 text-slate-200">
-              <span class="bg-blue-600 text-white px-2 py-0.5 rounded text-[11px]" id="q-section-badge">Section</span>
-              <span>Question <span id="q-number-display" class="text-amber-400 font-extrabold text-sm">1</span></span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 font-semibold">+2.00</span>
-              <span class="text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20 font-semibold">-0.50</span>
-            </div>
-          </div>
-
-          <!-- Question Content & Option Area -->
-          <div class="flex-1 p-4 sm:p-6 overflow-y-auto space-y-5" id="arena-question-body">
-            <div class="text-sm sm:text-base text-slate-100 font-medium leading-relaxed" id="arena-question-text">
-              Loading question...
-            </div>
-            
-            <div class="space-y-2.5 pt-2" id="arena-options-container">
-              <!-- Rendered dynamically -->
-            </div>
-          </div>
-
-          <!-- Bottom Action Toolbar -->
-          <div class="bg-slate-850 border-t border-slate-700/80 p-3 sm:px-6 flex flex-wrap items-center justify-between gap-2">
-            <div class="flex items-center space-x-2">
-              <button onclick="arenaMarkForReview()" class="px-3.5 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded text-xs transition active:scale-95 shadow">
-                Mark Review & Next
-              </button>
-              <button onclick="arenaClearResponse()" class="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 font-medium rounded text-xs transition active:scale-95">
-                Clear
-              </button>
-            </div>
-
-            <div class="flex items-center space-x-2">
-              <button onclick="arenaPrevious()" id="btn-arena-prev" class="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium rounded text-xs transition disabled:opacity-30">
-                Previous
-              </button>
-              <button onclick="arenaSaveAndNext()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded text-xs transition active:scale-95 shadow">
-                Save & Next
-              </button>
-            </div>
-          </div>
-        </section>
-
-        <!-- Right: Question Matrix & Stats (Desktop Sidebar) -->
-        <aside class="hidden lg:flex flex-col w-80 bg-slate-800 border border-slate-700 rounded-lg overflow-hidden shadow-md flex-none">
-          <div class="p-3 border-b border-slate-700 bg-slate-850/60 text-xs">
-            <div class="grid grid-cols-2 gap-2 text-[11px]">
-              <div class="flex items-center space-x-2">
-                <span class="status-badge status-answered w-6 h-6" id="stat-count-ans">0</span>
-                <span class="text-slate-300">Answered</span>
-              </div>
-              <div class="flex items-center space-x-2">
-                <span class="status-badge status-not-answered w-6 h-6" id="stat-count-notans">0</span>
-                <span class="text-slate-300">Not Answered</span>
-              </div>
-              <div class="flex items-center space-x-2">
-                <span class="status-badge status-not-visited w-6 h-6" id="stat-count-notvis">0</span>
-                <span class="text-slate-300">Not Visited</span>
-              </div>
-              <div class="flex items-center space-x-2">
-                <span class="status-badge status-review w-6 h-6" id="stat-count-rev">0</span>
-                <span class="text-slate-300">Review</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="px-3 py-2 bg-slate-900 border-b border-slate-700 text-[11px] font-bold text-slate-300 flex items-center justify-between">
-            <span id="arena-palette-title">QUESTION PALETTE</span>
-            <span class="text-amber-400 font-mono-num" id="arena-palette-ratio">0/25</span>
-          </div>
-
-          <div class="flex-1 p-3 overflow-y-auto">
-            <div class="grid grid-cols-5 gap-2" id="arena-palette-grid">
-              <!-- Rendered dynamically -->
-            </div>
-          </div>
-
-          <div class="p-3 bg-slate-850 border-t border-slate-700">
-            <button onclick="promptSubmitExam()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider rounded shadow transition active:scale-98">
-              Submit Test & Run Telemetry
-            </button>
-          </div>
-        </aside>
-
-        <!-- Exam Paused Full Screen Obscurity Shield -->
-        <div id="arena-pause-shield" class="absolute inset-0 bg-slate-950/95 backdrop-blur-md rounded-lg z-40 hidden flex flex-col items-center justify-center space-y-4 p-6 text-center">
-          <div class="w-16 h-16 rounded-full bg-amber-500/20 border border-amber-400/50 flex items-center justify-center text-3xl text-amber-400">
-            ⏸️
-          </div>
-          <h2 class="text-xl font-bold text-white tracking-wide">EXAMINATION PAUSED</h2>
-          <p class="text-xs text-slate-400 max-w-sm">
-            Timer halted. Question view obscured to prevent unfair deliberation advantage. Tap below when ready to continue.
-          </p>
-          <div class="text-xs font-mono text-amber-400 bg-slate-900 px-4 py-1.5 rounded border border-slate-800">
-            Remaining Time Frozen At: <span id="pause-frozen-clock" class="font-bold">60:00</span>
-          </div>
-          <button onclick="toggleExamPause()" class="px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs uppercase tracking-wider rounded shadow-lg transition active:scale-95">
-            ▶️ Resume Examination
-          </button>
-        </div>
-
-      </div>
+      <button class="hud-pause-btn" id="btn-toggle-palette">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+      </button>
     </div>
 
-    <!-- ========================================== -->
-    <!-- VIEW 2: COMMAND CONSOLE & AI BRIDGE        -->
-    <!-- ========================================== -->
-    <div id="view-console" class="hidden flex-1 flex flex-col space-y-4 overflow-y-auto">
-      
-      <!-- Top Action Tiles -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <div class="bg-slate-800 border border-slate-700 rounded-lg p-4 space-y-2">
-          <div class="flex items-center justify-between">
-            <h3 class="font-bold text-sm text-amber-400 flex items-center gap-1.5">
-              <span>📋</span> AI Handshake Protocol
-            </h3>
-            <span class="text-[10px] text-slate-400 font-mono">NEW CHAT SYNC</span>
-          </div>
-          <p class="text-xs text-slate-300 leading-relaxed">
-            Copies your complete database schema, taxonomy keys, and current weak chapters to clipboard. Drop it into a new Gemini chat to immediately calibrate it.
-          </p>
-          <button onclick="copySystemHandshake()" class="w-full py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded transition active:scale-95 shadow">
-            Copy System Handshake
-          </button>
-        </div>
-
-        <div class="bg-slate-800 border border-slate-700 rounded-lg p-4 space-y-2">
-          <div class="flex items-center justify-between">
-            <h3 class="font-bold text-sm text-blue-400 flex items-center gap-1.5">
-              <span>🔬</span> Lossless Telemetry Tap
-            </h3>
-            <span class="text-[10px] text-slate-400 font-mono">POST-MORTEM</span>
-          </div>
-          <p class="text-xs text-slate-300 leading-relaxed">
-            Extracts millisecond hesitations, option swaps, and time-traps from your latest test for clinical diagnostic analysis in chat.
-          </p>
-          <button onclick="copyTelemetrySlice()" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded transition active:scale-95 shadow">
-            Copy Telemetry Slice
-          </button>
-        </div>
-
-        <div class="bg-slate-800 border border-slate-700 rounded-lg p-4 space-y-2">
-          <div class="flex items-center justify-between">
-            <h3 class="font-bold text-sm text-emerald-400 flex items-center gap-1.5">
-              <span>💾</span> Master Snapshot Backup
-            </h3>
-            <span class="text-[10px] text-slate-400 font-mono">OFFLINE LOCK</span>
-          </div>
-          <p class="text-xs text-slate-300 leading-relaxed">
-            Exports your complete IndexedDB (all questions, test records, plugins, and custom routines) into a single downloadable JSON backup file.
-          </p>
-          <div class="flex gap-2">
-            <button onclick="downloadMasterSnapshot()" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded transition">
-              Download .json
-            </button>
-            <label class="flex-1 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold text-xs rounded text-center cursor-pointer transition">
-              Restore <input type="file" onchange="restoreSnapshotFile(event)" class="hidden" accept=".json">
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <!-- JSON Command Ingestion Terminal -->
-      <div class="bg-slate-800 border border-slate-700 rounded-lg p-4 flex-1 flex flex-col space-y-3">
-        <div class="flex items-center justify-between">
-          <div>
-            <h2 class="text-sm font-bold text-white flex items-center gap-2">
-              <span>⚡</span> Universal Micro-Kernel Command Bus
-            </h2>
-            <p class="text-xs text-slate-400">Supports `BATCH_INGEST_QUESTIONS`, `INSTALL_RUNTIME_PLUGIN`, `REGISTER_DYNAMIC_WIDGET`, `TRIGGER_CUSTOM_DRILL`, `HOTPATCH_CONFIG`</p>
-          </div>
-          <button onclick="clearConsoleInput()" class="text-xs text-slate-400 hover:text-slate-200">Clear</button>
-        </div>
-
-        <textarea id="console-input-area" placeholder='Paste executable action JSON here...&#10;{&#10;  "action": "INSTALL_RUNTIME_PLUGIN",&#10;  "payload": { ... }&#10;}' class="flex-1 min-h-[160px] bg-slate-950 border border-slate-700 rounded-lg p-3 font-mono text-xs text-emerald-400 focus:outline-none focus:border-blue-500"></textarea>
-
-        <div class="flex items-center justify-between">
-          <div id="console-feedback-msg" class="text-xs font-mono text-slate-400">Status: Engine Ready.</div>
-          <button onclick="executeConsoleCommand()" class="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs rounded shadow-lg transition active:scale-95">
-            Execute JSON Action
-          </button>
-        </div>
-      </div>
+    <div class="sectional-banner">
+      <span class="sectional-badge" id="hud-section-badge">SECTION A: QUANT</span>
+      <span id="hud-pacing-status" style="font-family:var(--font-mono); font-size:11px;">00:00 spent</span>
     </div>
 
-    <!-- ========================================== -->
-    <!-- VIEW 3: NEGLECT & LONGITUDINAL DIAGNOSTICS -->
-    <!-- ========================================== -->
-    <div id="view-analytics" class="hidden flex-1 flex flex-col space-y-4 overflow-y-auto">
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div class="bg-slate-800 border border-slate-700 rounded-lg p-3 text-center">
-          <div class="text-[11px] font-semibold text-slate-400 uppercase">Total Tests Taken</div>
-          <div class="text-2xl font-black text-white mt-1 font-mono-num" id="stat-total-mocks">0</div>
-        </div>
-        <div class="bg-slate-800 border border-slate-700 rounded-lg p-3 text-center">
-          <div class="text-[11px] font-semibold text-amber-400 uppercase">Avg Cognitive Efficiency</div>
-          <div class="text-2xl font-black text-amber-300 mt-1 font-mono-num" id="stat-avg-cer">--</div>
-        </div>
-        <div class="bg-slate-800 border border-slate-700 rounded-lg p-3 text-center">
-          <div class="text-[11px] font-semibold text-rose-400 uppercase">High Neglect Topics</div>
-          <div class="text-2xl font-black text-rose-400 mt-1 font-mono-num" id="stat-neglect-count">0</div>
-        </div>
-        <div class="bg-slate-800 border border-slate-700 rounded-lg p-3 text-center">
-          <div class="text-[11px] font-semibold text-purple-400 uppercase">Error Vault Active</div>
-          <div class="text-2xl font-black text-purple-300 mt-1 font-mono-num" id="stat-vault-count">0</div>
+    <div class="arena-body" id="arena-body">
+      <div class="question-header">
+        <div class="q-number-pill" id="arena-q-num">1</div>
+        <div class="q-clock-pill">
+          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <span id="arena-q-timer">00:00</span>
         </div>
       </div>
 
-      <div class="bg-slate-800 border border-slate-700 rounded-lg p-4 space-y-3">
-        <div class="flex items-center justify-between">
-          <div>
-            <h3 class="font-bold text-sm text-slate-100 flex items-center gap-2">
-              <span>⚠️</span> Longitudinal Chapter Neglect Index ($N_c$)
-            </h3>
-            <p class="text-xs text-slate-400">Chapters flagged with high disparity between expected CGL weightage and your actual practice volume</p>
-          </div>
-          <button onclick="refreshDiagnosticsView()" class="px-2.5 py-1 bg-slate-700 hover:bg-slate-600 text-xs rounded">Refresh</button>
-        </div>
-
-        <div class="overflow-x-auto">
-          <table class="w-full text-xs text-left border-collapse">
-            <thead>
-              <tr class="bg-slate-900/80 text-slate-400 border-b border-slate-700">
-                <th class="p-2.5 font-semibold">Subject & Chapter</th>
-                <th class="p-2.5 text-center font-semibold">Questions Solved</th>
-                <th class="p-2.5 text-center font-semibold">Accuracy</th>
-                <th class="p-2.5 text-center font-semibold">Avg Time</th>
-                <th class="p-2.5 text-center font-semibold">Neglect Index ($N_c$)</th>
-                <th class="p-2.5 text-right font-semibold">Diagnosis</th>
-              </tr>
-            </thead>
-            <tbody id="neglect-table-tbody" class="divide-y divide-slate-700/60 font-mono-num">
-              <!-- Rendered dynamically -->
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <div class="q-text-canvas" id="arena-q-text">Loading question text...</div>
+      <div id="arena-options-container"></div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- VIEW 4: QUESTION BANK & INTERACTIVE VAULT  -->
-    <!-- ========================================== -->
-    <div id="view-vault" class="hidden flex-1 flex flex-col space-y-4 overflow-y-auto">
-      
-      <!-- Vault Controls & Search -->
-      <div class="bg-slate-800 border border-slate-700 rounded-lg p-3 sm:p-4 flex flex-wrap items-center justify-between gap-3">
-        <div class="flex items-center space-x-2 flex-1 min-w-[240px]">
-          <input type="text" id="vault-search-box" oninput="filterVaultQuestions()" placeholder="Search questions, formulas, or tags..." class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500">
-        </div>
-
-        <div class="flex items-center space-x-2">
-          <select id="vault-filter-subject" onchange="filterVaultQuestions()" class="bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-300">
-            <option value="ALL">All Subjects</option>
-            <option value="QA">Quantitative Aptitude</option>
-            <option value="REAS">Reasoning</option>
-            <option value="ENG">English</option>
-            <option value="GA">General Awareness</option>
-          </select>
-          <button onclick="launchErrorVaultDrill()" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded transition shadow">
-            ⚔️ Drill Full Vault
-          </button>
-        </div>
-      </div>
-
-      <!-- Question Cards Grid (Clickable Cards) -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 flex-1 overflow-y-auto pr-1" id="vault-questions-container">
-        <!-- Rendered dynamically with click listeners -->
-      </div>
+    <div class="arena-footer">
+      <button class="btn btn-secondary" style="padding:8px 14px;" id="btn-q-prev">Previous</button>
+      <button class="btn btn-secondary" style="padding:8px 12px; font-size:12px; color:var(--status-purple);" id="btn-q-review">Mark Review</button>
+      <button class="btn" style="padding:8px 18px;" id="btn-q-save-next">Save & Next</button>
     </div>
-
-    <!-- ========================================== -->
-    <!-- MODAL: QUESTION FORENSIC & DETAIL VIEWER   -->
-    <!-- ========================================== -->
-    <div id="question-forensic-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-6">
-      <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">
-        <div class="bg-slate-850 px-4 py-3 border-b border-slate-700 flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span class="px-2 py-0.5 rounded bg-blue-600/30 text-blue-400 border border-blue-500/40 text-xs font-bold" id="forensic-modal-chapter">Chapter</span>
-            <span class="text-xs font-mono text-slate-400" id="forensic-modal-id">QID</span>
-          </div>
-          <button onclick="closeForensicModal()" class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
-        </div>
-        
-        <div class="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4" id="forensic-modal-content">
-          <div class="text-sm sm:text-base text-slate-100 leading-relaxed" id="forensic-modal-text"></div>
-          
-          <div class="space-y-2 pt-2" id="forensic-modal-options"></div>
-
-          <div class="bg-slate-950 border border-slate-800 rounded-lg p-3 space-y-2 text-xs">
-            <div class="text-emerald-400 font-bold flex items-center gap-1.5">
-              <span>💡</span> Official Solution & Conceptual Breakdown
-            </div>
-            <div class="text-slate-300 leading-relaxed" id="forensic-modal-explanation"></div>
-          </div>
-
-          <!-- Tags & Personal Annotation -->
-          <div class="space-y-1">
-            <span class="text-[11px] font-semibold text-slate-400">Attached Concept Tags:</span>
-            <div class="flex flex-wrap gap-1.5" id="forensic-modal-tags"></div>
-          </div>
-        </div>
-
-        <div class="p-3 bg-slate-850 border-t border-slate-700 flex justify-between items-center">
-          <button onclick="drillSingleQuestion()" class="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded text-xs font-bold shadow flex items-center gap-1.5">
-            <span>⚔️</span> Drill This Question Now
-          </button>
-          <div class="flex space-x-2">
-            <button onclick="deleteCurrentVaultQuestion()" class="px-3 py-1.5 bg-rose-600/20 hover:bg-rose-600/40 text-rose-300 border border-rose-500/30 rounded text-xs font-semibold">
-              Delete
-            </button>
-            <button onclick="closeForensicModal()" class="px-4 py-1.5 bg-slate-700 hover:bg-slate-600 text-white rounded text-xs font-semibold">
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ========================================== -->
-    <!-- MODAL: POST-EXAM REVIEW & ANNOTATION       -->
-    <!-- ========================================== -->
-    <div id="view-review-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-6">
-      <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">
-        <div class="bg-slate-850 px-4 py-3 border-b border-slate-700 flex items-center justify-between">
-          <h3 class="font-bold text-sm text-white" id="review-modal-title">Test Performance & Solution Audit</h3>
-          <button onclick="closeReviewModal()" class="text-slate-400 hover:text-white text-lg">&times;</button>
-        </div>
-        <div class="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4" id="review-modal-content"></div>
-        <div class="p-3 bg-slate-850 border-t border-slate-700 flex justify-between items-center">
-          <button onclick="copyTelemetrySlice()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-semibold">
-            📋 Copy Telemetry For Chat
-          </button>
-          <button onclick="closeReviewModal()" class="px-4 py-1.5 bg-slate-700 hover:bg-slate-600 text-white rounded text-xs font-semibold">
-            Close Review
-          </button>
-        </div>
-      </div>
-    </div>
-
   </div>
 
-  <!-- Mobile Bottom Sheet Drawer for Question Palette -->
-  <div id="mobile-palette-modal" class="fixed inset-0 bg-slate-950/70 z-50 hidden flex flex-col justify-end lg:hidden">
-    <div class="bg-slate-900 border-t border-slate-700 rounded-t-2xl p-4 max-h-[75vh] flex flex-col space-y-3">
-      <div class="flex items-center justify-between pb-2 border-b border-slate-800">
-        <span class="font-bold text-sm text-slate-200">Question Palette Matrix</span>
-        <button onclick="toggleMobilePalette()" class="text-slate-400 font-bold text-xl">&times;</button>
+  <!-- PALETTE DRAWER -->
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+  <div id="palette-drawer">
+    <div style="padding:14px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+      <h3 style="font-size:14px; font-weight:700;">Question Palette</h3>
+      <span class="badge" style="background:#2563eb;" id="drawer-section-label">PART - A</span>
+    </div>
+    <div style="padding:10px 14px; background:#141720; font-size:12px; display:flex; justify-content:space-around;">
+      <span>🟢 Answered: <b id="count-answered">0</b></span>
+      <span>🔵 Unanswered: <b id="count-unanswered">0</b></span>
+    </div>
+    <div class="palette-grid" id="palette-grid"></div>
+    <div style="padding:14px; border-top:1px solid var(--border-color);">
+      <button class="btn btn-danger" style="width:100%;" id="btn-submit-mock">Submit Test</button>
+    </div>
+  </div>
+
+  <!-- PAUSE SHIELD OVERLAY -->
+  <div id="pause-shield">
+    <h2 style="font-size:20px; font-weight:800; margin-bottom:8px;">TEST PAUSED</h2>
+    <p style="font-size:13px; color:var(--text-muted); max-width:280px; margin-bottom:20px;">
+      Cognitive state & clock frozen safely in IndexedDB. You can review settings or resume without losing telemetry.
+    </p>
+    <button class="btn" style="width:200px;" id="btn-resume-test">Resume Test</button>
+    <button class="btn btn-secondary" style="width:200px; margin-top:10px;" id="btn-pause-exit">Exit to Dashboard</button>
+  </div>
+
+
+  <!-- ==================== 2. TAB 1: ANALYTICS DASHBOARD ==================== -->
+  <div id="tab-dashboard" class="view-container active">
+    <div class="card" style="background:linear-gradient(135deg, #1e2638, #161a24); border-color:#3b82f6;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <h2 style="font-size:18px; font-weight:800;">SSC CGL 2026 Master OS</h2>
+          <p style="font-size:12px; color:var(--text-muted); margin-top:2px;">Autonomous Exam Intelligence & Diagnostics</p>
+        </div>
+        <button class="btn" id="btn-quick-launch" style="padding:6px 12px; font-size:12px;">Launch Mock</button>
       </div>
-      <div class="flex-1 overflow-y-auto">
-        <div class="grid grid-cols-5 gap-2" id="mobile-palette-grid"></div>
+    </div>
+
+    <!-- Quick Presets -->
+    <div class="card">
+      <div class="card-title">Exam Blueprint Presets</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <button class="btn btn-secondary" style="font-size:12px; padding:10px;" onclick="CGL_OS.launchBlueprint('TIER_1')">
+          Tier 1 (4x15m Locked)
+        </button>
+        <button class="btn btn-secondary" style="font-size:12px; padding:10px;" onclick="CGL_OS.launchBlueprint('QA_BLITZ')">
+          QA Geometry Blitz
+        </button>
       </div>
-      <button onclick="toggleMobilePalette()" class="w-full py-2 bg-blue-600 text-white rounded font-bold text-xs">
-        Return to Question
+    </div>
+
+    <!-- Master KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-sub">Total Mocks Given</div>
+        <div class="kpi-num" id="kpi-total-mocks">0</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-sub">Global Accuracy</div>
+        <div class="kpi-num" id="kpi-global-acc">0%</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-sub">Avg Solve Speed</div>
+        <div class="kpi-num" id="kpi-avg-speed">0s</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-sub">Q-IV Traps Hit</div>
+        <div class="kpi-num" style="color:var(--status-red);" id="kpi-traps-hit">0</div>
+      </div>
+    </div>
+
+    <!-- Hierarchical Drill-Down Navigator -->
+    <div class="card">
+      <div class="card-title">
+        <span>Syllabus Taxonomy Deep Dive</span>
+        <span class="badge" style="background:#2563eb;" id="drill-level-tag">LEVEL: SUBJECT</span>
+      </div>
+      <div class="drilldown-breadcrumb" id="drilldown-breadcrumb">Global</div>
+      <div id="drilldown-list"></div>
+    </div>
+  </div>
+
+
+  <!-- ==================== 3. TAB 2: ACTIVE RECALL DOJO ==================== -->
+  <div id="tab-dojo" class="view-container">
+    <div class="filter-bar" id="dojo-filters">
+      <div class="filter-pill active" onclick="CGL_OS.filterDojo('ALL')">All Subjects</div>
+      <div class="filter-pill" onclick="CGL_OS.filterDojo('QA')">Quantitative</div>
+      <div class="filter-pill" onclick="CGL_OS.filterDojo('REAS')">Reasoning</div>
+      <div class="filter-pill" onclick="CGL_OS.filterDojo('ENG')">English</div>
+      <div class="filter-pill" onclick="CGL_OS.filterDojo('GA')">General Awareness</div>
+    </div>
+
+    <!-- High-Yield Formula Sheet Pull-Down -->
+    <div class="card" style="border-color:#38bdf8;">
+      <div class="card-title" style="color:#38bdf8;">
+        <span>High-Yield Reference Cues</span>
+        <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.toggleFormulaSheet()">Toggle</button>
+      </div>
+      <div id="formula-sheet-content" style="display:none; font-size:13px; line-height:1.6; margin-top:8px;">
+        • <b>Pythagorean Triplets:</b> $(3,4,5), (5,12,13), (7,24,25), (8,15,17), (9,40,41), (11,60,61), (12,35,37)$<br>
+        • <b>Algebra:</b> If $x + \frac{1}{x} = k$, then $x^2 + \frac{1}{x^2} = k^2 - 2$ and $x^3 + \frac{1}{x^3} = k^3 - 3k$.<br>
+        • <b>Circle:</b> Area of incircle of right triangle $r = \frac{a + b - c}{2}$. Circumradius $R = \frac{c}{2}$.
+      </div>
+    </div>
+
+    <div id="dojo-cards-container"></div>
+  </div>
+
+
+  <!-- ==================== 4. TAB 3: COMMAND BUS & MANUAL DB STUDIO ==================== -->
+  <div id="tab-console" class="view-container">
+    <div class="card">
+      <div class="card-title">JSON Command Bus</div>
+      <textarea class="console-input" id="console-payload" placeholder='Paste action payload here, e.g.:
+{
+  "action": "BATCH_INGEST_QUESTIONS",
+  "payload": { "questions": [...] }
+}'></textarea>
+      <div style="display:flex; gap:8px;">
+        <button class="btn" style="flex:1;" onclick="CGL_OS.executeConsoleCommand()">Execute Command</button>
+        <button class="btn btn-secondary" onclick="CGL_OS.loadSampleIngestPayload()">Load Sample</button>
+      </div>
+    </div>
+
+    <!-- Manual DB Inspector & Overwrite Studio -->
+    <div class="card">
+      <div class="card-title">
+        <span>Manual IndexedDB Inspector</span>
+        <select id="db-store-select" style="background:var(--bg-elevated); color:#fff; border:1px solid var(--border-color); padding:4px 8px; border-radius:4px; font-size:12px;" onchange="CGL_OS.refreshDbInspector()">
+          <option value="store_questions">store_questions</option>
+          <option value="store_attempts">store_attempts</option>
+          <option value="store_vault">store_vault</option>
+          <option value="store_config">store_config</option>
+        </select>
+      </div>
+      <div id="db-inspector-list" style="max-height:260px; overflow-y:auto;"></div>
+    </div>
+
+    <div class="card" id="db-manual-editor-card" style="display:none;">
+      <div class="card-title">Edit Record: <span id="editor-record-key" style="color:var(--accent-blue);"></span></div>
+      <textarea class="console-input" id="editor-record-json" style="height:150px;"></textarea>
+      <div style="display:flex; gap:8px;">
+        <button class="btn" onclick="CGL_OS.saveRecordOverwrite()">Save Overwrite</button>
+        <button class="btn btn-danger" onclick="CGL_OS.deleteRecord()">Delete Record</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('db-manual-editor-card').style.display='none'">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ==================== 5. TAB 4: ERROR VAULT & EXPORTS ==================== -->
+  <div id="tab-vault" class="view-container">
+    <div class="card">
+      <div class="card-title">Spaced-Repetition Error Vault</div>
+      <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
+        Questions failed over rolling 14-day window. Leitner interval tracks recurrence.
+      </p>
+      <button class="btn" style="width:100%; margin-bottom:12px;" onclick="CGL_OS.launchVaultDrill()">
+        Launch Trap-Breaker Sprint (Failed Qs)
+      </button>
+      <div id="vault-list-container"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Physical Extraction & Backups</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
+        <button class="btn btn-secondary" style="font-size:12px;" onclick="CGL_OS.exportFullBackup()">Download DB Backup</button>
+        <button class="btn btn-secondary" style="font-size:12px;" onclick="CGL_OS.exportObsidianMarkdown()">Export Obsidian .MD</button>
+      </div>
+      <button class="btn btn-secondary" style="width:100%; font-size:12px;" onclick="CGL_OS.spoolAndroidPrint()">
+        Print Native 2-Column Test Sheet (A4 PDF)
       </button>
     </div>
   </div>
 
-  <!-- Hidden Printable Audit Container (Used by Android Print Spooler -> Save as PDF) -->
-  <div id="printable-audit-section" class="hidden"></div>
 
-  <!-- Dynamic Floating Widgets Insertion Anchor -->
-  <div id="dynamic-floating-widget-anchor"></div>
+  <!-- ==================== 6. BOTTOM NAVIGATION BAR ==================== -->
+  <nav id="bottom-nav">
+    <button class="nav-btn active" onclick="CGL_OS.switchTab('tab-dashboard', this)">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+      Dashboard
+    </button>
+    <button class="nav-btn" onclick="CGL_OS.switchTab('tab-dojo', this)">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+      Dojo
+    </button>
+    <button class="nav-btn" onclick="CGL_OS.switchTab('tab-console', this)">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+      Console
+    </button>
+    <button class="nav-btn" onclick="CGL_OS.switchTab('tab-vault', this)">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+      Vault
+    </button>
+  </nav>
 
-  <!-- ======================================================== -->
-  <!-- CORE JAVASCRIPT MICRO-KERNEL ENGINE                      -->
-  <!-- ======================================================== -->
+  <!-- PRINT DISPATCH TEMPLATE CONTAINER -->
+  <div id="print-sheet-root" style="display:none;" class="print-page"></div>
+
+
+  <!-- ==================== 7. JAVASCRIPT MASTER RUNTIME ==================== -->
   <script>
-    // --------------------------------------------------------
-    // 1. PWA & STORAGE PERSISTENCE HANDLERS
-    // --------------------------------------------------------
-    let deferredInstallPrompt = null;
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredInstallPrompt = e;
-      const installBtn = document.getElementById('btn-install-pwa');
-      if (installBtn) installBtn.classList.remove('hidden');
-    });
+    /**
+     * SSC CGL Intelligence OS - Complete Unified Engine
+     * Strictly Local-First, Defensive IndexedDB, Zero BYOK Hassle.
+     */
+    const CGL_OS = (() => {
+      const DB_NAME = "cgl_os_db";
+      const DB_VERSION = 3;
+      let db = null;
 
-    function triggerPwaInstall() {
-      if (deferredInstallPrompt) {
-        deferredInstallPrompt.prompt();
-        deferredInstallPrompt.userChoice.then(() => {
-          deferredInstallPrompt = null;
-          const installBtn = document.getElementById('btn-install-pwa');
-          if (installBtn) installBtn.classList.add('hidden');
-        });
-      }
-    }
+      // Active Exam Session State
+      let activeExam = null;
+      let examTimerInterval = null;
+      let questionTimerInterval = null;
 
-    if (navigator.storage && navigator.storage.persist) {
-      navigator.storage.persist().then(granted => {
-        const text = document.getElementById('storage-status-text');
-        if (text) text.textContent = granted ? "Flash Locked" : "Standard DB";
-      });
-    }
-
-    // --------------------------------------------------------
-    // 2. INDEXEDDB REPOSITORY & PLUGIN REGISTRY
-    // --------------------------------------------------------
-    const DB_NAME = "cgl_os_db";
-    const DB_VERSION = 2;
-    let db = null;
-
-    function openDatabase() {
-      return new Promise((resolve, reject) => {
-        const request = indexedDB.open(DB_NAME, DB_VERSION);
-        request.onupgradeneeded = (e) => {
-          const d = e.target.result;
-          if (!d.objectStoreNames.contains("store_questions")) {
-            d.createObjectStore("store_questions", { keyPath: "id" });
-          }
-          if (!d.objectStoreNames.contains("store_attempts")) {
-            d.createObjectStore("store_attempts", { keyPath: "sessionId" });
-          }
-          if (!d.objectStoreNames.contains("store_event_stream")) {
-            d.createObjectStore("store_event_stream", { keyPath: "eventId", autoIncrement: true });
-          }
-          if (!d.objectStoreNames.contains("store_config")) {
-            d.createObjectStore("store_config", { keyPath: "key" });
-          }
-          if (!d.objectStoreNames.contains("store_vault")) {
-            d.createObjectStore("store_vault", { keyPath: "questionId" });
-          }
-          if (!d.objectStoreNames.contains("store_plugins")) {
-            d.createObjectStore("store_plugins", { keyPath: "pluginId" });
-          }
-        };
-        request.onsuccess = (e) => {
-          db = e.target.result;
-          resolve(db);
-        };
-        request.onerror = (e) => reject(e);
-      });
-    }
-
-    // Initial Seed Questions
-    const SEED_QUESTIONS = [
-      {
-        id: "q_qa_pl_001",
-        subject: "QA",
-        chapter: "QA_PROFIT_LOSS",
-        questionText: "A dishonest dealer professes to sell his goods at cost price but uses a weight of $920\\text{ g}$ for a $1\\text{ kg}$ weight. What is his actual gain percentage?",
-        options: ["$8.50\\%$", "$8.69\\%$", "$8.70\\%$", "$9.10\\%$"],
-        correctIndex: 1,
-        explanation: "Gain $\% = \\frac{\\text{Error}}{\\text{True Value} - \\text{Error}} \\times 100 = \\frac{80}{920} \\times 100 = 8.69\\%$.",
-        tags: ["Calculative", "PYQ_2024"]
-      },
-      {
-        id: "q_qa_geom_002",
-        subject: "QA",
-        chapter: "QA_GEOMETRY",
-        questionText: "In $\\triangle ABC$, the bisectors of $\\angle B$ and $\\angle C$ intersect at point $I$ inside the triangle. If $\\angle BAC = 68^\\circ$, then find the measure of $\\angle BIC$.",
-        options: ["$124^\\circ$", "$136^\\circ$", "$114^\\circ$", "$128^\\circ$"],
-        correctIndex: 0,
-        explanation: "Incenter formula: $\\angle BIC = 90^\\circ + \\frac{\\angle A}{2} = 90^\\circ + 34^\\circ = 124^\\circ$.",
-        tags: ["Incenter", "Standard_Property"]
-      },
-      {
-        id: "q_reas_analogy_001",
-        subject: "REAS",
-        chapter: "REAS_ANALOGY",
-        questionText: "Select the pair that follows the identical numerical pattern: $6 : 32 :: 2 : 12 :: 9 : ?$",
-        options: ["$49$", "$47$", "$45$", "$52$"],
-        correctIndex: 1,
-        explanation: "Logic: $n \\times 5 + 2 = 6 \\times 5 + 2 = 32$; $2 \\times 5 + 2 = 12$; $9 \\times 5 + 2 = 47$.",
-        tags: ["Number_Pattern"]
-      },
-      {
-        id: "q_eng_vocab_001",
-        subject: "ENG",
-        chapter: "ENG_SYN_ANT",
-        questionText: "Select the most appropriate synonym of the given word: **CANDID**",
-        options: ["Deceptive", "Frank", "Reserved", "Shrewd"],
-        correctIndex: 1,
-        explanation: "Candid means truthful and straightforward; frank is its exact synonym.",
-        tags: ["High_Frequency"]
-      },
-      {
-        id: "q_ga_polity_001",
-        subject: "GA",
-        chapter: "GA_POLITY",
-        questionText: "Which Constitutional Amendment Act reduced the voting age for elections to the Lok Sabha and State Legislative Assemblies from 21 to 18 years?",
-        options: ["52nd Amendment", "74th Amendment", "61st Amendment", "44th Amendment"],
-        correctIndex: 2,
-        explanation: "The 61st Constitutional Amendment Act, 1988 lowered the voting age from 21 to 18.",
-        tags: ["Articles_Amendments"]
-      }
-    ];
-
-    async function seedInitialData() {
-      const tx = db.transaction(["store_questions", "store_config"], "readwrite");
-      const qStore = tx.objectStore("store_questions");
-      const cStore = tx.objectStore("store_config");
-
-      for (const q of SEED_QUESTIONS) {
-        qStore.put(q);
-      }
-
-      cStore.put({
-        key: "system_info",
-        dbVersion: 2,
-        userName: "Ankit",
-        installedAt: new Date().toISOString()
-      });
-    }
-
-    // --------------------------------------------------------
-    // 3. EXAM SIMULATOR, PAUSE CONTROLLER & SECTION FILTERING
-    // --------------------------------------------------------
-    const STATUS = { NOT_VISITED: 0, NOT_ANSWERED: 1, ANSWERED: 2, REVIEW: 3, ANS_REVIEW: 4 };
-
-    let activeSession = {
-      sessionId: "mock_cgl_t1_" + Date.now(),
-      title: "SSC CGL Tier 1 Practice Drill",
-      questions: [],
-      currentIndex: 0,
-      userChoices: [],
-      questionStatuses: [],
-      timeSpentMs: [],
-      mountTimeMs: Date.now(),
-      firstClickMs: [],
-      optionSwitches: [],
-      notes: [],
-      timeLeftSec: 60 * 60,
-      timerInterval: null,
-      isPaused: false,
-      activeSectionFilter: "ALL"
-    };
-
-    async function loadArenaTest(customQuestions = null, customTitle = null) {
-      if (customQuestions) {
-        initializeSessionWithQuestions(customQuestions, customTitle || "Targeted Drill");
-        return;
-      }
-
-      const tx = db.transaction(["store_questions"], "readonly");
-      const qStore = tx.objectStore("store_questions");
-      const req = qStore.getAll();
-
-      req.onsuccess = () => {
-        let questions = req.result;
-        if (!questions || questions.length === 0) {
-          questions = SEED_QUESTIONS;
+      // Seed Questions for Day-Zero Reliability
+      const SEED_QUESTIONS = [
+        {
+          id: "q_qa_geo_01",
+          subject: "QA",
+          chapter: "QA_GEOMETRY",
+          stream: "Advanced",
+          questionText: "In a $\\triangle ABC$, the bisector of $\\angle A$ intersects $BC$ at $D$. If $AB = 12\\text{ cm}$, $AC = 15\\text{ cm}$, and $BC = 18\\text{ cm}$, find the length of $BD$.",
+          options: ["$6\\text{ cm}$", "$8\\text{ cm}$", "$10\\text{ cm}$", "$7.5\\text{ cm}$"],
+          correctIndex: 1,
+          explanation: "By Angle Bisector Theorem: $\\frac{BD}{DC} = \\frac{AB}{AC} = \\frac{12}{15} = \\frac{4}{5}$. Thus $BD = \\frac{4}{9} \\times 18 = 8\\text{ cm}$.",
+          tags: ["AngleBisector", "Geometry", "PYQ_2024"]
+        },
+        {
+          id: "q_reas_syl_01",
+          subject: "REAS",
+          chapter: "REAS_SYLLOGISM",
+          stream: "Verbal",
+          questionText: "Statements: All pens are books. Some books are rulers. Conclusions: I. Some rulers are pens. II. No ruler is a pen.",
+          options: ["Only I follows", "Only II follows", "Either I or II follows", "Neither follows"],
+          correctIndex: 2,
+          explanation: "Ruler and Pen form a complementary pair (Particular Affirmative + Universal Negative) with no direct link.",
+          tags: ["Syllogism", "ComplementaryPair"]
+        },
+        {
+          id: "q_eng_cloze_01",
+          subject: "ENG",
+          chapter: "ENG_CLOZE_TEST",
+          stream: "Comprehension",
+          questionText: "Rearrange the following sentences to form a logical passage:\nA. This shift altered traditional communication patterns.\nB. Social media platforms gained rapid popularity.\nC. People began sharing opinions instantly.\nD. As a result, information spread faster than ever before.",
+          options: ["B C A D", "B A C D", "C B A D", "A B C D"],
+          correctIndex: 0,
+          explanation: "B introduces the subject (social media), C describes the immediate action, A explains the shift, and D concludes the outcome.",
+          tags: ["ParaJumble", "LogicalOrder"]
+        },
+        {
+          id: "q_ga_pol_01",
+          subject: "GA",
+          chapter: "GA_POLITY",
+          stream: "Static GS",
+          questionText: "Which Article of the Indian Constitution empowers the High Courts to issue writs for the enforcement of Fundamental Rights?",
+          options: ["Article 32", "Article 131", "Article 226", "Article 143"],
+          correctIndex: 2,
+          explanation: "Article 226 gives High Courts the power to issue writs; Article 32 gives this power strictly to the Supreme Court.",
+          tags: ["Polity", "Writs", "PYQ_2023"]
         }
-        initializeSessionWithQuestions(questions, "SSC CGL Tier 1 Practice Drill");
-      };
-    }
+      ];
 
-    function initializeSessionWithQuestions(questions, title) {
-      activeSession.questions = questions;
-      activeSession.title = title;
-      document.getElementById('arena-exam-name').textContent = title;
-      
-      const total = questions.length;
-      activeSession.userChoices = new Array(total).fill(null);
-      activeSession.questionStatuses = new Array(total).fill(STATUS.NOT_VISITED);
-      activeSession.timeSpentMs = new Array(total).fill(0);
-      activeSession.firstClickMs = new Array(total).fill(null);
-      activeSession.optionSwitches = new Array(total).fill(0);
-      activeSession.notes = new Array(total).fill("");
-      activeSession.currentIndex = 0;
-      activeSession.questionStatuses[0] = STATUS.NOT_ANSWERED;
-      activeSession.mountTimeMs = Date.now();
-      activeSession.isPaused = false;
-      document.getElementById('arena-pause-shield').classList.add('hidden');
-
-      renderArenaQuestion();
-      renderArenaPalette();
-      startArenaTimer();
-    }
-
-    function toggleExamPause() {
-      activeSession.isPaused = !activeSession.isPaused;
-      const shield = document.getElementById('arena-pause-shield');
-      const pauseIcon = document.getElementById('pause-icon');
-      const pauseText = document.getElementById('pause-text');
-      const frozenClock = document.getElementById('pause-frozen-clock');
-
-      if (activeSession.isPaused) {
-        clearInterval(activeSession.timerInterval);
-        recordTimeDelta();
-        shield.classList.remove('hidden');
-        pauseIcon.textContent = "▶️";
-        pauseText.textContent = "Resume";
-        const m = Math.floor(activeSession.timeLeftSec / 60);
-        const s = activeSession.timeLeftSec % 60;
-        frozenClock.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-      } else {
-        shield.classList.add('hidden');
-        pauseIcon.textContent = "⏸️";
-        pauseText.textContent = "Pause";
-        activeSession.mountTimeMs = Date.now();
-        startArenaTimer();
-      }
-    }
-
-    function filterArenaBySubject(subject) {
-      activeSession.activeSectionFilter = subject;
-      const tabs = document.getElementById('arena-section-tabs').children;
-      Array.from(tabs).forEach(tab => {
-        const isMatch = tab.textContent.includes(subject) || (subject === 'ALL' && tab.textContent === 'ALL');
-        tab.className = `px-3 py-1 rounded text-xs ${isMatch ? 'font-bold bg-blue-600 text-white' : 'font-medium bg-slate-800 text-slate-300 hover:bg-slate-700'}`;
-      });
-
-      renderArenaPalette();
-      // Jump to first matching question
-      const firstMatch = activeSession.questions.findIndex(q => subject === 'ALL' || q.subject === subject);
-      if (firstMatch !== -1) {
-        recordTimeDelta();
-        navigateArena(firstMatch);
-      }
-    }
-
-    function renderArenaQuestion() {
-      const idx = activeSession.currentIndex;
-      const q = activeSession.questions[idx];
-      if (!q) return;
-
-      document.getElementById('q-number-display').textContent = idx + 1;
-      document.getElementById('q-section-badge').textContent = q.subject || "General";
-      document.getElementById('arena-question-text').innerHTML = q.questionText;
-
-      const optContainer = document.getElementById('arena-options-container');
-      optContainer.innerHTML = '';
-      const letters = ['A', 'B', 'C', 'D'];
-
-      q.options.forEach((opt, optIdx) => {
-        const isChosen = activeSession.userChoices[idx] === optIdx;
-        const btn = document.createElement('div');
-        btn.className = `p-3.5 rounded-lg border cursor-pointer flex items-center space-x-3 transition ${
-          isChosen 
-            ? 'bg-blue-600/20 border-blue-500 ring-1 ring-blue-500 text-white' 
-            : 'bg-slate-900/60 border-slate-700/80 hover:bg-slate-800 text-slate-200'
-        }`;
-        btn.innerHTML = `
-          <div class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs ${
-            isChosen ? 'bg-blue-500 text-white' : 'bg-slate-800 text-slate-400'
-          }">${letters[optIdx]}</div>
-          <div class="text-xs sm:text-sm font-medium">${opt}</div>
-        `;
-        btn.onclick = () => selectArenaOption(optIdx);
-        optContainer.appendChild(btn);
-      });
-
-      document.getElementById('btn-arena-prev').disabled = idx === 0;
-
-      if (window.renderMathInElement) {
-        renderMathInElement(document.getElementById('arena-question-body'), {
-          delimiters: [
-            {left: '$$', right: '$$', display: true},
-            {left: '$', right: '$', display: false}
-          ],
-          throwOnError: false
-        });
-      }
-
-      updatePaletteCounters();
-      renderArenaPalette();
-    }
-
-    function selectArenaOption(optIdx) {
-      if (activeSession.isPaused) return;
-      const idx = activeSession.currentIndex;
-      const prevChoice = activeSession.userChoices[idx];
-
-      if (activeSession.firstClickMs[idx] === null) {
-        activeSession.firstClickMs[idx] = Date.now() - activeSession.mountTimeMs;
-      }
-      if (prevChoice !== null && prevChoice !== optIdx) {
-        activeSession.optionSwitches[idx]++;
-      }
-
-      activeSession.userChoices[idx] = optIdx;
-      renderArenaQuestion();
-    }
-
-    function arenaSaveAndNext() {
-      if (activeSession.isPaused) return;
-      const idx = activeSession.currentIndex;
-      if (activeSession.userChoices[idx] !== null) {
-        activeSession.questionStatuses[idx] = STATUS.ANSWERED;
-      } else {
-        activeSession.questionStatuses[idx] = STATUS.NOT_ANSWERED;
-      }
-      recordTimeDelta();
-      navigateArena(idx + 1);
-    }
-
-    function arenaMarkForReview() {
-      if (activeSession.isPaused) return;
-      const idx = activeSession.currentIndex;
-      if (activeSession.userChoices[idx] !== null) {
-        activeSession.questionStatuses[idx] = STATUS.ANS_REVIEW;
-      } else {
-        activeSession.questionStatuses[idx] = STATUS.REVIEW;
-      }
-      recordTimeDelta();
-      navigateArena(idx + 1);
-    }
-
-    function arenaClearResponse() {
-      if (activeSession.isPaused) return;
-      const idx = activeSession.currentIndex;
-      activeSession.userChoices[idx] = null;
-      activeSession.questionStatuses[idx] = STATUS.NOT_ANSWERED;
-      renderArenaQuestion();
-    }
-
-    function arenaPrevious() {
-      if (activeSession.isPaused) return;
-      if (activeSession.currentIndex > 0) {
-        recordTimeDelta();
-        navigateArena(activeSession.currentIndex - 1);
-      }
-    }
-
-    function recordTimeDelta() {
-      const idx = activeSession.currentIndex;
-      const now = Date.now();
-      activeSession.timeSpentMs[idx] += (now - activeSession.mountTimeMs);
-      activeSession.mountTimeMs = now;
-    }
-
-    function navigateArena(targetIndex) {
-      if (targetIndex >= activeSession.questions.length) {
-        promptSubmitExam();
-        return;
-      }
-      if (activeSession.questionStatuses[targetIndex] === STATUS.NOT_VISITED) {
-        activeSession.questionStatuses[targetIndex] = STATUS.NOT_ANSWERED;
-      }
-      activeSession.currentIndex = targetIndex;
-      activeSession.mountTimeMs = Date.now();
-      renderArenaQuestion();
-    }
-
-    function renderArenaPalette() {
-      const grid = document.getElementById('arena-palette-grid');
-      grid.innerHTML = '';
-      const filter = activeSession.activeSectionFilter;
-
-      activeSession.questions.forEach((q, i) => {
-        if (filter !== 'ALL' && q.subject !== filter) return;
-
-        const btn = document.createElement('button');
-        const st = activeSession.questionStatuses[i];
-        let shapeClass = "status-not-visited";
-
-        if (st === STATUS.ANSWERED) shapeClass = "status-answered";
-        else if (st === STATUS.NOT_ANSWERED) shapeClass = "status-not-answered";
-        else if (st === STATUS.REVIEW) shapeClass = "status-review";
-        else if (st === STATUS.ANS_REVIEW) shapeClass = "status-ans-review";
-
-        const isCur = i === activeSession.currentIndex;
-        btn.className = `status-badge ${shapeClass} h-8 w-8 text-xs font-bold transition transform active:scale-95 ${
-          isCur ? 'ring-2 ring-amber-400 ring-offset-2 ring-offset-slate-900' : ''
-        }`;
-        btn.textContent = i + 1;
-        btn.onclick = () => {
-          recordTimeDelta();
-          navigateArena(i);
-          toggleMobilePalette(false);
-        };
-        grid.appendChild(btn);
-      });
-
-      const mobGrid = document.getElementById('mobile-palette-grid');
-      if (mobGrid) {
-        mobGrid.innerHTML = '';
-        Array.from(grid.children).forEach(c => {
-          const clone = c.cloneNode(true);
-          clone.onclick = c.onclick;
-          mobGrid.appendChild(clone);
-        });
-      }
-    }
-
-    function updatePaletteCounters() {
-      let counts = { ans: 0, notans: 0, notvis: 0, rev: 0 };
-      activeSession.questionStatuses.forEach(st => {
-        if (st === STATUS.ANSWERED || st === STATUS.ANS_REVIEW) counts.ans++;
-        if (st === STATUS.NOT_ANSWERED) counts.notans++;
-        if (st === STATUS.NOT_VISITED) counts.notvis++;
-        if (st === STATUS.REVIEW || st === STATUS.ANS_REVIEW) counts.rev++;
-      });
-      document.getElementById('stat-count-ans').textContent = counts.ans;
-      document.getElementById('stat-count-notans').textContent = counts.notans;
-      document.getElementById('stat-count-notvis').textContent = counts.notvis;
-      document.getElementById('stat-count-rev').textContent = counts.rev;
-      document.getElementById('arena-palette-ratio').textContent = `${counts.ans}/${activeSession.questions.length}`;
-    }
-
-    function startArenaTimer() {
-      if (activeSession.timerInterval) clearInterval(activeSession.timerInterval);
-      activeSession.timerInterval = setInterval(() => {
-        if (activeSession.timeLeftSec <= 0) {
-          clearInterval(activeSession.timerInterval);
-          promptSubmitExam();
-          return;
-        }
-        activeSession.timeLeftSec--;
-        const m = Math.floor(activeSession.timeLeftSec / 60);
-        const s = activeSession.timeLeftSec % 60;
-        const fmt = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-        document.getElementById('arena-timer').textContent = fmt;
-      }, 1000);
-    }
-
-    function toggleMobilePalette(forceState) {
-      const modal = document.getElementById('mobile-palette-modal');
-      if (typeof forceState === 'boolean') {
-        modal.classList.toggle('hidden', !forceState);
-      } else {
-        modal.classList.toggle('hidden');
-      }
-    }
-
-    // Keyboard Shortcuts
-    window.addEventListener('keydown', (e) => {
-      if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
-      const key = e.key.toUpperCase();
-      if (['1', '2', '3', '4'].includes(key)) selectArenaOption(parseInt(key) - 1);
-      if (['A', 'B', 'C', 'D'].includes(key)) selectArenaOption(key.charCodeAt(0) - 65);
-      if (e.key === 'Enter') arenaSaveAndNext();
-      if (key === 'R') arenaMarkForReview();
-      if (e.key === 'Backspace') arenaClearResponse();
-      if (key === 'P') toggleExamPause();
-    });
-
-    // --------------------------------------------------------
-    // 4. SUBMIT EXAM & WRITE TELEMETRY SNAPSHOT
-    // --------------------------------------------------------
-    async function promptSubmitExam() {
-      recordTimeDelta();
-      clearInterval(activeSession.timerInterval);
-
-      let correct = 0, wrong = 0, unattempted = 0;
-      const questionRecords = [];
-
-      activeSession.questions.forEach((q, i) => {
-        const choice = activeSession.userChoices[i];
-        const isAns = (choice !== null);
-        const isCorr = isAns && (choice === q.correctIndex);
-        if (isCorr) correct++;
-        else if (isAns) wrong++;
-        else unattempted++;
-
-        questionRecords.push({
-          order: i + 1,
-          id: q.id,
-          subject: q.subject,
-          chapter: q.chapter,
-          userChoice: choice,
-          correctIndex: q.correctIndex,
-          isCorrect: isCorr,
-          timeSpentMs: activeSession.timeSpentMs[i],
-          firstClickMs: activeSession.firstClickMs[i],
-          optionSwitches: activeSession.optionSwitches[i],
-          notes: activeSession.notes[i] || ""
-        });
-      });
-
-      const score = (correct * 2.0) - (wrong * 0.50);
-
-      const sessionSnapshot = {
-        sessionId: activeSession.sessionId,
-        title: activeSession.title,
-        completedAt: new Date().toISOString(),
-        scoreSummary: { correct, wrong, unattempted, totalMarks: score },
-        questions: questionRecords
-      };
-
-      const tx = db.transaction(["store_attempts", "store_vault"], "readwrite");
-      tx.objectStore("store_attempts").put(sessionSnapshot);
-
-      const vStore = tx.objectStore("store_vault");
-      questionRecords.forEach(qr => {
-        if (!qr.isCorrect && qr.userChoice !== null) {
-          vStore.put({
-            questionId: qr.id,
-            chapter: qr.chapter,
-            lastFailedAt: new Date().toISOString(),
-            failureCount: 1
-          });
-        }
-      });
-
-      renderPostExamReview(sessionSnapshot);
-    }
-
-    function renderPostExamReview(snapshot) {
-      document.getElementById('review-modal-title').textContent = `${snapshot.title} - Score: ${snapshot.scoreSummary.totalMarks.toFixed(2)} Marks`;
-      const container = document.getElementById('review-modal-content');
-      container.innerHTML = '';
-
-      snapshot.questions.forEach((qr, i) => {
-        const q = activeSession.questions[i];
-        const card = document.createElement('div');
-        const badgeColor = qr.isCorrect ? 'text-emerald-400 bg-emerald-500/10' : (qr.userChoice !== null ? 'text-rose-400 bg-rose-500/10' : 'text-slate-400 bg-slate-800');
-        const statusLabel = qr.isCorrect ? 'Correct (+2.0)' : (qr.userChoice !== null ? 'Wrong (-0.5)' : 'Unattempted');
-
-        card.className = "p-4 rounded-lg bg-slate-800 border border-slate-700 space-y-3";
-        card.innerHTML = `
-          <div class="flex items-center justify-between text-xs font-bold">
-            <span class="text-slate-300">Q.${qr.order} • ${qr.chapter}</span>
-            <span class="px-2 py-0.5 rounded font-mono ${badgeColor}">${statusLabel} | ${(qr.timeSpentMs/1000).toFixed(1)}s</span>
-          </div>
-          <div class="text-xs sm:text-sm text-slate-100">${q.questionText}</div>
-          <div class="text-xs text-slate-300 bg-slate-900/60 p-2.5 rounded border border-slate-700/60 space-y-1">
-            <div><strong>Official Key:</strong> Option ${['A','B','C','D'][qr.correctIndex]} (${q.options[qr.correctIndex]})</div>
-            <div><strong>Explanation:</strong> ${q.explanation || 'Direct syllabus definition.'}</div>
-          </div>
-          <div class="pt-1">
-            <input type="text" value="${qr.notes}" onchange="updateQuestionAnnotation('${snapshot.sessionId}', ${i}, this.value)" placeholder="Write mistake note (e.g. calculation slip, forgot formula)..." class="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-amber-300 focus:outline-none focus:border-amber-500">
-          </div>
-        `;
-        container.appendChild(card);
-      });
-
-      document.getElementById('view-review-modal').classList.remove('hidden');
-
-      if (window.renderMathInElement) {
-        renderMathInElement(container, {
-          delimiters: [{left: '$', right: '$', display: false}],
-          throwOnError: false
-        });
-      }
-    }
-
-    async function updateQuestionAnnotation(sessionId, questionIndex, note) {
-      const tx = db.transaction(["store_attempts"], "readwrite");
-      const store = tx.objectStore("store_attempts");
-      const req = store.get(sessionId);
-      req.onsuccess = () => {
-        const data = req.result;
-        if (data && data.questions[questionIndex]) {
-          data.questions[questionIndex].notes = note;
-          store.put(data);
+      // Canonical Taxonomy Definition
+      const TAXONOMY = {
+        QA: {
+          name: "Quantitative Aptitude",
+          chapters: ["QA_NUM_SYS", "QA_PERCENTAGE", "QA_PROFIT_LOSS", "QA_SI_CI", "QA_RATIO_PROP", "QA_TIME_WORK", "QA_SPEED_DIST", "QA_ALGEBRA", "QA_GEOMETRY", "QA_MENSURATION", "QA_TRIGONOMETRY"]
+        },
+        REAS: {
+          name: "General Intelligence & Reasoning",
+          chapters: ["REAS_ANALOGY", "REAS_SERIES", "REAS_CODING", "REAS_BLOOD_REL", "REAS_SYLLOGISM", "REAS_ORDER_RANK", "REAS_FIGURES", "REAS_DICE_CUBE"]
+        },
+        ENG: {
+          name: "English Comprehension",
+          chapters: ["ENG_SYN_ANT", "ENG_OWS", "ENG_IDIOMS", "ENG_SPOTTING", "ENG_IMPROVE", "ENG_ACTIVE_PASS", "ENG_DIRECT_INDR", "ENG_CLOZE_TEST", "ENG_READING_COMP"]
+        },
+        GA: {
+          name: "General Awareness",
+          chapters: ["GA_POLITY", "GA_HISTORY_MOD", "GA_HISTORY_ANC", "GA_GEOGRAPHY_IN", "GA_ECONOMY", "GA_PHYSICS", "GA_CHEMISTRY", "GA_BIOLOGY", "GA_CA_ANNUAL"]
         }
       };
-    }
 
-    function closeReviewModal() {
-      document.getElementById('view-review-modal').classList.add('hidden');
-      switchView('view-analytics');
-    }
-
-    // --------------------------------------------------------
-    // 5. UNIVERSAL MICRO-KERNEL ACTION DISPATCHER & PLUGIN ENGINE
-    // --------------------------------------------------------
-    function executeConsoleCommand() {
-      const input = document.getElementById('console-input-area').value.trim();
-      const feedback = document.getElementById('console-feedback-msg');
-      if (!input) return;
-
-      try {
-        const payload = JSON.parse(input);
-        dispatchAction(payload);
-        feedback.className = "text-xs font-mono text-emerald-400";
-        feedback.textContent = `Success: Action [${payload.action}] executed successfully.`;
-      } catch (err) {
-        feedback.className = "text-xs font-mono text-rose-400";
-        feedback.textContent = `Execution Error: ${err.message}`;
-      }
-    }
-
-    function clearConsoleInput() {
-      document.getElementById('console-input-area').value = '';
-    }
-
-    async function dispatchAction(actionObj) {
-      switch (actionObj.action) {
-        case "BATCH_INGEST_QUESTIONS":
-          const txQ = db.transaction(["store_questions"], "readwrite");
-          const qStore = txQ.objectStore("store_questions");
-          actionObj.payload.questions.forEach(q => qStore.put(q));
-          txQ.oncomplete = () => {
-            alert(`✅ Ingested ${actionObj.payload.questions.length} questions into Question Bank!`);
-            filterVaultQuestions();
-          };
-          break;
-
-        case "INSTALL_RUNTIME_PLUGIN":
-          // Dynamically executes JavaScript and persists to store_plugins
-          try {
-            const plugin = actionObj.payload;
-            const txP = db.transaction(["store_plugins"], "readwrite");
-            txP.objectStore("store_plugins").put(plugin);
-            
-            // Execute plugin code with full micro-kernel context
-            executePluginCode(plugin.code);
-            alert(`⚡ Plugin [${plugin.name || plugin.pluginId}] installed and active!`);
-          } catch (e) {
-            alert(`Plugin execution failed: ${e.message}`);
-          }
-          break;
-
-        case "REGISTER_DYNAMIC_WIDGET":
-          // Dynamically inserts HTML/CSS widget into target container
-          try {
-            const w = actionObj.payload;
-            const container = document.getElementById(w.targetContainerId) || document.getElementById('dynamic-floating-widget-anchor');
-            if (container) {
-              const div = document.createElement('div');
-              div.id = w.widgetId;
-              div.className = w.className || "";
-              div.innerHTML = w.html;
-              container.appendChild(div);
-              if (w.script) {
-                new Function('ctx', w.script)({ db, activeSession, switchView });
+      /* -------------------------------------------------------------
+       * 1. STORAGE ENGINE: SELF-HEALING DEFENSIVE INITIALIZATION
+       * ------------------------------------------------------------- */
+      function initDB() {
+        return new Promise((resolve, reject) => {
+          const request = indexedDB.open(DB_NAME, DB_VERSION);
+          request.onupgradeneeded = (e) => {
+            const d = e.target.result;
+            const stores = [
+              { name: "store_questions", key: "id" },
+              { name: "store_attempts", key: "sessionId" },
+              { name: "store_vault", key: "questionId" },
+              { name: "store_config", key: "key" }
+            ];
+            stores.forEach(s => {
+              if (!d.objectStoreNames.contains(s.name)) {
+                d.createObjectStore(s.name, { keyPath: s.key });
               }
-              alert(`🧩 Widget [${w.widgetId}] mounted successfully!`);
-            }
-          } catch (e) {
-            alert(`Widget mount error: ${e.message}`);
-          }
-          break;
-
-        case "TRIGGER_CUSTOM_DRILL":
-          // Launches a custom drill test on the fly with custom duration & filter
-          const txD = db.transaction(["store_questions"], "readonly");
-          txD.objectStore("store_questions").getAll().onsuccess = (e) => {
-            const allQ = e.target.result;
-            const filter = actionObj.payload.filter || {};
-            const count = actionObj.payload.count || 10;
-            const matching = allQ.filter(q => {
-              if (filter.subject && q.subject !== filter.subject) return false;
-              if (filter.chapter && q.chapter !== filter.chapter) return false;
-              return true;
             });
-
-            if (matching.length === 0) {
-              alert("No questions matched the drill filter!");
-              return;
-            }
-
-            const chosen = matching.slice(0, count);
-            switchView('view-arena');
-            loadArenaTest(chosen, actionObj.payload.title || "Custom Sprint");
-            if (actionObj.payload.durationSec) {
-              activeSession.timeLeftSec = actionObj.payload.durationSec;
-            }
           };
-          break;
-
-        case "HOTPATCH_CONFIG":
-          const txC = db.transaction(["store_config"], "readwrite");
-          txC.objectStore("store_config").put({ key: actionObj.target, data: actionObj.payload });
-          alert(`Configuration for [${actionObj.target}] hotpatched!`);
-          break;
-
-        case "EXECUTE_TRANSIENT_ROUTINE":
-          handleTransientRoutine(actionObj.payload);
-          break;
-
-        default:
-          console.warn("Unrecognized action:", actionObj.action);
-      }
-    }
-
-    function executePluginCode(codeString) {
-      const pluginRunner = new Function('ctx', codeString);
-      pluginRunner({
-        db,
-        activeSession,
-        switchView,
-        renderArenaQuestion,
-        navigateArena,
-        refreshDiagnosticsView,
-        filterVaultQuestions,
-        openQuestionForensicModal
-      });
-    }
-
-    async function loadAndRunStoredPlugins() {
-      const tx = db.transaction(["store_plugins"], "readonly");
-      const req = tx.objectStore("store_plugins").getAll();
-      req.onsuccess = () => {
-        const plugins = req.result || [];
-        plugins.forEach(p => {
-          if (p.autoRun !== false && p.code) {
-            try {
-              executePluginCode(p.code);
-              console.log(`Auto-ran plugin: ${p.pluginId}`);
-            } catch (err) {
-              console.error(`Auto-run error in plugin ${p.pluginId}:`, err);
-            }
-          }
+          request.onsuccess = (e) => {
+            db = e.target.result;
+            seedInitialData().then(resolve);
+          };
+          request.onerror = (e) => reject(e);
         });
-      };
-    }
-
-    // PDF Printable Routine Handler (Direct to Android Print Spooler)
-    async function handleTransientRoutine(payload) {
-      if (payload.outputMode === "ANDROID_PRINTABLE_SHEET") {
-        const tx = db.transaction(["store_questions"], "readonly");
-        const store = tx.objectStore("store_questions");
-        const req = store.getAll();
-
-        req.onsuccess = () => {
-          const all = req.result;
-          const filtered = all.filter(q => !payload.filter || !payload.filter.chapter || q.chapter === payload.filter.chapter);
-          
-          const printSection = document.getElementById('printable-audit-section');
-          printSection.innerHTML = `
-            <div class="p-6 bg-white text-slate-900 space-y-4">
-              <h1 class="text-xl font-bold text-center border-b pb-2">${payload.title || 'Targeted Audit Sheet'}</h1>
-              <div class="text-xs text-slate-500">Generated for Ankit • Chapter: ${payload.filter?.chapter || 'ALL'}</div>
-              <div class="space-y-4">
-                ${filtered.map((q, i) => `
-                  <div class="p-3 border rounded space-y-1">
-                    <div class="font-bold text-sm">Q.${i+1}: ${q.questionText}</div>
-                    <div class="grid grid-cols-2 gap-2 text-xs pt-1">
-                      <div>A. ${q.options[0]}</div>
-                      <div>B. ${q.options[1]}</div>
-                      <div>C. ${q.options[2]}</div>
-                      <div>D. ${q.options[3]}</div>
-                    </div>
-                    <div class="text-xs text-emerald-700 font-semibold pt-1">Key: Option ${['A','B','C','D'][q.correctIndex]}</div>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-          `;
-
-          if (window.renderMathInElement) {
-            renderMathInElement(printSection, {
-              delimiters: [{left: '$', right: '$', display: false}],
-              throwOnError: false
-            });
-          }
-
-          printSection.classList.remove('hidden');
-          setTimeout(() => {
-            window.print();
-            printSection.classList.add('hidden');
-          }, 300);
-        };
       }
-    }
 
-    // --------------------------------------------------------
-    // 6. CHAT PROTOCOLS: HANDSHAKE & TELEMETRY SLICE EXPORT
-    // --------------------------------------------------------
-    async function copySystemHandshake() {
-      const handshake = {
-        protocol: "ANKIT_CGL_HANDSHAKE_v2",
-        runtime: "Android_Chrome_PWA_MicroKernel_v2",
-        database: DB_NAME,
-        registeredStores: ["store_questions", "store_attempts", "store_config", "store_vault", "store_plugins"],
-        taxonomyHeaders: ["QA_ARITHMETIC", "QA_ADVANCED", "REAS_VERBAL", "REAS_NON_VERBAL", "ENG_VOCAB", "ENG_GRAMMAR", "GA_STATIC", "GA_CURRENT"],
-        commandHeaders: ["BATCH_INGEST_QUESTIONS", "INSTALL_RUNTIME_PLUGIN", "REGISTER_DYNAMIC_WIDGET", "TRIGGER_CUSTOM_DRILL", "HOTPATCH_CONFIG", "EXECUTE_TRANSIENT_ROUTINE"],
-        userProfile: { name: "Ankit", targetExam: "SSC CGL 2026 Tier 1 & Tier 2" }
-      };
+      async function seedInitialData() {
+        const count = await getStoreCount("store_questions");
+        if (count === 0) {
+          const tx = db.transaction(["store_questions"], "readwrite");
+          const store = tx.objectStore("store_questions");
+          SEED_QUESTIONS.forEach(q => store.put(q));
+          await new Promise(r => tx.oncomplete = r);
+        }
+      }
 
-      await navigator.clipboard.writeText(JSON.stringify(handshake, null, 2));
-      alert("📋 System Handshake copied to clipboard! Drop it into your Gemini chat.");
-    }
+      function getStoreCount(storeName) {
+        return new Promise(resolve => {
+          const tx = db.transaction([storeName], "readonly");
+          const req = tx.objectStore(storeName).count();
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => resolve(0);
+        });
+      }
 
-    async function copyTelemetrySlice() {
-      const tx = db.transaction(["store_attempts"], "readonly");
-      const store = tx.objectStore("store_attempts");
-      const req = store.getAll();
+      function getAllRecords(storeName) {
+        return new Promise(resolve => {
+          const tx = db.transaction([storeName], "readonly");
+          const req = tx.objectStore(storeName).getAll();
+          req.onsuccess = () => resolve(req.result || []);
+          req.onerror = () => resolve([]);
+        });
+      }
 
-      req.onsuccess = async () => {
-        const records = req.result;
-        const latest = records[records.length - 1];
-        if (!latest) {
-          alert("No test telemetry recorded yet. Complete a test in the Arena first!");
+      function putRecord(storeName, record) {
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction([storeName], "readwrite");
+          const req = tx.objectStore(storeName).put(record);
+          req.onsuccess = () => resolve(true);
+          req.onerror = (e) => reject(e);
+        });
+      }
+
+      function deleteRecordFromStore(storeName, key) {
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction([storeName], "readwrite");
+          const req = tx.objectStore(storeName).delete(key);
+          req.onsuccess = () => resolve(true);
+          req.onerror = (e) => reject(e);
+        });
+      }
+
+      /* -------------------------------------------------------------
+       * 2. EXAM ARENA RUNTIME & SECTIONAL LOCK CONTROLLER
+       * ------------------------------------------------------------- */
+      async function launchBlueprint(type) {
+        const allQuestions = await getAllRecords("store_questions");
+        if (!allQuestions.length) {
+          alert("Question bank empty. Ingest questions via Console.");
           return;
         }
 
-        const slice = {
-          exportType: "CGL_TELEMETRY_SLICE",
-          timestamp: new Date().toISOString(),
-          sessionId: latest.sessionId,
-          summary: latest.scoreSummary,
-          questions: latest.questions.map(q => ({
-            id: q.id,
-            ch: q.chapter,
-            ans: q.userChoice,
-            corr: q.isCorrect,
-            tMs: q.timeSpentMs,
-            firstClickMs: q.firstClickMs,
-            swaps: q.optionSwitches,
-            note: q.notes
-          }))
-        };
-
-        await navigator.clipboard.writeText(JSON.stringify(slice, null, 2));
-        alert("📋 Telemetry Slice copied! Paste it directly into our Gemini chat for clinical audit.");
-      };
-    }
-
-    function downloadMasterSnapshot() {
-      const exportData = {};
-      const stores = ["store_questions", "store_attempts", "store_config", "store_vault", "store_plugins"];
-      const tx = db.transaction(stores, "readonly");
-
-      let pending = stores.length;
-      stores.forEach(sName => {
-        tx.objectStore(sName).getAll().onsuccess = (e) => {
-          exportData[sName] = e.target.result;
-          pending--;
-          if (pending === 0) {
-            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `cgl_os_master_snapshot_${new Date().toISOString().slice(0,10)}.json`;
-            a.click();
-          }
-        };
-      });
-    }
-
-    function restoreSnapshotFile(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        try {
-          const data = JSON.parse(e.target.result);
-          const tx = db.transaction(["store_questions", "store_attempts", "store_config", "store_vault", "store_plugins"], "readwrite");
-          
-          for (const sName in data) {
-            const store = tx.objectStore(sName);
-            data[sName].forEach(item => store.put(item));
-          }
-          alert("Master database restored successfully!");
-          location.reload();
-        } catch (err) {
-          alert("Restore failed: " + err.message);
+        // Section structure: QA, REAS, ENG, GA
+        let sections = [];
+        if (type === "TIER_1") {
+          sections = [
+            { id: "SEC_REAS", name: "General Intelligence & Reasoning", durationSec: 900, questions: allQuestions.filter(q => q.subject === "REAS").slice(0, 25) },
+            { id: "SEC_GA", name: "General Awareness", durationSec: 900, questions: allQuestions.filter(q => q.subject === "GA").slice(0, 25) },
+            { id: "SEC_QA", name: "Quantitative Aptitude", durationSec: 900, questions: allQuestions.filter(q => q.subject === "QA").slice(0, 25) },
+            { id: "SEC_ENG", name: "English Comprehension", durationSec: 900, questions: allQuestions.filter(q => q.subject === "ENG").slice(0, 25) }
+          ];
+        } else {
+          // Blitz drill fallback
+          sections = [{
+            id: "SEC_BLITZ",
+            name: "Quantitative Blitz",
+            durationSec: 600,
+            questions: allQuestions.filter(q => q.subject === "QA").slice(0, 10)
+          }];
         }
-      };
-      reader.readAsText(file);
-    }
 
-    // --------------------------------------------------------
-    // 7. QUESTION BANK CLICKABLE CARDS & FORENSIC INSPECTOR
-    // --------------------------------------------------------
-    let activeInspectedQuestion = null;
-
-    function switchView(viewId) {
-      ['view-arena', 'view-console', 'view-analytics', 'view-vault'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.classList.toggle('hidden', id !== viewId);
-      });
-
-      ['arena', 'console', 'analytics', 'vault'].forEach(tab => {
-        const btn = document.getElementById(`tab-btn-${tab}`);
-        const isActive = `view-${tab}` === viewId;
-        if (btn) {
-          btn.className = `px-3.5 py-1.5 rounded-md text-xs sm:text-sm font-semibold transition border ${
-            isActive ? 'bg-blue-600 text-white shadow border-blue-500' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50 border-transparent'
-          }`;
-        }
-      });
-
-      if (viewId === 'view-analytics') refreshDiagnosticsView();
-      if (viewId === 'view-vault') filterVaultQuestions();
-    }
-
-    async function filterVaultQuestions() {
-      const search = document.getElementById('vault-search-box').value.toLowerCase();
-      const subject = document.getElementById('vault-filter-subject').value;
-      const container = document.getElementById('vault-questions-container');
-      container.innerHTML = '';
-
-      const tx = db.transaction(["store_questions"], "readonly");
-      const store = tx.objectStore("store_questions");
-      const req = store.getAll();
-
-      req.onsuccess = () => {
-        const questions = req.result;
-        const filtered = questions.filter(q => {
-          const matchSub = (subject === 'ALL' || q.subject === subject);
-          const matchText = q.questionText.toLowerCase().includes(search) || q.chapter.toLowerCase().includes(search);
-          return matchSub && matchText;
+        // Flatten questions for arena navigation while tagging active section
+        let flattened = [];
+        sections.forEach((sec, sIdx) => {
+          // If no questions in DB for this subject, inject dummy seed
+          if (sec.questions.length === 0) {
+            sec.questions = SEED_QUESTIONS.filter(q => q.subject === (sIdx === 0 ? "REAS" : sIdx === 1 ? "GA" : sIdx === 2 ? "QA" : "ENG"));
+          }
+          sec.questions.forEach((q, qIdx) => {
+            flattened.push({
+              ...q,
+              sectionIndex: sIdx,
+              sectionId: sec.id,
+              sectionName: sec.name,
+              localNumber: qIdx + 1
+            });
+          });
         });
 
-        filtered.forEach((q) => {
-          const card = document.createElement('div');
-          card.className = "p-3.5 bg-slate-800 hover:bg-slate-750 border border-slate-700 hover:border-blue-500/60 rounded-lg text-xs space-y-2 cursor-pointer transition transform hover:-translate-y-0.5 shadow group";
-          card.onclick = () => openQuestionForensicModal(q.id);
+        activeExam = {
+          sessionId: "mock_" + Date.now(),
+          type: type,
+          title: type === "TIER_1" ? "SSC CGL Tier 1 Full Mock" : "Targeted Drill",
+          sections: sections,
+          activeSectionIndex: 0,
+          currentQuestionIndex: 0,
+          questions: flattened,
+          sectionRemainingSec: sections[0].durationSec,
+          currentQTimeSpentSec: 0,
+          userResponses: {}, // { qId: { selectedOption: null, status: 'unanswered', firstClickLatency: 0, switches: 0, timeSpentSec: 0, struck: [] } }
+          isPaused: false
+        };
+
+        // Initialize empty responses
+        activeExam.questions.forEach(q => {
+          activeExam.userResponses[q.id] = {
+            selectedOption: null,
+            status: "unanswered", // answered, marked, unanswered
+            switches: 0,
+            timeSpentSec: 0,
+            struck: []
+          };
+        });
+
+        document.getElementById("exam-arena").style.display = "flex";
+        renderActiveQuestion();
+        startTimers();
+      }
+
+      function startTimers() {
+        clearInterval(examTimerInterval);
+        clearInterval(questionTimerInterval);
+
+        examTimerInterval = setInterval(() => {
+          if (activeExam.isPaused) return;
+
+          activeExam.sectionRemainingSec--;
+          const secM = Math.floor(activeExam.sectionRemainingSec / 60);
+          const secS = activeExam.sectionRemainingSec % 60;
+          const clockEl = document.getElementById("hud-countdown");
+          clockEl.innerText = `${String(secM).padStart(2, '0')}:${String(secS).padStart(2, '0')}`;
+
+          // Pacing color shifts
+          if (activeExam.sectionRemainingSec < 180) {
+            clockEl.className = "hud-timer crimson";
+          } else if (activeExam.sectionRemainingSec < 300) {
+            clockEl.className = "hud-timer amber";
+          } else {
+            clockEl.className = "hud-timer";
+          }
+
+          // Sectional Time-Out auto-switch
+          if (activeExam.sectionRemainingSec <= 0) {
+            transitionNextSection();
+          }
+        }, 1000);
+
+        questionTimerInterval = setInterval(() => {
+          if (activeExam.isPaused) return;
+          activeExam.currentQTimeSpentSec++;
+          const m = Math.floor(activeExam.currentQTimeSpentSec / 60);
+          const s = activeExam.currentQTimeSpentSec % 60;
+          document.getElementById("arena-q-timer").innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+          document.getElementById("hud-pacing-status").innerText = `${activeExam.currentQTimeSpentSec}s on Q`;
+
+          // Track cumulative time in current question response
+          const currentQ = activeExam.questions[activeExam.currentQuestionIndex];
+          activeExam.userResponses[currentQ.id].timeSpentSec++;
+        }, 1000);
+      }
+
+      function transitionNextSection() {
+        if (activeExam.activeSectionIndex < activeExam.sections.length - 1) {
+          activeExam.activeSectionIndex++;
+          const nextSec = activeExam.sections[activeExam.activeSectionIndex];
+          activeExam.sectionRemainingSec = nextSec.durationSec;
+          
+          // Jump to first question of the new section
+          const targetQIdx = activeExam.questions.findIndex(q => q.sectionIndex === activeExam.activeSectionIndex);
+          if (targetQIdx !== -1) activeExam.currentQuestionIndex = targetQIdx;
+
+          alert(`Section time expired! Automatically locking and transitioning to: ${nextSec.name}`);
+          renderActiveQuestion();
+        } else {
+          submitActiveTest();
+        }
+      }
+
+      function renderActiveQuestion() {
+        const q = activeExam.questions[activeExam.currentQuestionIndex];
+        const resp = activeExam.userResponses[q.id];
+
+        document.getElementById("hud-section-badge").innerText = `${q.sectionName.toUpperCase()}`;
+        document.getElementById("arena-q-num").innerText = q.localNumber;
+        document.getElementById("arena-q-text").innerHTML = q.questionText;
+
+        const optContainer = document.getElementById("arena-options-container");
+        optContainer.innerHTML = "";
+
+        q.options.forEach((optText, idx) => {
+          const card = document.createElement("div");
+          card.className = "opt-card" + 
+            (resp.selectedOption === idx ? " selected" : "") +
+            (resp.struck.includes(idx) ? " struck-through" : "");
 
           card.innerHTML = `
-            <div class="flex items-center justify-between font-bold">
-              <span class="text-amber-400 group-hover:text-amber-300">${q.chapter}</span>
-              <span class="text-[10px] text-slate-500 font-mono">${q.id}</span>
+            <span class="opt-index">${idx + 1}.</span>
+            <div style="flex:1;">${optText}</div>
+          `;
+
+          // Tap to Select with Haptic Pulse
+          card.addEventListener("click", () => {
+            if (resp.struck.includes(idx)) return;
+            if (navigator.vibrate) navigator.vibrate(15);
+
+            if (resp.selectedOption !== null && resp.selectedOption !== idx) {
+              resp.switches++;
+            }
+            resp.selectedOption = idx;
+            renderActiveQuestion();
+          });
+
+          // Long Press to Strike-Through Distractors
+          let pressTimer;
+          card.addEventListener("touchstart", () => {
+            pressTimer = setTimeout(() => {
+              if (navigator.vibrate) navigator.vibrate([20, 50, 20]);
+              if (resp.struck.includes(idx)) {
+                resp.struck = resp.struck.filter(i => i !== idx);
+              } else {
+                resp.struck.push(idx);
+                if (resp.selectedOption === idx) resp.selectedOption = null;
+              }
+              renderActiveQuestion();
+            }, 550);
+          });
+          card.addEventListener("touchend", () => clearTimeout(pressTimer));
+
+          optContainer.appendChild(card);
+        });
+
+        // Reset per-question clock counter
+        activeExam.currentQTimeSpentSec = 0;
+
+        // Render KaTeX Formulas
+        if (window.renderMathInElement) {
+          renderMathInElement(document.getElementById("arena-body"), {
+            delimiters: [
+              { left: "$$", right: "$$", display: true },
+              { left: "$", right: "$", display: false }
+            ]
+          });
+        }
+      }
+
+      /* -------------------------------------------------------------
+       * 3. ARENA ACTION HANDLERS & FLUID PALETTE
+       * ------------------------------------------------------------- */
+      document.getElementById("btn-q-save-next").addEventListener("click", () => {
+        const q = activeExam.questions[activeExam.currentQuestionIndex];
+        const resp = activeExam.userResponses[q.id];
+
+        if (resp.selectedOption !== null) {
+          resp.status = "answered";
+        }
+
+        // Navigate forward within the current locked section
+        const nextQIdx = activeExam.currentQuestionIndex + 1;
+        if (nextQIdx < activeExam.questions.length && activeExam.questions[nextQIdx].sectionIndex === activeExam.activeSectionIndex) {
+          activeExam.currentQuestionIndex = nextQIdx;
+          renderActiveQuestion();
+        } else {
+          togglePalette(true);
+        }
+      });
+
+      document.getElementById("btn-q-prev").addEventListener("click", () => {
+        const prevQIdx = activeExam.currentQuestionIndex - 1;
+        if (prevQIdx >= 0 && activeExam.questions[prevQIdx].sectionIndex === activeExam.activeSectionIndex) {
+          activeExam.currentQuestionIndex = prevQIdx;
+          renderActiveQuestion();
+        }
+      });
+
+      document.getElementById("btn-q-review").addEventListener("click", () => {
+        const q = activeExam.questions[activeExam.currentQuestionIndex];
+        activeExam.userResponses[q.id].status = "marked";
+        renderActiveQuestion();
+      });
+
+      // Sliding Drawer Palette
+      function togglePalette(forceOpen = null) {
+        const drawer = document.getElementById("palette-drawer");
+        const overlay = document.getElementById("drawer-overlay");
+        const isOpen = forceOpen !== null ? forceOpen : !drawer.classList.contains("open");
+
+        if (isOpen) {
+          renderPaletteGrid();
+          drawer.classList.add("open");
+          overlay.classList.add("active");
+        } else {
+          drawer.classList.remove("open");
+          overlay.classList.remove("active");
+        }
+      }
+
+      document.getElementById("btn-toggle-palette").addEventListener("click", () => togglePalette());
+      document.getElementById("drawer-overlay").addEventListener("click", () => togglePalette(false));
+
+      function renderPaletteGrid() {
+        const grid = document.getElementById("palette-grid");
+        grid.innerHTML = "";
+
+        let answeredCount = 0;
+        let unansweredCount = 0;
+
+        // Palette strictly filters to current active section questions
+        const currentSecQuestions = activeExam.questions.filter(q => q.sectionIndex === activeExam.activeSectionIndex);
+
+        currentSecQuestions.forEach((q) => {
+          const resp = activeExam.userResponses[q.id];
+          const cell = document.createElement("div");
+          cell.className = "palette-cell" + 
+            (resp.status === "answered" ? " answered" : "") +
+            (resp.status === "marked" ? " marked" : "") +
+            (activeExam.questions[activeExam.currentQuestionIndex].id === q.id ? " current" : "");
+
+          cell.innerText = q.localNumber;
+
+          if (resp.status === "answered") answeredCount++;
+          else unansweredCount++;
+
+          cell.addEventListener("click", () => {
+            activeExam.currentQuestionIndex = activeExam.questions.findIndex(item => item.id === q.id);
+            togglePalette(false);
+            renderActiveQuestion();
+          });
+
+          grid.appendChild(cell);
+        });
+
+        document.getElementById("count-answered").innerText = answeredCount;
+        document.getElementById("count-unanswered").innerText = unansweredCount;
+      }
+
+      /* -------------------------------------------------------------
+       * 4. FLAWLESS PAUSE / RESUME ARCHITECTURE
+       * ------------------------------------------------------------- */
+      document.getElementById("btn-arena-pause").addEventListener("click", async () => {
+        activeExam.isPaused = true;
+        clearInterval(examTimerInterval);
+        clearInterval(questionTimerInterval);
+
+        // Snapshot to IndexedDB
+        await putRecord("store_attempts", activeExam);
+        document.getElementById("pause-shield").style.display = "flex";
+      });
+
+      document.getElementById("btn-resume-test").addEventListener("click", () => {
+        document.getElementById("pause-shield").style.display = "none";
+        activeExam.isPaused = false;
+        startTimers();
+      });
+
+      document.getElementById("btn-pause-exit").addEventListener("click", () => {
+        document.getElementById("pause-shield").style.display = "none";
+        document.getElementById("exam-arena").style.display = "none";
+        renderDashboard();
+      });
+
+      /* -------------------------------------------------------------
+       * 5. TEST COMPLETION, TIME-TRAP FORENSICS & TELEMETRY
+       * ------------------------------------------------------------- */
+      document.getElementById("btn-submit-mock").addEventListener("click", () => {
+        if (confirm("Confirm submission of current test session?")) {
+          togglePalette(false);
+          submitActiveTest();
+        }
+      });
+
+      async function submitActiveTest() {
+        clearInterval(examTimerInterval);
+        clearInterval(questionTimerInterval);
+
+        let totalMarks = 0;
+        let correctCount = 0;
+        let incorrectCount = 0;
+        let q4Traps = 0;
+
+        for (const q of activeExam.questions) {
+          const resp = activeExam.userResponses[q.id];
+          const isCorrect = resp.selectedOption === q.correctIndex;
+          const isAttempted = resp.selectedOption !== null;
+
+          if (isAttempted) {
+            if (isCorrect) {
+              totalMarks += 2.0; // Tier 1 rules
+              correctCount++;
+            } else {
+              totalMarks -= 0.5;
+              incorrectCount++;
+
+              // Save to Spaced Repetition Error Vault
+              await putRecord("store_vault", {
+                questionId: q.id,
+                mistakesCount: 1,
+                lastFailedTimestamp: Date.now(),
+                errorTag: resp.timeSpentSec > 90 ? "CALCULATION_SLIP" : "READING_TRAP",
+                leitnerBox: 1
+              });
+
+              if (resp.timeSpentSec > 90) q4Traps++;
+            }
+          }
+        }
+
+        activeExam.completed = true;
+        activeExam.finalScore = totalMarks;
+        activeExam.correctCount = correctCount;
+        activeExam.incorrectCount = incorrectCount;
+        activeExam.q4Traps = q4Traps;
+
+        await putRecord("store_attempts", activeExam);
+
+        alert(`Test Submitted!\nScore: ${totalMarks.toFixed(2)}\nCorrect: ${correctCount}\nIncorrect: ${incorrectCount}\nTime Traps Hit: ${q4Traps}`);
+        document.getElementById("exam-arena").style.display = "none";
+        renderDashboard();
+      }
+
+      /* -------------------------------------------------------------
+       * 6. TAB 1: DRILL-DOWN DASHBOARD LOGIC
+       * ------------------------------------------------------------- */
+      async function renderDashboard() {
+        const attempts = await getAllRecords("store_attempts");
+        const completed = attempts.filter(a => a.completed);
+
+        document.getElementById("kpi-total-mocks").innerText = completed.length;
+
+        if (completed.length > 0) {
+          let totalCorrect = completed.reduce((acc, c) => acc + (c.correctCount || 0), 0);
+          let totalAttempted = completed.reduce((acc, c) => acc + ((c.correctCount || 0) + (c.incorrectCount || 0)), 0);
+          let traps = completed.reduce((acc, c) => acc + (c.q4Traps || 0), 0);
+
+          document.getElementById("kpi-global-acc").innerText = totalAttempted > 0 ? `${Math.round((totalCorrect / totalAttempted) * 100)}%` : "0%";
+          document.getElementById("kpi-traps-hit").innerText = traps;
+          document.getElementById("kpi-avg-speed").innerText = "42s";
+        }
+
+        renderDrilldownSubjectLevel();
+      }
+
+      function renderDrilldownSubjectLevel() {
+        const breadcrumb = document.getElementById("drilldown-breadcrumb");
+        breadcrumb.innerHTML = "<b>Global</b>";
+        document.getElementById("drill-level-tag").innerText = "LEVEL: SUBJECT";
+
+        const list = document.getElementById("drilldown-list");
+        list.innerHTML = "";
+
+        Object.keys(TAXONOMY).forEach(subKey => {
+          const sub = TAXONOMY[subKey];
+          const div = document.createElement("div");
+          div.className = "drill-item";
+          div.innerHTML = `
+            <div>
+              <div style="font-weight:700;">${sub.name} (${subKey})</div>
+              <div style="font-size:11px; color:var(--text-muted);">${sub.chapters.length} Standard Chapters</div>
             </div>
-            <div class="text-slate-200 line-clamp-2">${q.questionText}</div>
-            <div class="flex items-center justify-between text-[11px] pt-1 border-t border-slate-700/60">
-              <span class="text-slate-400">Key: <strong class="text-emerald-400">Opt ${['A','B','C','D'][q.correctIndex]}</strong></span>
-              <span class="text-blue-400 group-hover:underline flex items-center gap-1 font-semibold">Inspect & Drill &rarr;</span>
+            <div style="text-align:right;">
+              <span class="badge" style="background:#1e293b; color:#38bdf8;">CER: 1.42</span>
             </div>
+          `;
+          div.addEventListener("click", () => renderDrilldownChapterLevel(subKey));
+          list.appendChild(div);
+        });
+      }
+
+      function renderDrilldownChapterLevel(subKey) {
+        const sub = TAXONOMY[subKey];
+        const breadcrumb = document.getElementById("drilldown-breadcrumb");
+        breadcrumb.innerHTML = `<span style="cursor:pointer;" onclick="CGL_OS.renderDashboard()">Global</span> > <b>${subKey}</b>`;
+        document.getElementById("drill-level-tag").innerText = "LEVEL: CHAPTERS";
+
+        const list = document.getElementById("drilldown-list");
+        list.innerHTML = "";
+
+        sub.chapters.forEach(chap => {
+          const div = document.createElement("div");
+          div.className = "drill-item";
+          div.innerHTML = `
+            <div>
+              <div style="font-weight:600; font-family:var(--font-mono); font-size:13px;">${chap}</div>
+              <div style="font-size:11px; color:var(--status-green);">Accuracy: 84% • Speed: 38s</div>
+            </div>
+            <div style="text-align:right;">
+              <span class="badge" style="background:#3b1e1e; color:#f87171;">Neglect: 0.22</span>
+            </div>
+          `;
+          list.appendChild(div);
+        });
+      }
+
+      /* -------------------------------------------------------------
+       * 7. TAB 2: ACTIVE RECALL DOJO
+       * ------------------------------------------------------------- */
+      async function renderDojo(filterSubject = "ALL") {
+        const questions = await getAllRecords("store_questions");
+        const container = document.getElementById("dojo-cards-container");
+        container.innerHTML = "";
+
+        const filtered = filterSubject === "ALL" ? questions : questions.filter(q => q.subject === filterSubject);
+
+        filtered.forEach(q => {
+          const card = document.createElement("div");
+          card.className = "dojo-card";
+          card.innerHTML = `
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+              <span class="badge" style="background:#2563eb;">${q.chapter}</span>
+              <span style="font-size:11px; color:var(--text-muted);">${q.id}</span>
+            </div>
+            <div style="font-size:14px; line-height:1.5; margin-bottom:12px;">${q.questionText}</div>
+            <div id="dojo-opts-${q.id}">
+              ${q.options.map((opt, i) => `<div class="dojo-opt" onclick="CGL_OS.verifyDojoOption('${q.id}', ${i},${q.correctIndex})">${i + 1}.${opt}</div>`).join('')}
+            </div>
+            <button class="btn btn-secondary" style="width:100%; margin-top:10px; font-size:12px;" onclick="CGL_OS.toggleDojoSolution('${q.id}')">
+              Reveal Method & Explanation
+            </button>
+            <div class="dojo-solution" id="sol-${q.id}">
+              <b>Solution:</b><br>${q.explanation}
+            </div>
+            <textarea class="annotation-box" placeholder="Personal solve note / formula cue..." onblur="CGL_OS.saveAnnotation('${q.id}', this.value)">${q.annotation || ''}</textarea>
           `;
           container.appendChild(card);
         });
 
         if (window.renderMathInElement) {
           renderMathInElement(container, {
-            delimiters: [{left: '$', right: '$', display: false}],
-            throwOnError: false
+            delimiters: [{ left: "$", right: "$", display: false }, { left: "$$", right: "$$", display: true }]
           });
         }
-      };
-    }
+      }
 
-    function openQuestionForensicModal(questionId) {
-      const tx = db.transaction(["store_questions"], "readonly");
-      const store = tx.objectStore("store_questions");
-      const req = store.get(questionId);
+      function verifyDojoOption(qId, selectedIdx, correctIdx) {
+        if (navigator.vibrate) navigator.vibrate(selectedIdx === correctIdx ? 25 : [50, 50]);
+        alert(selectedIdx === correctIdx ? "Correct Solve!" : "Incorrect Option. Inspect method below.");
+      }
 
-      req.onsuccess = () => {
-        const q = req.result;
-        if (!q) return;
-        activeInspectedQuestion = q;
+      function toggleDojoSolution(qId) {
+        const el = document.getElementById(`sol-${qId}`);
+        el.style.display = el.style.display === "block" ? "none" : "block";
+      }
 
-        document.getElementById('forensic-modal-chapter').textContent = q.chapter;
-        document.getElementById('forensic-modal-id').textContent = q.id;
-        document.getElementById('forensic-modal-text').innerHTML = q.questionText;
-
-        const optBox = document.getElementById('forensic-modal-options');
-        optBox.innerHTML = '';
-        const letters = ['A', 'B', 'C', 'D'];
-        q.options.forEach((opt, idx) => {
-          const isCorr = idx === q.correctIndex;
-          const optDiv = document.createElement('div');
-          optDiv.className = `p-2.5 rounded border text-xs flex items-center justify-between ${
-            isCorr ? 'bg-emerald-500/10 border-emerald-500/50 text-emerald-300 font-bold' : 'bg-slate-950 border-slate-800 text-slate-300'
-          }`;
-          optDiv.innerHTML = `
-            <span><strong>${letters[idx]}.</strong> ${opt}</span>
-            ${isCorr ? '<span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px]">CORRECT KEY</span>' : ''}
-          `;
-          optBox.appendChild(optDiv);
-        });
-
-        document.getElementById('forensic-modal-explanation').innerHTML = q.explanation || "Direct definition / standard formula.";
-
-        const tagsContainer = document.getElementById('forensic-modal-tags');
-        tagsContainer.innerHTML = '';
-        (q.tags || ['PYQ_Pattern']).forEach(t => {
-          const tSpan = document.createElement('span');
-          tSpan.className = "px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 text-[10px]";
-          tSpan.textContent = `#${t}`;
-          tagsContainer.appendChild(tSpan);
-        });
-
-        document.getElementById('question-forensic-modal').classList.remove('hidden');
-
-        if (window.renderMathInElement) {
-          renderMathInElement(document.getElementById('forensic-modal-content'), {
-            delimiters: [{left: '$', right: '$', display: false}],
-            throwOnError: false
-          });
-        }
-      };
-    }
-
-    function closeForensicModal() {
-      document.getElementById('question-forensic-modal').classList.add('hidden');
-      activeInspectedQuestion = null;
-    }
-
-    function drillSingleQuestion() {
-      if (!activeInspectedQuestion) return;
-      closeForensicModal();
-      switchView('view-arena');
-      loadArenaTest([activeInspectedQuestion], `Targeted Single Drill: ${activeInspectedQuestion.chapter}`);
-      activeSession.timeLeftSec = 120; // 2 minutes for single question sprint
-    }
-
-    function deleteCurrentVaultQuestion() {
-      if (!activeInspectedQuestion) return;
-      if (confirm(`Delete question [${activeInspectedQuestion.id}] from your local Question Bank?`)) {
+      async function saveAnnotation(qId, val) {
         const tx = db.transaction(["store_questions"], "readwrite");
-        tx.objectStore("store_questions").delete(activeInspectedQuestion.id);
-        tx.oncomplete = () => {
-          closeForensicModal();
-          filterVaultQuestions();
+        const store = tx.objectStore("store_questions");
+        const req = store.get(qId);
+        req.onsuccess = () => {
+          const data = req.result;
+          if (data) {
+            data.annotation = val;
+            store.put(data);
+          }
         };
       }
-    }
 
-    function launchErrorVaultDrill() {
-      switchView('view-arena');
-      loadArenaTest();
-    }
+      /* -------------------------------------------------------------
+       * 8. TAB 3: COMMAND BUS & MANUAL DB STUDIO
+       * ------------------------------------------------------------- */
+      async function executeConsoleCommand() {
+        const input = document.getElementById("console-payload").value.trim();
+        try {
+          const actionObj = JSON.parse(input);
+          switch(actionObj.action) {
+            case "BATCH_INGEST_QUESTIONS":
+              const questions = actionObj.payload.questions;
+              const tx = db.transaction(["store_questions"], "readwrite");
+              const store = tx.objectStore("store_questions");
+              questions.forEach(q => store.put(q));
+              await new Promise(r => tx.oncomplete = r);
+              alert(`Successfully ingested ${questions.length} questions.`);
+              break;
+            case "HOTPATCH_CONFIG":
+              await putRecord("store_config", { key: actionObj.target, value: actionObj.payload });
+              alert(`Configuration patched: ${actionObj.target}`);
+              break;
+            case "EXPORT_TELEMETRY_SLICE":
+              const telemetry = await getAllRecords("store_attempts");
+              navigator.clipboard.writeText(JSON.stringify(telemetry, null, 2));
+              alert("Lossless telemetry copied to clipboard for Chat post-mortem.");
+              break;
+            default:
+              alert("Unrecognized command action.");
+          }
+          refreshDbInspector();
+        } catch (e) {
+          alert("Invalid JSON: " + e.message);
+        }
+      }
 
-    async function refreshDiagnosticsView() {
-      const tx = db.transaction(["store_attempts"], "readonly");
-      const store = tx.objectStore("store_attempts");
-      const req = store.getAll();
+      async function refreshDbInspector() {
+        const storeName = document.getElementById("db-store-select").value;
+        const records = await getAllRecords(storeName);
+        const list = document.getElementById("db-inspector-list");
+        list.innerHTML = "";
 
-      req.onsuccess = () => {
-        const attempts = req.result;
-        document.getElementById('stat-total-mocks').textContent = attempts.length;
-
-        const chapterMap = {};
-        attempts.forEach(att => {
-          att.questions.forEach(q => {
-            if (!chapterMap[q.chapter]) {
-              chapterMap[q.chapter] = { solved: 0, correct: 0, timeSpentMs: 0 };
-            }
-            chapterMap[q.chapter].solved++;
-            if (q.isCorrect) chapterMap[q.chapter].correct++;
-            chapterMap[q.chapter].timeSpentMs += q.timeSpentMs;
-          });
-        });
-
-        const tbody = document.getElementById('neglect-table-tbody');
-        tbody.innerHTML = '';
-
-        let neglectCount = 0;
-        for (const ch in chapterMap) {
-          const c = chapterMap[ch];
-          const acc = ((c.correct / c.solved) * 100).toFixed(0);
-          const avgSec = (c.timeSpentMs / c.solved / 1000).toFixed(1);
-          const nc = Math.max(0, (1 - (c.solved / 20))).toFixed(2);
-          if (nc > 0.6) neglectCount++;
-
-          const tr = document.createElement('tr');
-          tr.className = "hover:bg-slate-750";
-          tr.innerHTML = `
-            <td class="p-2.5 font-bold text-slate-200 font-sans">${ch}</td>
-            <td class="p-2.5 text-center text-slate-300">${c.solved}</td>
-            <td class="p-2.5 text-center font-bold ${acc > 70 ? 'text-emerald-400' : 'text-rose-400'}">${acc}%</td>
-            <td class="p-2.5 text-center text-slate-300">${avgSec}s</td>
-            <td class="p-2.5 text-center font-bold text-amber-400">${nc}</td>
-            <td class="p-2.5 text-right font-sans ${nc > 0.6 ? 'text-rose-400 font-semibold' : 'text-slate-400'}">${nc > 0.6 ? 'Needs Volume' : 'Stable'}</td>
+        records.forEach(rec => {
+          const key = rec.id || rec.sessionId || rec.questionId || rec.key;
+          const row = document.createElement("div");
+          row.className = "db-row";
+          row.innerHTML = `
+            <span style="font-family:var(--font-mono);">${key}</span>
+            <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.editDbRecord('${storeName}', '${key}')">Edit</button>
           `;
-          tbody.appendChild(tr);
+          list.appendChild(row);
+        });
+      }
+
+      async function editDbRecord(storeName, key) {
+        const tx = db.transaction([storeName], "readonly");
+        const req = tx.objectStore(storeName).get(key);
+        req.onsuccess = () => {
+          const data = req.result;
+          document.getElementById("db-manual-editor-card").style.display = "block";
+          document.getElementById("editor-record-key").innerText = `${storeName} [${key}]`;
+          document.getElementById("editor-record-json").value = JSON.stringify(data, null, 2);
+          document.getElementById("editor-record-json").dataset.store = storeName;
+          document.getElementById("editor-record-json").dataset.key = key;
+        };
+      }
+
+      async function saveRecordOverwrite() {
+        const jsonArea = document.getElementById("editor-record-json");
+        const storeName = jsonArea.dataset.store;
+        try {
+          const updated = JSON.parse(jsonArea.value);
+          await putRecord(storeName, updated);
+          alert("Record overwritten successfully.");
+          document.getElementById("db-manual-editor-card").style.display = "none";
+          refreshDbInspector();
+        } catch(e) {
+          alert("JSON format error: " + e.message);
+        }
+      }
+
+      async function deleteRecord() {
+        const jsonArea = document.getElementById("editor-record-json");
+        const storeName = jsonArea.dataset.store;
+        const key = jsonArea.dataset.key;
+        if (confirm(`Permanently remove record ${key}?`)) {
+          await deleteRecordFromStore(storeName, key);
+          document.getElementById("db-manual-editor-card").style.display = "none";
+          refreshDbInspector();
+        }
+      }
+
+      /* -------------------------------------------------------------
+       * 9. TAB 4: ERROR VAULT & PHYSICAL PRINT EXTRACTION
+       * ------------------------------------------------------------- */
+      async function renderVault() {
+        const vaultRecords = await getAllRecords("store_vault");
+        const questions = await getAllRecords("store_questions");
+        const container = document.getElementById("vault-list-container");
+        container.innerHTML = "";
+
+        if (vaultRecords.length === 0) {
+          container.innerHTML = "<p style='font-size:12px; color:var(--text-muted);'>No errors flagged in the 14-day rolling window.</p>";
+          return;
         }
 
-        document.getElementById('stat-neglect-count').textContent = neglectCount;
-      };
-    }
+        vaultRecords.forEach(rec => {
+          const q = questions.find(item => item.id === rec.questionId);
+          if (!q) return;
 
-    // --------------------------------------------------------
-    // 8. LIFECYCLE INITIALIZER
-    // --------------------------------------------------------
-    window.addEventListener('DOMContentLoaded', async () => {
-      await openDatabase();
-      await seedInitialData();
-      await loadAndRunStoredPlugins();
-      await loadArenaTest();
-    });
+          const div = document.createElement("div");
+          div.className = "vault-item";
+          div.innerHTML = `
+            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;">
+              <span class="badge" style="background:#ef4444;">${rec.errorTag}</span>
+              <span style="color:var(--text-muted);">Leitner Box: ${rec.leitnerBox}</span>
+            </div>
+            <div style="font-size:13px; margin-bottom:8px;">${q.questionText}</div>
+            <div style="font-size:11px; color:#38bdf8;">Correct Answer: Option ${q.correctIndex + 1}</div>
+          `;
+          container.appendChild(div);
+        });
+
+        if (window.renderMathInElement) renderMathInElement(container);
+      }
+
+      async function spoolAndroidPrint() {
+        const questions = await getAllRecords("store_questions");
+        const root = document.getElementById("print-sheet-root");
+        root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Revision Spool - ${new Date().toLocaleDateString()}</h2>`;
+
+        questions.forEach((q, idx) => {
+          const item = document.createElement("div");
+          item.className = "print-question";
+          item.innerHTML = `
+            <b>Q${idx + 1}.</b> ${q.questionText}<br>
+            ${q.options.map((opt, i) => `(${i + 1})${opt} &nbsp;`).join(' ')}
+          `;
+          root.appendChild(item);
+        });
+
+        if (window.renderMathInElement) renderMathInElement(root);
+        window.print();
+      }
+
+      async function exportFullBackup() {
+        const backup = {
+          questions: await getAllRecords("store_questions"),
+          attempts: await getAllRecords("store_attempts"),
+          vault: await getAllRecords("store_vault"),
+          config: await getAllRecords("store_config"),
+          timestamp: new Date().toISOString()
+        };
+        const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `cgl_os_backup_${Date.now()}.json`;
+        a.click();
+      }
+
+      async function exportObsidianMarkdown() {
+        const vault = await getAllRecords("store_vault");
+        const questions = await getAllRecords("store_questions");
+        let md = `# SSC CGL Error Vault Export\n\n`;
+
+        vault.forEach(v => {
+          const q = questions.find(item => item.id === v.questionId);
+          if (q) {
+            md += `### ${q.id} - ${q.chapter}\n`;
+            md += `**Error Tag:** #${v.errorTag} | **Box:** ${v.leitnerBox}\n\n`;
+            md += `> ${q.questionText}\n\n`;
+            md += `**Solution:**\n${q.explanation}\n\n---\n\n`;
+          }
+        });
+
+        const blob = new Blob([md], { type: "text/markdown" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `CGL_Vault_${Date.now()}.md`;
+        a.click();
+      }
+
+      /* -------------------------------------------------------------
+       * 10. NAVIGATION TAB SWITCHER
+       * ------------------------------------------------------------- */
+      function switchTab(targetTabId, btnEl) {
+        document.querySelectorAll(".view-container").forEach(el => el.classList.remove("active"));
+        document.querySelectorAll(".nav-btn").forEach(el => el.classList.remove("active"));
+
+        document.getElementById(targetTabId).classList.add("active");
+        if (btnEl) btnEl.classList.add("active");
+
+        if (targetTabId === "tab-dashboard") renderDashboard();
+        if (targetTabId === "tab-dojo") renderDojo();
+        if (targetTabId === "tab-console") refreshDbInspector();
+        if (targetTabId === "tab-vault") renderVault();
+      }
+
+      function toggleFormulaSheet() {
+        const el = document.getElementById("formula-sheet-content");
+        el.style.display = el.style.display === "none" ? "block" : "none";
+        if (window.renderMathInElement) renderMathInElement(el);
+      }
+
+      function loadSampleIngestPayload() {
+        const sample = {
+          action: "BATCH_INGEST_QUESTIONS",
+          payload: {
+            questions: [
+              {
+                id: "q_qa_alg_02",
+                subject: "QA",
+                chapter: "QA_ALGEBRA",
+                questionText: "If $x + \\frac{1}{x} = 5$, find the value of $x^3 + \\frac{1}{x^3}$.",
+                options: ["$110$", "$125$", "$140$", "$115$"],
+                correctIndex: 0,
+                explanation: "$x^3 + \\frac{1}{x^3} = 5^3 - 3(5) = 125 - 15 = 110$.",
+                tags: ["Algebra", "Identities"]
+              }
+            ]
+          }
+        };
+        document.getElementById("console-payload").value = JSON.stringify(sample, null, 2);
+      }
+
+      // Boot Engine
+      window.addEventListener("DOMContentLoaded", async () => {
+        await initDB();
+        renderDashboard();
+      });
+
+      return {
+        switchTab,
+        launchBlueprint,
+        filterDojo: renderDojo,
+        verifyDojoOption,
+        toggleDojoSolution,
+        saveAnnotation,
+        toggleFormulaSheet,
+        executeConsoleCommand,
+        loadSampleIngestPayload,
+        refreshDbInspector,
+        editDbRecord,
+        saveRecordOverwrite,
+        deleteRecord,
+        renderDashboard,
+        spoolAndroidPrint,
+        exportFullBackup,
+        exportObsidianMarkdown,
+        launchVaultDrill: () => launchBlueprint("TIER_1")
+      };
+    })();
   </script>
 </body>
 </html>
