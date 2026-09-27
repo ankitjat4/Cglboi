@@ -13,11 +13,12 @@
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 
   <style>
-    /* === ZONE 1: LINEAR PRO-DARK DESIGN SYSTEM === */
+    /* === ZONE 1: LINEAR PRO-DARK SYSTEM TOKENS === */
     :root {
       --bg-dark: #06080d;
       --bg-card: #0d1118;
       --bg-elevated: #131822;
+      --bg-document: #0a0e16;
       --border-color: rgba(255, 255, 255, 0.08);
       --border-focus: rgba(56, 189, 248, 0.45);
       --accent-blue: #388bfd;
@@ -441,17 +442,6 @@
     .palette-cell.locked-cell { background: #151922; color: #484f58; cursor: not-allowed; border-color: rgba(255,255,255,0.03); }
     .palette-cell.current { border-color: #ffffff; box-shadow: 0 0 10px rgba(255,255,255,0.8); }
 
-    .chapter-section-header {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--accent-cyan);
-      margin: 12px 0 6px 0;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 4px;
-      display: flex;
-      justify-content: space-between;
-    }
-
     /* INTERACTIVE FORENSIC TILES IN REVIEW */
     .forensic-tile {
       background: #151422;
@@ -512,18 +502,19 @@
       border: 1px solid var(--border-color);
     }
 
-    /* LIVING DOCUMENT COMPENDIUM STYLES */
+    /* LIVING DOCUMENT COMPENDIUM STYLES (A4 CANVAS RATIO) */
     .document-page-canvas {
-      background: #090d14;
+      background: var(--bg-document);
       border: 1px solid var(--border-color);
       border-radius: 12px;
-      padding: 22px 18px;
-      margin-bottom: 18px;
-      line-height: 1.65;
+      padding: 24px 20px;
+      margin-bottom: 20px;
+      line-height: 1.7;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
     }
     .document-meta-header {
       border-bottom: 1px solid var(--border-color);
-      padding-bottom: 8px;
+      padding-bottom: 10px;
       margin-bottom: 14px;
       display: flex;
       justify-content: space-between;
@@ -532,8 +523,8 @@
     .sticky-anchor-bar {
       position: sticky;
       top: 0;
-      background: rgba(13, 17, 24, 0.95);
-      backdrop-filter: blur(10px);
+      background: rgba(13, 17, 24, 0.96);
+      backdrop-filter: blur(12px);
       z-index: 10;
       padding: 8px 0;
       margin-bottom: 14px;
@@ -584,16 +575,16 @@
       width: 100%;
       border-collapse: collapse;
       font-size: 12px;
-      margin: 12px 0;
+      margin: 14px 0;
     }
     .document-table th, .document-table td {
       border: 1px solid var(--border-color);
-      padding: 6px 10px;
+      padding: 8px 10px;
       text-align: left;
     }
     .document-table th { background: var(--bg-elevated); color: var(--accent-cyan); }
 
-    /* SVG Radial Gauges & Velocity Meters */
+    /* SVG Radial Accuracy Gauges */
     .gauge-wrapper {
       display: flex;
       align-items: center;
@@ -617,7 +608,7 @@
       transition: stroke-dashoffset 0.6s ease;
     }
 
-    /* Battery Mastery Meters */
+    /* Battery Mastery Progress Meters */
     .battery-bar-container {
       background: var(--bg-elevated);
       height: 8px;
@@ -633,7 +624,7 @@
       transition: width 0.4s ease;
     }
 
-    /* PRINT STYLES */
+    /* PRINT SPOOLER */
     @media print {
       body { background: white !important; color: black !important; }
       #bottom-nav, #exam-arena, #dojo-arena-view, .btn, .card, .modal-overlay, #pause-shield, #mini-player-dock { display: none !important; }
@@ -663,7 +654,7 @@
     </div>
   </div>
 
-  <!-- APPLICATION VIEWPORT ROOT -->
+  <!-- APPLICATION VIEWPORT ROOT (FOR GLOBAL GESTURE INTERCEPTOR) -->
   <div id="app-viewport-root">
 
     <!-- ==================== 1. TIMED EXAM ARENA ==================== -->
@@ -842,16 +833,16 @@
         </div>
       </div>
 
-      <!-- Quick Launch Saved Blueprints Row -->
+      <!-- Quick Launch Fixed Papers & Saved Blueprints Row -->
       <div style="margin-bottom:14px;">
         <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px; display:flex; justify-content:space-between;">
-          <span>Saved Mock Blueprints</span>
-          <span style="color:var(--accent-cyan); cursor:pointer;" onclick="CGL_OS.openCustomMockModal()">+ New Blueprint</span>
+          <span>Saved Papers & Blueprints</span>
+          <span style="color:var(--accent-cyan); cursor:pointer;" onclick="CGL_OS.openCustomMockModal()">+ New Setup</span>
         </div>
         <div id="dash-blueprints-pills" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;"></div>
       </div>
 
-      <!-- Master Key Performance Indicators with Radial SVG Gauges -->
+      <!-- Master KPI Section with Animated Radial SVG Gauges -->
       <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; margin-bottom:14px;">
         <div class="card" style="margin-bottom:0; padding:12px;">
           <div class="gauge-wrapper">
@@ -887,7 +878,7 @@
       <div class="card">
         <div class="card-title">
           <span>Subject Mastery Matrix</span>
-          <span style="font-size:10px; color:var(--accent-cyan);">Tap Subject to Drill</span>
+          <span style="font-size:10px; color:var(--accent-cyan);">Tap to Inspect</span>
         </div>
         <div id="dash-subject-batteries"></div>
       </div>
@@ -926,12 +917,12 @@
         </p>
       </div>
 
-      <!-- Knowledge Compendium Button Card -->
+      <!-- Knowledge Compendium Launcher Card -->
       <div class="card" style="border-color:#38bdf8;">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <div>
             <b style="font-size:14px; color:#38bdf8;">Knowledge & Topic Compendium</b>
-            <p style="font-size:11px; color:var(--text-muted);">Master scrollable chapter compendiums, theorem dossiers & pop-out topic sheets.</p>
+            <p style="font-size:11px; color:var(--text-muted);">Living document cheat sheets, theorem dossiers & pop-out topic sheets.</p>
           </div>
           <button class="btn" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openKnowledgeCompendiumModal()">
             Open Compendium
@@ -974,7 +965,7 @@
     <div id="tab-console" class="view-container">
       <div class="card">
         <div class="card-title">JSON Command Bus & AI Dispatch</div>
-        <textarea class="form-control" id="console-payload" style="height:140px; font-family:var(--font-mono); font-size:12px; color:#38bdf8;" placeholder='Paste AI payload here (e.g. AI_PRESCRIBE_REMEDY, INGEST_AND_LAUNCH_MOCK, BATCH_INGEST)...'></textarea>
+        <textarea class="form-control" id="console-payload" style="height:140px; font-family:var(--font-mono); font-size:12px; color:#38bdf8;" placeholder='Paste AI command payload here (e.g. AI_PRESCRIBE_REMEDY, INGEST_AND_LAUNCH_MOCK, BATCH_INGEST)...'></textarea>
         <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
           <button class="btn" onclick="CGL_OS.executeConsoleCommand()">Execute Command</button>
           <button class="btn btn-secondary" onclick="document.getElementById('console-payload').value=''">Clear Console</button>
@@ -1050,7 +1041,7 @@
       </div>
 
       <div class="card">
-        <div class="card-title">Universal Plain Text & Disaster Recovery Backups</div>
+        <div class="card-title">Disaster Recovery & Universal Plain Text Exports</div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
           <button class="btn btn-secondary" style="font-size:12px;" onclick="CGL_OS.exportFullBackup()">Export Backup (.json)</button>
           <button class="btn btn-secondary" style="font-size:12px;" onclick="CGL_OS.openBackupRestoreModal()">Restore Backup (.json)</button>
@@ -1074,7 +1065,8 @@
           <span style="font-size:11px; color:var(--text-muted);" id="review-modal-date">Submitted on Date</span>
         </div>
         <div style="display:flex; gap:6px;">
-          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--accent-cyan);" id="btn-review-reattempt">🔁 Re-attempt</button>
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--accent-cyan);" id="btn-review-save-fixed">📌 Freeze Paper</button>
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--status-green);" id="btn-review-reattempt">🔁 Re-attempt</button>
           <button class="btn" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openAiExportModal()">Export for AI</button>
           <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-mock-review').classList.remove('active')">✕ Close</button>
         </div>
@@ -1238,16 +1230,16 @@
   </div>
 
 
-  <!-- ==================== 11. HYBRID KNOWLEDGE COMPENDIUM (MASTER & POPOUT) ==================== -->
+  <!-- ==================== 11. HYBRID LIVING DOCUMENT COMPENDIUM ==================== -->
   <div class="modal-overlay" id="modal-knowledge-compendium">
     <div class="modal-window" style="max-width:850px; max-height:94vh;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
         <div>
           <h3 style="font-size:16px; font-weight:800; color:#38bdf8;">Knowledge & Topic Compendium</h3>
-          <span style="font-size:11px; color:var(--text-muted);">Master scrollable chapter view with pop-out topic sheets</span>
+          <span style="font-size:11px; color:var(--text-muted);">Living document master view with pop-out topic sheets</span>
         </div>
         <div style="display:flex; gap:6px;">
-          <button class="btn" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openConceptEditorModal(true)">+ Add Topic</button>
+          <button class="btn" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openConceptEditorModal(true)">+ Add Topic Dossier</button>
           <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-knowledge-compendium').classList.remove('active')">✕</button>
         </div>
       </div>
@@ -1393,22 +1385,25 @@
       </div>
 
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px;">
-        <button class="btn btn-secondary" onclick="CGL_OS.openSaveBlueprintModal()">Save as Blueprint</button>
+        <button class="btn btn-secondary" onclick="CGL_OS.openSaveBlueprintModal()">Save as Dynamic Blueprint</button>
         <button class="btn" onclick="CGL_OS.launchConfiguredMock()">Launch Arena</button>
       </div>
     </div>
   </div>
 
 
-  <!-- ==================== 13B. SAVE BLUEPRINT PRESET MODAL ==================== -->
+  <!-- ==================== 13B. SAVE BLUEPRINT / FIXED PAPER MODAL ==================== -->
   <div class="modal-overlay" id="modal-save-blueprint">
-    <div class="modal-window" style="max-width:420px;">
-      <h3 style="font-size:16px; font-weight:800; margin-bottom:10px;">Save Mock Blueprint</h3>
+    <div class="modal-window" style="max-width:440px;">
+      <h3 style="font-size:16px; font-weight:800; margin-bottom:10px;" id="save-preset-modal-title">Save Mock Blueprint</h3>
+      <input type="hidden" id="save-preset-mode" value="DYNAMIC_BLUEPRINT">
+      <input type="hidden" id="save-preset-target-id" value="">
+      
       <div class="form-group">
-        <label>Blueprint Title</label>
+        <label>Blueprint / Fixed Paper Title</label>
         <input type="text" id="blueprint-title-input" class="form-control" placeholder="e.g. Speed Blitz Alpha (QA + REAS)">
       </div>
-      <button class="btn" style="width:100%; margin-top:8px;" onclick="CGL_OS.saveCurrentBlueprint()">Save Blueprint to Dashboard</button>
+      <button class="btn" style="width:100%; margin-top:8px;" onclick="CGL_OS.saveCurrentPresetAction()">Save to Dashboard</button>
     </div>
   </div>
 
@@ -1623,7 +1618,7 @@
   <script>
     const CGL_OS = (() => {
       const DB_NAME = "cgl_os_db";
-      const DB_VERSION = 10;
+      const DB_VERSION = 11;
       let db = null;
       let dbInitPromise = null;
 
@@ -1644,7 +1639,7 @@
       // Custom Mistake Tags State
       let customMistakeTags = ["CALCULATION_SLIP", "READING_TRAP", "FORMULA_AMNESIA", "CONCEPT_VOID", "RUSHED_PANIC"];
 
-      // 8 Restored Vault Questions from historical archive + Baseline Question Pool
+      // 8 Restored Vault Questions from historical archive + Foundation Questions
       const SEED_QUESTIONS = [
         {
           id: "q_cgl_ga_polity_014",
@@ -1830,7 +1825,7 @@
         }
       ];
 
-      // Pre-Seeded Topic Dossiers with KaTeX, Callouts & Tables
+      // Pre-Seeded Living Document Topic Dossiers
       const SEED_TOPIC_DOSSIERS = [
         {
           id: "top_qa_geo_triangles",
@@ -1874,10 +1869,11 @@
         }
       ];
 
-      // Saved Mock Blueprint Presets
+      // Pre-Seeded Fixed Papers & Blueprints
       const SEED_SAVED_MOCKS = [
         {
           id: "bp_tier1_standard",
+          type: "DYNAMIC_BLUEPRINT",
           title: "Tier 1 Standard Full Mock",
           isSectionLocked: true,
           sections: [
@@ -1889,6 +1885,7 @@
         },
         {
           id: "bp_qa_reas_speed_blitz",
+          type: "DYNAMIC_BLUEPRINT",
           title: "Speed Blitz (QA + REAS)",
           isSectionLocked: false,
           sections: [
@@ -1922,13 +1919,13 @@
       };
 
       /* -------------------------------------------------------------
-       * 1. KATEX, MARKDOWN & ADMONITION FORMATTER
+       * 1. KATEX, MARKDOWN, CALLOUTS & TABLE FORMATTER
        * ------------------------------------------------------------- */
       function formatRichText(str) {
         if (!str) return "";
         let out = String(str);
 
-        // Callout Admonitions
+        // Callout Admonition Blocks
         out = out.replace(/^>\s*\[!trap\]\s*(.*)$/gm, '<div class="callout-box trap"><b>⚠️ Trapping Point:</b> $1</div>');
         out = out.replace(/^>\s*\[!formula\]\s*(.*)$/gm, '<div class="callout-box formula"><b>⚡ Formula:</b> $1</div>');
         out = out.replace(/^>\s*\[!tip\]\s*(.*)$/gm, '<div class="callout-box"><b>💡 Tip:</b> $1</div>');
@@ -1939,7 +1936,7 @@
         out = out.replace(/^# (.*$)/gim, '<h1 style="font-size:19px; font-weight:800; color:#fff; margin:14px 0 8px 0;">$1</h1>');
         out = out.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 
-        // Simple Markdown Table Parser
+        // Markdown Tables
         out = out.replace(/(\|[^\n]+\|\r?\n)((?:\|:?[-]+:?)+\|)(\r?\n(?:\|[^\n]+\|\r?\n?)+)/g, (match, headerLine, alignLine, bodyLines) => {
           const headers = headerLine.trim().split('|').filter(c => c.trim().length > 0).map(c => `<th>${c.trim()}</th>`).join('');
           const rows = bodyLines.trim().split('\n').map(row => {
@@ -1949,7 +1946,7 @@
           return `<table class="document-table"><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table>`;
         });
 
-        // KaTeX Mathematics Parsing
+        // KaTeX Math Rendering
         if (window.katex) {
           out = out.replace(/\$\$([\s\S]*?)\$\$/g, (m, f) => {
             try { return katex.renderToString(f, { displayMode: true, throwOnError: false }); } catch(e) { return m; }
@@ -1988,7 +1985,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 2. SELF-HEALING ASYNC STORAGE ENGINE (VERSION 10)
+       * 2. SELF-HEALING ASYNC STORAGE ENGINE (VERSION 11)
        * ------------------------------------------------------------- */
       function getDB() {
         if (db) return Promise.resolve(db);
@@ -2080,7 +2077,7 @@
         SEED_TOPIC_DOSSIERS.forEach(t => stC.put(t));
         await new Promise(r => txC.oncomplete = r);
 
-        // 4. Seed Saved Mock Blueprints
+        // 4. Seed Saved Mock Blueprints & Fixed Papers
         const txB = d.transaction(["store_saved_mocks"], "readwrite");
         const stB = txB.objectStore("store_saved_mocks");
         SEED_SAVED_MOCKS.forEach(b => stB.put(b));
@@ -2159,7 +2156,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 2B. UNIVERSAL DISASTER RECOVERY & HYDRATION ENGINE
+       * 2B. SELF-HEALING DISASTER RECOVERY & HYDRATION ENGINE
        * ------------------------------------------------------------- */
       async function exportFullBackup() {
         const envelope = {
@@ -2215,7 +2212,7 @@
               • Attempts & Scores: ${pendingHydrationData.store_attempts.length}<br>
               • Active Error Vault Traps: ${pendingHydrationData.store_vault.length}<br>
               • Knowledge Dossiers: ${pendingHydrationData.store_concepts.length}<br>
-              • Saved Mock Blueprints: ${pendingHydrationData.store_saved_mocks.length}
+              • Saved Blueprints & Papers: ${pendingHydrationData.store_saved_mocks.length}
             `;
             document.getElementById("btn-execute-restore").disabled = false;
           } catch(err) {
@@ -2242,7 +2239,7 @@
           stores.store_config = raw.config || raw.store_config || [];
         }
 
-        // Schema Normalization & Default Injection
+        // Defensive Schema Sanitizers (Guarantees no undefined crashes on dashboard renders)
         stores.store_questions = (stores.store_questions || []).map(sanitizeQuestion);
         stores.store_concepts = (stores.store_concepts || []).map(sanitizeDossier);
         stores.store_vault = (stores.store_vault || []).map(sanitizeVaultEntry);
@@ -2296,20 +2293,36 @@
         };
       }
 
-      function sanitizeAttempt(a) {
+      function sanitizeAttempt(a, idx) {
         return {
-          ...a,
+          sessionId: a.sessionId || `mock_${Date.now()}_${idx}`,
+          title: a.title || "SSC CGL Practice Mock",
+          timestamp: a.timestamp || Date.now(),
           mockType: a.mockType || "CUSTOM",
-          completed: a.completed !== undefined ? a.completed : true
+          signatureTag: a.signatureTag || "",
+          finalScore: typeof a.finalScore === "number" ? a.finalScore : 0,
+          correctCount: typeof a.correctCount === "number" ? a.correctCount : 0,
+          incorrectCount: typeof a.incorrectCount === "number" ? a.incorrectCount : 0,
+          q4Traps: typeof a.q4Traps === "number" ? a.q4Traps : 0,
+          penaltyDrag: typeof a.penaltyDrag === "number" ? a.penaltyDrag : 0,
+          switchDelta: typeof a.switchDelta === "number" ? a.switchDelta : 0,
+          completed: a.completed !== undefined ? a.completed : true,
+          isVaultSprint: !!a.isVaultSprint,
+          isSectionLocked: !!a.isSectionLocked,
+          questions: Array.isArray(a.questions) ? a.questions.map(sanitizeQuestion) : [],
+          userResponses: (a.userResponses && typeof a.userResponses === "object") ? a.userResponses : {},
+          sections: Array.isArray(a.sections) ? a.sections : []
         };
       }
 
       function sanitizeSavedMock(b, idx) {
         return {
-          id: b.id || `bp_saved_${Date.now()}_${idx}`,
-          title: b.title || `Saved Routine ${idx + 1}`,
+          id: b.id || `preset_${Date.now()}_${idx}`,
+          type: b.type || (b.questions ? "FIXED_PAPER" : "DYNAMIC_BLUEPRINT"),
+          title: b.title || `Saved Item ${idx + 1}`,
           isSectionLocked: b.isSectionLocked !== undefined ? b.isSectionLocked : true,
-          sections: Array.isArray(b.sections) ? b.sections : [{ id: 1, subject: "QA", count: 25, durationMin: 15 }]
+          sections: Array.isArray(b.sections) ? b.sections : [{ id: 1, subject: "QA", count: 25, durationMin: 15 }],
+          questions: Array.isArray(b.questions) ? b.questions.map(sanitizeQuestion) : null
         };
       }
 
@@ -2342,7 +2355,7 @@
             }
           }
 
-          alert("Disaster Recovery Hydration Complete! All database tables restored successfully.");
+          alert("Disaster Recovery Complete! All database tables and mock histories restored successfully.");
           document.getElementById("modal-backup-restore").classList.remove("active");
           await renderDashboard();
           await updateDojoChapters();
@@ -2353,9 +2366,9 @@
       }
 
 /* ==================== END OF PART 1 ==================== */
-/* Paste Part 2 immediately following this line */
+/* Part 2 will resume immediately below */
       /* -------------------------------------------------------------
-       * 3. MULTI-SUBJECT CUSTOM MOCK BUILDER & SAVED BLUEPRINTS
+       * 3. MULTI-SUBJECT CUSTOM MOCK BUILDER & SAVED PRESETS
        * ------------------------------------------------------------- */
       let customSequenceRows = [];
 
@@ -2454,30 +2467,69 @@
         }
       }
 
-      function openSaveBlueprintModal() {
-        document.getElementById("blueprint-title-input").value = "";
+      function openSaveBlueprintModal(mode = "DYNAMIC_BLUEPRINT", targetId = "") {
+        document.getElementById("save-preset-mode").value = mode;
+        document.getElementById("save-preset-target-id").value = targetId;
+
+        const titleInput = document.getElementById("blueprint-title-input");
+        const modalTitle = document.getElementById("save-preset-modal-title");
+
+        if (mode === "FIXED_PAPER") {
+          modalTitle.innerText = "Freeze Mock as Fixed Paper";
+          titleInput.placeholder = "e.g. CGL 2024 Tier 1 Replica (Exact Questions)";
+        } else {
+          modalTitle.innerText = "Save Dynamic Blueprint Ruleset";
+          titleInput.placeholder = "e.g. Speed Blitz Alpha (QA + REAS)";
+        }
+
+        titleInput.value = "";
         pushHistoryState("modal-save-blueprint");
         document.getElementById("modal-save-blueprint").classList.add("active");
       }
 
-      async function saveCurrentBlueprint() {
+      async function saveCurrentPresetAction() {
+        const mode = document.getElementById("save-preset-mode").value;
+        const targetId = document.getElementById("save-preset-target-id").value;
         const title = document.getElementById("blueprint-title-input").value.trim();
+
         if (!title) {
-          alert("Blueprint title is required.");
+          alert("Title is required.");
           return;
         }
 
-        const isLock = document.getElementById("builder-sectional-lock").value === "YES";
-        const blueprint = {
-          id: "bp_" + Date.now(),
-          title: title,
-          isSectionLocked: isLock,
-          sections: JSON.parse(JSON.stringify(customSequenceRows))
-        };
+        let record;
 
-        await putRecord("store_saved_mocks", blueprint);
+        if (mode === "FIXED_PAPER") {
+          const attempts = await getAllRecords("store_attempts");
+          const target = attempts.find(a => a.sessionId === targetId);
+          if (!target || !target.questions || target.questions.length === 0) {
+            alert("Unable to locate questions for fixed paper.");
+            return;
+          }
+
+          record = {
+            id: "paper_" + Date.now(),
+            type: "FIXED_PAPER",
+            title: title,
+            isSectionLocked: !!target.isSectionLocked,
+            sections: target.sections ? JSON.parse(JSON.stringify(target.sections)) : [],
+            questions: JSON.parse(JSON.stringify(target.questions))
+          };
+        } else {
+          const isLock = document.getElementById("builder-sectional-lock").value === "YES";
+          record = {
+            id: "bp_" + Date.now(),
+            type: "DYNAMIC_BLUEPRINT",
+            title: title,
+            isSectionLocked: isLock,
+            sections: JSON.parse(JSON.stringify(customSequenceRows)),
+            questions: null
+          };
+        }
+
+        await putRecord("store_saved_mocks", record);
         document.getElementById("modal-save-blueprint").classList.remove("active");
-        alert(`Blueprint "${title}" saved to Dashboard.`);
+        alert(`Saved "${title}" (${mode === "FIXED_PAPER" ? "Fixed Question Paper" : "Dynamic Blueprint"}) to Dashboard.`);
         await renderDashboardBlueprints();
       }
 
@@ -2487,7 +2539,7 @@
         const blueprints = await getAllRecords("store_saved_mocks");
 
         if (blueprints.length === 0) {
-          pillsContainer.innerHTML = `<span style="font-size:11px; color:var(--text-muted);">No saved blueprints. Create one in the Custom Mock Builder.</span>`;
+          pillsContainer.innerHTML = `<span style="font-size:11px; color:var(--text-muted);">No saved setups. Save blueprints or freeze past test papers to launch them here.</span>`;
           return;
         }
 
@@ -2497,23 +2549,66 @@
           pill.style.display = "inline-flex";
           pill.style.alignItems = "center";
           pill.style.gap = "6px";
-          pill.innerHTML = `<span>⚡ ${bp.title}</span><span style="opacity:0.6; font-size:9px;" onclick="event.stopPropagation(); CGL_OS.deleteSavedBlueprint('${bp.id}')">✕</span>`;
-          pill.addEventListener("click", () => launchSavedBlueprint(bp.id));
+          const icon = bp.type === "FIXED_PAPER" ? "📌" : "⚡";
+          pill.innerHTML = `<span>${icon} ${bp.title}</span><span style="opacity:0.6; font-size:9px;" onclick="event.stopPropagation(); CGL_OS.deleteSavedPreset('${bp.id}')">✕</span>`;
+          pill.addEventListener("click", () => launchSavedPreset(bp.id));
           pillsContainer.appendChild(pill);
         });
       }
 
-      async function launchSavedBlueprint(id) {
-        const bp = await getRecord("store_saved_mocks", id);
-        if (!bp) return;
+      async function launchSavedPreset(id) {
+        const preset = await getRecord("store_saved_mocks", id);
+        if (!preset) return;
 
-        customSequenceRows = bp.sections;
-        document.getElementById("builder-sectional-lock").value = bp.isSectionLocked ? "YES" : "NO";
-        await launchConfiguredMock();
+        if (preset.type === "FIXED_PAPER" && preset.questions && preset.questions.length > 0) {
+          activeExam = {
+            sessionId: "fixed_mock_" + Date.now(),
+            timestamp: Date.now(),
+            title: preset.title,
+            mockType: "CUSTOM",
+            signatureTag: "FIXED_PAPER",
+            isVaultSprint: false,
+            isSectionLocked: !!preset.isSectionLocked,
+            sections: preset.sections && preset.sections.length > 0 
+              ? JSON.parse(JSON.stringify(preset.sections)).map(s => ({ ...s, locked: false }))
+              : [{ id: "SEC_1", name: "Paper Arena", durationSec: 900, locked: false }],
+            activeSectionIndex: 0,
+            currentQuestionIndex: 0,
+            questions: preset.questions.map((q, idx) => ({ ...q, globalNumber: idx + 1 })),
+            sectionRemainingSec: preset.sections && preset.sections[0] ? preset.sections[0].durationSec : 900,
+            currentQTimeSpentSec: 0,
+            userResponses: {},
+            isPaused: false
+          };
+
+          activeExam.questions.forEach(q => {
+            activeExam.userResponses[q.id] = {
+              selectedOption: null,
+              initialOption: null,
+              status: "unanswered",
+              switches: 0,
+              decisionTrail: [],
+              timeSpentSec: 0,
+              struck: []
+            };
+          });
+
+          await putRecord("store_active_session", { id: "current_session", session: activeExam });
+          hideMiniPlayer();
+
+          pushHistoryState("exam-arena");
+          document.getElementById("exam-arena").style.display = "flex";
+          renderActiveExamQuestion();
+          startExamTimers();
+        } else {
+          customSequenceRows = preset.sections;
+          document.getElementById("builder-sectional-lock").value = preset.isSectionLocked ? "YES" : "NO";
+          await launchConfiguredMock();
+        }
       }
 
-      async function deleteSavedBlueprint(id) {
-        if (confirm("Delete this saved mock blueprint?")) {
+      async function deleteSavedPreset(id) {
+        if (confirm("Delete this saved mock setup?")) {
           await deleteRecordFromStore("store_saved_mocks", id);
           await renderDashboardBlueprints();
         }
@@ -3010,7 +3105,7 @@
 
         for (const q of activeExam.questions) {
           const resp = activeExam.userResponses[q.id];
-          if (resp.selectedOption !== null) {
+          if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
             const isCorrect = resp.selectedOption === q.correctIndex;
             if (isCorrect) {
               totalMarks += 2.0;
@@ -3644,6 +3739,7 @@
         document.getElementById("rev-traps").innerText = att.q4Traps || 0;
 
         document.getElementById("btn-review-reattempt").onclick = () => reattemptMock(att.sessionId);
+        document.getElementById("btn-review-save-fixed").onclick = () => openSaveBlueprintModal("FIXED_PAPER", att.sessionId);
 
         filterReviewQuestions("ALL");
         pushHistoryState("modal-mock-review");
@@ -3657,7 +3753,7 @@
         const vaultRecords = await getAllRecords("store_vault");
 
         activeReviewAttempt.questions.forEach((q, idx) => {
-          const resp = activeReviewAttempt.userResponses[q.id] || {};
+          const resp = activeReviewAttempt.userResponses && activeReviewAttempt.userResponses[q.id] ? activeReviewAttempt.userResponses[q.id] : {};
           const isAtt = resp.selectedOption !== null && resp.selectedOption !== undefined;
           const isCor = resp.selectedOption === q.correctIndex;
           const isTrap = isAtt && !isCor && (resp.timeSpentSec > 90);
@@ -3792,12 +3888,12 @@
             penalty: att.penaltyDrag,
             traps: att.q4Traps,
             telemetry: att.questions.map(q => {
-              const r = att.userResponses[q.id] || {};
+              const r = att.userResponses && att.userResponses[q.id] ? att.userResponses[q.id] : {};
               return {
                 id: q.id,
-                sel: r.selectedOption,
+                sel: r.selectedOption !== undefined ? r.selectedOption : null,
                 cor: q.correctIndex,
-                t: r.timeSpentSec,
+                t: r.timeSpentSec || 0,
                 trail: (r.decisionTrail || []).map(d => d.opt)
               };
             })
@@ -3805,25 +3901,28 @@
         } else if (mode === "DEEP_AUDIT") {
           payload = JSON.stringify({
             meta: { title: att.title, timestamp: att.timestamp, finalScore: att.finalScore },
-            questions: att.questions.map(q => ({
-              id: q.id,
-              chapter: q.chapter,
-              text: q.questionText,
-              options: q.options,
-              userOption: (att.userResponses[q.id] || {}).selectedOption,
-              correctIndex: q.correctIndex,
-              timeSpentSec: (att.userResponses[q.id] || {}).timeSpentSec,
-              decisionTrail: (att.userResponses[q.id] || {}).decisionTrail,
-              explanation: q.explanation
-            }))
+            questions: att.questions.map(q => {
+              const r = att.userResponses && att.userResponses[q.id] ? att.userResponses[q.id] : {};
+              return {
+                id: q.id,
+                chapter: q.chapter,
+                text: q.questionText,
+                options: q.options,
+                userOption: r.selectedOption !== undefined ? r.selectedOption : null,
+                correctIndex: q.correctIndex,
+                timeSpentSec: r.timeSpentSec || 0,
+                decisionTrail: r.decisionTrail || [],
+                explanation: q.explanation
+              };
+            })
           }, null, 2);
         } else if (mode === "LONGITUDINAL") {
           const allAtt = await getAllRecords("store_attempts");
           const vault = await getAllRecords("store_vault");
-          payload = `# SSC CGL 14-Day Strategic Telemetry Audit\n` +
+          payload = `# SSC CGL Strategic Telemetry Audit\n` +
             `• Completed Standard Mocks: ${allAtt.length}\n` +
             `• Active Leitner Vault Traps: ${vault.length}\n` +
-            `• Active Traps Breakdown:\n` +
+            `• Active Traps Inventory:\n` +
             vault.map(v => `- [${v.chapter}] Tag: ${v.errorTag} | Box ${v.leitnerBox}`).join('\n');
         }
 
@@ -3927,16 +4026,18 @@
           document.getElementById("kpi-global-acc").innerText = "--";
           document.getElementById("kpi-avg-speed").innerText = "--";
           document.getElementById("kpi-traps-hit").innerText = "0";
-          circleGauge.setAttribute("stroke-dasharray", "0, 100");
-          circleGauge.style.stroke = "var(--border-color)";
+          if (circleGauge) {
+            circleGauge.setAttribute("stroke-dasharray", "0, 100");
+            circleGauge.style.stroke = "var(--border-color)";
+          }
         } else {
           let totalCor = 0, totalAtt = 0, totalSec = 0, traps = 0;
           completed.forEach(c => {
             totalCor += (c.correctCount || 0);
             totalAtt += ((c.correctCount || 0) + (c.incorrectCount || 0));
             traps += (c.q4Traps || 0);
-            if (c.userResponses) {
-              Object.values(c.userResponses).forEach(r => totalSec += (r.timeSpentSec || 0));
+            if (c.userResponses && typeof c.userResponses === "object") {
+              Object.values(c.userResponses).forEach(r => totalSec += (r ? (r.timeSpentSec || 0) : 0));
             }
           });
 
@@ -3947,23 +4048,23 @@
           document.getElementById("kpi-avg-speed").innerText = `${avgSpeed}s`;
           document.getElementById("kpi-traps-hit").innerText = traps;
 
-          // Color & Stroke-dasharray for radial accuracy gauge
-          circleGauge.setAttribute("stroke-dasharray", `${accPercent}, 100`);
-          if (accPercent >= 80) circleGauge.style.stroke = "var(--status-green-border)";
-          else if (accPercent >= 65) circleGauge.style.stroke = "var(--status-amber)";
-          else circleGauge.style.stroke = "var(--status-red)";
+          if (circleGauge) {
+            circleGauge.setAttribute("stroke-dasharray", `${accPercent}, 100`);
+            if (accPercent >= 80) circleGauge.style.stroke = "var(--status-green-border)";
+            else if (accPercent >= 65) circleGauge.style.stroke = "var(--status-amber)";
+            else circleGauge.style.stroke = "var(--status-red)";
+          }
 
-          // Velocity Benchmark Indicator
           const speedEl = document.getElementById("kpi-speed-benchmark");
           if (avgSpeed <= 45) speedEl.innerHTML = `<span style="color:var(--status-green);">⚡ Elite Speed Zone (≤45s)</span>`;
           else if (avgSpeed <= 60) speedEl.innerHTML = `<span style="color:var(--status-amber);">Pacing Acceptable (46-60s)</span>`;
           else speedEl.innerHTML = `<span style="color:var(--status-red);">⚠️ Drag Alert (>60s / Q)</span>`;
         }
 
-        renderDashboardSubjectBatteries(completed);
-        renderRecentHistory(completed);
-        renderDashboardBlueprints();
-        renderDrilldownSubjectLevel();
+        try { renderDashboardSubjectBatteries(completed); } catch(e) { console.error("Batteries error:", e); }
+        try { renderRecentHistory(completed); } catch(e) { console.error("Recent history error:", e); }
+        try { await renderDashboardBlueprints(); } catch(e) { console.error("Blueprints error:", e); }
+        try { await renderDrilldownSubjectLevel(); } catch(e) { console.error("Drilldown error:", e); }
       }
 
       function renderDashboardSubjectBatteries(completed) {
@@ -3973,11 +4074,11 @@
         Object.keys(TAXONOMY).forEach(subKey => {
           let subAtt = 0, subCor = 0;
           completed.forEach(c => {
-            if (c.questions) {
+            if (c.questions && Array.isArray(c.questions)) {
               c.questions.forEach(q => {
                 if (q.subject === subKey) {
-                  const resp = c.userResponses[q.id];
-                  if (resp && resp.selectedOption !== null) {
+                  const resp = c.userResponses && c.userResponses[q.id] ? c.userResponses[q.id] : null;
+                  if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
                     subAtt++;
                     if (resp.selectedOption === q.correctIndex) subCor++;
                   }
@@ -4013,14 +4114,13 @@
 
         container.innerHTML = "";
         completed.slice(-3).reverse().forEach(att => {
-          // Calculate Per-Section Score Badges
           const secScores = {};
-          if (att.questions && att.userResponses) {
+          if (att.questions && Array.isArray(att.questions) && att.userResponses) {
             att.questions.forEach(q => {
               const secName = q.subject || "GEN";
               if (!secScores[secName]) secScores[secName] = 0;
               const resp = att.userResponses[q.id];
-              if (resp && resp.selectedOption !== null) {
+              if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
                 if (resp.selectedOption === q.correctIndex) secScores[secName] += 2.0;
                 else secScores[secName] -= 0.5;
               }
@@ -4046,6 +4146,7 @@
             </div>
 
             <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:10px;">
+              <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.openSaveBlueprintModal('FIXED_PAPER', '${att.sessionId}')">📌 Freeze Paper</button>
               <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.reattemptMock('${att.sessionId}')">🔁 Re-attempt</button>
               <button class="btn btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openMockReview('${att.sessionId}')">Inspect Solutions</button>
             </div>
@@ -4092,7 +4193,8 @@
               <div style="text-align:right;">
                 <span style="font-size:14px; font-weight:800; color:var(--accent-cyan);">${(att.finalScore || 0).toFixed(2)} pts</span><br>
                 <div style="display:flex; gap:4px; margin-top:4px;">
-                  <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px;" onclick="CGL_OS.reattemptMock('${att.sessionId}')">🔁</button>
+                  <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px; color:var(--accent-cyan);" onclick="CGL_OS.openSaveBlueprintModal('FIXED_PAPER', '${att.sessionId}')" title="Freeze Paper">📌</button>
+                  <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px;" onclick="CGL_OS.reattemptMock('${att.sessionId}')" title="Re-attempt">🔁</button>
                   <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openMockReview('${att.sessionId}')">Inspect</button>
                 </div>
               </div>
@@ -4117,11 +4219,11 @@
           let subAtt = 0, subCor = 0;
 
           completed.forEach(c => {
-            if (c.questions) {
+            if (c.questions && Array.isArray(c.questions)) {
               c.questions.forEach(q => {
                 if (q.subject === subKey) {
-                  const resp = c.userResponses[q.id];
-                  if (resp && resp.selectedOption !== null) {
+                  const resp = c.userResponses && c.userResponses[q.id] ? c.userResponses[q.id] : null;
+                  if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
                     subAtt++;
                     if (resp.selectedOption === q.correctIndex) subCor++;
                   }
@@ -4168,11 +4270,11 @@
         sub.chapters.forEach(chap => {
           let chapAtt = 0, chapCor = 0, chapSec = 0;
           completed.forEach(c => {
-            if (c.questions) {
+            if (c.questions && Array.isArray(c.questions)) {
               c.questions.forEach(q => {
                 if (q.chapter === chap) {
-                  const resp = c.userResponses[q.id];
-                  if (resp && resp.selectedOption !== null) {
+                  const resp = c.userResponses && c.userResponses[q.id] ? c.userResponses[q.id] : null;
+                  if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
                     chapAtt++;
                     chapSec += (resp.timeSpentSec || 0);
                     if (resp.selectedOption === q.correctIndex) chapCor++;
@@ -4628,9 +4730,9 @@
             alert(`Ingested ${dossiers.length} topic dossiers successfully.`);
 
           } else if (cmd.action === "SAVE_MOCK_PRESET") {
-            const blueprint = sanitizeSavedMock(cmd.payload, Date.now());
-            await putRecord("store_saved_mocks", blueprint);
-            alert(`Saved mock preset: "${blueprint.title}".`);
+            const preset = sanitizeSavedMock(cmd.payload, Date.now());
+            await putRecord("store_saved_mocks", preset);
+            alert(`Saved mock setup: "${preset.title}".`);
             await renderDashboardBlueprints();
 
           } else if (cmd.action === "HOTPATCH_CONFIG") {
@@ -4830,7 +4932,6 @@
         }, { passive: true });
 
         viewportRoot.addEventListener("touchend", (e) => {
-          // Guard: Ignore if an arena or any modal is currently open
           const arenaView = document.getElementById("exam-arena");
           const dojoView = document.getElementById("dojo-arena-view");
           const openModals = document.querySelectorAll(".modal-overlay.active");
@@ -4838,7 +4939,6 @@
             return;
           }
 
-          // Guard: Ignore if touch originated inside scrollable code textareas or sticky anchor bars
           const target = e.target;
           if (target.closest("textarea") || target.closest(".sticky-anchor-bar") || target.closest(".palette-scroll-body") || target.closest("#dash-blueprints-pills")) {
             return;
@@ -4854,10 +4954,8 @@
             if (currentIdx === -1) return;
 
             if (deltaX < 0 && currentIdx < tabSequence.length - 1) {
-              // Swipe Left: Forward tab
               switchTab(tabSequence[currentIdx + 1], document.getElementById(`nav-btn-${tabSequence[currentIdx + 1]}`));
             } else if (deltaX > 0 && currentIdx > 0) {
-              // Swipe Right: Backward tab
               switchTab(tabSequence[currentIdx - 1], document.getElementById(`nav-btn-${tabSequence[currentIdx - 1]}`));
             }
           }
@@ -4969,14 +5067,14 @@
 
           root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">${targetMock.title} - Score: ${targetMock.finalScore.toFixed(2)} (${new Date(targetMock.timestamp).toLocaleDateString()})</h2>`;
           targetMock.questions.forEach((q, idx) => {
-            const resp = targetMock.userResponses[q.id] || {};
+            const resp = targetMock.userResponses && targetMock.userResponses[q.id] ? targetMock.userResponses[q.id] : {};
             const item = document.createElement("div");
             item.className = "print-question";
             let img = q.imageUrl ? `<br><img src="${q.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
             item.innerHTML = `
               <strong>Q${idx + 1}.</strong> ${formatRichText(q.questionText)}${img}<br>
               ${q.options.map((opt, i) => `(${i + 1})${formatRichText(opt)} &nbsp;`).join(' ')}
-              ${incAns ? `<div style="font-size:10px; margin-top:4px;"><b>Selected:</b> Option ${resp.selectedOption !== null ? resp.selectedOption + 1 : 'None'} | <b>Correct:</b> Option ${q.correctIndex + 1} \vert{} <i>${q.explanation || ''}</i></div>` : ''}
+              ${incAns ? `<div style="font-size:10px; margin-top:4px;"><b>Selected:</b> Option ${resp.selectedOption !== null && resp.selectedOption !== undefined ? resp.selectedOption + 1 : 'None'} | <b>Correct:</b> Option ${q.correctIndex + 1} \vert{} <i>${q.explanation || ''}</i></div>` : ''}
             `;
             root.appendChild(item);
           });
@@ -5065,9 +5163,9 @@
         updateCustomRowDuration,
         applyBlueprintPreset,
         openSaveBlueprintModal,
-        saveCurrentBlueprint,
-        launchSavedBlueprint,
-        deleteSavedBlueprint,
+        saveCurrentPresetAction,
+        launchSavedPreset,
+        deleteSavedPreset,
         launchConfiguredMock,
         requestEndSectionEarly,
         confirmEndSectionEarly,
