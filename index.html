@@ -1414,8 +1414,9 @@
   <script>
     const CGL_OS = (() => {
       const DB_NAME = "cgl_os_db";
-      const DB_VERSION = 7;
+      const DB_VERSION = 8;
       let db = null;
+      let dbInitPromise = null;
 
       let activeExam = null;
       let examTimerInterval = null;
@@ -1432,8 +1433,114 @@
       // Custom Mistake Tags State
       let customMistakeTags = ["CALCULATION_SLIP", "READING_TRAP", "FORMULA_AMNESIA", "CONCEPT_VOID"];
 
-      // Seed Questions with Optional Image Support
+      // Seed Questions with your 8 restored historical vault questions included out of the box
       const SEED_QUESTIONS = [
+        // --- 8 RESTORED VAULT QUESTIONS FROM MARKDOWN ARCHIVE ---
+        {
+          id: "q_cgl_ga_polity_014",
+          subject: "GA",
+          chapter: "GA_POLITY",
+          subtopic: "Judiciary",
+          method: "Constitutional Articles",
+          questionText: "Which Article of the Constitution of India provides for the establishment and constitution of the Supreme Court of India?",
+          imageUrl: "",
+          options: ["Article 124", "Article 131", "Article 214", "Article 143"],
+          correctIndex: 0,
+          explanation: "Article 124 of the Constitution establishes the Supreme Court of India and governs its composition and appointments.",
+          tags: ["Polity", "SupremeCourt", "RestoredVault"]
+        },
+        {
+          id: "q_cgl_qa_geom_011",
+          subject: "QA",
+          chapter: "QA_GEOMETRY",
+          subtopic: "Circles",
+          method: "Cyclic Quadrilateral Angles",
+          questionText: "In a cyclic quadrilateral $ABCD$, the opposite angles $\\angle A$ and $\\angle C$ satisfy $\\angle A = (2x + 10)^\\circ$ and $\\angle C = (3x + 20)^\\circ$. What is the measure of $\\angle A$?",
+          imageUrl: "",
+          options: ["$60^\\circ$", "$70^\\circ$", "$80^\\circ$", "$75^\\circ$"],
+          correctIndex: 1,
+          explanation: "Opposite angles of a cyclic quadrilateral sum to $180^\\circ$. $(2x + 10) + (3x + 20) = 180 \\implies 5x + 30 = 180 \\implies 5x = 150 \\implies x = 30^\\circ$. Therefore, $\\angle A = 2(30) + 10 = 70^\\circ$.",
+          tags: ["Geometry", "CyclicQuadrilateral", "RestoredVault"]
+        },
+        {
+          id: "q_cgl_qa_tw_010",
+          subject: "QA",
+          chapter: "QA_TIME_WORK",
+          subtopic: "Pipes & Cisterns",
+          method: "Combined Rate of Flow",
+          questionText: "Pipe $A$ can fill a tank in $12\\text{ hours}$ and Pipe $B$ can fill it in $18\\text{ hours}$. If both pipes are opened simultaneously, in how many hours will the tank be full?",
+          imageUrl: "",
+          options: ["$7.2\\text{ hours}$", "$7.5\\text{ hours}$", "$8.0\\text{ hours}$", "$6.8\\text{ hours}$"],
+          correctIndex: 0,
+          explanation: "Combined rate $= \\frac{1}{12} + \\frac{1}{18} = \\frac{3 + 2}{36} = \\frac{5}{36}\\text{ tank/hour}$. Total time $= \\frac{36}{5} = 7.2\\text{ hours}$.",
+          tags: ["TimeAndWork", "Pipes", "RestoredVault"]
+        },
+        {
+          id: "q_cgl_reas_analogy_012",
+          subject: "REAS",
+          chapter: "REAS_ANALOGY",
+          subtopic: "Number Analogy",
+          method: "n(n + 1) Product Form",
+          questionText: "Select the option that is related to the third number in the same way as the second number is related to the first number: **$14 : 210 :: 18 : \\underline{\\quad ? \\quad}$**",
+          imageUrl: "",
+          options: ["$324$", "$342$", "$360$", "$306$"],
+          correctIndex: 1,
+          explanation: "Pattern: $n : n(n + 1)$. Here, $14 \\times 15 = 210$. Similarly, $18 \\times 19 = 342$.",
+          tags: ["Reasoning", "Analogy", "RestoredVault"]
+        },
+        {
+          id: "q_ga_polity_001",
+          subject: "GA",
+          chapter: "GA_POLITY",
+          subtopic: "Constitutional Amendments",
+          method: "Electoral Reform Provisions",
+          questionText: "Which Constitutional Amendment Act reduced the voting age for elections to the Lok Sabha and State Legislative Assemblies from 21 to 18 years?",
+          imageUrl: "",
+          options: ["42nd Amendment Act", "44th Amendment Act", "61st Amendment Act", "73rd Amendment Act"],
+          correctIndex: 2,
+          explanation: "The 61st Constitutional Amendment Act, 1988 lowered the voting age from 21 to 18.",
+          tags: ["Polity", "Amendments", "RestoredVault"]
+        },
+        {
+          id: "q_qa_geom_002",
+          subject: "QA",
+          chapter: "QA_GEOMETRY",
+          subtopic: "Triangles & Incenters",
+          method: "Internal Angle Bisector Angle",
+          questionText: "In $\\triangle ABC$, the bisectors of $\\angle B$ and $\\angle C$ intersect at point $I$ inside the triangle. If $\\angle BAC = 68^\\circ$, then find the measure of $\\angle BIC$.",
+          imageUrl: "",
+          options: ["$124^\\circ$", "$136^\\circ$", "$112^\\circ$", "$146^\\circ$"],
+          correctIndex: 0,
+          explanation: "Incenter formula: $\\angle BIC = 90^\\circ + \\frac{\\angle A}{2} = 90^\\circ + 34^\\circ = 124^\\circ$.",
+          tags: ["Geometry", "Incenter", "RestoredVault"]
+        },
+        {
+          id: "q_qa_pl_001",
+          subject: "QA",
+          chapter: "QA_PROFIT_LOSS",
+          subtopic: "Dishonest Dealer",
+          method: "Weight Discrepancy Gain",
+          questionText: "A dishonest dealer professes to sell his goods at cost price but uses a weight of $920\\text{ g}$ for a $1\\text{ kg}$ weight. What is his actual gain percentage?",
+          imageUrl: "",
+          options: ["$8.00\\%$", "$8.69\\%$", "$9.20\\%$", "$7.85\\%$"],
+          correctIndex: 1,
+          explanation: "Gain $\\% = \\frac{\\text{Error}}{\\text{True Value} - \\text{Error}} \\times 100 = \\frac{80}{920} \\times 100 = 8.69\\%$.",
+          tags: ["ProfitLoss", "DishonestDealer", "RestoredVault"]
+        },
+        {
+          id: "q_reas_analogy_001",
+          subject: "REAS",
+          chapter: "REAS_ANALOGY",
+          subtopic: "Number Operations",
+          method: "Linear Scaling 5n + 2",
+          questionText: "Select the pair that follows the identical numerical pattern: **$6 : 32 :: 2 : 12 :: 9 : \\underline{\\quad ? \\quad}$**",
+          imageUrl: "",
+          options: ["$45$", "$47$", "$49$", "$51$"],
+          correctIndex: 1,
+          explanation: "Logic: $n \\times 5 + 2 = 6 \\times 5 + 2 = 32$; $2 \\times 5 + 2 = 12$; $9 \\times 5 + 2 = 47$.",
+          tags: ["Reasoning", "Analogy", "RestoredVault"]
+        },
+        // --- BASELINE FOUNDATION QUESTIONS ---
         {
           id: "q_qa_geo_001",
           subject: "QA",
@@ -1628,11 +1735,19 @@
       }
 
       /* -------------------------------------------------------------
-       * 2. DEFENSIVE STORAGE ENGINE (INDEXEDDB VERSION 7)
+       * 2. DEFENSIVE STORAGE ENGINE (SELF-HEALING ASYNC GETDB)
        * ------------------------------------------------------------- */
-      function initDB() {
-        return new Promise((resolve, reject) => {
+      function getDB() {
+        if (db) return Promise.resolve(db);
+        if (dbInitPromise) return dbInitPromise;
+
+        dbInitPromise = new Promise((resolve, reject) => {
           const req = indexedDB.open(DB_NAME, DB_VERSION);
+
+          req.onblocked = () => {
+            console.warn("Database upgrade blocked by another tab or old handle. Forcing clean...");
+          };
+
           req.onupgradeneeded = (e) => {
             const d = e.target.result;
             const stores = [
@@ -1653,38 +1768,77 @@
               }
             });
           };
-          req.onsuccess = (e) => {
+
+          req.onsuccess = async (e) => {
             db = e.target.result;
-            seedData().then(resolve);
+            db.onversionchange = () => {
+              if (db) { db.close(); db = null; dbInitPromise = null; }
+            };
+            await seedData(db);
+            resolve(db);
           };
-          req.onerror = (e) => reject(e);
+
+          req.onerror = (e) => {
+            dbInitPromise = null;
+            reject(req.error || e);
+          };
         });
+
+        return dbInitPromise;
       }
 
-      async function seedData() {
-        const qCount = await getStoreCount("store_questions");
-        if (qCount === 0) {
-          const tx = db.transaction(["store_questions"], "readwrite");
-          const store = tx.objectStore("store_questions");
-          SEED_QUESTIONS.forEach(q => store.put(q));
-          await new Promise(r => tx.oncomplete = r);
-        }
+      async function seedData(database) {
+        const d = database || await getDB();
 
+        // 1. Seed Questions
+        const qCount = await getStoreCount("store_questions");
+        const txQ = d.transaction(["store_questions"], "readwrite");
+        const stQ = txQ.objectStore("store_questions");
+        SEED_QUESTIONS.forEach(q => stQ.put(q));
+        await new Promise(r => txQ.oncomplete = r);
+
+        // 2. Seed Historical Error Vault Items directly into store_vault
+        const historicalVaultKeys = [
+          { questionId: "q_cgl_ga_polity_014", chapter: "GA_POLITY", subject: "GA", errorTag: "CONCEPT_VOID" },
+          { questionId: "q_cgl_qa_geom_011", chapter: "QA_GEOMETRY", subject: "QA", errorTag: "CALCULATION_SLIP" },
+          { questionId: "q_cgl_qa_tw_010", chapter: "QA_TIME_WORK", subject: "QA", errorTag: "READING_TRAP" },
+          { questionId: "q_cgl_reas_analogy_012", chapter: "REAS_ANALOGY", subject: "REAS", errorTag: "FORMULA_AMNESIA" },
+          { questionId: "q_ga_polity_001", chapter: "GA_POLITY", subject: "GA", errorTag: "CONCEPT_VOID" },
+          { questionId: "q_qa_geom_002", chapter: "QA_GEOMETRY", subject: "QA", errorTag: "FORMULA_AMNESIA" },
+          { questionId: "q_qa_pl_001", chapter: "QA_PROFIT_LOSS", subject: "QA", errorTag: "CALCULATION_SLIP" },
+          { questionId: "q_reas_analogy_001", chapter: "REAS_ANALOGY", subject: "REAS", errorTag: "READING_TRAP" }
+        ];
+
+        const txV = d.transaction(["store_vault"], "readwrite");
+        const stV = txV.objectStore("store_vault");
+        for (const item of historicalVaultKeys) {
+          stV.put({
+            questionId: item.questionId,
+            chapter: item.chapter,
+            subject: item.subject,
+            errorTag: item.errorTag,
+            leitnerBox: 1,
+            lastAttempted: 1790430483803
+          });
+        }
+        await new Promise(r => txV.oncomplete = r);
+
+        // 3. Seed Concepts
         const cCount = await getStoreCount("store_concepts");
         if (cCount === 0) {
-          const tx = db.transaction(["store_concepts"], "readwrite");
-          const store = tx.objectStore("store_concepts");
-          SEED_CONCEPTS.forEach(c => store.put(c));
-          await new Promise(r => tx.oncomplete = r);
+          const txC = d.transaction(["store_concepts"], "readwrite");
+          const stC = txC.objectStore("store_concepts");
+          SEED_CONCEPTS.forEach(c => stC.put(c));
+          await new Promise(r => txC.oncomplete = r);
         }
 
-        // Load custom mistake tags from config
+        // 4. Load Custom Mistake Tags from Config
         const savedMistakeConfig = await getRecord("store_config", "custom_mistake_tags");
         if (savedMistakeConfig && Array.isArray(savedMistakeConfig.value)) {
           customMistakeTags = [...new Set([...customMistakeTags, ...savedMistakeConfig.value])];
         }
 
-        // Sanitize store_attempts: purge any legacy vault sprints that were mislogged
+        // 5. Sanitize store_attempts: purge any legacy vault sprints that were mislogged
         const attempts = await getAllRecords("store_attempts");
         for (const a of attempts) {
           if (a.isVaultSprint || (a.title && a.title.includes("Trap-Breaker Sprint"))) {
@@ -1693,64 +1847,69 @@
         }
       }
 
-      function getStoreCount(sName) {
-        return new Promise(res => {
-          try {
-            if (!db || !db.objectStoreNames.contains(sName)) return res(0);
-            const tx = db.transaction([sName], "readonly");
+      async function getStoreCount(sName) {
+        try {
+          const d = await getDB();
+          if (!d.objectStoreNames.contains(sName)) return 0;
+          return new Promise(res => {
+            const tx = d.transaction([sName], "readonly");
             const req = tx.objectStore(sName).count();
-            req.onsuccess = () => res(req.result);
+            req.onsuccess = () => res(req.result || 0);
             req.onerror = () => res(0);
-          } catch(e) { res(0); }
-        });
+          });
+        } catch(e) { return 0; }
       }
 
-      function getAllRecords(sName) {
-        return new Promise(res => {
-          try {
-            if (!db || !db.objectStoreNames.contains(sName)) return res([]);
-            const tx = db.transaction([sName], "readonly");
+      async function getAllRecords(sName) {
+        try {
+          const d = await getDB();
+          if (!d.objectStoreNames.contains(sName)) return [];
+          return new Promise(res => {
+            const tx = d.transaction([sName], "readonly");
             const req = tx.objectStore(sName).getAll();
             req.onsuccess = () => res(req.result || []);
             req.onerror = () => res([]);
-          } catch(e) { res([]); }
-        });
+          });
+        } catch(e) { return []; }
       }
 
-      function getRecord(sName, key) {
-        return new Promise(res => {
-          try {
-            if (!db || !db.objectStoreNames.contains(sName)) return res(null);
-            const tx = db.transaction([sName], "readonly");
+      async function getRecord(sName, key) {
+        try {
+          const d = await getDB();
+          if (!d.objectStoreNames.contains(sName)) return null;
+          return new Promise(res => {
+            const tx = d.transaction([sName], "readonly");
             const req = tx.objectStore(sName).get(key);
             req.onsuccess = () => res(req.result || null);
             req.onerror = () => res(null);
-          } catch(e) { res(null); }
-        });
+          });
+        } catch(e) { return null; }
       }
 
-      function putRecord(sName, record) {
-        return new Promise((res) => {
-          try {
-            if (!db || !db.objectStoreNames.contains(sName)) return res(false);
-            const tx = db.transaction([sName], "readwrite");
+      async function putRecord(sName, record) {
+        try {
+          const d = await getDB();
+          if (!d.objectStoreNames.contains(sName)) return false;
+          return new Promise(res => {
+            const tx = d.transaction([sName], "readwrite");
             const req = tx.objectStore(sName).put(record);
             req.onsuccess = () => res(true);
             req.onerror = () => res(false);
-          } catch(e) { res(false); }
-        });
+          });
+        } catch(e) { return false; }
       }
 
-      function deleteRecordFromStore(sName, key) {
-        return new Promise((res) => {
-          try {
-            if (!db || !db.objectStoreNames.contains(sName)) return res(false);
-            const tx = db.transaction([sName], "readwrite");
+      async function deleteRecordFromStore(sName, key) {
+        try {
+          const d = await getDB();
+          if (!d.objectStoreNames.contains(sName)) return false;
+          return new Promise(res => {
+            const tx = d.transaction([sName], "readwrite");
             const req = tx.objectStore(sName).delete(key);
             req.onsuccess = () => res(true);
             req.onerror = () => res(false);
-          } catch(e) { res(false); }
-        });
+          });
+        } catch(e) { return false; }
       }
 
       /* -------------------------------------------------------------
@@ -3311,7 +3470,6 @@
         const allConcepts = await getAllRecords("store_concepts");
         conceptCardsList = allConcepts.filter(c => c.category === currentConceptCategory);
 
-        const card = document.getElementById("concept-canvas-card");
         if (conceptCardsList.length === 0) {
           document.getElementById("canvas-card-category").innerText = currentConceptCategory;
           document.getElementById("canvas-card-counter").innerText = "0 of 0";
@@ -3891,25 +4049,49 @@
       }
 
       /* -------------------------------------------------------------
-       * 12. COMMAND BUS TERMINAL & AUTO RUNNER
+       * 12. COMMAND BUS TERMINAL (DEFENSIVE WITH AWAIT GETDB)
        * ------------------------------------------------------------- */
       async function executeConsoleCommand() {
         const raw = document.getElementById("console-payload").value.trim();
+        let cmd;
         try {
-          const cmd = JSON.parse(raw);
+          cmd = JSON.parse(raw);
+        } catch (err) {
+          alert("Invalid JSON Syntax: " + err.message);
+          return;
+        }
+
+        try {
+          const database = await getDB();
+          if (!database) throw new Error("IndexedDB instance unavailable.");
+
           if (cmd.action === "BATCH_INGEST_QUESTIONS") {
             const list = cmd.payload.questions || [];
-            const tx = db.transaction(["store_questions"], "readwrite");
+            const tx = database.transaction(["store_questions"], "readwrite");
             const st = tx.objectStore("store_questions");
             list.forEach(q => st.put(q));
-            await new Promise(r => tx.oncomplete = r);
+            await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
             alert(`Ingested ${list.length} questions successfully.`);
+          } else if (cmd.action === "RESTORE_VAULT_BACKUP") {
+            const questions = cmd.payload.questions || [];
+            const vaultEntries = cmd.payload.vault || [];
+
+            const tx = database.transaction(["store_questions", "store_vault"], "readwrite");
+            const qStore = tx.objectStore("store_questions");
+            const vStore = tx.objectStore("store_vault");
+
+            questions.forEach(q => qStore.put(q));
+            vaultEntries.forEach(v => vStore.put(v));
+
+            await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
+            alert(`Restored ${questions.length} questions and ${vaultEntries.length} Error Vault entries.`);
+            renderVault();
           } else if (cmd.action === "INGEST_AND_LAUNCH_MOCK") {
             const questions = cmd.payload.questions || [];
-            const tx = db.transaction(["store_questions"], "readwrite");
+            const tx = database.transaction(["store_questions"], "readwrite");
             const st = tx.objectStore("store_questions");
             questions.forEach(q => st.put(q));
-            await new Promise(r => tx.oncomplete = r);
+            await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
 
             activeExam = {
               sessionId: "ai_mock_" + Date.now(),
@@ -3957,8 +4139,9 @@
             alert(`Patched config: ${cmd.target}`);
           }
           refreshDbInspector();
-        } catch(e) {
-          alert("JSON Parse Error: " + e.message);
+          renderDashboard();
+        } catch(err) {
+          alert("Command Execution Error: " + err.message);
         }
       }
 
@@ -4020,7 +4203,8 @@
 
       async function wipeTestAttempts() {
         if (confirm("Permanently clear standard mock test history?")) {
-          const tx = db.transaction(["store_attempts"], "readwrite");
+          const d = await getDB();
+          const tx = d.transaction(["store_attempts"], "readwrite");
           tx.objectStore("store_attempts").clear();
           await new Promise(r => tx.oncomplete = r);
           alert("Standard test history cleared.");
@@ -4031,7 +4215,8 @@
 
       async function wipeErrorVault() {
         if (confirm("Permanently clear active Error Vault traps?")) {
-          const tx = db.transaction(["store_vault"], "readwrite");
+          const d = await getDB();
+          const tx = d.transaction(["store_vault"], "readwrite");
           tx.objectStore("store_vault").clear();
           await new Promise(r => tx.oncomplete = r);
           alert("Error Vault cleared.");
@@ -4042,7 +4227,8 @@
 
       async function factoryResetAll() {
         if (confirm("WARNING: Complete factory reset will wipe all data!")) {
-          const tx = db.transaction(["store_questions", "store_attempts", "store_vault", "store_vault_sprints", "store_concepts", "store_formulas", "store_vocab", "store_notes", "store_active_session", "store_config"], "readwrite");
+          const d = await getDB();
+          const tx = d.transaction(["store_questions", "store_attempts", "store_vault", "store_vault_sprints", "store_concepts", "store_formulas", "store_vocab", "store_notes", "store_active_session", "store_config"], "readwrite");
           tx.objectStore("store_questions").clear();
           tx.objectStore("store_attempts").clear();
           tx.objectStore("store_vault").clear();
@@ -4054,7 +4240,7 @@
           tx.objectStore("store_active_session").clear();
           tx.objectStore("store_config").clear();
           await new Promise(r => tx.oncomplete = r);
-          await seedData();
+          await seedData(d);
           alert("Factory reset complete.");
           renderDashboard();
           refreshDbInspector();
@@ -4087,8 +4273,8 @@
         vault.forEach(v => {
           const q = questions.find(item => item.id === v.questionId);
           if (q) {
-            md += `### ${q.chapter} - ${q.id}\n`;
-            md += `**Tag:** #${v.errorTag || 'UNCLASSIFIED'} | **Leitner Box:** ${v.leitnerBox || 1}\n\n`;
+            md += `### ${q.id} - ${q.chapter}\n`;
+            md += `**Error Tag:** #${v.errorTag || 'UNCLASSIFIED'} | **Box:** ${v.leitnerBox || 1}\n\n`;
             md += `> ${q.questionText}\n\n`;
             md += `**Solution:**\n${q.explanation}\n\n---\n\n`;
           }
@@ -4097,12 +4283,12 @@
         const blob = new Blob([md], { type: "text/markdown" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = `CGL_Error_Vault_${Date.now()}.md`;
+        a.download = `CGL_Vault_${Date.now()}.md`;
         a.click();
       }
 
       /* -------------------------------------------------------------
-       * 13. NAVIGATION & SYSTEM BOOT (DEFENSIVE CHECK)
+       * 13. NAVIGATION & SYSTEM BOOT
        * ------------------------------------------------------------- */
       function switchTab(tId, btn) {
         document.querySelectorAll(".view-container").forEach(el => el.classList.remove("active"));
@@ -4122,9 +4308,10 @@
         const shield = document.getElementById("pause-shield");
         shield.style.setProperty("display", "none", "important");
 
-        await initDB();
+        await getDB();
         renderDashboard();
         updateDojoChapters();
+        renderVault();
         initGestureControllers();
 
         // Check if there was an active exam minimized before refresh
