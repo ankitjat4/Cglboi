@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#0d1117">
+  <meta name="theme-color" content="#0a0d12">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>SSC CGL Intelligence OS</title>
@@ -192,7 +192,7 @@
       font-size: 14px;
     }
 
-    /* FULL SCREEN SIMULATOR ARENAS */
+    /* FULL-SCREEN SIMULATOR ARENAS */
     #exam-arena, #dojo-arena-view {
       display: none;
       position: fixed;
@@ -345,15 +345,18 @@
     }
     .drawer-overlay.active { display: block; }
     
+    .palette-scroll-body {
+      padding: 14px;
+      overflow-y: auto;
+      flex: 1;
+    }
     .palette-grid {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
       grid-auto-rows: 40px;
       align-content: start;
       gap: 8px;
-      padding: 14px;
-      overflow-y: auto;
-      flex: 1;
+      margin-bottom: 14px;
     }
     .palette-cell {
       height: 40px;
@@ -371,6 +374,17 @@
     .palette-cell.answered { background: var(--status-green); }
     .palette-cell.marked { background: var(--status-purple); border-radius: 50%; }
     .palette-cell.current { border-color: #ffffff; box-shadow: 0 0 8px rgba(255,255,255,0.7); }
+
+    .chapter-section-header {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      margin: 12px 0 6px 0;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
 
     /* PAUSE SHIELD */
     #pause-shield {
@@ -473,7 +487,9 @@
       <span>🟢 Answered: <b id="exam-count-ans">0</b></span>
       <span>🔵 Unanswered: <b id="exam-count-unans">0</b></span>
     </div>
-    <div class="palette-grid" id="exam-palette-grid"></div>
+    <div class="palette-scroll-body">
+      <div class="palette-grid" id="exam-palette-grid"></div>
+    </div>
     <div style="padding:14px; border-top:1px solid var(--border-color);">
       <button class="btn btn-danger" style="width:100%; font-size:14px; padding:12px;" id="btn-submit-exam">Submit Test</button>
     </div>
@@ -513,7 +529,6 @@
       <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openEditCurrentDojoQuestion()">Edit Question</button>
     </div>
 
-    <!-- Inline Method Theory Pill -->
     <div id="dojo-theory-banner" style="display:none; background:#161f30; padding:10px 14px; border-bottom:1px solid var(--border-color); font-size:12px; line-height:1.5;"></div>
 
     <div class="arena-body" id="dojo-arena-body">
@@ -546,14 +561,14 @@
     </div>
   </div>
 
-  <!-- DOJO PALETTE DRAWER -->
+  <!-- DOJO PALETTE DRAWER (SUPPORTS CHAPTER-SEGMENTED GRIDS) -->
   <div class="drawer-overlay" id="dojo-drawer-overlay" onclick="CGL_OS.toggleDojoPalette(false)"></div>
   <div class="palette-drawer-ui" id="dojo-palette-drawer">
     <div style="padding:14px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
       <h3 style="font-size:14px; font-weight:700;">Dojo Bank Navigator</h3>
       <span class="badge" style="background:#238636;" id="dojo-palette-count-badge">0 Qs</span>
     </div>
-    <div class="palette-grid" id="dojo-palette-grid"></div>
+    <div class="palette-scroll-body" id="dojo-palette-scroll-body"></div>
   </div>
 
 
@@ -567,7 +582,7 @@
           <h2 style="font-size:20px; font-weight:800; color:#fff;">Welcome back, Ankit</h2>
           <p style="font-size:12px; color:var(--accent-cyan); margin-top:2px;">Target: Tier 1 & Tier 2 Master Preparation</p>
         </div>
-        <button class="btn" id="btn-dash-launch-mock" style="padding:8px 14px; font-size:12px; box-shadow:0 0 12px rgba(56,139,253,0.5);">
+        <button class="btn" id="btn-dash-launch-mock" onclick="CGL_OS.openCustomMockModal()" style="padding:8px 14px; font-size:12px; box-shadow:0 0 12px rgba(56,139,253,0.5);">
           Launch Mock
         </button>
       </div>
@@ -698,8 +713,9 @@
       <div class="card-title" style="color:var(--status-red);">Danger Zone Operations</div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
         <button class="btn btn-danger" style="font-size:12px;" onclick="CGL_OS.wipeTestAttempts()">Wipe Test History</button>
-        <button class="btn btn-danger" style="font-size:12px;" onclick="CGL_OS.factoryResetAll()">Factory Reset DB</button>
+        <button class="btn btn-danger" style="font-size:12px;" onclick="CGL_OS.wipeErrorVault()">Wipe Error Vault</button>
       </div>
+      <button class="btn btn-danger" style="width:100%; margin-top:8px; font-size:12px;" onclick="CGL_OS.factoryResetAll()">Factory Reset Entire Database</button>
     </div>
   </div>
 
@@ -709,10 +725,13 @@
     <div class="card" style="border-color:#5a1e1e;">
       <div class="card-title" style="color:#f87171;">
         <span>Authentic Spaced-Repetition Error Vault</span>
-        <span class="badge" style="background:#da3633;" id="vault-count-badge">0 Traps</span>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <span class="badge" style="background:#da3633;" id="vault-count-badge">0 Traps</span>
+          <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.wipeErrorVault()">Clear Vault</button>
+        </div>
       </div>
       <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
-        Zero fake data. Questions enter here only when answered incorrectly in mocks. Retrying and solving moves them to higher Leitner review intervals.
+        Zero fake records. Questions enter here only when answered incorrectly in mocks. Retrying and solving moves them to higher Leitner review intervals.
       </p>
       <button class="btn btn-danger" style="width:100%; margin-bottom:12px;" onclick="CGL_OS.launchVaultSprint()">
         Launch Trap-Breaker Sprint (Failed Qs Only)
@@ -857,20 +876,24 @@
         <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-formula-editor').classList.remove('active')">✕</button>
       </div>
 
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-        <div class="form-group">
-          <label>Subject</label>
-          <select id="form-formula-sub" class="form-control">
-            <option value="QA">QA</option>
-            <option value="REAS">REAS</option>
-            <option value="ENG">ENG</option>
-            <option value="GA">GA</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Chapter Tag</label>
-          <input type="text" id="form-formula-chap" class="form-control" placeholder="e.g. QA_PERCENTAGE">
-        </div>
+      <div class="form-group">
+        <label>Subject</label>
+        <select id="form-formula-sub" class="form-control" onchange="CGL_OS.handleFormulaSubjectChange(this.value)">
+          <option value="QA">QA</option>
+          <option value="REAS">REAS</option>
+          <option value="ENG">ENG</option>
+          <option value="GA">GA</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Select Chapter Tag</label>
+        <select id="form-formula-chap" class="form-control" onchange="CGL_OS.handleFormulaChapterChange(this.value)"></select>
+      </div>
+
+      <div class="form-group" id="form-formula-new-chap-wrap" style="display:none;">
+        <label style="color:var(--accent-cyan);">New Custom Chapter Tag Name</label>
+        <input type="text" id="form-formula-new-chap" class="form-control" placeholder="e.g. QA_COORDINATE">
       </div>
 
       <div class="form-group">
@@ -879,7 +902,7 @@
       </div>
 
       <div class="form-group">
-        <label>Formula & Concept Content (LaTeX inside $...$ or $$...$$)</label>
+        <label>Formula & Concept Content (LaTeX in $...$ or $$...$$)</label>
         <textarea id="form-formula-text" class="form-control" style="height:110px;" placeholder="Net change = $a + b + \frac{ab}{100}$%"></textarea>
       </div>
 
@@ -1558,7 +1581,7 @@
               totalMarks += 2.0;
               correct++;
               if (resp.initialOption !== null && resp.initialOption !== q.correctIndex) {
-                switchDelta++; // Switch from wrong to right
+                switchDelta++;
               }
             } else {
               totalMarks -= 0.5;
@@ -1566,7 +1589,7 @@
               incorrect++;
 
               if (resp.initialOption === q.correctIndex) {
-                switchDelta--; // Switch from right to wrong
+                switchDelta--;
               }
 
               // Ingest strictly failed question into Spaced-Repetition Error Vault
@@ -1600,17 +1623,17 @@
       }
 
       /* -------------------------------------------------------------
-       * 4. HIERARCHICAL DOJO WITH METHOD TAXONOMY
+       * 4. HIERARCHICAL DOJO WITH CHAPTER-SEGMENTED PALETTE
        * ------------------------------------------------------------- */
       async function updateDojoChapters() {
         const sub = document.getElementById("dojo-nav-subject").value;
         const chapSelect = document.getElementById("dojo-nav-chapter");
-        chapSelect.innerHTML = "";
+        chapSelect.innerHTML = `<option value="ALL">Entire ${sub} (All Chapters)</option>`;
 
         const allQs = await getAllRecords("store_questions");
         const availableChaps = [...new Set(allQs.filter(q => q.subject === sub).map(q => q.chapter))];
-
         const chaps = availableChaps.length > 0 ? availableChaps : (TAXONOMY[sub] ? TAXONOMY[sub].chapters : []);
+
         chaps.forEach(c => {
           const opt = document.createElement("option");
           opt.value = c;
@@ -1622,13 +1645,18 @@
       }
 
       async function updateDojoMethods() {
+        const sub = document.getElementById("dojo-nav-subject").value;
         const chap = document.getElementById("dojo-nav-chapter").value;
         const methodSelect = document.getElementById("dojo-nav-method");
-        methodSelect.innerHTML = `<option value="ALL">All Methods & Types in Chapter</option>`;
+        methodSelect.innerHTML = `<option value="ALL">All Methods & Types in Scope</option>`;
 
         const allQs = await getAllRecords("store_questions");
-        const methods = [...new Set(allQs.filter(q => q.chapter === chap && q.method).map(q => q.method))];
+        let pool = allQs.filter(q => q.subject === sub);
+        if (chap !== "ALL") {
+          pool = pool.filter(q => q.chapter === chap);
+        }
 
+        const methods = [...new Set(pool.filter(q => q.method).map(q => q.method))];
         methods.forEach(m => {
           const opt = document.createElement("option");
           opt.value = m;
@@ -1643,13 +1671,16 @@
         const method = document.getElementById("dojo-nav-method").value;
 
         const allQs = await getAllRecords("store_questions");
-        let pool = allQs.filter(q => q.subject === sub && q.chapter === chap);
+        let pool = allQs.filter(q => q.subject === sub);
+        if (chap !== "ALL") {
+          pool = pool.filter(q => q.chapter === chap);
+        }
         if (method !== "ALL") {
           pool = pool.filter(q => q.method === method);
         }
 
         if (pool.length === 0) {
-          alert("No questions found for this specific chapter/method in database.");
+          alert("No questions found matching this selection.");
           return;
         }
 
@@ -1661,7 +1692,7 @@
           subject: sub,
           chapter: chap,
           method: method,
-          title: method !== "ALL" ? `${chap} • ${method}` : `${chap} Dojo`,
+          title: chap === "ALL" ? `${sub} • Entire Subject Dojo` : (method !== "ALL" ? `${chap} • ${method}` : `${chap} Dojo`),
           formulaBrief: matchedFormula ? matchedFormula.content : null,
           questions: pool,
           currentIndex: 0,
@@ -1789,25 +1820,47 @@
       }
 
       function renderDojoPaletteGrid() {
-        const grid = document.getElementById("dojo-palette-grid");
-        grid.innerHTML = "";
+        const scrollBody = document.getElementById("dojo-palette-scroll-body");
+        scrollBody.innerHTML = "";
         document.getElementById("dojo-palette-count-badge").innerText = `${dojoExam.questions.length} Qs`;
 
+        // Group questions by Chapter for structured display
+        const grouped = {};
         dojoExam.questions.forEach((q, idx) => {
-          const resp = dojoExam.userResponses[q.id];
-          const cell = document.createElement("div");
-          cell.className = "palette-cell" +
-            (resp.status === "answered" ? " answered" : "") +
-            (idx === dojoExam.currentIndex ? " current" : "");
+          const ch = q.chapter || "GENERAL";
+          if (!grouped[ch]) grouped[ch] = [];
+          grouped[ch].push({ q, idx });
+        });
 
-          cell.innerText = idx + 1;
-          cell.addEventListener("click", () => {
-            dojoExam.currentIndex = idx;
-            toggleDojoPalette(false);
-            renderDojoArenaQuestion();
+        Object.keys(grouped).forEach(chapterKey => {
+          const items = grouped[chapterKey];
+
+          const header = document.createElement("div");
+          header.className = "chapter-section-header";
+          header.innerHTML = `<span>${chapterKey}</span><span>${items.length} Qs</span>`;
+          scrollBody.appendChild(header);
+
+          const grid = document.createElement("div");
+          grid.className = "palette-grid";
+
+          items.forEach(item => {
+            const resp = dojoExam.userResponses[item.q.id];
+            const cell = document.createElement("div");
+            cell.className = "palette-cell" +
+              (resp.status === "answered" ? " answered" : "") +
+              (item.idx === dojoExam.currentIndex ? " current" : "");
+
+            cell.innerText = item.idx + 1;
+            cell.addEventListener("click", () => {
+              dojoExam.currentIndex = item.idx;
+              toggleDojoPalette(false);
+              renderDojoArenaQuestion();
+            });
+
+            grid.appendChild(cell);
           });
 
-          grid.appendChild(cell);
+          scrollBody.appendChild(grid);
         });
       }
 
@@ -2067,12 +2120,17 @@
       }
 
       /* -------------------------------------------------------------
-       * 7. FORMULA HUB & MODAL
+       * 7. FORMULA HUB & DYNAMIC CHAPTER SELECTOR
        * ------------------------------------------------------------- */
       async function renderFormulaSheet() {
         const formulas = await getAllRecords("store_formulas");
         const container = document.getElementById("formula-sheet-content");
         container.innerHTML = "";
+
+        if (formulas.length === 0) {
+          container.innerHTML = "<p style='color:var(--text-muted);'>No formulas added yet. Tap '+ Add Formula' to create one.</p>";
+          return;
+        }
 
         formulas.forEach(f => {
           const div = document.createElement("div");
@@ -2096,18 +2154,70 @@
         if (!isOpen) renderFormulaSheet();
       }
 
-      function openFormulaEditorModal() {
+      async function openFormulaEditorModal() {
+        await populateFormulaChapterDropdown();
         document.getElementById("modal-formula-editor").classList.add("active");
+      }
+
+      async function handleFormulaSubjectChange(sub) {
+        await populateFormulaChapterDropdown(sub);
+      }
+
+      async function populateFormulaChapterDropdown(selectedSub = null) {
+        const sub = selectedSub || document.getElementById("form-formula-sub").value;
+        const chapSelect = document.getElementById("form-formula-chap");
+        chapSelect.innerHTML = "";
+
+        const allQs = await getAllRecords("store_questions");
+        const allFs = await getAllRecords("store_formulas");
+
+        const qChaps = allQs.filter(q => q.subject === sub).map(q => q.chapter);
+        const fChaps = allFs.filter(f => f.subject === sub).map(f => f.chapter);
+        const canonChaps = TAXONOMY[sub] ? TAXONOMY[sub].chapters : [];
+
+        const combinedChaps = [...new Set([...canonChaps, ...qChaps, ...fChaps])].filter(Boolean);
+
+        combinedChaps.forEach(ch => {
+          const opt = document.createElement("option");
+          opt.value = ch;
+          opt.innerText = ch;
+          chapSelect.appendChild(opt);
+        });
+
+        const newOpt = document.createElement("option");
+        newOpt.value = "__CREATE_NEW__";
+        newOpt.innerText = "+ Create New Chapter Tag...";
+        chapSelect.appendChild(newOpt);
+
+        handleFormulaChapterChange(chapSelect.value);
+      }
+
+      function handleFormulaChapterChange(val) {
+        const wrap = document.getElementById("form-formula-new-chap-wrap");
+        if (val === "__CREATE_NEW__") {
+          wrap.style.display = "block";
+        } else {
+          wrap.style.display = "none";
+        }
       }
 
       async function saveFormulaCard() {
         const sub = document.getElementById("form-formula-sub").value;
-        const chap = document.getElementById("form-formula-chap").value.trim();
+        let chap = document.getElementById("form-formula-chap").value;
+
+        if (chap === "__CREATE_NEW__") {
+          chap = document.getElementById("form-formula-new-chap").value.trim().toUpperCase();
+          if (!chap) {
+            alert("Please specify a valid Chapter Tag name.");
+            return;
+          }
+        }
+
         const method = document.getElementById("form-formula-method").value.trim();
         const content = document.getElementById("form-formula-text").value.trim();
 
         if (!chap || !content) {
-          alert("Chapter tag and Formula content are required.");
+          alert("Chapter and Formula content are required.");
           return;
         }
 
@@ -2289,6 +2399,17 @@
         }
       }
 
+      async function wipeErrorVault() {
+        if (confirm("Permanently clear all logged mistakes from Error Vault?")) {
+          const tx = db.transaction(["store_vault"], "readwrite");
+          tx.objectStore("store_vault").clear();
+          await new Promise(r => tx.oncomplete = r);
+          alert("Error Vault has been completely cleared.");
+          renderVault();
+          refreshDbInspector();
+        }
+      }
+
       async function factoryResetAll() {
         if (confirm("WARNING: Complete factory reset will wipe all questions, error vaults, and attempts!")) {
           const tx = db.transaction(["store_questions", "store_attempts", "store_vault", "store_formulas", "store_config"], "readwrite");
@@ -2306,24 +2427,33 @@
       }
 
       /* -------------------------------------------------------------
-       * 10. AUTHENTIC SPHERICAL SPACED-REPETITION ERROR VAULT
+       * 10. AUTHENTIC ERROR VAULT WITH SELF-CLEANING
        * ------------------------------------------------------------- */
       async function renderVault() {
         const vault = await getAllRecords("store_vault");
         const questions = await getAllRecords("store_questions");
         const container = document.getElementById("vault-list-container");
-        document.getElementById("vault-count-badge").innerText = `${vault.length} Traps`;
         container.innerHTML = "";
 
-        if (vault.length === 0) {
-          container.innerHTML = `<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">Error Vault is clear! Failed questions will log here after tests.</div>`;
+        // Purge orphan records where question no longer exists in store_questions
+        const validTraps = [];
+        for (const v of vault) {
+          const q = questions.find(item => item.id === v.questionId);
+          if (q) {
+            validTraps.push({ v, q });
+          } else {
+            await deleteRecordFromStore("store_vault", v.questionId);
+          }
+        }
+
+        document.getElementById("vault-count-badge").innerText = `${validTraps.length} Traps`;
+
+        if (validTraps.length === 0) {
+          container.innerHTML = `<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">Error Vault is clear. Zero failed questions recorded.</div>`;
           return;
         }
 
-        vault.forEach(v => {
-          const q = questions.find(item => item.id === v.questionId);
-          if (!q) return;
-
+        validTraps.forEach(({ v, q }) => {
           const div = document.createElement("div");
           div.className = "card";
           div.style.borderColor = "#da3633";
@@ -2484,8 +2614,6 @@
       window.addEventListener("DOMContentLoaded", async () => {
         await initDB();
         renderDashboard();
-
-        document.getElementById("btn-dash-launch-mock").addEventListener("click", openCustomMockModal);
         updateDojoChapters();
       });
 
@@ -2503,6 +2631,8 @@
         autoSaveDojoAnnotation,
         toggleDojoPalette,
         openFormulaEditorModal,
+        handleFormulaSubjectChange,
+        handleFormulaChapterChange,
         saveFormulaCard,
         toggleFormulaSheet,
         openEditQuestionModal,
@@ -2516,6 +2646,7 @@
         refreshDbInspector,
         editDbRecordModal,
         wipeTestAttempts,
+        wipeErrorVault,
         factoryResetAll,
         renderDashboard,
         renderVault,
