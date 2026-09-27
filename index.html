@@ -19,7 +19,6 @@
       --bg-card: #111726;
       --bg-elevated: #1b2234;
       --border-color: #263147;
-      --border-accent: rgba(56, 189, 248, 0.2);
       --accent-blue: #388bfd;
       --accent-blue-hover: #1f6feb;
       --accent-cyan: #38bdf8;
@@ -45,7 +44,7 @@
 
     .view-container {
       display: none;
-      padding: 14px 14px calc(var(--bottom-nav-height) + 30px) 14px;
+      padding: 14px 14px calc(var(--bottom-nav-height) + 34px) 14px;
       max-width: 900px;
       margin: 0 auto;
     }
@@ -199,7 +198,7 @@
       border-radius: 14px;
       padding: 18px;
       width: 100%;
-      max-width: 600px;
+      max-width: 620px;
       max-height: 90vh;
       overflow-y: auto;
     }
@@ -426,13 +425,13 @@
     }
     .palette-cell {
       height: 40px;
-      border-radius: 8px; /* Tactile Squircle */
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
       font-size: 13px;
-      background: #1f6feb; /* TCS Blue */
+      background: #1f6feb;
       color: #fff;
       cursor: pointer;
       border: 2px solid transparent;
@@ -478,6 +477,31 @@
     .forensic-tile:hover {
       border-color: var(--accent-cyan);
       background: #231b30;
+    }
+
+    /* SCORECARD PRESENTATION CARDS */
+    .history-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .history-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-bottom: 10px;
+      background: var(--bg-elevated);
+      padding: 8px;
+      border-radius: 6px;
+      text-align: center;
     }
 
     /* PRINT SPOOLER STYLES */
@@ -554,7 +578,7 @@
       <h3 style="font-size:14px; font-weight:700;">Question Palette</h3>
       <span class="badge" style="background:#1f6feb;" id="exam-drawer-sec-badge">PART - A</span>
     </div>
-    <!-- Section Tabs -->
+    <!-- Section Tabs for Free Switching -->
     <div class="palette-tab-bar" id="palette-sec-tabs"></div>
     <div style="padding:10px 14px; background:#080b11; font-size:12px; display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color);">
       <span>🟢 Answered: <b id="exam-count-ans">0</b></span>
@@ -591,8 +615,6 @@
       </div>
       <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openEditCurrentDojoQuestion()">Edit Question</button>
     </div>
-
-    <div id="dojo-theory-banner" style="display:none; background:#161f30; padding:10px 14px; border-bottom:1px solid var(--border-color); font-size:12px; line-height:1.5;"></div>
 
     <div class="arena-body" id="dojo-arena-body">
       <div class="question-header">
@@ -638,7 +660,7 @@
 
   <!-- ==================== 3. TAB 1: DASHBOARD ==================== -->
   <div id="tab-dashboard" class="view-container active">
-    <!-- Hero Banner with Hitbox-Protected Button -->
+    <!-- Hero Banner with Surface Hit-Box Protection -->
     <div class="hero-banner">
       <div class="hero-content">
         <div>
@@ -711,7 +733,7 @@
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
           <b style="font-size:14px; color:#38bdf8;">Concept & Knowledge Hub</b>
-          <p style="font-size:11px; color:var(--text-muted);">Math theorems, English vocab cards with images, rules & notes.</p>
+          <p style="font-size:11px; color:var(--text-muted);">Math theorems, English vocab with images, rules & notes.</p>
         </div>
         <button class="btn" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openConceptHubModal()">
           Open Hub
@@ -759,7 +781,7 @@
         <button class="btn" onclick="CGL_OS.executeConsoleCommand()">Execute Command</button>
         <button class="btn btn-secondary" onclick="document.getElementById('console-payload').value=''">Clear Console</button>
         <button class="btn btn-secondary" onclick="CGL_OS.loadSamplePayload('INGEST')">Sample Ingest</button>
-        <button class="btn btn-secondary" onclick="CGL_OS.exportMasterQuestionBankLedger()">Export Question Bank (Gem Ledger)</button>
+        <button class="btn btn-secondary" onclick="CGL_OS.openMasterBankExportModal()">Export Master Bank (Gem Ledger)</button>
       </div>
     </div>
 
@@ -773,6 +795,7 @@
           <option value="store_vault_sprints">store_vault_sprints</option>
           <option value="store_concepts">store_concepts</option>
           <option value="store_notes">store_notes</option>
+          <option value="store_active_session">store_active_session</option>
           <option value="store_config">store_config</option>
         </select>
       </div>
@@ -804,10 +827,10 @@
       <!-- Leitner System Explainer -->
       <div style="background:#1c1315; border:1px solid #4a1d20; border-radius:8px; padding:10px; font-size:11px; line-height:1.5; margin-bottom:12px; color:#fca5a5;">
         <b>How the Leitner Vault Works:</b><br>
-        • Questions log here only when answered incorrectly during full mocks[span_24](start_span)[span_24](end_span).<br>
-        • <b>Box 1:</b> Daily review queue[span_25](start_span)[span_25](end_span).<br>
-        • <b>Box 2:</b> Review interval: 4 days[span_26](start_span)[span_26](end_span).<br>
-        • <b>Box 3:</b> Final mastery interval: 14 days[span_27](start_span)[span_27](end_span).<br>
+        • Questions log here only when answered incorrectly during full mocks[span_27](start_span)[span_27](end_span).<br>
+        • <b>Box 1:</b> Daily review queue[span_28](start_span)[span_28](end_span).<br>
+        • <b>Box 2:</b> Review interval: 4 days[span_29](start_span)[span_29](end_span).<br>
+        • <b>Box 3:</b> Final mastery interval: 14 days[span_30](start_span)[span_30](end_span).<br>
         • Solving a Box 3 question graduates and clears it permanently from the vault.
       </div>
 
@@ -918,7 +941,7 @@
         <select id="ai-export-mode" class="form-control" onchange="CGL_OS.updateAiExportPreview()">
           <option value="LEAN_GEM">1. Lean Telemetry Pack (IDs, Choices & Timing for Custom Gem)</option>
           <option value="DEEP_AUDIT">2. Autonomous Deep Audit (Full Qs, Options, Decision Trails)</option>
-          <option value="MASTER_LEDGER">3. Master Question Bank Ledger (Export Full Bank for Gem)</option>
+          <option value="TEXT_MD">3. Clean Markdown Report (Formatted for Direct Chat Reading)</option>
           <option value="LONGITUDINAL">4. Longitudinal Audit (Rolling Accuracy, Nc Index, Vault)</option>
         </select>
       </div>
@@ -930,6 +953,37 @@
 
       <button class="btn" style="width:100%; padding:12px;" onclick="CGL_OS.copyAiExportToClipboard()">
         Copy Payload to Clipboard
+      </button>
+    </div>
+  </div>
+
+
+  <!-- ==================== 8B. MASTER BANK GEM LEDGER EXPORT MODAL ==================== -->
+  <div class="modal-overlay" id="modal-bank-export">
+    <div class="modal-window">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+        <h3 style="font-size:16px; font-weight:800; color:#38bdf8;">Export Question Bank for Gem</h3>
+        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-bank-export').classList.remove('active')">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label>Export Format</label>
+        <select id="bank-export-format" class="form-control">
+          <option value="JSON">Structured JSON (.json)</option>
+          <option value="TXT">Plain Text / Markdown (.txt)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Include Base64 Image Data in Export?</label>
+        <select id="bank-export-include-img" class="form-control">
+          <option value="NO">No (Omit image data to keep file lightweight)</option>
+          <option value="YES">Yes (Include complete offline diagram data)</option>
+        </select>
+      </div>
+
+      <button class="btn" style="width:100%; padding:12px;" onclick="CGL_OS.executeMasterBankDownload()">
+        Download Master Ledger File
       </button>
     </div>
   </div>
@@ -1281,7 +1335,7 @@
   <div id="pause-shield" style="display:none !important;">
     <h2 style="font-size:22px; font-weight:800; margin-bottom:8px; color:#fff;">TEST PAUSED</h2>
     <p style="font-size:13px; color:var(--text-muted); max-width:280px; margin-bottom:20px;">
-      Timer halted. Telemetry & question index frozen safely in IndexedDB[span_28](start_span)[span_28](end_span).
+      Timer halted. Telemetry & question index frozen safely in IndexedDB[span_31](start_span)[span_31](end_span).
     </p>
     <button class="btn" style="width:220px;" onclick="CGL_OS.resumeTestFromModal()">Resume Now</button>
     <button class="btn btn-secondary" style="width:220px; margin-top:10px;" onclick="CGL_OS.minimizeTestToApp()">Minimize to App (Explore)</button>
@@ -1316,7 +1370,7 @@
   <script>
     const CGL_OS = (() => {
       const DB_NAME = "cgl_os_db";
-      const DB_VERSION = 7;
+      const DB_VERSION = 8;
       let db = null;
 
       let activeExam = null;
@@ -1329,7 +1383,7 @@
       let hubActiveIndex = 0;
       let currentHubCategory = "MATH";
 
-      // Seed Questions
+      // Authentic Seed Questions
       const SEED_QUESTIONS = [
         {
           id: "q_qa_geo_001",
@@ -1507,7 +1561,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 2. STORAGE ENGINE (INDEXEDDB VERSION 7)
+       * 2. STORAGE ENGINE (INDEXEDDB VERSION 8 - DEFENSIVE & CRASH-PROOF)
        * ------------------------------------------------------------- */
       function initDB() {
         return new Promise((resolve, reject) => {
@@ -1520,6 +1574,8 @@
               { name: "store_vault", key: "questionId" },
               { name: "store_vault_sprints", key: "sessionId" },
               { name: "store_concepts", key: "id" },
+              { name: "store_formulas", key: "id" },
+              { name: "store_vocab", key: "id" },
               { name: "store_notes", key: "id" },
               { name: "store_active_session", key: "id" },
               { name: "store_config", key: "key" }
@@ -1541,21 +1597,18 @@
       async function seedData() {
         const qCount = await getStoreCount("store_questions");
         if (qCount === 0) {
-          const tx = db.transaction(["store_questions"], "readwrite");
-          const store = tx.objectStore("store_questions");
-          SEED_QUESTIONS.forEach(q => store.put(q));
-          await new Promise(r => tx.oncomplete = r);
+          for (const q of SEED_QUESTIONS) {
+            await putRecord("store_questions", q);
+          }
         }
 
         const cCount = await getStoreCount("store_concepts");
         if (cCount === 0) {
-          const tx = db.transaction(["store_concepts"], "readwrite");
-          const store = tx.objectStore("store_concepts");
-          SEED_CONCEPTS.forEach(c => store.put(c));
-          await new Promise(r => tx.oncomplete = r);
+          for (const c of SEED_CONCEPTS) {
+            await putRecord("store_concepts", c);
+          }
         }
 
-        // Initialize Mistake Taxonomy Tags in config if not present
         const confTags = await getRecord("store_config", "mistake_tags");
         if (!confTags) {
           await putRecord("store_config", {
@@ -1564,55 +1617,69 @@
           });
         }
 
-        // Check for active minimized session
         const activeSess = await getRecord("store_active_session", "active_mock");
-        if (activeSess) {
+        if (activeSess && activeSess.data) {
           updateActiveTestDock(activeSess.data);
         }
       }
 
       function getStoreCount(sName) {
         return new Promise(res => {
-          const tx = db.transaction([sName], "readonly");
-          const req = tx.objectStore(sName).count();
-          req.onsuccess = () => res(req.result);
-          req.onerror = () => res(0);
+          if (!db || !db.objectStoreNames.contains(sName)) return res(0);
+          try {
+            const tx = db.transaction([sName], "readonly");
+            const req = tx.objectStore(sName).count();
+            req.onsuccess = () => res(req.result);
+            req.onerror = () => res(0);
+          } catch(e) { res(0); }
         });
       }
 
       function getAllRecords(sName) {
         return new Promise(res => {
-          const tx = db.transaction([sName], "readonly");
-          const req = tx.objectStore(sName).getAll();
-          req.onsuccess = () => res(req.result || []);
-          req.onerror = () => res([]);
+          if (!db || !db.objectStoreNames.contains(sName)) return res([]);
+          try {
+            const tx = db.transaction([sName], "readonly");
+            const req = tx.objectStore(sName).getAll();
+            req.onsuccess = () => res(req.result || []);
+            req.onerror = () => res([]);
+          } catch(e) { res([]); }
         });
       }
 
       function getRecord(sName, key) {
         return new Promise(res => {
-          const tx = db.transaction([sName], "readonly");
-          const req = tx.objectStore(sName).get(key);
-          req.onsuccess = () => res(req.result);
-          req.onerror = () => res(null);
+          if (!db || !db.objectStoreNames.contains(sName)) return res(null);
+          try {
+            const tx = db.transaction([sName], "readonly");
+            const req = tx.objectStore(sName).get(key);
+            req.onsuccess = () => res(req.result);
+            req.onerror = () => res(null);
+          } catch(e) { res(null); }
         });
       }
 
       function putRecord(sName, record) {
-        return new Promise((res, rej) => {
-          const tx = db.transaction([sName], "readwrite");
-          const req = tx.objectStore(sName).put(record);
-          req.onsuccess = () => res(true);
-          req.onerror = (e) => rej(e);
+        return new Promise(res => {
+          if (!db || !db.objectStoreNames.contains(sName)) return res(false);
+          try {
+            const tx = db.transaction([sName], "readwrite");
+            const req = tx.objectStore(sName).put(record);
+            req.onsuccess = () => res(true);
+            req.onerror = () => res(false);
+          } catch(e) { res(false); }
         });
       }
 
       function deleteRecordFromStore(sName, key) {
-        return new Promise((res, rej) => {
-          const tx = db.transaction([sName], "readwrite");
-          const req = tx.objectStore(sName).delete(key);
-          req.onsuccess = () => res(true);
-          req.onerror = (e) => rej(e);
+        return new Promise(res => {
+          if (!db || !db.objectStoreNames.contains(sName)) return res(true);
+          try {
+            const tx = db.transaction([sName], "readwrite");
+            const req = tx.objectStore(sName).delete(key);
+            req.onsuccess = () => res(true);
+            req.onerror = () => res(false);
+          } catch(e) { res(false); }
         });
       }
 
@@ -1755,6 +1822,11 @@
           });
         });
 
+        if (flattened.length === 0) {
+          alert("Database question pool empty for configured routine.");
+          return;
+        }
+
         const isStandardTier1 = preset === "TIER1_FULL";
         const isSingleSectional = customSequenceRows.length === 1;
 
@@ -1789,9 +1861,8 @@
           };
         });
 
-        // Hide mini-player dock if active
         document.getElementById("active-test-dock").style.display = "none";
-        deleteRecordFromStore("store_active_session", "active_mock");
+        await deleteRecordFromStore("store_active_session", "active_mock");
 
         pushHistoryState("exam-arena");
         document.getElementById("exam-arena").style.display = "flex";
@@ -1860,7 +1931,6 @@
         document.getElementById("arena-q-num").innerText = q.globalNumber;
         document.getElementById("arena-q-text").innerHTML = formatRichText(q.questionText);
 
-        // Visual diagram rendering
         const imgBox = document.getElementById("arena-image-container");
         if (q.imageUrl && q.imageUrl.trim().length > 0) {
           imgBox.style.display = "block";
@@ -1896,7 +1966,6 @@
             renderActiveExamQuestion();
           });
 
-          // Strikethrough Distractors
           let timer;
           card.addEventListener("touchstart", () => {
             timer = setTimeout(() => {
@@ -1915,7 +1984,7 @@
           container.appendChild(card);
         });
 
-        // Update Mark Review button toggle state
+        // Mark Review Toggle Button UI
         const revBtn = document.getElementById("btn-q-review");
         if (resp.isMarked) {
           revBtn.innerText = "Unmark Review";
@@ -1956,7 +2025,6 @@
         }
       });
 
-      // Mark for Review Toggle Implementation
       document.getElementById("btn-q-review").addEventListener("click", () => {
         const q = activeExam.questions[activeExam.currentQuestionIndex];
         const resp = activeExam.userResponses[q.id];
@@ -2027,7 +2095,7 @@
             (isMarked ? " marked" : "") +
             (activeExam.questions[activeExam.currentQuestionIndex].id === q.id ? " current" : "");
 
-          cell.innerText = q.globalNumber; // Clear sequential continuous numbering
+          cell.innerText = q.globalNumber;
           if (isAnswered) ans++; else unans++;
 
           cell.addEventListener("click", () => {
@@ -2043,7 +2111,7 @@
         document.getElementById("exam-count-unans").innerText = unans;
       }
 
-      /* Hardened Pause & Minimize Modal */
+      /* Hardened Pause Overlay & Minimize Routine */
       document.getElementById("btn-arena-pause").addEventListener("click", () => {
         if (!activeExam) return;
         activeExam.isPaused = true;
@@ -2068,7 +2136,6 @@
         shield.style.setProperty("display", "none", "important");
         document.getElementById("exam-arena").style.display = "none";
 
-        // Write snapshot to store_active_session in IndexedDB
         await putRecord("store_active_session", { id: "active_mock", data: activeExam });
         updateActiveTestDock(activeExam);
       }
@@ -2187,7 +2254,6 @@
         activeExam.penaltyDrag = penaltyDrag;
         activeExam.switchDelta = switchDelta;
 
-        // Clear active session dock
         document.getElementById("active-test-dock").style.display = "none";
         await deleteRecordFromStore("store_active_session", "active_mock");
 
@@ -2210,8 +2276,8 @@
         openMockReview(activeExam);
       }
 
-      /* Universal Swiping Physics */
       function setupSwipe(element, onSwipeLeft, onSwipeRight) {
+        if (!element) return;
         let startX = 0, startY = 0;
         element.addEventListener("touchstart", (e) => {
           startX = e.touches[0].clientX;
@@ -2284,10 +2350,14 @@
           return;
         }
 
-        // Pre-sort sequentially by Chapter -> Subtopic -> Method
+        // Strict Hierarchical Pre-Sort
         pool.sort((a, b) => {
-          if (a.chapter !== b.chapter) return a.chapter.localeCompare(b.chapter);
-          return (a.method || '').localeCompare(b.method || '');
+          const cA = a.chapter || "";
+          const cB = b.chapter || "";
+          if (cA !== cB) return cA.localeCompare(cB);
+          const mA = a.method || "";
+          const mB = b.method || "";
+          return mA.localeCompare(mB);
         });
 
         dojoExam = {
@@ -2501,7 +2571,7 @@
 
         const vaultRecords = await getAllRecords("store_vault");
         const confObj = await getRecord("store_config", "mistake_tags");
-        const availableTags = confObj ? confObj.tags : ["CALCULATION_SLIP", "READING_TRAP", "FORMULA_AMNESIA", "CONCEPT_VOID"];
+        const availableTags = confObj ? confObj.tags : ["CALCULATION_SLIP", "READING_TRAP", "FORMULA_AMNESIA", "CONCEPT_VOID", "RUSHED_PANIC"];
 
         activeReviewAttempt.questions.forEach((q, idx) => {
           const resp = activeReviewAttempt.userResponses[q.id] || {};
@@ -2661,9 +2731,17 @@
               explanation: q.explanation
             }))
           }, null, 2);
-        } else if (mode === "MASTER_LEDGER") {
-          const allQs = await getAllRecords("store_questions");
-          payload = JSON.stringify(allQs, null, 2);
+        } else if (mode === "TEXT_MD") {
+          payload = `# SSC CGL Mock Session Report: ${att.title}\n` +
+            `• Date: ${new Date(att.timestamp).toLocaleString()}\n` +
+            `• Score: ${att.finalScore.toFixed(2)} | Accuracy: ${Math.round((att.correctCount / (att.correctCount + att.incorrectCount || 1)) * 100)}%\n` +
+            `• Penalty Drag: -${(att.penaltyDrag || 0).toFixed(2)} | Traps Hit: ${att.q4Traps || 0}\n\n` +
+            `### Question Breakdown:\n` +
+            att.questions.map((q, i) => {
+              const resp = att.userResponses[q.id];
+              const isCor = resp.selectedOption === q.correctIndex;
+              return `${i + 1}. [${q.chapter}] Result: ${isCor ? 'CORRECT' : (resp.selectedOption !== null ? 'WRONG' : 'SKIPPED')} | Time: ${resp.timeSpentSec}s`;
+            }).join('\n');
         } else if (mode === "LONGITUDINAL") {
           const allAtt = await getAllRecords("store_attempts");
           const vault = await getAllRecords("store_vault");
@@ -2684,13 +2762,44 @@
         document.getElementById("modal-ai-export").classList.remove("active");
       }
 
-      async function exportMasterQuestionBankLedger() {
+      function openMasterBankExportModal() {
+        pushHistoryState("modal-bank-export");
+        document.getElementById("modal-bank-export").classList.add("active");
+      }
+
+      async function executeMasterBankDownload() {
+        document.getElementById("modal-bank-export").classList.remove("active");
+        const format = document.getElementById("bank-export-format").value;
+        const incImg = document.getElementById("bank-export-include-img").value === "YES";
         const allQs = await getAllRecords("store_questions");
-        const blob = new Blob([JSON.stringify(allQs, null, 2)], { type: "application/json" });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = `cgl_master_bank_${Date.now()}.json`;
-        a.click();
+
+        let prepared = allQs.map(q => {
+          let clone = { ...q };
+          if (!incImg) delete clone.imageUrl;
+          return clone;
+        });
+
+        if (format === "JSON") {
+          const blob = new Blob([JSON.stringify(prepared, null, 2)], { type: "application/json" });
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = `cgl_master_bank_${Date.now()}.json`;
+          a.click();
+        } else {
+          let txt = `# SSC CGL Master Question Bank Ledger\n\n`;
+          prepared.forEach((q, i) => {
+            txt += `### Q${i + 1}. [${q.id}] ${q.subject} - ${q.chapter}\n`;
+            txt += `**Text:** ${q.questionText}\n`;
+            q.options.forEach((opt, idx) => { txt += `(${idx + 1}) ${opt} `; });
+            txt += `\n**Correct:** Option ${q.correctIndex + 1}\n`;
+            txt += `**Explanation:** ${q.explanation || 'N/A'}\n\n---\n\n`;
+          });
+          const blob = new Blob([txt], { type: "text/plain" });
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = `cgl_master_bank_${Date.now()}.txt`;
+          a.click();
+        }
       }
 
       /* -------------------------------------------------------------
@@ -2720,7 +2829,6 @@
           select.appendChild(opt);
         });
 
-        // Filter concepts for active category
         hubConcepts = allConcepts.filter(c => c.category === currentHubCategory);
         hubActiveIndex = 0;
       }
@@ -2731,7 +2839,6 @@
       }
 
       function renderCurrentConceptItem() {
-        const canvas = document.getElementById("hub-concept-canvas");
         if (hubConcepts.length === 0) {
           document.getElementById("hub-item-tag").innerText = currentHubCategory;
           document.getElementById("hub-item-index").innerText = "0 of 0";
@@ -2802,7 +2909,6 @@
         });
       }
 
-      /* Concept Card Creator */
       let currentConceptImageBase64 = "";
 
       function openConceptEditorModal() {
@@ -3091,36 +3197,26 @@
       }
 
       async function advanceVaultBox(qId) {
-        const tx = db.transaction(["store_vault"], "readwrite");
-        const store = tx.objectStore("store_vault");
-        const req = store.get(qId);
-        req.onsuccess = async () => {
-          const rec = req.result;
-          if (rec) {
-            rec.leitnerBox = (rec.leitnerBox || 1) + 1;
-            if (rec.leitnerBox > 3) {
-              await deleteRecordFromStore("store_vault", qId);
-              alert("Mastered! Question successfully graduated out of the Error Vault.");
-            } else {
-              await putRecord("store_vault", rec);
-              alert(`Promoted to Leitner Box ${rec.leitnerBox}! Review scheduled.`);
-            }
-            renderVault();
+        const rec = await getRecord("store_vault", qId);
+        if (rec) {
+          rec.leitnerBox = (rec.leitnerBox || 1) + 1;
+          if (rec.leitnerBox > 3) {
+            await deleteRecordFromStore("store_vault", qId);
+            alert("Mastered! Question successfully graduated out of the Error Vault.");
+          } else {
+            await putRecord("store_vault", rec);
+            alert(`Promoted to Leitner Box ${rec.leitnerBox}! Review scheduled.`);
           }
-        };
+          renderVault();
+        }
       }
 
       async function demoteVaultBox(qId) {
-        const tx = db.transaction(["store_vault"], "readwrite");
-        const store = tx.objectStore("store_vault");
-        const req = store.get(qId);
-        req.onsuccess = async () => {
-          const rec = req.result;
-          if (rec) {
-            rec.leitnerBox = 1;
-            await putRecord("store_vault", rec);
-          }
-        };
+        const rec = await getRecord("store_vault", qId);
+        if (rec) {
+          rec.leitnerBox = 1;
+          await putRecord("store_vault", rec);
+        }
       }
 
       async function launchVaultSprint() {
@@ -3272,17 +3368,15 @@
           const cmd = JSON.parse(raw);
           if (cmd.action === "BATCH_INGEST_QUESTIONS") {
             const list = cmd.payload.questions || [];
-            const tx = db.transaction(["store_questions"], "readwrite");
-            const st = tx.objectStore("store_questions");
-            list.forEach(q => st.put(q));
-            await new Promise(r => tx.oncomplete = r);
-            alert(`Ingested ${list.length} questions successfully[span_29](start_span)[span_29](end_span).`);
+            for (const q of list) {
+              await putRecord("store_questions", q);
+            }
+            alert(`Ingested ${list.length} questions successfully[span_32](start_span)[span_32](end_span).`);
           } else if (cmd.action === "INGEST_AND_LAUNCH_MOCK") {
             const questions = cmd.payload.questions || [];
-            const tx = db.transaction(["store_questions"], "readwrite");
-            const st = tx.objectStore("store_questions");
-            questions.forEach(q => st.put(q));
-            await new Promise(r => tx.oncomplete = r);
+            for (const q of questions) {
+              await putRecord("store_questions", q);
+            }
 
             activeExam = {
               sessionId: "ai_mock_" + Date.now(),
@@ -3327,7 +3421,7 @@
             startExamTimers();
           } else if (cmd.action === "HOTPATCH_CONFIG") {
             await putRecord("store_config", { key: cmd.target, value: cmd.payload });
-            alert(`Patched config: ${cmd.target}[span_30](start_span)[span_30](end_span)`);
+            alert(`Patched config: ${cmd.target}[span_33](start_span)[span_33](end_span)`);
           }
           refreshDbInspector();
         } catch(e) {
@@ -3383,22 +3477,21 @@
       }
 
       async function editDbRecordModal(sName, key) {
-        const tx = db.transaction([sName], "readonly");
-        const req = tx.objectStore(sName).get(key);
-        req.onsuccess = () => {
-          if (sName === "store_questions") {
-            openEditQuestionModal(req.result);
-          } else {
-            alert(`Record Details (${key}):\n` + JSON.stringify(req.result, null, 2));
-          }
-        };
+        const data = await getRecord(sName, key);
+        if (!data) return;
+        if (sName === "store_questions") {
+          openEditQuestionModal(data);
+        } else {
+          alert(`Record Details (${key}):\n` + JSON.stringify(data, null, 2));
+        }
       }
 
       async function wipeTestAttempts() {
         if (confirm("Permanently clear standard mock test history?")) {
-          const tx = db.transaction(["store_attempts"], "readwrite");
-          tx.objectStore("store_attempts").clear();
-          await new Promise(r => tx.oncomplete = r);
+          const attempts = await getAllRecords("store_attempts");
+          for (const a of attempts) {
+            await deleteRecordFromStore("store_attempts", a.sessionId);
+          }
           alert("Standard test history cleared.");
           renderDashboard();
           refreshDbInspector();
@@ -3407,9 +3500,10 @@
 
       async function wipeErrorVault() {
         if (confirm("Permanently clear active Error Vault traps?")) {
-          const tx = db.transaction(["store_vault"], "readwrite");
-          tx.objectStore("store_vault").clear();
-          await new Promise(r => tx.oncomplete = r);
+          const traps = await getAllRecords("store_vault");
+          for (const t of traps) {
+            await deleteRecordFromStore("store_vault", t.questionId);
+          }
           alert("Error Vault cleared.");
           renderVault();
           refreshDbInspector();
@@ -3418,16 +3512,14 @@
 
       async function factoryResetAll() {
         if (confirm("WARNING: Complete factory reset will wipe all data!")) {
-          const tx = db.transaction(["store_questions", "store_attempts", "store_vault", "store_vault_sprints", "store_concepts", "store_notes", "store_active_session", "store_config"], "readwrite");
-          tx.objectStore("store_questions").clear();
-          tx.objectStore("store_attempts").clear();
-          tx.objectStore("store_vault").clear();
-          tx.objectStore("store_vault_sprints").clear();
-          tx.objectStore("store_concepts").clear();
-          tx.objectStore("store_notes").clear();
-          tx.objectStore("store_active_session").clear();
-          tx.objectStore("store_config").clear();
-          await new Promise(r => tx.oncomplete = r);
+          const stores = ["store_questions", "store_attempts", "store_vault", "store_vault_sprints", "store_concepts", "store_formulas", "store_vocab", "store_notes", "store_active_session", "store_config"];
+          for (const s of stores) {
+            const records = await getAllRecords(s);
+            for (const r of records) {
+              const k = r.id || r.sessionId || r.questionId || r.key;
+              await deleteRecordFromStore(s, k);
+            }
+          }
           await seedData();
           alert("Factory reset complete.");
           renderDashboard();
@@ -3496,7 +3588,6 @@
       }
 
       window.addEventListener("DOMContentLoaded", async () => {
-        // Defensive Pause-Shield Sanitization
         const shield = document.getElementById("pause-shield");
         shield.style.setProperty("display", "none", "important");
 
@@ -3504,7 +3595,7 @@
         renderDashboard();
         updateDojoChapters();
 
-        // Bind Universal Swiping Physics
+        // Bind Universal Swiping Physics to Arena, Dojo, and Concept Hub
         setupSwipe(
           document.getElementById("arena-body"),
           () => document.getElementById("btn-q-save-next").click(),
@@ -3521,7 +3612,7 @@
           () => navHubItem(-1)
         );
 
-        // Hardware / Gesture Back Button Shield
+        // Hardware & Gesture Back Button Protection
         window.addEventListener("popstate", () => {
           const openModals = document.querySelectorAll(".modal-overlay.active");
           if (openModals.length > 0) {
@@ -3589,7 +3680,8 @@
         openAiExportModal,
         updateAiExportPreview,
         copyAiExportToClipboard,
-        exportMasterQuestionBankLedger,
+        openMasterBankExportModal,
+        executeMasterBankDownload,
         openHistoryArchiveModal,
         renderArchiveList,
         executeConsoleCommand,
