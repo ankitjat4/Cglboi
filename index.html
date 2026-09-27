@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#07090e">
+  <meta name="theme-color" content="#06080d">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>SSC CGL Intelligence OS</title>
@@ -15,11 +15,11 @@
   <style>
     /* === ZONE 1: LINEAR PRO-DARK DESIGN SYSTEM === */
     :root {
-      --bg-dark: #07090e;
-      --bg-card: #0e121a;
-      --bg-elevated: #151a24;
+      --bg-dark: #06080d;
+      --bg-card: #0d1118;
+      --bg-elevated: #131822;
       --border-color: rgba(255, 255, 255, 0.08);
-      --border-focus: rgba(56, 189, 248, 0.4);
+      --border-focus: rgba(56, 189, 248, 0.45);
       --accent-blue: #388bfd;
       --accent-blue-hover: #1f6feb;
       --accent-cyan: #38bdf8;
@@ -42,12 +42,18 @@
       min-height: 100vh;
       overflow-x: hidden;
       user-select: none;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.015em;
+    }
+
+    #app-viewport-root {
+      min-height: 100vh;
+      width: 100%;
+      position: relative;
     }
 
     .view-container {
       display: none;
-      padding: 14px 14px calc(var(--bottom-nav-height) + 24px) 14px;
+      padding: 14px 14px calc(var(--bottom-nav-height) + 28px) 14px;
       max-width: 900px;
       margin: 0 auto;
     }
@@ -106,7 +112,7 @@
     .btn-danger { background: var(--status-red); }
     .btn-amber { background: var(--status-amber); color: #000; font-weight: 700; }
 
-    /* DASHBOARD HERO HEADER & SURFACE HIT-BOX */
+    /* DASHBOARD HERO HEADER */
     .hero-banner {
       background: linear-gradient(135deg, #131926 0%, #090c12 100%);
       border: 1px solid rgba(56, 139, 253, 0.35);
@@ -140,7 +146,7 @@
       position: fixed;
       bottom: 0; left: 0; right: 0;
       height: var(--bottom-nav-height);
-      background: rgba(7, 9, 14, 0.94);
+      background: rgba(6, 8, 13, 0.94);
       backdrop-filter: blur(14px);
       border-top: 1px solid var(--border-color);
       display: flex;
@@ -173,7 +179,7 @@
       bottom: calc(var(--bottom-nav-height) + 8px);
       left: 12px; right: 12px;
       height: 56px;
-      background: rgba(14, 18, 26, 0.92);
+      background: rgba(13, 17, 24, 0.92);
       backdrop-filter: blur(12px);
       border: 1px solid rgba(56, 139, 253, 0.5);
       border-radius: 12px;
@@ -379,13 +385,13 @@
       z-index: 2100;
     }
 
-    /* SLIDING PALETTE DRAWER & CHAPTER HEADERS */
+    /* SLIDING PALETTE DRAWER & CELLS */
     .palette-drawer-ui {
       position: fixed;
       top: 0; right: -100%; bottom: 0;
       width: 85%;
       max-width: 360px;
-      background: #0e121a;
+      background: #0d1118;
       border-left: 1px solid var(--border-color);
       z-index: 2500;
       transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -432,7 +438,7 @@
     .palette-cell.unanswered { background: var(--bg-elevated); color: var(--text-muted); border-color: var(--border-color); }
     .palette-cell.answered { background: var(--status-green); color: #fff; border-color: var(--status-green-border); }
     .palette-cell.marked { background: var(--status-purple); color: #fff; border-radius: 8px; border: 2px solid #d2a8ff; }
-    .palette-cell.locked-cell { background: #1a1e28; color: #484f58; cursor: not-allowed; border-color: rgba(255,255,255,0.03); }
+    .palette-cell.locked-cell { background: #151922; color: #484f58; cursor: not-allowed; border-color: rgba(255,255,255,0.03); }
     .palette-cell.current { border-color: #ffffff; box-shadow: 0 0 10px rgba(255,255,255,0.8); }
 
     .chapter-section-header {
@@ -467,7 +473,7 @@
       inset: 0 !important;
       width: 100vw !important;
       height: 100vh !important;
-      background: rgba(7, 9, 14, 0.98) !important;
+      background: rgba(6, 8, 13, 0.98) !important;
       z-index: 9999 !important;
       flex-direction: column !important;
       align-items: center !important;
@@ -476,50 +482,61 @@
       text-align: center !important;
     }
 
-    /* SCORECARD PRESENTATION CARDS */
-    .history-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 14px;
-      margin-bottom: 10px;
-    }
-    .history-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-    .history-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 6px;
-      margin-bottom: 10px;
-      background: var(--bg-elevated);
-      padding: 8px;
-      border-radius: 6px;
-      text-align: center;
-    }
-
-    /* COMPENDIUM MASTER & POPOUT STYLES */
-    .compendium-topic-card {
+    /* TICKET-STUB SCORECARDS */
+    .ticket-card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 14px;
-      transition: border-color 0.2s;
+      padding: 14px;
+      margin-bottom: 10px;
+      position: relative;
     }
-    .compendium-topic-card:hover { border-color: rgba(56, 189, 248, 0.3); }
+    .ticket-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+    .ticket-pills-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .ticket-sec-pill {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      background: var(--bg-elevated);
+      padding: 3px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+    }
 
+    /* LIVING DOCUMENT COMPENDIUM STYLES */
+    .document-page-canvas {
+      background: #090d14;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 22px 18px;
+      margin-bottom: 18px;
+      line-height: 1.65;
+    }
+    .document-meta-header {
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
     .sticky-anchor-bar {
       position: sticky;
       top: 0;
-      background: rgba(14, 18, 26, 0.95);
+      background: rgba(13, 17, 24, 0.95);
       backdrop-filter: blur(10px);
       z-index: 10;
       padding: 8px 0;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       display: flex;
       gap: 6px;
       overflow-x: auto;
@@ -543,13 +560,13 @@
       border-color: var(--accent-blue);
     }
 
-    /* Admonition / Callout Styles */
+    /* Admonition / Callout Blocks */
     .callout-box {
       border-left: 3px solid var(--accent-cyan);
       background: rgba(56, 189, 248, 0.08);
       border-radius: 4px 8px 8px 4px;
       padding: 10px 12px;
-      margin: 10px 0;
+      margin: 12px 0;
       font-size: 13px;
       line-height: 1.5;
     }
@@ -562,14 +579,67 @@
       background: rgba(137, 87, 229, 0.08);
     }
 
-    /* PRINT SPOOLER STYLES */
+    /* Markdown Tables */
+    .document-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin: 12px 0;
+    }
+    .document-table th, .document-table td {
+      border: 1px solid var(--border-color);
+      padding: 6px 10px;
+      text-align: left;
+    }
+    .document-table th { background: var(--bg-elevated); color: var(--accent-cyan); }
+
+    /* SVG Radial Gauges & Velocity Meters */
+    .gauge-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .gauge-svg {
+      width: 64px;
+      height: 64px;
+      transform: rotate(-90deg);
+    }
+    .gauge-bg {
+      fill: none;
+      stroke: var(--bg-elevated);
+      stroke-width: 6;
+    }
+    .gauge-fill {
+      fill: none;
+      stroke: var(--accent-blue);
+      stroke-width: 6;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.6s ease;
+    }
+
+    /* Battery Mastery Meters */
+    .battery-bar-container {
+      background: var(--bg-elevated);
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 4px;
+      position: relative;
+    }
+    .battery-bar-fill {
+      height: 100%;
+      background: var(--accent-blue);
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+
+    /* PRINT STYLES */
     @media print {
       body { background: white !important; color: black !important; }
       #bottom-nav, #exam-arena, #dojo-arena-view, .btn, .card, .modal-overlay, #pause-shield, #mini-player-dock { display: none !important; }
       .print-page { display: block !important; column-count: 2; column-gap: 20px; font-size: 11px; padding: 20px; }
       .print-question { break-inside: avoid; margin-bottom: 14px; border-bottom: 1px solid #ccc; padding-bottom: 8px; }
       .print-vocab-item { break-inside: avoid; border: 1px solid #ddd; padding: 6px; margin-bottom: 8px; border-radius: 4px; }
-      .print-vocab-item img { max-width: 60px; max-height: 60px; float: right; margin-left: 8px; }
     }
   </style>
 </head>
@@ -593,372 +663,406 @@
     </div>
   </div>
 
-  <!-- ==================== 1. TIMED EXAM ARENA ==================== -->
-  <div id="exam-arena">
-    <div class="arena-header">
-      <div style="display:flex; align-items:center; gap:8px;">
-        <button class="hud-icon-btn" id="btn-arena-pause" title="Pause / Minimize">
-          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        </button>
-        <button class="btn btn-amber" id="btn-arena-early-lock" style="padding:4px 10px; font-size:11px; display:none;" onclick="CGL_OS.requestEndSectionEarly()">
-          🔒 Lock Section Early
-        </button>
-      </div>
+  <!-- APPLICATION VIEWPORT ROOT -->
+  <div id="app-viewport-root">
 
-      <div style="text-align:center;">
-        <div id="hud-countdown" class="hud-timer">15:00</div>
-        <div style="font-size:10px; color:var(--text-muted);" id="hud-test-title">SSC CGL Mock</div>
-      </div>
-
-      <button class="hud-icon-btn" id="btn-toggle-exam-palette" title="Open Question Palette">
-        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
-      </button>
-    </div>
-
-    <div class="sectional-banner">
-      <div style="display:flex; align-items:center; gap:6px;">
-        <span class="badge" style="background:#1f6feb;" id="hud-section-badge">SECTION: QUANT</span>
-        <span style="font-size:11px; color:var(--accent-cyan);" id="hud-section-qinfo">Q1 of 25</span>
-      </div>
-      <span id="hud-pacing-status" style="font-family:var(--font-mono); color:var(--text-muted);">0s spent</span>
-    </div>
-
-    <!-- Non-blocking Section Lock Transition Alert Banner -->
-    <div id="arena-lock-toast" style="display:none; background:#d29922; color:#000; font-size:12px; font-weight:700; padding:6px 14px; text-align:center;"></div>
-
-    <div class="arena-body" id="arena-body">
-      <div class="question-header">
-        <div class="q-number-pill" id="arena-q-num">Q1</div>
-        <div class="q-clock-pill">
-          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-          <span id="arena-q-timer">00:00</span>
+    <!-- ==================== 1. TIMED EXAM ARENA ==================== -->
+    <div id="exam-arena">
+      <div class="arena-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button class="hud-icon-btn" id="btn-arena-pause" title="Pause / Minimize">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </button>
+          <button class="btn btn-amber" id="btn-arena-early-lock" style="padding:4px 10px; font-size:11px; display:none;" onclick="CGL_OS.requestEndSectionEarly()">
+            🔒 Lock Section Early
+          </button>
         </div>
-      </div>
 
-      <div class="q-text-canvas" id="arena-q-text"></div>
-      <div class="q-image-container" id="arena-image-container" style="display:none;"></div>
-      <div id="arena-options-container"></div>
-    </div>
-
-    <div class="arena-footer">
-      <button class="btn btn-secondary" style="padding:8px 14px;" id="btn-q-prev">Previous</button>
-      <button class="btn btn-secondary" style="padding:8px 12px; font-size:12px; color:var(--status-purple);" id="btn-q-review">Mark Review</button>
-      <button class="btn" style="padding:8px 18px;" id="btn-q-save-next">Save & Next</button>
-    </div>
-  </div>
-
-  <!-- EXAM PALETTE DRAWER -->
-  <div class="drawer-overlay" id="exam-drawer-overlay"></div>
-  <div class="palette-drawer-ui" id="exam-palette-drawer">
-    <div style="padding:14px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
-      <h3 style="font-size:14px; font-weight:700;">Question Palette</h3>
-      <span class="badge" style="background:#1f6feb;" id="exam-drawer-sec-badge">PART - A</span>
-    </div>
-    
-    <!-- Section Switching Tabs (Free mode) or Section Lock status (Auto-lock mode) -->
-    <div id="exam-palette-section-tabs" style="display:flex; overflow-x:auto; padding:8px 12px; background:#07090e; border-bottom:1px solid var(--border-color); gap:6px;"></div>
-
-    <div style="padding:10px 14px; background:#07090e; font-size:12px; display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color);">
-      <span>🟢 Ans: <b id="exam-count-ans">0</b></span>
-      <span>🟣 Marked: <b id="exam-count-marked">0</b></span>
-      <span>⚪ Unans: <b id="exam-count-unans">0</b></span>
-    </div>
-    <div class="palette-scroll-body">
-      <div class="palette-grid" id="exam-palette-grid"></div>
-    </div>
-    <div style="padding:14px; border-top:1px solid var(--border-color); display:flex; flex-direction:column; gap:8px;">
-      <button class="btn btn-amber" id="btn-drawer-early-lock" style="width:100%; font-size:13px; padding:10px; display:none;" onclick="CGL_OS.requestEndSectionEarly()">
-        🔒 Lock & Advance Current Section
-      </button>
-      <button class="btn btn-danger" style="width:100%; font-size:14px; padding:12px;" id="btn-submit-exam">Submit Full Test</button>
-    </div>
-  </div>
-
-  <!-- SECTION LOCK CONFIRMATION MODAL -->
-  <div class="modal-overlay" id="modal-section-lock-confirm">
-    <div class="modal-window" style="max-width:400px; text-align:center;">
-      <h3 style="font-size:18px; font-weight:800; color:var(--status-amber); margin-bottom:8px;">Lock Section Early?</h3>
-      <p style="font-size:13px; color:var(--text-muted); line-height:1.5; margin-bottom:14px;" id="lock-confirm-msg">
-        You have time remaining in this section. Once submitted, this section will be permanently locked and cannot be revisited.
-      </p>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-        <button class="btn btn-secondary" onclick="document.getElementById('modal-section-lock-confirm').classList.remove('active')">Cancel</button>
-        <button class="btn btn-amber" onclick="CGL_OS.confirmEndSectionEarly()">Lock & Proceed</button>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- ==================== 2. UNTIMED DOJO ARENA ==================== -->
-  <div id="dojo-arena-view">
-    <div class="arena-header">
-      <button class="hud-icon-btn" onclick="CGL_OS.exitDojoArena()">
-        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-      </button>
-      <div style="text-align:center;">
-        <div style="font-size:14px; font-weight:800; color:var(--accent-cyan);" id="dojo-arena-title">Dojo Practice</div>
-        <div style="font-size:10px; color:var(--text-muted);">Untimed Active Recall Mode</div>
-      </div>
-      <button class="hud-icon-btn" onclick="CGL_OS.toggleDojoPalette(true)">
-        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
-      </button>
-    </div>
-
-    <div class="sectional-banner">
-      <div style="display:flex; gap:6px; align-items:center;">
-        <span class="badge" style="background:#238636;" id="dojo-arena-chap-badge">QA_PERCENTAGE</span>
-        <span class="badge" style="background:#151a24; color:#38bdf8;" id="dojo-arena-method-badge">General</span>
-      </div>
-      <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openEditCurrentDojoQuestion()">Edit Question</button>
-    </div>
-
-    <div id="dojo-theory-banner" style="display:none; background:#111622; padding:10px 14px; border-bottom:1px solid var(--border-color); font-size:12px; line-height:1.5;"></div>
-
-    <div class="arena-body" id="dojo-arena-body">
-      <div class="question-header">
-        <div class="q-number-pill" id="dojo-arena-qnum">1</div>
-        <span style="font-size:12px; color:var(--text-muted);" id="dojo-arena-total-tag">Question 1 of 10</span>
-      </div>
-
-      <div class="q-text-canvas" id="dojo-arena-qtext"></div>
-      <div class="q-image-container" id="dojo-image-container" style="display:none;"></div>
-      <div id="dojo-arena-options"></div>
-
-      <div id="dojo-arena-feedback" style="display:none; padding:10px; border-radius:8px; margin:12px 0; font-size:13px; font-weight:700;"></div>
-
-      <button class="btn btn-secondary" style="width:100%; margin-top:10px; font-size:13px;" onclick="CGL_OS.toggleDojoMethod()">
-        Reveal Method & Solution
-      </button>
-
-      <div id="dojo-arena-method-box" style="display:none; margin-top:12px; padding:12px; background:#151a24; border-left:3px solid var(--accent-blue); border-radius:4px; font-size:13px; line-height:1.6;"></div>
-
-      <div class="form-group" style="margin-top:14px;">
-        <label>Personal Solving Cue / Annotation (Auto-Saves to Device)</label>
-        <textarea id="dojo-arena-annotation" class="form-control" style="height:60px;" placeholder="Personal note, shortcut, or formula reminder..." oninput="CGL_OS.autoSaveDojoAnnotation(this.value)"></textarea>
-      </div>
-    </div>
-
-    <div class="arena-footer">
-      <button class="btn btn-secondary" style="padding:8px 14px;" onclick="CGL_OS.navDojoArena(-1)">Previous</button>
-      <button class="btn btn-secondary" style="padding:8px 14px;" onclick="CGL_OS.toggleDojoPalette(true)">Palette</button>
-      <button class="btn" style="padding:8px 18px;" onclick="CGL_OS.navDojoArena(1)">Next Question</button>
-    </div>
-  </div>
-
-  <!-- DOJO PALETTE DRAWER -->
-  <div class="drawer-overlay" id="dojo-drawer-overlay" onclick="CGL_OS.toggleDojoPalette(false)"></div>
-  <div class="palette-drawer-ui" id="dojo-palette-drawer">
-    <div style="padding:14px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
-      <h3 style="font-size:14px; font-weight:700;">Dojo Bank Navigator</h3>
-      <span class="badge" style="background:#238636;" id="dojo-palette-count-badge">0 Qs</span>
-    </div>
-    <div class="palette-scroll-body" id="dojo-palette-scroll-body"></div>
-  </div>
-
-
-  <!-- ==================== 3. TAB 1: DASHBOARD ==================== -->
-  <div id="tab-dashboard" class="view-container active">
-    <div class="hero-banner">
-      <div class="hero-content">
-        <div>
-          <span class="badge" style="background:#238636; margin-bottom:6px;">SSC CGL 2026 CANDIDATE</span>
-          <h2 style="font-size:20px; font-weight:800; color:#fff;">Welcome back, Ankit</h2>
-          <p style="font-size:12px; color:var(--accent-cyan); margin-top:2px;">Target: Tier 1 & Tier 2 Master Preparation</p>
+        <div style="text-align:center;">
+          <div id="hud-countdown" class="hud-timer">15:00</div>
+          <div style="font-size:10px; color:var(--text-muted);" id="hud-test-title">SSC CGL Mock</div>
         </div>
-        <button class="btn" id="btn-dash-launch-mock" onclick="CGL_OS.openCustomMockModal()" style="padding:10px 16px; font-size:13px; box-shadow:0 0 14px rgba(56,139,253,0.5); z-index:5;">
-          Launch Mock
+
+        <button class="hud-icon-btn" id="btn-toggle-exam-palette" title="Open Question Palette">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
         </button>
       </div>
-    </div>
 
-    <!-- Master Key Performance Indicators -->
-    <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; margin-bottom:14px;">
-      <div class="card" style="margin-bottom:0; padding:12px;">
-        <div style="font-size:11px; color:var(--text-muted);">Standard Mocks Taken</div>
-        <div style="font-size:24px; font-weight:800;" id="kpi-total-mocks">0</div>
-      </div>
-      <div class="card" style="margin-bottom:0; padding:12px;">
-        <div style="font-size:11px; color:var(--text-muted);">Overall Accuracy</div>
-        <div style="font-size:24px; font-weight:800;" id="kpi-global-acc">--</div>
-      </div>
-      <div class="card" style="margin-bottom:0; padding:12px;">
-        <div style="font-size:11px; color:var(--text-muted);">Avg Solve Speed</div>
-        <div style="font-size:24px; font-weight:800;" id="kpi-avg-speed">--</div>
-      </div>
-      <div class="card" style="margin-bottom:0; padding:12px;">
-        <div style="font-size:11px; color:var(--text-muted);">Q-IV Traps Hit</div>
-        <div style="font-size:24px; font-weight:800; color:var(--status-red);" id="kpi-traps-hit">0</div>
-      </div>
-    </div>
-
-    <!-- Recent Mocks & History Archive -->
-    <div class="card">
-      <div class="card-title">
-        <span>Recent Mock Scorecards</span>
-        <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.openHistoryArchiveModal()">
-          Open History Archive
-        </button>
-      </div>
-      <div id="mock-history-container">
-        <p style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">No mocks submitted yet. Launch your first mock above.</p>
-      </div>
-    </div>
-
-    <!-- Syllabus Taxonomy Drill-Down -->
-    <div class="card">
-      <div class="card-title">
-        <span>Syllabus Taxonomy Deep Dive</span>
-        <span class="badge" style="background:#1f6feb;" id="drill-level-tag">LEVEL: SUBJECT</span>
-      </div>
-      <div id="drilldown-breadcrumb" style="font-size:12px; color:var(--accent-cyan); margin-bottom:10px; cursor:pointer;">Global</div>
-      <div id="drilldown-list"></div>
-    </div>
-  </div>
-
-
-  <!-- ==================== 4. TAB 2: DOJO & KNOWLEDGE COMPENDIUM ==================== -->
-  <div id="tab-dojo" class="view-container">
-    <div class="card" style="background:linear-gradient(135deg, #131b29, #090c12); border-color:#238636;">
-      <h2 style="font-size:18px; font-weight:800;">Question Dojo & Practice Hub</h2>
-      <p style="font-size:12px; color:var(--text-muted); margin-top:2px;">
-        Untimed active recall, question editing, and targeted method drilling.
-      </p>
-    </div>
-
-    <!-- Knowledge Compendium Button Card -->
-    <div class="card" style="border-color:#38bdf8;">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <div>
-          <b style="font-size:14px; color:#38bdf8;">Knowledge & Topic Compendium</b>
-          <p style="font-size:11px; color:var(--text-muted);">Master scrollable chapter compendiums, theorem dossiers & pop-out topic sheets.</p>
+      <div class="sectional-banner">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span class="badge" style="background:#1f6feb;" id="hud-section-badge">SECTION: QUANT</span>
+          <span style="font-size:11px; color:var(--accent-cyan);" id="hud-section-qinfo">Q1 of 25</span>
         </div>
-        <button class="btn" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openKnowledgeCompendiumModal()">
-          Open Compendium
-        </button>
+        <span id="hud-pacing-status" style="font-family:var(--font-mono); color:var(--text-muted);">0s spent</span>
+      </div>
+
+      <div id="arena-lock-toast" style="display:none; background:#d29922; color:#000; font-size:12px; font-weight:700; padding:6px 14px; text-align:center;"></div>
+
+      <div class="arena-body" id="arena-body">
+        <div class="question-header">
+          <div class="q-number-pill" id="arena-q-num">Q1</div>
+          <div class="q-clock-pill">
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            <span id="arena-q-timer">00:00</span>
+          </div>
+        </div>
+
+        <div class="q-text-canvas" id="arena-q-text"></div>
+        <div class="q-image-container" id="arena-image-container" style="display:none;"></div>
+        <div id="arena-options-container"></div>
+      </div>
+
+      <div class="arena-footer">
+        <button class="btn btn-secondary" style="padding:8px 14px;" id="btn-q-prev">Previous</button>
+        <button class="btn btn-secondary" style="padding:8px 12px; font-size:12px; color:var(--status-purple);" id="btn-q-review">Mark Review</button>
+        <button class="btn" style="padding:8px 18px;" id="btn-q-save-next">Save & Next</button>
       </div>
     </div>
 
-    <!-- Module & Method Selector -->
-    <div class="card">
-      <div class="card-title">Select Module & Method to Practice</div>
+    <!-- EXAM PALETTE DRAWER -->
+    <div class="drawer-overlay" id="exam-drawer-overlay"></div>
+    <div class="palette-drawer-ui" id="exam-palette-drawer">
+      <div style="padding:14px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="font-size:14px; font-weight:700;">Question Palette</h3>
+        <span class="badge" style="background:#1f6feb;" id="exam-drawer-sec-badge">PART - A</span>
+      </div>
       
-      <div class="form-group">
-        <label>Subject</label>
-        <select id="dojo-nav-subject" class="form-control" onchange="CGL_OS.updateDojoChapters()">
-          <option value="QA">Quantitative Aptitude (QA)</option>
-          <option value="REAS">General Intelligence & Reasoning (REAS)</option>
-          <option value="ENG">English Comprehension (ENG)</option>
-          <option value="GA">General Awareness (GA)</option>
-        </select>
+      <div id="exam-palette-section-tabs" style="display:flex; overflow-x:auto; padding:8px 12px; background:#07090e; border-bottom:1px solid var(--border-color); gap:6px;"></div>
+
+      <div style="padding:10px 14px; background:#07090e; font-size:12px; display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color);">
+        <span>🟢 Ans: <b id="exam-count-ans">0</b></span>
+        <span>🟣 Marked: <b id="exam-count-marked">0</b></span>
+        <span>⚪ Unans: <b id="exam-count-unans">0</b></span>
       </div>
-
-      <div class="form-group">
-        <label>Chapter</label>
-        <select id="dojo-nav-chapter" class="form-control" onchange="CGL_OS.updateDojoMethods()"></select>
+      <div class="palette-scroll-body">
+        <div class="palette-grid" id="exam-palette-grid"></div>
       </div>
-
-      <div class="form-group">
-        <label>Subtopic / Method Type</label>
-        <select id="dojo-nav-method" class="form-control"></select>
-      </div>
-
-      <button class="btn" style="width:100%; margin-top:8px;" onclick="CGL_OS.launchFilteredDojo()">
-        Launch Untimed Dojo Session
-      </button>
-    </div>
-  </div>
-
-
-  <!-- ==================== 5. TAB 3: COMMAND TERMINAL ==================== -->
-  <div id="tab-console" class="view-container">
-    <div class="card">
-      <div class="card-title">JSON Command Bus & AI Dispatch</div>
-      <textarea class="form-control" id="console-payload" style="height:140px; font-family:var(--font-mono); font-size:12px; color:#38bdf8;" placeholder='Paste AI payload here (e.g. AI_PRESCRIBE_REMEDY, BATCH_INGEST)...'></textarea>
-      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
-        <button class="btn" onclick="CGL_OS.executeConsoleCommand()">Execute Command</button>
-        <button class="btn btn-secondary" onclick="document.getElementById('console-payload').value=''">Clear Console</button>
-        <button class="btn btn-secondary" onclick="CGL_OS.loadSamplePayload('REMEDY')">Sample AI Remedy</button>
-        <button class="btn btn-secondary" onclick="CGL_OS.openMasterLedgerExportModal()">Export Bank for Gem</button>
+      <div style="padding:14px; border-top:1px solid var(--border-color); display:flex; flex-direction:column; gap:8px;">
+        <button class="btn btn-amber" id="btn-drawer-early-lock" style="width:100%; font-size:13px; padding:10px; display:none;" onclick="CGL_OS.requestEndSectionEarly()">
+          🔒 Lock & Advance Current Section
+        </button>
+        <button class="btn btn-danger" style="width:100%; font-size:14px; padding:12px;" id="btn-submit-exam">Submit Full Test</button>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-title">
-        <span>Direct Database Studio</span>
-        <select id="db-store-select" class="form-control" style="width:auto; padding:4px 8px; font-size:12px;" onchange="CGL_OS.refreshDbInspector()">
-          <option value="store_questions">store_questions</option>
-          <option value="store_attempts">store_attempts</option>
-          <option value="store_vault">store_vault</option>
-          <option value="store_vault_sprints">store_vault_sprints</option>
-          <option value="store_concepts">store_concepts</option>
-          <option value="store_notes">store_notes</option>
-          <option value="store_active_session">store_active_session</option>
-          <option value="store_config">store_config</option>
-        </select>
+    <!-- SECTION LOCK CONFIRMATION MODAL -->
+    <div class="modal-overlay" id="modal-section-lock-confirm">
+      <div class="modal-window" style="max-width:400px; text-align:center;">
+        <h3 style="font-size:18px; font-weight:800; color:var(--status-amber); margin-bottom:8px;">Lock Section Early?</h3>
+        <p style="font-size:13px; color:var(--text-muted); line-height:1.5; margin-bottom:14px;" id="lock-confirm-msg">
+          You have time remaining in this section. Once submitted, this section will be permanently locked and cannot be revisited.
+        </p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <button class="btn btn-secondary" onclick="document.getElementById('modal-section-lock-confirm').classList.remove('active')">Cancel</button>
+          <button class="btn btn-amber" onclick="CGL_OS.confirmEndSectionEarly()">Lock & Proceed</button>
+        </div>
       </div>
-      <div id="db-inspector-list" style="max-height:220px; overflow-y:auto; font-size:12px;"></div>
     </div>
 
-    <div class="card" style="border-color:#5a1e1e;">
-      <div class="card-title" style="color:var(--status-red);">Danger Zone Operations</div>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-        <button class="btn btn-danger" style="font-size:12px;" onclick="CGL_OS.wipeTestAttempts()">Wipe Test History</button>
-        <button class="btn btn-danger" style="font-size:12px;" onclick="CGL_OS.wipeErrorVault()">Wipe Error Vault</button>
+
+    <!-- ==================== 2. UNTIMED DOJO ARENA ==================== -->
+    <div id="dojo-arena-view">
+      <div class="arena-header">
+        <button class="hud-icon-btn" onclick="CGL_OS.exitDojoArena()">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        </button>
+        <div style="text-align:center;">
+          <div style="font-size:14px; font-weight:800; color:var(--accent-cyan);" id="dojo-arena-title">Dojo Practice</div>
+          <div style="font-size:10px; color:var(--text-muted);">Untimed Active Recall Mode</div>
+        </div>
+        <button class="hud-icon-btn" onclick="CGL_OS.toggleDojoPalette(true)">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+        </button>
       </div>
-      <button class="btn btn-danger" style="width:100%; margin-top:8px; font-size:12px;" onclick="CGL_OS.factoryResetAll()">Factory Reset Entire Database</button>
-    </div>
-  </div>
 
-
-  <!-- ==================== 6. TAB 4: ERROR VAULT & EXTRACTIONS ==================== -->
-  <div id="tab-vault" class="view-container">
-    <div class="card" style="border-color:#5a1e1e;">
-      <div class="card-title" style="color:#f87171;">
-        <span>Spaced-Repetition Error Vault</span>
+      <div class="sectional-banner">
         <div style="display:flex; gap:6px; align-items:center;">
-          <span class="badge" style="background:#da3633;" id="vault-count-badge">0 Traps</span>
-          <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.wipeErrorVault()">Clear</button>
+          <span class="badge" style="background:#238636;" id="dojo-arena-chap-badge">QA_PERCENTAGE</span>
+          <span class="badge" style="background:#151a24; color:#38bdf8;" id="dojo-arena-method-badge">General</span>
+        </div>
+        <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openEditCurrentDojoQuestion()">Edit Question</button>
+      </div>
+
+      <div id="dojo-theory-banner" style="display:none; background:#111622; padding:10px 14px; border-bottom:1px solid var(--border-color); font-size:12px; line-height:1.5;"></div>
+
+      <div class="arena-body" id="dojo-arena-body">
+        <div class="question-header">
+          <div class="q-number-pill" id="dojo-arena-qnum">1</div>
+          <span style="font-size:12px; color:var(--text-muted);" id="dojo-arena-total-tag">Question 1 of 10</span>
+        </div>
+
+        <div class="q-text-canvas" id="dojo-arena-qtext"></div>
+        <div class="q-image-container" id="dojo-image-container" style="display:none;"></div>
+        <div id="dojo-arena-options"></div>
+
+        <div id="dojo-arena-feedback" style="display:none; padding:10px; border-radius:8px; margin:12px 0; font-size:13px; font-weight:700;"></div>
+
+        <button class="btn btn-secondary" style="width:100%; margin-top:10px; font-size:13px;" onclick="CGL_OS.toggleDojoMethod()">
+          Reveal Method & Solution
+        </button>
+
+        <div id="dojo-arena-method-box" style="display:none; margin-top:12px; padding:12px; background:#151a24; border-left:3px solid var(--accent-blue); border-radius:4px; font-size:13px; line-height:1.6;"></div>
+
+        <div class="form-group" style="margin-top:14px;">
+          <label>Personal Solving Cue / Annotation (Auto-Saves to Device)</label>
+          <textarea id="dojo-arena-annotation" class="form-control" style="height:60px;" placeholder="Personal note, shortcut, or formula reminder..." oninput="CGL_OS.autoSaveDojoAnnotation(this.value)"></textarea>
         </div>
       </div>
-      
-      <!-- Leitner System Explainer -->
-      <div style="background:#161012; border:1px solid #4a1d20; border-radius:8px; padding:10px; font-size:11px; line-height:1.5; margin-bottom:12px; color:#fca5a5;">
-        <b>How the Leitner Vault Works:</b><br>
-        • Questions log here only when answered incorrectly during full mocks.<br>
-        • <b>Box 1:</b> Daily review queue.<br>
-        • <b>Box 2:</b> Review interval: 4 days.<br>
-        • <b>Box 3:</b> Final mastery interval: 14 days.<br>
-        • Solving a Box 3 question graduates and clears it permanently from the vault.
-      </div>
 
-      <button class="btn btn-danger" style="width:100%; margin-bottom:12px;" onclick="CGL_OS.launchVaultSprint()">
-        Launch Trap-Breaker Sprint (Failed Qs Only)
-      </button>
-      <div id="vault-list-container"></div>
-    </div>
-
-    <!-- Vault Sprint History Log Card -->
-    <div class="card">
-      <div class="card-title">
-        <span>Vault Sprint History (Isolated)</span>
-        <span class="badge" style="background:#238636;" id="vault-sprint-count-badge">0 Sprints</span>
-      </div>
-      <div id="vault-sprint-history-list" style="max-height:180px; overflow-y:auto;">
-        <p style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">No sprints recorded yet.</p>
+      <div class="arena-footer">
+        <button class="btn btn-secondary" style="padding:8px 14px;" onclick="CGL_OS.navDojoArena(-1)">Previous</button>
+        <button class="btn btn-secondary" style="padding:8px 14px;" onclick="CGL_OS.toggleDojoPalette(true)">Palette</button>
+        <button class="btn" style="padding:8px 18px;" onclick="CGL_OS.navDojoArena(1)">Next Question</button>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-title">Universal Plain Text & Markdown Exports</div>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
-        <button class="btn btn-secondary" style="font-size:12px;" onclick="CGL_OS.exportFullBackup()">Export DB (.json)</button>
-        <button class="btn btn-secondary" style="font-size:12px;" onclick="CGL_OS.exportCleanMarkdownVault()">Export Vault (.md)</button>
+    <!-- DOJO PALETTE DRAWER -->
+    <div class="drawer-overlay" id="dojo-drawer-overlay" onclick="CGL_OS.toggleDojoPalette(false)"></div>
+    <div class="palette-drawer-ui" id="dojo-palette-drawer">
+      <div style="padding:14px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="font-size:14px; font-weight:700;">Dojo Bank Navigator</h3>
+        <span class="badge" style="background:#238636;" id="dojo-palette-count-badge">0 Qs</span>
       </div>
-      <button class="btn btn-secondary" style="width:100%; font-size:12px;" onclick="CGL_OS.openPrintConfigModal()">
-        Configure & Spool Native Print Sheet (A4 PDF)
-      </button>
+      <div class="palette-scroll-body" id="dojo-palette-scroll-body"></div>
     </div>
-  </div>
+
+
+    <!-- ==================== 3. TAB 1: DASHBOARD ==================== -->
+    <div id="tab-dashboard" class="view-container active">
+      <div class="hero-banner">
+        <div class="hero-content">
+          <div>
+            <span class="badge" style="background:#238636; margin-bottom:6px;">SSC CGL 2026 CANDIDATE</span>
+            <h2 style="font-size:20px; font-weight:800; color:#fff;">Welcome back, Ankit</h2>
+            <p style="font-size:12px; color:var(--accent-cyan); margin-top:2px;">Target: Tier 1 & Tier 2 Master Preparation</p>
+          </div>
+          <button class="btn" id="btn-dash-launch-mock" onclick="CGL_OS.openCustomMockModal()" style="padding:10px 16px; font-size:13px; box-shadow:0 0 14px rgba(56,139,253,0.5); z-index:5;">
+            Launch Mock
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Launch Saved Blueprints Row -->
+      <div style="margin-bottom:14px;">
+        <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px; display:flex; justify-content:space-between;">
+          <span>Saved Mock Blueprints</span>
+          <span style="color:var(--accent-cyan); cursor:pointer;" onclick="CGL_OS.openCustomMockModal()">+ New Blueprint</span>
+        </div>
+        <div id="dash-blueprints-pills" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;"></div>
+      </div>
+
+      <!-- Master Key Performance Indicators with Radial SVG Gauges -->
+      <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; margin-bottom:14px;">
+        <div class="card" style="margin-bottom:0; padding:12px;">
+          <div class="gauge-wrapper">
+            <svg class="gauge-svg" viewBox="0 0 36 36">
+              <path class="gauge-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <path class="gauge-fill" id="gauge-acc-circle" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            </svg>
+            <div>
+              <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase;">Overall Accuracy</div>
+              <div style="font-size:22px; font-weight:800;" id="kpi-global-acc">--</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:0; padding:12px;">
+          <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase;">Solve Velocity</div>
+          <div style="font-size:22px; font-weight:800;" id="kpi-avg-speed">--</div>
+          <div style="font-size:10px; color:var(--text-muted); margin-top:2px;" id="kpi-speed-benchmark">Target: 45s / Q</div>
+        </div>
+
+        <div class="card" style="margin-bottom:0; padding:12px;">
+          <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase;">Standard Mocks</div>
+          <div style="font-size:22px; font-weight:800;" id="kpi-total-mocks">0</div>
+        </div>
+
+        <div class="card" style="margin-bottom:0; padding:12px;">
+          <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase;">Q-IV Traps Hit</div>
+          <div style="font-size:22px; font-weight:800; color:var(--status-red);" id="kpi-traps-hit">0</div>
+        </div>
+      </div>
+
+      <!-- Subject Mastery Battery Meters -->
+      <div class="card">
+        <div class="card-title">
+          <span>Subject Mastery Matrix</span>
+          <span style="font-size:10px; color:var(--accent-cyan);">Tap Subject to Drill</span>
+        </div>
+        <div id="dash-subject-batteries"></div>
+      </div>
+
+      <!-- Recent Mocks & History Archive (Ticket-Stub Design) -->
+      <div class="card">
+        <div class="card-title">
+          <span>Recent Mock Scorecards</span>
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.openHistoryArchiveModal()">
+            Open History Archive
+          </button>
+        </div>
+        <div id="mock-history-container">
+          <p style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">No mocks submitted yet. Launch your first mock above.</p>
+        </div>
+      </div>
+
+      <!-- Syllabus Taxonomy Drill-Down -->
+      <div class="card">
+        <div class="card-title">
+          <span>Syllabus Taxonomy Deep Dive</span>
+          <span class="badge" style="background:#1f6feb;" id="drill-level-tag">LEVEL: SUBJECT</span>
+        </div>
+        <div id="drilldown-breadcrumb" style="font-size:12px; color:var(--accent-cyan); margin-bottom:10px; cursor:pointer;">Global</div>
+        <div id="drilldown-list"></div>
+      </div>
+    </div>
+
+
+    <!-- ==================== 4. TAB 2: DOJO & KNOWLEDGE COMPENDIUM ==================== -->
+    <div id="tab-dojo" class="view-container">
+      <div class="card" style="background:linear-gradient(135deg, #131b29, #090c12); border-color:#238636;">
+        <h2 style="font-size:18px; font-weight:800;">Question Dojo & Practice Hub</h2>
+        <p style="font-size:12px; color:var(--text-muted); margin-top:2px;">
+          Untimed active recall, question editing, and targeted method drilling.
+        </p>
+      </div>
+
+      <!-- Knowledge Compendium Button Card -->
+      <div class="card" style="border-color:#38bdf8;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <b style="font-size:14px; color:#38bdf8;">Knowledge & Topic Compendium</b>
+            <p style="font-size:11px; color:var(--text-muted);">Master scrollable chapter compendiums, theorem dossiers & pop-out topic sheets.</p>
+          </div>
+          <button class="btn" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openKnowledgeCompendiumModal()">
+            Open Compendium
+          </button>
+        </div>
+      </div>
+
+      <!-- Module & Method Selector -->
+      <div class="card">
+        <div class="card-title">Select Module & Method to Practice</div>
+        
+        <div class="form-group">
+          <label>Subject</label>
+          <select id="dojo-nav-subject" class="form-control" onchange="CGL_OS.updateDojoChapters()">
+            <option value="QA">Quantitative Aptitude (QA)</option>
+            <option value="REAS">General Intelligence & Reasoning (REAS)</option>
+            <option value="ENG">English Comprehension (ENG)</option>
+            <option value="GA">General Awareness (GA)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Chapter</label>
+          <select id="dojo-nav-chapter" class="form-control" onchange="CGL_OS.updateDojoMethods()"></select>
+        </div>
+
+        <div class="form-group">
+          <label>Subtopic / Method Type</label>
+          <select id="dojo-nav-method" class="form-control"></select>
+        </div>
+
+        <button class="btn" style="width:100%; margin-top:8px;" onclick="CGL_OS.launchFilteredDojo()">
+          Launch Untimed Dojo Session
+        </button>
+      </div>
+    </div>
+
+
+    <!-- ==================== 5. TAB 3: COMMAND TERMINAL ==================== -->
+    <div id="tab-console" class="view-container">
+      <div class="card">
+        <div class="card-title">JSON Command Bus & AI Dispatch</div>
+        <textarea class="form-control" id="console-payload" style="height:140px; font-family:var(--font-mono); font-size:12px; color:#38bdf8;" placeholder='Paste AI payload here (e.g. AI_PRESCRIBE_REMEDY, INGEST_AND_LAUNCH_MOCK, BATCH_INGEST)...'></textarea>
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
+          <button class="btn" onclick="CGL_OS.executeConsoleCommand()">Execute Command</button>
+          <button class="btn btn-secondary" onclick="document.getElementById('console-payload').value=''">Clear Console</button>
+          <button class="btn btn-secondary" onclick="CGL_OS.loadSamplePayload('REMEDY')">Sample AI Remedy</button>
+          <button class="btn btn-secondary" onclick="CGL_OS.openMasterLedgerExportModal()">Export Bank for Gem</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>Direct Database Studio</span>
+          <select id="db-store-select" class="form-control" style="width:auto; padding:4px 8px; font-size:12px;" onchange="CGL_OS.refreshDbInspector()">
+            <option value="store_questions">store_questions</option>
+            <option value="store_attempts">store_attempts</option>
+            <option value="store_vault">store_vault</option>
+            <option value="store_vault_sprints">store_vault_sprints</option>
+            <option value="store_concepts">store_concepts</option>
+            <option value="store_notes">store_notes</option>
+            <option value="store_saved_mocks">store_saved_mocks</option>
+            <option value="store_active_session">store_active_session</option>
+            <option value="store_config">store_config</option>
+          </select>
+        </div>
+        <div id="db-inspector-list" style="max-height:220px; overflow-y:auto; font-size:12px;"></div>
+      </div>
+
+      <div class="card" style="border-color:#5a1e1e;">
+        <div class="card-title" style="color:var(--status-red);">Danger Zone Operations</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+          <button class="btn btn-danger" style="font-size:12px;" onclick="CGL_OS.wipeTestAttempts()">Wipe Test History</button>
+          <button class="btn btn-danger" style="font-size:12px;" onclick="CGL_OS.wipeErrorVault()">Wipe Error Vault</button>
+        </div>
+        <button class="btn btn-danger" style="width:100%; margin-top:8px; font-size:12px;" onclick="CGL_OS.factoryResetAll()">Factory Reset Entire Database</button>
+      </div>
+    </div>
+
+
+    <!-- ==================== 6. TAB 4: ERROR VAULT & EXTRACTIONS ==================== -->
+    <div id="tab-vault" class="view-container">
+      <div class="card" style="border-color:#5a1e1e;">
+        <div class="card-title" style="color:#f87171;">
+          <span>Spaced-Repetition Error Vault</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="badge" style="background:#da3633;" id="vault-count-badge">0 Traps</span>
+            <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.wipeErrorVault()">Clear</button>
+          </div>
+        </div>
+        
+        <div style="background:#161012; border:1px solid #4a1d20; border-radius:8px; padding:10px; font-size:11px; line-height:1.5; margin-bottom:12px; color:#fca5a5;">
+          <b>How the Leitner Vault Works:</b><br>
+          • Questions log here only when answered incorrectly during full mocks.<br>
+          • <b>Box 1:</b> Daily review queue.<br>
+          • <b>Box 2:</b> Review interval: 4 days.<br>
+          • <b>Box 3:</b> Final mastery interval: 14 days.<br>
+          • Solving a Box 3 question graduates and clears it permanently from the vault.
+        </div>
+
+        <button class="btn btn-danger" style="width:100%; margin-bottom:12px;" onclick="CGL_OS.launchVaultSprint()">
+          Launch Trap-Breaker Sprint (Failed Qs Only)
+        </button>
+        <div id="vault-list-container"></div>
+      </div>
+
+      <!-- Vault Sprint History Log Card -->
+      <div class="card">
+        <div class="card-title">
+          <span>Vault Sprint History (Isolated)</span>
+          <span class="badge" style="background:#238636;" id="vault-sprint-count-badge">0 Sprints</span>
+        </div>
+        <div id="vault-sprint-history-list" style="max-height:180px; overflow-y:auto;">
+          <p style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">No sprints recorded yet.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Universal Plain Text & Disaster Recovery Backups</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
+          <button class="btn btn-secondary" style="font-size:12px;" onclick="CGL_OS.exportFullBackup()">Export Backup (.json)</button>
+          <button class="btn btn-secondary" style="font-size:12px;" onclick="CGL_OS.openBackupRestoreModal()">Restore Backup (.json)</button>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
+          <button class="btn btn-secondary" style="font-size:12px;" onclick="CGL_OS.exportCleanMarkdownVault()">Export Vault (.md)</button>
+          <button class="btn btn-secondary" style="font-size:12px;" onclick="CGL_OS.openPrintConfigModal()">Print Sheet (PDF)</button>
+        </div>
+      </div>
+    </div>
+
+  </div> <!-- /#app-viewport-root -->
 
 
   <!-- ==================== 7. TESTBOOK MOCK SOLUTION ANALYZER ==================== -->
@@ -970,12 +1074,12 @@
           <span style="font-size:11px; color:var(--text-muted);" id="review-modal-date">Submitted on Date</span>
         </div>
         <div style="display:flex; gap:6px;">
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--accent-cyan);" id="btn-review-reattempt">🔁 Re-attempt</button>
           <button class="btn" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openAiExportModal()">Export for AI</button>
           <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-mock-review').classList.remove('active')">✕ Close</button>
         </div>
       </div>
 
-      <!-- Core Scorecard Metrics -->
       <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:10px; text-align:center;">
         <div style="background:var(--bg-elevated); padding:8px; border-radius:6px;">
           <div style="font-size:10px; color:var(--text-muted);">SCORE</div>
@@ -995,7 +1099,6 @@
         </div>
       </div>
 
-      <!-- Interactive Forensic Metric Tiles -->
       <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:14px; text-align:center;">
         <div class="forensic-tile" onclick="CGL_OS.filterReviewQuestions('PENALTY')">
           <div style="font-size:9px; color:var(--status-purple);">PENALTY DRAG (TAP)</div>
@@ -1011,7 +1114,6 @@
         </div>
       </div>
 
-      <!-- Review Filter Pills -->
       <div style="display:flex; gap:6px; margin-bottom:12px; overflow-x:auto;">
         <button class="btn btn-secondary" style="font-size:11px; padding:6px 10px;" onclick="CGL_OS.filterReviewQuestions('ALL')">All Qs</button>
         <button class="btn btn-danger" style="font-size:11px; padding:6px 10px;" onclick="CGL_OS.filterReviewQuestions('INCORRECT')">Incorrect Only</button>
@@ -1150,7 +1252,6 @@
         </div>
       </div>
 
-      <!-- Subject & Chapter Selector Bar -->
       <div style="display:grid; grid-template-columns: 120px 1fr; gap:8px; margin-bottom:10px;">
         <select id="comp-subject-select" class="form-control" onchange="CGL_OS.handleCompendiumSubjectChange(this.value)">
           <option value="QA">QA</option>
@@ -1161,10 +1262,7 @@
         <select id="comp-chapter-select" class="form-control" onchange="CGL_OS.renderMasterCompendiumView()"></select>
       </div>
 
-      <!-- Sticky Anchor Bar for in-chapter jump -->
       <div class="sticky-anchor-bar" id="comp-anchor-bar"></div>
-
-      <!-- Master Continuous Scrollable Chapter Compendium -->
       <div id="comp-scroll-canvas" style="min-height:300px;"></div>
     </div>
   </div>
@@ -1179,6 +1277,7 @@
         </div>
         <div style="display:flex; gap:6px;">
           <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.openConceptEditorModal(false)">Edit</button>
+          <button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.deleteCurrentTopicDossier()">🗑 Delete</button>
           <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-popout-sheet').classList.remove('active')">✕</button>
         </div>
       </div>
@@ -1293,14 +1392,28 @@
         </select>
       </div>
 
-      <button class="btn" style="width:100%; margin-top:10px; padding:12px;" onclick="CGL_OS.launchConfiguredMock()">
-        Launch Mock Arena
-      </button>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px;">
+        <button class="btn btn-secondary" onclick="CGL_OS.openSaveBlueprintModal()">Save as Blueprint</button>
+        <button class="btn" onclick="CGL_OS.launchConfiguredMock()">Launch Arena</button>
+      </div>
     </div>
   </div>
 
 
-  <!-- ==================== 14. TOPIC DOSSIER EDITOR (WITH DUAL IMAGE) ==================== -->
+  <!-- ==================== 13B. SAVE BLUEPRINT PRESET MODAL ==================== -->
+  <div class="modal-overlay" id="modal-save-blueprint">
+    <div class="modal-window" style="max-width:420px;">
+      <h3 style="font-size:16px; font-weight:800; margin-bottom:10px;">Save Mock Blueprint</h3>
+      <div class="form-group">
+        <label>Blueprint Title</label>
+        <input type="text" id="blueprint-title-input" class="form-control" placeholder="e.g. Speed Blitz Alpha (QA + REAS)">
+      </div>
+      <button class="btn" style="width:100%; margin-top:8px;" onclick="CGL_OS.saveCurrentBlueprint()">Save Blueprint to Dashboard</button>
+    </div>
+  </div>
+
+
+  <!-- ==================== 14. TOPIC DOSSIER EDITOR ==================== -->
   <div class="modal-overlay" id="modal-concept-editor">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1328,7 +1441,7 @@
 
       <div class="form-group">
         <label>Topic / Concept Title</label>
-        <input type="text" id="concept-edit-title" class="form-control" placeholder="e.g. Tangent Theorems & Direct Tangent">
+        <input type="text" id="concept-edit-title" class="form-control" placeholder="e.g. Tangent Theorems & Common Tangents">
       </div>
 
       <div class="form-group">
@@ -1337,8 +1450,15 @@
       </div>
 
       <div class="form-group">
-        <label>Topic Dossier Body (Markdown, KaTeX in $...$ or $$...$$, callout blocks)</label>
-        <textarea id="concept-edit-body" class="form-control" style="height:120px;" placeholder="Full theorem notes, shortcuts, rules..."></textarea>
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+          <label>Topic Dossier Body (Markdown, KaTeX, Callouts, Tables)</label>
+          <div style="display:flex; gap:4px;">
+            <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px;" onclick="CGL_OS.insertDossierSnippet('FORMULA')">+ Formula</button>
+            <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px;" onclick="CGL_OS.insertDossierSnippet('TRAP')">+ Trap</button>
+            <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px;" onclick="CGL_OS.insertDossierSnippet('TABLE')">+ Table</button>
+          </div>
+        </div>
+        <textarea id="concept-edit-body" class="form-control" style="height:150px; font-family:var(--font-mono); font-size:12px;" placeholder="Full theorem notes, shortcuts, rules..."></textarea>
       </div>
 
       <div class="form-group">
@@ -1352,7 +1472,7 @@
   </div>
 
 
-  <!-- ==================== 15. GUI QUESTION EDITOR (WITH DUAL IMAGE) ==================== -->
+  <!-- ==================== 15. GUI QUESTION EDITOR ==================== -->
   <div class="modal-overlay" id="modal-question-editor">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1428,8 +1548,42 @@
   </div>
 
 
+  <!-- ==================== 15B. DISASTER RECOVERY RESTORE MODAL ==================== -->
+  <div class="modal-overlay" id="modal-backup-restore">
+    <div class="modal-window" style="max-width:480px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+        <h3 style="font-size:16px; font-weight:800; color:var(--accent-cyan);">Universal Disaster Recovery</h3>
+        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-backup-restore').classList.remove('active')">✕</button>
+      </div>
+
+      <p style="font-size:12px; color:var(--text-muted); line-height:1.5; margin-bottom:14px;">
+        Select an exported JSON backup file. The self-healing hydration engine will adapt to any schema differences and restore your data safely.
+      </p>
+
+      <div class="form-group">
+        <label>Select Backup File (.json)</label>
+        <input type="file" id="restore-backup-file-input" class="form-control" accept=".json" onchange="CGL_OS.handleBackupFileSelect(this)">
+      </div>
+
+      <div class="form-group">
+        <label>Hydration Mode</label>
+        <select id="restore-hydration-mode" class="form-control">
+          <option value="WIPE_REPLACE">Clean Disaster Recovery (Full Wipe & Replace)</option>
+          <option value="SAFE_MERGE">Safe Merge (Non-Destructive Append / Overwrite by Key)</option>
+        </select>
+      </div>
+
+      <div id="restore-file-preview-stats" style="display:none; background:var(--bg-elevated); padding:10px; border-radius:8px; font-size:11px; margin-bottom:12px;"></div>
+
+      <button class="btn" id="btn-execute-restore" style="width:100%; padding:12px;" disabled onclick="CGL_OS.executeHydrationRestore()">
+        Run Disaster Recovery Hydration
+      </button>
+    </div>
+  </div>
+
+
   <!-- ==================== 16. HARDENED PAUSE OVERLAY SHIELD ==================== -->
-  <div id="pause-shield" style="display:none !important; position:fixed !important; inset:0 !important; width:100vw !important; height:100vh !important; background:rgba(7, 9, 14, 0.98) !important; z-index:9999 !important; flex-direction:column !important; align-items:center !important; justify-content:center !important; padding:24px !important; text-align:center !important;">
+  <div id="pause-shield" style="display:none !important; position:fixed !important; inset:0 !important; width:100vw !important; height:100vh !important; background:rgba(6, 8, 13, 0.98) !important; z-index:9999 !important; flex-direction:column !important; align-items:center !important; justify-content:center !important; padding:24px !important; text-align:center !important;">
     <h2 style="font-size:22px; font-weight:800; margin-bottom:8px; color:#fff;">TEST PAUSED</h2>
     <p style="font-size:13px; color:var(--text-muted); max-width:280px; margin-bottom:20px;">
       Timer halted. Telemetry & session state frozen safely in IndexedDB.
@@ -1444,19 +1598,19 @@
 
   <!-- ==================== 17. BOTTOM NAVIGATION ==================== -->
   <nav id="bottom-nav">
-    <button class="nav-btn active" onclick="CGL_OS.switchTab('tab-dashboard', this)">
+    <button class="nav-btn active" id="nav-btn-tab-dashboard" onclick="CGL_OS.switchTab('tab-dashboard', this)">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
       Dashboard
     </button>
-    <button class="nav-btn" onclick="CGL_OS.switchTab('tab-dojo', this)">
+    <button class="nav-btn" id="nav-btn-tab-dojo" onclick="CGL_OS.switchTab('tab-dojo', this)">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
       Dojo
     </button>
-    <button class="nav-btn" onclick="CGL_OS.switchTab('tab-console', this)">
+    <button class="nav-btn" id="nav-btn-tab-console" onclick="CGL_OS.switchTab('tab-console', this)">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
       Console
     </button>
-    <button class="nav-btn" onclick="CGL_OS.switchTab('tab-vault', this)">
+    <button class="nav-btn" id="nav-btn-tab-vault" onclick="CGL_OS.switchTab('tab-vault', this)">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
       Vault
     </button>
@@ -1465,11 +1619,11 @@
   <div id="print-sheet-root" style="display:none;" class="print-page"></div>
 
 
-  <!-- ==================== 18. MASTER JAVASCRIPT RUNTIME ==================== -->
+  <!-- ==================== 18. MASTER JAVASCRIPT RUNTIME (CORE STORES & ENVELOPE) ==================== -->
   <script>
     const CGL_OS = (() => {
       const DB_NAME = "cgl_os_db";
-      const DB_VERSION = 9;
+      const DB_VERSION = 10;
       let db = null;
       let dbInitPromise = null;
 
@@ -1484,10 +1638,13 @@
       let currentPopoutTopicIndex = 0;
       let currentConceptImageBase64 = "";
 
+      // Disaster Recovery Hydration State
+      let pendingHydrationData = null;
+
       // Custom Mistake Tags State
       let customMistakeTags = ["CALCULATION_SLIP", "READING_TRAP", "FORMULA_AMNESIA", "CONCEPT_VOID", "RUSHED_PANIC"];
 
-      // 8 Restored Vault Questions from user markdown export
+      // 8 Restored Vault Questions from historical archive + Baseline Question Pool
       const SEED_QUESTIONS = [
         {
           id: "q_cgl_ga_polity_014",
@@ -1594,6 +1751,19 @@
           tags: ["Reasoning", "Analogy", "RestoredVault"]
         },
         {
+          id: "q_qa_geo_001",
+          subject: "QA",
+          chapter: "QA_GEOMETRY",
+          subtopic: "Triangles",
+          method: "Angle Bisector Theorem",
+          questionText: "In a $\\triangle ABC$, the bisector of $\\angle A$ intersects $BC$ at $D$. If $AB = 12\\text{ cm}$, $AC = 15\\text{ cm}$, and $BC = 18\\text{ cm}$, find the length of $BD$.",
+          imageUrl: "",
+          options: ["$6\\text{ cm}$", "$8\\text{ cm}$", "$10\\text{ cm}$", "$7.5\\text{ cm}$"],
+          correctIndex: 1,
+          explanation: "By Angle Bisector Theorem: $\\frac{BD}{DC} = \\frac{AB}{AC} = \\frac{12}{15} = \\frac{4}{5}$. Since $BC = 18\\text{ cm}$, $BD = \\frac{4}{9} \\times 18 = 8\\text{ cm}$.",
+          tags: ["AngleBisector", "Geometry"]
+        },
+        {
           id: "q_qa_alg_002",
           subject: "QA",
           chapter: "QA_ALGEBRA",
@@ -1607,6 +1777,32 @@
           tags: ["Algebra", "Identities"]
         },
         {
+          id: "q_qa_perc_001",
+          subject: "QA",
+          chapter: "QA_PERCENTAGE",
+          subtopic: "Successive Changes",
+          method: "Formula vs Ratio Approach",
+          questionText: "The length of a rectangle is increased by $20\\%$ and its breadth is decreased by $10\\%$. Find the net percentage change in its area.",
+          imageUrl: "",
+          options: ["$8\\%\\text{ increase}$", "$10\\%\\text{ increase}$", "$8\\%\\text{ decrease}$", "$12\\%\\text{ increase}$"],
+          correctIndex: 0,
+          explanation: "Net change $= a + b + \\frac{ab}{100} = 20 - 10 - \\frac{200}{100} = +8\\%$.",
+          tags: ["Percentage", "Successive"]
+        },
+        {
+          id: "q_reas_cod_001",
+          subject: "REAS",
+          chapter: "REAS_CODING",
+          subtopic: "Letter to Number",
+          method: "Forward Alphabet Rank",
+          questionText: "In a certain code language, **\"STRIKE\"** is coded as **\"19-20-18-9-11-5\"**. How will **\"CHAMP\"** be coded?",
+          imageUrl: "",
+          options: ["3-8-1-13-16", "3-8-2-14-16", "3-9-1-13-15", "4-8-1-12-16"],
+          correctIndex: 0,
+          explanation: "Each letter is represented directly by its forward alphabet rank ($C=3, H=8, A=1, M=13, P=16$).",
+          tags: ["CodingDecoding", "Alphabet"]
+        },
+        {
           id: "q_eng_ows_001",
           subject: "ENG",
           chapter: "ENG_OWS",
@@ -1618,10 +1814,23 @@
           correctIndex: 0,
           explanation: "**Insolvent** means unable to pay one's debts. Mercenary is someone working merely for money.",
           tags: ["OWS", "Vocabulary"]
+        },
+        {
+          id: "q_ga_pol_001",
+          subject: "GA",
+          chapter: "GA_POLITY",
+          subtopic: "Judiciary",
+          method: "Constitutional Articles",
+          questionText: "Which Article of the Constitution of India empowers High Courts to issue writs for the enforcement of Fundamental Rights?",
+          imageUrl: "",
+          options: ["Article 32", "Article 131", "Article 226", "Article 143"],
+          correctIndex: 2,
+          explanation: "Article 226 empowers High Courts to issue writs. Article 32 gives writ powers strictly to the Supreme Court.",
+          tags: ["Polity", "Writs"]
         }
       ];
 
-      // Initial Unified Compendium Topic Seeds
+      // Pre-Seeded Topic Dossiers with KaTeX, Callouts & Tables
       const SEED_TOPIC_DOSSIERS = [
         {
           id: "top_qa_geo_triangles",
@@ -1639,7 +1848,7 @@
           chapter: "QA_GEOMETRY",
           title: "Circles & Tangents Compendium",
           subtitle: "Secants, Power of Point & Tangent Lengths",
-          content: "### Tangent-Secant Theorem (Power of a Point)\nFrom an external point $P$, if $PT$ is tangent and $PAB$ is secant:\n$$PT^2 = PA \\cdot PB$$\n\n### Direct & Transverse Common Tangents\nFor two circles of radii $r_1, r_2$ with distance between centers $d$:\n• **Direct Common Tangent (DCT):**\n$$DCT = \\sqrt{d^2 - (r_1 - r_2)^2}$$\n• **Transverse Common Tangent (TCT):**\n$$TCT = \\sqrt{d^2 - (r_1 + r_2)^2}$$\n\n> [!tip] Quick Observation\n> $DCT$ is always strictly longer than $TCT$ because $(r_1 - r_2)^2 < (r_1 + r_2)^2$.",
+          content: "### Tangent-Secant Theorem (Power of a Point)\nFrom an external point $P$, if $PT$ is tangent and $PAB$ is secant:\n$$PT^2 = PA \\cdot PB$$\n\n### Direct & Transverse Common Tangents\nFor two circles of radii $r_1, r_2$ with distance between centers $d$:\n• **Direct Common Tangent (DCT):**\n$$DCT = \\sqrt{d^2 - (r_1 - r_2)^2}$$\n• **Transverse Common Tangent (TCT):**\n$$TCT = \\sqrt{d^2 - (r_1 + r_2)^2}$$\n\n### Common Tangents Inventory\n| Circle Position | Distance $d$ | No. of Common Tangents |\n| :--- | :--- | :--- |\n| Completely Separate | $d > r_1 + r_2$ | 4 (2 Direct, 2 Transverse) |\n| Touching Externally | $d = r_1 + r_2$ | 3 (2 Direct, 1 Common) |\n| Intersecting at 2 pts | $|r_1-r_2| < d < r_1+r_2$ | 2 (Direct Only) |\n| Touching Internally | $d = |r_1 - r_2|$ | 1 |\n| One inside other | $d < |r_1 - r_2|$ | 0 |",
           imageUrl: "",
           timestamp: Date.now()
         },
@@ -1649,7 +1858,7 @@
           chapter: "QA_ALGEBRA",
           title: "Symmetric Inverse Power Identities",
           subtitle: "Doubling, Cubing & Conditional Nullity",
-          content: "### The $x + 1/x = k$ Reduction Ladder\n• $x^2 + \\frac{1}{x^2} = k^2 - 2$\n• $x^3 + \\frac{1}{x^3} = k^3 - 3k$\n• $x^4 + \\frac{1}{x^4} = (k^2 - 2)^2 - 2$\n• $x^5 + \\frac{1}{x^5} = \\left(x^2 + \\frac{1}{x^2}\\right)\\left(x^3 + \\frac{1}{x^3}\\right) - \\left(x + \\frac{1}{x}\\right)$\n\n> [!formula] Conditional Nullity\n> If $a + b + c = 0$, then:\n> $$a^3 + b^3 + c^3 = 3abc$$",
+          content: "### The $x + 1/x = k$ Reduction Ladder\n• $x^2 + \\frac{1}{x^2} = k^2 - 2$\n• $x^3 + \\frac{1}{x^3} = k^3 - 3k$\n• $x^4 + \\frac{1}{x^4} = (k^2 - 2)^2 - 2$\n• $x^5 + \\frac{1}{x^5} = \\left(x^2 + \\frac{1}{x^2}\\right)\\left(x^3 + \\frac{1}{x^3}\\right) - \\left(x + \\frac{1}{x}\\right)$\n\n> [!formula] Conditional Nullity Identity\n> If $a + b + c = 0$, then:\n> $$a^3 + b^3 + c^3 = 3abc$$",
           imageUrl: "",
           timestamp: Date.now()
         },
@@ -1657,11 +1866,35 @@
           id: "top_ga_polity_judiciary",
           subject: "GA",
           chapter: "GA_POLITY",
-          title: "The Supreme Court & Writ Jurisdiction",
+          title: "Supreme Court & Writ Jurisdiction",
           subtitle: "Articles 32, 124, 131, 226",
-          content: "### Constitutional Architecture\n• **Article 124:** Establishment and constitution of the Supreme Court of India.\n• **Article 131:** Original jurisdiction of the Supreme Court (federal disputes).\n• **Article 143:** Advisory jurisdiction of the President.\n\n### The High Court Writ Powers\n• **Article 226:** Empowers High Courts to issue writs not only for Fundamental Rights, but also for 'any other purpose' (making HC writ jurisdiction broader in scope than SC under Article 32).",
+          content: "### Constitutional Architecture\n• **Article 124:** Establishment and constitution of the Supreme Court of India.\n• **Article 131:** Original jurisdiction of the Supreme Court (Federal disputes between Union & States).\n• **Article 143:** Advisory jurisdiction of the Supreme Court on Presidential references.\n\n### The High Court Writ Advantage\n• **Article 32:** Supreme Court issues writs strictly for enforcement of Fundamental Rights.\n• **Article 226:** High Courts can issue writs for Fundamental Rights *and* for 'any other legal right'.",
           imageUrl: "",
           timestamp: Date.now()
+        }
+      ];
+
+      // Saved Mock Blueprint Presets
+      const SEED_SAVED_MOCKS = [
+        {
+          id: "bp_tier1_standard",
+          title: "Tier 1 Standard Full Mock",
+          isSectionLocked: true,
+          sections: [
+            { id: 1, subject: "REAS", count: 25, durationMin: 15 },
+            { id: 2, subject: "GA", count: 25, durationMin: 15 },
+            { id: 3, subject: "QA", count: 25, durationMin: 15 },
+            { id: 4, subject: "ENG", count: 25, durationMin: 15 }
+          ]
+        },
+        {
+          id: "bp_qa_reas_speed_blitz",
+          title: "Speed Blitz (QA + REAS)",
+          isSectionLocked: false,
+          sections: [
+            { id: 1, subject: "QA", count: 25, durationMin: 18 },
+            { id: 2, subject: "REAS", count: 25, durationMin: 12 }
+          ]
         }
       ];
 
@@ -1689,24 +1922,34 @@
       };
 
       /* -------------------------------------------------------------
-       * 1. KATEX & MARKDOWN FORMATTER (WITH CALLOUT BLOCKS)
+       * 1. KATEX, MARKDOWN & ADMONITION FORMATTER
        * ------------------------------------------------------------- */
       function formatRichText(str) {
         if (!str) return "";
         let out = String(str);
 
-        // Callout Admonition blocks: > [!trap] or > [!formula] or > [!tip]
+        // Callout Admonitions
         out = out.replace(/^>\s*\[!trap\]\s*(.*)$/gm, '<div class="callout-box trap"><b>⚠️ Trapping Point:</b> $1</div>');
         out = out.replace(/^>\s*\[!formula\]\s*(.*)$/gm, '<div class="callout-box formula"><b>⚡ Formula:</b> $1</div>');
         out = out.replace(/^>\s*\[!tip\]\s*(.*)$/gm, '<div class="callout-box"><b>💡 Tip:</b> $1</div>');
 
-        // Standard Markdown headers & bold
+        // Markdown Headers
         out = out.replace(/^### (.*$)/gim, '<h3 style="font-size:15px; font-weight:700; color:var(--accent-cyan); margin:10px 0 4px 0;">$1</h3>');
         out = out.replace(/^## (.*$)/gim, '<h2 style="font-size:17px; font-weight:800; color:#fff; margin:12px 0 6px 0;">$1</h2>');
         out = out.replace(/^# (.*$)/gim, '<h1 style="font-size:19px; font-weight:800; color:#fff; margin:14px 0 8px 0;">$1</h1>');
         out = out.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 
-        // KaTeX Math Rendering
+        // Simple Markdown Table Parser
+        out = out.replace(/(\|[^\n]+\|\r?\n)((?:\|:?[-]+:?)+\|)(\r?\n(?:\|[^\n]+\|\r?\n?)+)/g, (match, headerLine, alignLine, bodyLines) => {
+          const headers = headerLine.trim().split('|').filter(c => c.trim().length > 0).map(c => `<th>${c.trim()}</th>`).join('');
+          const rows = bodyLines.trim().split('\n').map(row => {
+            const cells = row.trim().split('|').filter(c => c.trim().length > 0).map(c => `<td>${c.trim()}</td>`).join('');
+            return `<tr>${cells}</tr>`;
+          }).join('');
+          return `<table class="document-table"><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table>`;
+        });
+
+        // KaTeX Mathematics Parsing
         if (window.katex) {
           out = out.replace(/\$\$([\s\S]*?)\$\$/g, (m, f) => {
             try { return katex.renderToString(f, { displayMode: true, throwOnError: false }); } catch(e) { return m; }
@@ -1745,7 +1988,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 2. SELF-HEALING ASYNC STORAGE ENGINE (GETDB)
+       * 2. SELF-HEALING ASYNC STORAGE ENGINE (VERSION 10)
        * ------------------------------------------------------------- */
       function getDB() {
         if (db) return Promise.resolve(db);
@@ -1755,7 +1998,7 @@
           const req = indexedDB.open(DB_NAME, DB_VERSION);
 
           req.onblocked = () => {
-            console.warn("Database upgrade blocked. Closing stale handles...");
+            console.warn("Database upgrade blocked by another tab or stale handle. Forcing clean...");
           };
 
           req.onupgradeneeded = (e) => {
@@ -1767,6 +2010,7 @@
               { name: "store_vault_sprints", key: "sessionId" },
               { name: "store_concepts", key: "id" },
               { name: "store_notes", key: "id" },
+              { name: "store_saved_mocks", key: "id" },
               { name: "store_active_session", key: "id" },
               { name: "store_config", key: "key" }
             ];
@@ -1836,7 +2080,13 @@
         SEED_TOPIC_DOSSIERS.forEach(t => stC.put(t));
         await new Promise(r => txC.oncomplete = r);
 
-        // 4. Custom Mistake Tags config
+        // 4. Seed Saved Mock Blueprints
+        const txB = d.transaction(["store_saved_mocks"], "readwrite");
+        const stB = txB.objectStore("store_saved_mocks");
+        SEED_SAVED_MOCKS.forEach(b => stB.put(b));
+        await new Promise(r => txB.oncomplete = r);
+
+        // 5. Custom Mistake Tags config
         const savedMistakeConfig = await getRecord("store_config", "custom_mistake_tags");
         if (savedMistakeConfig && Array.isArray(savedMistakeConfig.value)) {
           customMistakeTags = [...new Set([...customMistakeTags, ...savedMistakeConfig.value])];
@@ -1895,8 +2145,217 @@
         } catch(e) { return false; }
       }
 
+      async function clearStore(sName) {
+        try {
+          const d = await getDB();
+          if (!d.objectStoreNames.contains(sName)) return false;
+          return new Promise(res => {
+            const tx = d.transaction([sName], "readwrite");
+            const req = tx.objectStore(sName).clear();
+            req.onsuccess = () => res(true);
+            req.onerror = () => res(false);
+          });
+        } catch(e) { return false; }
+      }
+
       /* -------------------------------------------------------------
-       * 3. MULTI-SUBJECT CUSTOM MOCK BUILDER
+       * 2B. UNIVERSAL DISASTER RECOVERY & HYDRATION ENGINE
+       * ------------------------------------------------------------- */
+      async function exportFullBackup() {
+        const envelope = {
+          cgl_os_envelope: {
+            magic_header: "CGL_INTELLIGENCE_OS_BACKUP",
+            engine_version: DB_VERSION,
+            exported_at: Date.now(),
+            exported_date: new Date().toISOString()
+          },
+          stores: {
+            store_questions: await getAllRecords("store_questions"),
+            store_attempts: await getAllRecords("store_attempts"),
+            store_vault: await getAllRecords("store_vault"),
+            store_vault_sprints: await getAllRecords("store_vault_sprints"),
+            store_concepts: await getAllRecords("store_concepts"),
+            store_notes: await getAllRecords("store_notes"),
+            store_saved_mocks: await getAllRecords("store_saved_mocks"),
+            store_config: await getAllRecords("store_config")
+          }
+        };
+
+        const blob = new Blob([JSON.stringify(envelope, null, 2)], { type: "application/json" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `cgl_os_backup_${Date.now()}.json`;
+        a.click();
+      }
+
+      function openBackupRestoreModal() {
+        pendingHydrationData = null;
+        document.getElementById("restore-backup-file-input").value = "";
+        document.getElementById("btn-execute-restore").disabled = true;
+        document.getElementById("restore-file-preview-stats").style.display = "none";
+        pushHistoryState("modal-backup-restore");
+        document.getElementById("modal-backup-restore").classList.add("active");
+      }
+
+      function handleBackupFileSelect(input) {
+        if (!input.files || !input.files[0]) return;
+        const file = input.files[0];
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          try {
+            const parsed = JSON.parse(e.target.result);
+            pendingHydrationData = normalizeBackupStructure(parsed);
+
+            const statsBox = document.getElementById("restore-file-preview-stats");
+            statsBox.style.display = "block";
+            statsBox.innerHTML = `
+              <b>Backup File Validated:</b><br>
+              • Questions: ${pendingHydrationData.store_questions.length}<br>
+              • Attempts & Scores: ${pendingHydrationData.store_attempts.length}<br>
+              • Active Error Vault Traps: ${pendingHydrationData.store_vault.length}<br>
+              • Knowledge Dossiers: ${pendingHydrationData.store_concepts.length}<br>
+              • Saved Mock Blueprints: ${pendingHydrationData.store_saved_mocks.length}
+            `;
+            document.getElementById("btn-execute-restore").disabled = false;
+          } catch(err) {
+            alert("Corrupted Backup File: " + err.message);
+            document.getElementById("btn-execute-restore").disabled = true;
+          }
+        };
+        reader.readAsText(file);
+      }
+
+      function normalizeBackupStructure(raw) {
+        let stores = {};
+        if (raw.cgl_os_envelope && raw.stores) {
+          stores = raw.stores;
+        } else {
+          // Legacy format detector & key normalizer
+          stores.store_questions = raw.questions || raw.store_questions || [];
+          stores.store_attempts = raw.attempts || raw.store_attempts || [];
+          stores.store_vault = raw.vault || raw.store_vault || [];
+          stores.store_vault_sprints = raw.sprints || raw.store_vault_sprints || [];
+          stores.store_concepts = raw.concepts || raw.formulas || raw.vocab || raw.store_concepts || [];
+          stores.store_notes = raw.notes || raw.store_notes || [];
+          stores.store_saved_mocks = raw.savedMocks || raw.store_saved_mocks || [];
+          stores.store_config = raw.config || raw.store_config || [];
+        }
+
+        // Schema Normalization & Default Injection
+        stores.store_questions = (stores.store_questions || []).map(sanitizeQuestion);
+        stores.store_concepts = (stores.store_concepts || []).map(sanitizeDossier);
+        stores.store_vault = (stores.store_vault || []).map(sanitizeVaultEntry);
+        stores.store_attempts = (stores.store_attempts || []).map(sanitizeAttempt);
+        stores.store_saved_mocks = (stores.store_saved_mocks || []).map(sanitizeSavedMock);
+        stores.store_vault_sprints = stores.store_vault_sprints || [];
+        stores.store_notes = stores.store_notes || [];
+        stores.store_config = stores.store_config || [];
+
+        return stores;
+      }
+
+      function sanitizeQuestion(q, idx) {
+        return {
+          id: q.id || `q_restored_${Date.now()}_${idx}`,
+          subject: q.subject || "QA",
+          chapter: q.chapter || "QA_GENERAL",
+          subtopic: q.subtopic || "",
+          method: q.method || "",
+          questionText: q.questionText || "",
+          imageUrl: q.imageUrl || "",
+          options: Array.isArray(q.options) && q.options.length === 4 ? q.options : ["Option 1", "Option 2", "Option 3", "Option 4"],
+          correctIndex: typeof q.correctIndex === "number" ? q.correctIndex : 0,
+          explanation: q.explanation || "",
+          tags: Array.isArray(q.tags) ? q.tags : ["Hydrated"],
+          annotation: q.annotation || ""
+        };
+      }
+
+      function sanitizeDossier(d, idx) {
+        return {
+          id: d.id || `top_restored_${Date.now()}_${idx}`,
+          subject: d.subject || "QA",
+          chapter: d.chapter || "QA_GENERAL",
+          title: d.title || d.word || "Untitled Topic",
+          subtitle: d.subtitle || d.root || "",
+          content: d.content || d.meaning || "",
+          imageUrl: d.imageUrl || "",
+          timestamp: d.timestamp || Date.now()
+        };
+      }
+
+      function sanitizeVaultEntry(v, idx) {
+        return {
+          questionId: v.questionId || `q_vault_err_${idx}`,
+          chapter: v.chapter || "QA_GENERAL",
+          subject: v.subject || "QA",
+          errorTag: v.errorTag || "UNCLASSIFIED",
+          leitnerBox: typeof v.leitnerBox === "number" ? v.leitnerBox : 1,
+          lastAttempted: v.lastAttempted || Date.now()
+        };
+      }
+
+      function sanitizeAttempt(a) {
+        return {
+          ...a,
+          mockType: a.mockType || "CUSTOM",
+          completed: a.completed !== undefined ? a.completed : true
+        };
+      }
+
+      function sanitizeSavedMock(b, idx) {
+        return {
+          id: b.id || `bp_saved_${Date.now()}_${idx}`,
+          title: b.title || `Saved Routine ${idx + 1}`,
+          isSectionLocked: b.isSectionLocked !== undefined ? b.isSectionLocked : true,
+          sections: Array.isArray(b.sections) ? b.sections : [{ id: 1, subject: "QA", count: 25, durationMin: 15 }]
+        };
+      }
+
+      async function executeHydrationRestore() {
+        if (!pendingHydrationData) return;
+        const mode = document.getElementById("restore-hydration-mode").value;
+        const d = await getDB();
+
+        try {
+          const storeKeys = [
+            "store_questions", "store_attempts", "store_vault", 
+            "store_vault_sprints", "store_concepts", "store_notes", 
+            "store_saved_mocks", "store_config"
+          ];
+
+          if (mode === "WIPE_REPLACE") {
+            for (const sName of storeKeys) {
+              await clearStore(sName);
+            }
+          }
+
+          // Write Hydrated Stores
+          for (const sName of storeKeys) {
+            const items = pendingHydrationData[sName] || [];
+            if (items.length > 0 && d.objectStoreNames.contains(sName)) {
+              const tx = d.transaction([sName], "readwrite");
+              const st = tx.objectStore(sName);
+              items.forEach(item => st.put(item));
+              await new Promise(r => tx.oncomplete = r);
+            }
+          }
+
+          alert("Disaster Recovery Hydration Complete! All database tables restored successfully.");
+          document.getElementById("modal-backup-restore").classList.remove("active");
+          await renderDashboard();
+          await updateDojoChapters();
+          await renderVault();
+        } catch(err) {
+          alert("Hydration Error: " + err.message);
+        }
+      }
+
+/* ==================== END OF PART 1 ==================== */
+/* Paste Part 2 immediately following this line */
+      /* -------------------------------------------------------------
+       * 3. MULTI-SUBJECT CUSTOM MOCK BUILDER & SAVED BLUEPRINTS
        * ------------------------------------------------------------- */
       let customSequenceRows = [];
 
@@ -1995,8 +2454,75 @@
         }
       }
 
+      function openSaveBlueprintModal() {
+        document.getElementById("blueprint-title-input").value = "";
+        pushHistoryState("modal-save-blueprint");
+        document.getElementById("modal-save-blueprint").classList.add("active");
+      }
+
+      async function saveCurrentBlueprint() {
+        const title = document.getElementById("blueprint-title-input").value.trim();
+        if (!title) {
+          alert("Blueprint title is required.");
+          return;
+        }
+
+        const isLock = document.getElementById("builder-sectional-lock").value === "YES";
+        const blueprint = {
+          id: "bp_" + Date.now(),
+          title: title,
+          isSectionLocked: isLock,
+          sections: JSON.parse(JSON.stringify(customSequenceRows))
+        };
+
+        await putRecord("store_saved_mocks", blueprint);
+        document.getElementById("modal-save-blueprint").classList.remove("active");
+        alert(`Blueprint "${title}" saved to Dashboard.`);
+        await renderDashboardBlueprints();
+      }
+
+      async function renderDashboardBlueprints() {
+        const pillsContainer = document.getElementById("dash-blueprints-pills");
+        pillsContainer.innerHTML = "";
+        const blueprints = await getAllRecords("store_saved_mocks");
+
+        if (blueprints.length === 0) {
+          pillsContainer.innerHTML = `<span style="font-size:11px; color:var(--text-muted);">No saved blueprints. Create one in the Custom Mock Builder.</span>`;
+          return;
+        }
+
+        blueprints.forEach(bp => {
+          const pill = document.createElement("button");
+          pill.className = "anchor-pill";
+          pill.style.display = "inline-flex";
+          pill.style.alignItems = "center";
+          pill.style.gap = "6px";
+          pill.innerHTML = `<span>⚡ ${bp.title}</span><span style="opacity:0.6; font-size:9px;" onclick="event.stopPropagation(); CGL_OS.deleteSavedBlueprint('${bp.id}')">✕</span>`;
+          pill.addEventListener("click", () => launchSavedBlueprint(bp.id));
+          pillsContainer.appendChild(pill);
+        });
+      }
+
+      async function launchSavedBlueprint(id) {
+        const bp = await getRecord("store_saved_mocks", id);
+        if (!bp) return;
+
+        customSequenceRows = bp.sections;
+        document.getElementById("builder-sectional-lock").value = bp.isSectionLocked ? "YES" : "NO";
+        await launchConfiguredMock();
+      }
+
+      async function deleteSavedBlueprint(id) {
+        if (confirm("Delete this saved mock blueprint?")) {
+          await deleteRecordFromStore("store_saved_mocks", id);
+          await renderDashboardBlueprints();
+        }
+      }
+
       async function launchConfiguredMock() {
-        document.getElementById("modal-mock-builder").classList.remove("active");
+        const modal = document.getElementById("modal-mock-builder");
+        if (modal) modal.classList.remove("active");
+
         const preset = document.getElementById("builder-blueprint-preset").value;
         const isLock = document.getElementById("builder-sectional-lock").value === "YES";
         const allQuestions = await getAllRecords("store_questions");
@@ -2100,7 +2626,6 @@
           else if (activeExam.sectionRemainingSec < 300) clockEl.className = "hud-timer amber";
           else clockEl.className = "hud-timer";
 
-          // Automatic Expiry Lock
           if (activeExam.sectionRemainingSec <= 0) {
             handleSectionLockTransition(true);
           }
@@ -2172,7 +2697,6 @@
         const resp = activeExam.userResponses[q.id];
         const secQs = activeExam.questions.filter(item => item.sectionIndex === q.sectionIndex);
 
-        // Control Visibility of Early Lock Button
         const lockBtn = document.getElementById("btn-arena-early-lock");
         const drawerLockBtn = document.getElementById("btn-drawer-early-lock");
         if (activeExam.isSectionLocked) {
@@ -2554,67 +3078,293 @@
         openMockReview(activeExam);
       }
 
-      /* Unified Gesture Interceptor across Arena, Dojo, and Topic Sheet */
-      function initGestureControllers() {
-        const attachSwipeHandler = (elementId, onLeftSwipe, onRightSwipe) => {
-          const el = document.getElementById(elementId);
-          if (!el) return;
-          let startX = 0, startY = 0;
+      async function reattemptMock(sessionId) {
+        const attempts = await getAllRecords("store_attempts");
+        const target = attempts.find(a => a.sessionId === sessionId);
+        if (!target) return;
 
-          el.addEventListener("touchstart", (e) => {
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
-          }, { passive: true });
+        const modalReview = document.getElementById("modal-mock-review");
+        if (modalReview) modalReview.classList.remove("active");
+        const modalArchive = document.getElementById("modal-history-archive");
+        if (modalArchive) modalArchive.classList.remove("active");
 
-          el.addEventListener("touchend", (e) => {
-            const deltaX = e.changedTouches[0].clientX - startX;
-            const deltaY = e.changedTouches[0].clientY - startY;
-
-            // Strict delta filtering: deltaX > 60px, abs(deltaY) < 35px
-            if (Math.abs(deltaX) > 60 && Math.abs(deltaY) < 35) {
-              if (navigator.vibrate) navigator.vibrate(15);
-              if (deltaX < 0) onLeftSwipe();
-              else onRightSwipe();
-            }
-          }, { passive: true });
+        activeExam = {
+          sessionId: "mock_re_" + Date.now(),
+          timestamp: Date.now(),
+          title: `Re-attempt: ${target.title}`,
+          mockType: target.mockType || "CUSTOM",
+          signatureTag: target.signatureTag || "",
+          isVaultSprint: false,
+          isSectionLocked: target.isSectionLocked || false,
+          sections: target.sections ? JSON.parse(JSON.stringify(target.sections)).map(s => ({ ...s, locked: false })) : [{ id: "SEC_1", name: "Section 1", durationSec: 900, locked: false }],
+          activeSectionIndex: 0,
+          currentQuestionIndex: 0,
+          questions: target.questions.map((q, idx) => ({ ...q, globalNumber: idx + 1 })),
+          sectionRemainingSec: target.sections && target.sections[0] ? target.sections[0].durationSec : 900,
+          currentQTimeSpentSec: 0,
+          userResponses: {},
+          isPaused: false
         };
 
-        // Exam Arena Swipes
-        attachSwipeHandler("arena-body", () => document.getElementById("btn-q-save-next").click(), () => document.getElementById("btn-q-prev").click());
-
-        // Dojo Arena Swipes
-        attachSwipeHandler("dojo-arena-body", () => navDojoArena(1), () => navDojoArena(-1));
-
-        // Pop-out Topic Sheet Swipes
-        attachSwipeHandler("popout-sheet-body", () => navPopoutTopic(1), () => navPopoutTopic(-1));
-
-        // Hardware Gesture Shield
-        window.addEventListener("popstate", () => {
-          const openModals = document.querySelectorAll(".modal-overlay.active");
-          if (openModals.length > 0) {
-            openModals.forEach(m => m.classList.remove("active"));
-            return;
-          }
-
-          const arenaView = document.getElementById("exam-arena");
-          if (arenaView.style.display === "flex") {
-            document.getElementById("btn-arena-pause").click();
-            return;
-          }
-
-          const dojoView = document.getElementById("dojo-arena-view");
-          if (dojoView.style.display === "flex") {
-            exitDojoArena();
-          }
+        activeExam.questions.forEach(q => {
+          activeExam.userResponses[q.id] = {
+            selectedOption: null,
+            initialOption: null,
+            status: "unanswered",
+            switches: 0,
+            decisionTrail: [],
+            timeSpentSec: 0,
+            struck: []
+          };
         });
-      }
 
-      function pushHistoryState(name) {
-        history.pushState({ panel: name }, "");
+        await putRecord("store_active_session", { id: "current_session", session: activeExam });
+        hideMiniPlayer();
+
+        pushHistoryState("exam-arena");
+        document.getElementById("exam-arena").style.display = "flex";
+        renderActiveExamQuestion();
+        startExamTimers();
       }
 
       /* -------------------------------------------------------------
-       * 5. HIERARCHICAL DOJO PRE-SORTING & SEQUENTIAL NUMBERING
+       * 5. LIVING DOCUMENT COMPENDIUM & POPOUT TOPIC SHEETS
+       * ------------------------------------------------------------- */
+      async function openKnowledgeCompendiumModal() {
+        pushHistoryState("modal-knowledge-compendium");
+        document.getElementById("modal-knowledge-compendium").classList.add("active");
+        await handleCompendiumSubjectChange("QA");
+      }
+
+      async function handleCompendiumSubjectChange(sub) {
+        const chapSelect = document.getElementById("comp-chapter-select");
+        chapSelect.innerHTML = "";
+
+        const allDossiers = await getAllRecords("store_concepts");
+        const canonChaps = TAXONOMY[sub] ? TAXONOMY[sub].chapters : [];
+        const existingChaps = [...new Set(allDossiers.filter(d => d.subject === sub).map(d => d.chapter))];
+        const combined = [...new Set([...canonChaps, ...existingChaps])];
+
+        combined.forEach(c => {
+          const opt = document.createElement("option");
+          opt.value = c;
+          opt.innerText = c;
+          chapSelect.appendChild(opt);
+        });
+
+        renderMasterCompendiumView();
+      }
+
+      async function renderMasterCompendiumView() {
+        const sub = document.getElementById("comp-subject-select").value;
+        const chap = document.getElementById("comp-chapter-select").value;
+        const allDossiers = await getAllRecords("store_concepts");
+        compendiumTopics = allDossiers.filter(d => d.subject === sub && d.chapter === chap);
+
+        const anchorBar = document.getElementById("comp-anchor-bar");
+        const canvas = document.getElementById("comp-scroll-canvas");
+        anchorBar.innerHTML = "";
+        canvas.innerHTML = "";
+
+        if (compendiumTopics.length === 0) {
+          canvas.innerHTML = `
+            <div style="text-align:center; padding:40px 14px; color:var(--text-muted);">
+              <p style="font-size:14px; margin-bottom:10px;">No living documents or dossiers logged under <b>${chap}</b>.</p>
+              <button class="btn" style="font-size:12px;" onclick="CGL_OS.openConceptEditorModal(true)">+ Create First Topic Dossier</button>
+            </div>
+          `;
+          return;
+        }
+
+        compendiumTopics.forEach((t, idx) => {
+          const a = document.createElement("a");
+          a.className = "anchor-pill";
+          a.innerText = t.title;
+          a.href = `#doc_page_${idx}`;
+          anchorBar.appendChild(a);
+
+          const page = document.createElement("div");
+          page.className = "document-page-canvas";
+          page.id = `doc_page_${idx}`;
+
+          let imgHtml = "";
+          if (t.imageUrl && t.imageUrl.trim().length > 0) {
+            imgHtml = `<div style="text-align:center; margin:14px 0;"><img src="${t.imageUrl}" style="max-height:240px; max-width:100%; border-radius:8px; border:1px solid var(--border-color);"></div>`;
+          }
+
+          page.innerHTML = `
+            <div class="document-meta-header">
+              <div>
+                <span class="badge" style="background:#1f6feb;">${t.chapter}</span>
+                <span style="font-size:11px; color:var(--text-muted); margin-left:6px;">Topic #${idx + 1}</span>
+              </div>
+              <div style="display:flex; gap:6px;">
+                <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.editSpecificTopicDossier('${t.id}')">Edit</button>
+                <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.openPopoutTopicSheet(${idx})">⤢ Pop Out Sheet</button>
+              </div>
+            </div>
+            <h2 style="font-size:18px; font-weight:800; color:#fff; margin-bottom:2px;">${t.title}</h2>
+            ${t.subtitle ? `<div style="font-size:12px; color:var(--accent-cyan); font-family:var(--font-mono); margin-bottom:12px;">${t.subtitle}</div>` : ''}
+            ${imgHtml}
+            <div style="font-size:13.5px; line-height:1.65; margin-top:8px;">${formatRichText(t.content)}</div>
+          `;
+          canvas.appendChild(page);
+        });
+      }
+
+      function openPopoutTopicSheet(idx) {
+        if (!compendiumTopics || compendiumTopics.length === 0) return;
+        currentPopoutTopicIndex = idx;
+        renderPopoutTopicSheet();
+        pushHistoryState("modal-popout-sheet");
+        document.getElementById("modal-popout-sheet").classList.add("active");
+      }
+
+      async function renderPopoutTopicSheet() {
+        if (currentPopoutTopicIndex < 0) currentPopoutTopicIndex = compendiumTopics.length - 1;
+        if (currentPopoutTopicIndex >= compendiumTopics.length) currentPopoutTopicIndex = 0;
+
+        const t = compendiumTopics[currentPopoutTopicIndex];
+        document.getElementById("popout-topic-badge").innerText = t.chapter;
+        document.getElementById("popout-topic-counter").innerText = `Topic ${currentPopoutTopicIndex + 1} of ${compendiumTopics.length}`;
+        document.getElementById("popout-sheet-title").innerText = t.title;
+        document.getElementById("popout-sheet-sub").innerText = t.subtitle || "";
+        document.getElementById("popout-sheet-content").innerHTML = formatRichText(t.content);
+
+        const imgBox = document.getElementById("popout-sheet-image");
+        if (t.imageUrl && t.imageUrl.trim().length > 0) {
+          imgBox.style.display = "block";
+          imgBox.innerHTML = `<img src="${t.imageUrl}" style="max-height:240px; max-width:100%; border-radius:8px; border:1px solid var(--border-color);">`;
+        } else {
+          imgBox.style.display = "none";
+          imgBox.innerHTML = "";
+        }
+
+        const noteKey = `scratch_${t.id}`;
+        const savedNote = await getRecord("store_notes", noteKey);
+        document.getElementById("popout-sheet-scratchpad").value = savedNote ? savedNote.content : "";
+      }
+
+      function navPopoutTopic(step) {
+        currentPopoutTopicIndex += step;
+        renderPopoutTopicSheet();
+      }
+
+      async function autoSaveTopicScratchpad(val) {
+        const t = compendiumTopics[currentPopoutTopicIndex];
+        if (!t) return;
+        await putRecord("store_notes", { id: `scratch_${t.id}`, content: val, timestamp: Date.now() });
+      }
+
+      async function deleteCurrentTopicDossier() {
+        if (!compendiumTopics || compendiumTopics.length === 0) return;
+        const curr = compendiumTopics[currentPopoutTopicIndex];
+        if (confirm(`Permanently delete dossier: "${curr.title}"?`)) {
+          await deleteRecordFromStore("store_concepts", curr.id);
+          document.getElementById("modal-popout-sheet").classList.remove("active");
+          await renderMasterCompendiumView();
+        }
+      }
+
+      function insertDossierSnippet(type) {
+        const textarea = document.getElementById("concept-edit-body");
+        let snippet = "";
+        if (type === "FORMULA") snippet = "\n> [!formula] Key Identity\n> $$a^2 + b^2 = c^2$$\n";
+        if (type === "TRAP") snippet = "\n> [!trap] Common TCS Trap\n> Verify whether radius or diameter is specified.\n";
+        if (type === "TABLE") snippet = "\n| Condition | Method | Shortcut |\n| :--- | :--- | :--- |\n| Case 1 | Direct Tangent | $2\\sqrt{r_1 r_2}$ |\n";
+        textarea.value += snippet;
+        textarea.focus();
+      }
+
+      function openConceptEditorModal(isNew = true) {
+        currentConceptImageBase64 = "";
+        document.getElementById("concept-editor-title").innerText = isNew ? "Add Topic Dossier" : "Edit Topic Dossier";
+
+        if (isNew || compendiumTopics.length === 0) {
+          document.getElementById("concept-edit-id").value = "top_" + Date.now();
+          document.getElementById("concept-edit-subject").value = document.getElementById("comp-subject-select").value || "QA";
+          document.getElementById("concept-edit-chapter").value = document.getElementById("comp-chapter-select").value || "QA_GEOMETRY";
+          document.getElementById("concept-edit-title").value = "";
+          document.getElementById("concept-edit-sub").value = "";
+          document.getElementById("concept-edit-body").value = "";
+          document.getElementById("concept-edit-img-url").value = "";
+          document.getElementById("concept-edit-img-file").value = "";
+        } else {
+          const curr = compendiumTopics[currentPopoutTopicIndex];
+          document.getElementById("concept-edit-id").value = curr.id;
+          document.getElementById("concept-edit-subject").value = curr.subject;
+          document.getElementById("concept-edit-chapter").value = curr.chapter;
+          document.getElementById("concept-edit-title").value = curr.title;
+          document.getElementById("concept-edit-sub").value = curr.subtitle || "";
+          document.getElementById("concept-edit-body").value = curr.content;
+          document.getElementById("concept-edit-img-url").value = curr.imageUrl || "";
+          document.getElementById("concept-edit-img-file").value = "";
+        }
+
+        pushHistoryState("modal-concept-editor");
+        document.getElementById("modal-concept-editor").classList.add("active");
+      }
+
+      async function editSpecificTopicDossier(id) {
+        const item = await getRecord("store_concepts", id);
+        if (!item) return;
+
+        currentConceptImageBase64 = "";
+        document.getElementById("concept-editor-title").innerText = "Edit Topic Dossier";
+        document.getElementById("concept-edit-id").value = item.id;
+        document.getElementById("concept-edit-subject").value = item.subject;
+        document.getElementById("concept-edit-chapter").value = item.chapter;
+        document.getElementById("concept-edit-title").value = item.title;
+        document.getElementById("concept-edit-sub").value = item.subtitle || "";
+        document.getElementById("concept-edit-body").value = item.content;
+        document.getElementById("concept-edit-img-url").value = item.imageUrl || "";
+        document.getElementById("concept-edit-img-file").value = "";
+
+        pushHistoryState("modal-concept-editor");
+        document.getElementById("modal-concept-editor").classList.add("active");
+      }
+
+      async function handleConceptImageUpload(input) {
+        if (input.files && input.files[0]) {
+          currentConceptImageBase64 = await compressImageFile(input.files[0]);
+        }
+      }
+
+      async function saveConceptCard() {
+        const id = document.getElementById("concept-edit-id").value;
+        const subject = document.getElementById("concept-edit-subject").value;
+        const chapter = document.getElementById("concept-edit-chapter").value.trim().toUpperCase();
+        const title = document.getElementById("concept-edit-title").value.trim();
+        const subtitle = document.getElementById("concept-edit-sub").value.trim();
+        const content = document.getElementById("concept-edit-body").value.trim();
+        const urlInput = document.getElementById("concept-edit-img-url").value.trim();
+
+        if (!title || !content || !chapter) {
+          alert("Chapter, Topic Title, and Content are required.");
+          return;
+        }
+
+        const obj = {
+          id: id,
+          subject: subject,
+          chapter: chapter,
+          title: title,
+          subtitle: subtitle,
+          content: content,
+          imageUrl: currentConceptImageBase64 || urlInput,
+          timestamp: Date.now()
+        };
+
+        await putRecord("store_concepts", obj);
+        document.getElementById("modal-concept-editor").classList.remove("active");
+        document.getElementById("comp-subject-select").value = subject;
+        await handleCompendiumSubjectChange(subject);
+        document.getElementById("comp-chapter-select").value = chapter;
+        await renderMasterCompendiumView();
+      }
+
+      /* -------------------------------------------------------------
+       * 6. UNTIMED DOJO ARENA
        * ------------------------------------------------------------- */
       async function updateDojoChapters() {
         const sub = document.getElementById("dojo-nav-subject").value;
@@ -2669,7 +3419,6 @@
           return;
         }
 
-        // Hierarchical Pre-Sorting: Subject -> Chapter -> Subtopic / Method
         pool.sort((a, b) => {
           if (a.subject !== b.subject) return a.subject.localeCompare(b.subject);
           if (a.chapter !== b.chapter) return a.chapter.localeCompare(b.chapter);
@@ -2871,7 +3620,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 6. TESTBOOK FORENSICS & DYNAMIC MISTAKE TAGS
+       * 7. TESTBOOK FORENSICS, DECISION TRAILS & MISTAKE TAGGING
        * ------------------------------------------------------------- */
       async function openMockReview(attemptOrId) {
         let att = typeof attemptOrId === "string" 
@@ -2893,6 +3642,8 @@
         document.getElementById("rev-penalty").innerText = `-${(att.penaltyDrag || 0).toFixed(2)}`;
         document.getElementById("rev-switch-delta").innerText = `${att.switchDelta > 0 ? '+' : ''}${att.switchDelta || 0} Net`;
         document.getElementById("rev-traps").innerText = att.q4Traps || 0;
+
+        document.getElementById("btn-review-reattempt").onclick = () => reattemptMock(att.sessionId);
 
         filterReviewQuestions("ALL");
         pushHistoryState("modal-mock-review");
@@ -3018,6 +3769,9 @@
         renderVault();
       }
 
+      /* -------------------------------------------------------------
+       * 8. MULTI-TIER AI EXPORTS & GEM LEDGER
+       * ------------------------------------------------------------- */
       function openAiExportModal() {
         if (!activeReviewAttempt) return;
         pushHistoryState("modal-ai-export");
@@ -3136,8 +3890,30 @@
         document.getElementById("modal-ledger-export").classList.remove("active");
       }
 
+      async function exportCleanMarkdownVault() {
+        const vault = await getAllRecords("store_vault");
+        const questions = await getAllRecords("store_questions");
+        let md = `# SSC CGL Error Vault Export\n\n`;
+
+        vault.forEach(v => {
+          const q = questions.find(item => item.id === v.questionId);
+          if (q) {
+            md += `### ${q.id} - ${q.chapter}\n`;
+            md += `**Error Tag:** #${v.errorTag || 'UNCLASSIFIED'} | **Box:** ${v.leitnerBox || 1}\n\n`;
+            md += `> ${q.questionText}\n\n`;
+            md += `**Solution:**\n${q.explanation}\n\n---\n\n`;
+          }
+        });
+
+        const blob = new Blob([md], { type: "text/plain;charset=utf-8" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `CGL_Vault_${Date.now()}.md`;
+        a.click();
+      }
+
       /* -------------------------------------------------------------
-       * 7. DASHBOARD, ARCHIVE & CHAPTER INSPECTOR
+       * 9. DASHBOARD RENDER ENGINE (RADIAL SVG GAUGES & TICKETS)
        * ------------------------------------------------------------- */
       async function renderDashboard() {
         const attempts = await getAllRecords("store_attempts");
@@ -3145,10 +3921,14 @@
 
         document.getElementById("kpi-total-mocks").innerText = completed.length;
 
+        const circleGauge = document.getElementById("gauge-acc-circle");
+
         if (completed.length === 0) {
           document.getElementById("kpi-global-acc").innerText = "--";
           document.getElementById("kpi-avg-speed").innerText = "--";
           document.getElementById("kpi-traps-hit").innerText = "0";
+          circleGauge.setAttribute("stroke-dasharray", "0, 100");
+          circleGauge.style.stroke = "var(--border-color)";
         } else {
           let totalCor = 0, totalAtt = 0, totalSec = 0, traps = 0;
           completed.forEach(c => {
@@ -3160,13 +3940,68 @@
             }
           });
 
-          document.getElementById("kpi-global-acc").innerText = totalAtt > 0 ? `${Math.round((totalCor / totalAtt) * 100)}%` : "--";
-          document.getElementById("kpi-avg-speed").innerText = totalAtt > 0 ? `${Math.round(totalSec / totalAtt)}s` : "--";
+          const accPercent = totalAtt > 0 ? Math.round((totalCor / totalAtt) * 100) : 0;
+          const avgSpeed = totalAtt > 0 ? Math.round(totalSec / totalAtt) : 0;
+
+          document.getElementById("kpi-global-acc").innerText = `${accPercent}%`;
+          document.getElementById("kpi-avg-speed").innerText = `${avgSpeed}s`;
           document.getElementById("kpi-traps-hit").innerText = traps;
+
+          // Color & Stroke-dasharray for radial accuracy gauge
+          circleGauge.setAttribute("stroke-dasharray", `${accPercent}, 100`);
+          if (accPercent >= 80) circleGauge.style.stroke = "var(--status-green-border)";
+          else if (accPercent >= 65) circleGauge.style.stroke = "var(--status-amber)";
+          else circleGauge.style.stroke = "var(--status-red)";
+
+          // Velocity Benchmark Indicator
+          const speedEl = document.getElementById("kpi-speed-benchmark");
+          if (avgSpeed <= 45) speedEl.innerHTML = `<span style="color:var(--status-green);">⚡ Elite Speed Zone (≤45s)</span>`;
+          else if (avgSpeed <= 60) speedEl.innerHTML = `<span style="color:var(--status-amber);">Pacing Acceptable (46-60s)</span>`;
+          else speedEl.innerHTML = `<span style="color:var(--status-red);">⚠️ Drag Alert (>60s / Q)</span>`;
         }
 
+        renderDashboardSubjectBatteries(completed);
         renderRecentHistory(completed);
+        renderDashboardBlueprints();
         renderDrilldownSubjectLevel();
+      }
+
+      function renderDashboardSubjectBatteries(completed) {
+        const container = document.getElementById("dash-subject-batteries");
+        container.innerHTML = "";
+
+        Object.keys(TAXONOMY).forEach(subKey => {
+          let subAtt = 0, subCor = 0;
+          completed.forEach(c => {
+            if (c.questions) {
+              c.questions.forEach(q => {
+                if (q.subject === subKey) {
+                  const resp = c.userResponses[q.id];
+                  if (resp && resp.selectedOption !== null) {
+                    subAtt++;
+                    if (resp.selectedOption === q.correctIndex) subCor++;
+                  }
+                }
+              });
+            }
+          });
+
+          const acc = subAtt > 0 ? Math.round((subCor / subAtt) * 100) : 0;
+          const div = document.createElement("div");
+          div.style.marginBottom = "8px";
+          div.style.cursor = "pointer";
+          div.innerHTML = `
+            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:2px;">
+              <span style="font-weight:700;">${TAXONOMY[subKey].name} (${subKey})</span>
+              <span style="font-family:var(--font-mono); color:${acc >= 80 ? 'var(--status-green)' : (acc >= 60 ? 'var(--status-amber)' : 'var(--text-muted)')};">${subAtt > 0 ? `${acc}% (${subAtt} Qs)` : '0%'}</span>
+            </div>
+            <div class="battery-bar-container">
+              <div class="battery-bar-fill" style="width:${acc}%; background:${acc >= 80 ? 'var(--status-green)' : (acc >= 60 ? 'var(--status-amber)' : 'var(--accent-blue)')};"></div>
+            </div>
+          `;
+          div.addEventListener("click", () => renderDrilldownChapterLevel(subKey));
+          container.appendChild(div);
+        });
       }
 
       function renderRecentHistory(completed) {
@@ -3178,33 +4013,41 @@
 
         container.innerHTML = "";
         completed.slice(-3).reverse().forEach(att => {
+          // Calculate Per-Section Score Badges
+          const secScores = {};
+          if (att.questions && att.userResponses) {
+            att.questions.forEach(q => {
+              const secName = q.subject || "GEN";
+              if (!secScores[secName]) secScores[secName] = 0;
+              const resp = att.userResponses[q.id];
+              if (resp && resp.selectedOption !== null) {
+                if (resp.selectedOption === q.correctIndex) secScores[secName] += 2.0;
+                else secScores[secName] -= 0.5;
+              }
+            });
+          }
+
           const card = document.createElement("div");
-          card.className = "history-card";
+          card.className = "ticket-card";
           card.innerHTML = `
-            <div class="history-header">
+            <div class="ticket-header">
               <div>
-                <b style="font-size:14px;">${att.title || 'SSC CGL Mock'}</b>
+                <b style="font-size:14px; color:#fff;">${att.title || 'SSC CGL Mock'}</b>
                 <div style="font-size:11px; color:var(--text-muted);">${new Date(att.timestamp || Date.now()).toLocaleDateString()}</div>
               </div>
-              <button class="btn btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openMockReview('${att.sessionId}')">
-                Review Solutions
-              </button>
+              <div style="text-align:right;">
+                <span style="font-size:16px; font-weight:800; color:var(--accent-cyan);">${(att.finalScore || 0).toFixed(2)} pts</span>
+              </div>
             </div>
-            <div class="history-stats">
-              <div>
-                <div style="font-size:10px; color:var(--text-muted);">SCORE</div>
-                <b style="font-size:14px; color:#fff;">${(att.finalScore || 0).toFixed(2)}</b>
-              </div>
-              <div>
-                <div style="font-size:10px; color:var(--text-muted);">ACCURACY</div>
-                <b style="font-size:14px; color:var(--status-green);">
-                  ${((att.correctCount || 0) + (att.incorrectCount || 0)) > 0 ? Math.round(((att.correctCount || 0) / ((att.correctCount || 0) + (att.incorrectCount || 0))) * 100) : 0}%
-                </b>
-              </div>
-              <div>
-                <div style="font-size:10px; color:var(--text-muted);">TRAPS HIT</div>
-                <b style="font-size:14px; color:var(--status-red);">${att.q4Traps || 0}</b>
-              </div>
+
+            <div class="ticket-pills-row">
+              ${Object.keys(secScores).map(k => `<span class="ticket-sec-pill"><b>${k}:</b> ${secScores[k].toFixed(1)}</span>`).join('')}
+              <span class="ticket-sec-pill" style="color:var(--status-red);">Traps: ${att.q4Traps || 0}</span>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:10px;">
+              <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.reattemptMock('${att.sessionId}')">🔁 Re-attempt</button>
+              <button class="btn btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openMockReview('${att.sessionId}')">Inspect Solutions</button>
             </div>
           `;
           container.appendChild(card);
@@ -3248,7 +4091,10 @@
               </div>
               <div style="text-align:right;">
                 <span style="font-size:14px; font-weight:800; color:var(--accent-cyan);">${(att.finalScore || 0).toFixed(2)} pts</span><br>
-                <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px; margin-top:4px;" onclick="CGL_OS.openMockReview('${att.sessionId}')">Inspect</button>
+                <div style="display:flex; gap:4px; margin-top:4px;">
+                  <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px;" onclick="CGL_OS.reattemptMock('${att.sessionId}')">🔁</button>
+                  <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openMockReview('${att.sessionId}')">Inspect</button>
+                </div>
               </div>
             </div>
           `;
@@ -3455,330 +4301,6 @@
         document.getElementById("exam-arena").style.display = "flex";
         renderActiveExamQuestion();
         startExamTimers();
-      }
-
-      /* -------------------------------------------------------------
-       * 8. KNOWLEDGE COMPENDIUM & POPOUT TOPIC SHEETS
-       * ------------------------------------------------------------- */
-      async function openKnowledgeCompendiumModal() {
-        pushHistoryState("modal-knowledge-compendium");
-        document.getElementById("modal-knowledge-compendium").classList.add("active");
-        handleCompendiumSubjectChange("QA");
-      }
-
-      async function handleCompendiumSubjectChange(sub) {
-        const chapSelect = document.getElementById("comp-chapter-select");
-        chapSelect.innerHTML = "";
-
-        const allDossiers = await getAllRecords("store_concepts");
-        const canonChaps = TAXONOMY[sub] ? TAXONOMY[sub].chapters : [];
-        const existingChaps = [...new Set(allDossiers.filter(d => d.subject === sub).map(d => d.chapter))];
-        const combined = [...new Set([...canonChaps, ...existingChaps])];
-
-        combined.forEach(c => {
-          const opt = document.createElement("option");
-          opt.value = c;
-          opt.innerText = c;
-          chapSelect.appendChild(opt);
-        });
-
-        renderMasterCompendiumView();
-      }
-
-      async function renderMasterCompendiumView() {
-        const sub = document.getElementById("comp-subject-select").value;
-        const chap = document.getElementById("comp-chapter-select").value;
-        const allDossiers = await getAllRecords("store_concepts");
-        compendiumTopics = allDossiers.filter(d => d.subject === sub && d.chapter === chap);
-
-        const anchorBar = document.getElementById("comp-anchor-bar");
-        const canvas = document.getElementById("comp-scroll-canvas");
-        anchorBar.innerHTML = "";
-        canvas.innerHTML = "";
-
-        if (compendiumTopics.length === 0) {
-          canvas.innerHTML = `
-            <div style="text-align:center; padding:40px 14px; color:var(--text-muted);">
-              <p style="font-size:14px; margin-bottom:10px;">No topics or cheat-sheets logged under <b>${chap}</b>.</p>
-              <button class="btn" style="font-size:12px;" onclick="CGL_OS.openConceptEditorModal(true)">+ Create First Topic Dossier</button>
-            </div>
-          `;
-          return;
-        }
-
-        compendiumTopics.forEach((t, idx) => {
-          const a = document.createElement("a");
-          a.className = "anchor-pill";
-          a.innerText = t.title;
-          a.href = `#topic_sec_${idx}`;
-          anchorBar.appendChild(a);
-
-          const card = document.createElement("div");
-          card.className = "compendium-topic-card";
-          card.id = `topic_sec_${idx}`;
-
-          let imgHtml = "";
-          if (t.imageUrl && t.imageUrl.trim().length > 0) {
-            imgHtml = `<div style="text-align:center; margin:10px 0;"><img src="${t.imageUrl}" style="max-height:220px; max-width:100%; border-radius:8px; border:1px solid var(--border-color);"></div>`;
-          }
-
-          card.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; border-bottom:1px solid var(--border-color); padding-bottom:6px;">
-              <div>
-                <b style="font-size:16px; color:#fff;">${t.title}</b>
-                ${t.subtitle ? `<div style="font-size:11px; color:var(--accent-cyan); font-family:var(--font-mono);">${t.subtitle}</div>` : ''}
-              </div>
-              <button class="btn btn-secondary" style="padding:4px 10px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.openPopoutTopicSheet(${idx})">
-                ⤢ Pop Out Sheet
-              </button>
-            </div>
-            ${imgHtml}
-            <div style="font-size:13px; line-height:1.6; margin-top:8px;">${formatRichText(t.content)}</div>
-          `;
-          canvas.appendChild(card);
-        });
-      }
-
-      function openPopoutTopicSheet(idx) {
-        if (!compendiumTopics || compendiumTopics.length === 0) return;
-        currentPopoutTopicIndex = idx;
-        renderPopoutTopicSheet();
-        pushHistoryState("modal-popout-sheet");
-        document.getElementById("modal-popout-sheet").classList.add("active");
-      }
-
-      async function renderPopoutTopicSheet() {
-        if (currentPopoutTopicIndex < 0) currentPopoutTopicIndex = compendiumTopics.length - 1;
-        if (currentPopoutTopicIndex >= compendiumTopics.length) currentPopoutTopicIndex = 0;
-
-        const t = compendiumTopics[currentPopoutTopicIndex];
-        document.getElementById("popout-topic-badge").innerText = t.chapter;
-        document.getElementById("popout-topic-counter").innerText = `Topic ${currentPopoutTopicIndex + 1} of ${compendiumTopics.length}`;
-        document.getElementById("popout-sheet-title").innerText = t.title;
-        document.getElementById("popout-sheet-sub").innerText = t.subtitle || "";
-        document.getElementById("popout-sheet-content").innerHTML = formatRichText(t.content);
-
-        const imgBox = document.getElementById("popout-sheet-image");
-        if (t.imageUrl && t.imageUrl.trim().length > 0) {
-          imgBox.style.display = "block";
-          imgBox.innerHTML = `<img src="${t.imageUrl}" style="max-height:220px; max-width:100%; border-radius:8px; border:1px solid var(--border-color);">`;
-        } else {
-          imgBox.style.display = "none";
-          imgBox.innerHTML = "";
-        }
-
-        const noteKey = `scratch_${t.id}`;
-        const savedNote = await getRecord("store_notes", noteKey);
-        document.getElementById("popout-sheet-scratchpad").value = savedNote ? savedNote.content : "";
-      }
-
-      function navPopoutTopic(step) {
-        currentPopoutTopicIndex += step;
-        renderPopoutTopicSheet();
-      }
-
-      async function autoSaveTopicScratchpad(val) {
-        const t = compendiumTopics[currentPopoutTopicIndex];
-        if (!t) return;
-        await putRecord("store_notes", { id: `scratch_${t.id}`, content: val, timestamp: Date.now() });
-      }
-
-      function openConceptEditorModal(isNew = true) {
-        currentConceptImageBase64 = "";
-        document.getElementById("concept-editor-title").innerText = isNew ? "Add Topic Dossier" : "Edit Topic Dossier";
-
-        if (isNew || compendiumTopics.length === 0) {
-          document.getElementById("concept-edit-id").value = "top_" + Date.now();
-          document.getElementById("concept-edit-subject").value = document.getElementById("comp-subject-select").value || "QA";
-          document.getElementById("concept-edit-chapter").value = document.getElementById("comp-chapter-select").value || "QA_GEOMETRY";
-          document.getElementById("concept-edit-title").value = "";
-          document.getElementById("concept-edit-sub").value = "";
-          document.getElementById("concept-edit-body").value = "";
-          document.getElementById("concept-edit-img-url").value = "";
-          document.getElementById("concept-edit-img-file").value = "";
-        } else {
-          const curr = compendiumTopics[currentPopoutTopicIndex];
-          document.getElementById("concept-edit-id").value = curr.id;
-          document.getElementById("concept-edit-subject").value = curr.subject;
-          document.getElementById("concept-edit-chapter").value = curr.chapter;
-          document.getElementById("concept-edit-title").value = curr.title;
-          document.getElementById("concept-edit-sub").value = curr.subtitle || "";
-          document.getElementById("concept-edit-body").value = curr.content;
-          document.getElementById("concept-edit-img-url").value = curr.imageUrl || "";
-          document.getElementById("concept-edit-img-file").value = "";
-        }
-
-        pushHistoryState("modal-concept-editor");
-        document.getElementById("modal-concept-editor").classList.add("active");
-      }
-
-      async function handleConceptImageUpload(input) {
-        if (input.files && input.files[0]) {
-          currentConceptImageBase64 = await compressImageFile(input.files[0]);
-        }
-      }
-
-      async function saveConceptCard() {
-        const id = document.getElementById("concept-edit-id").value;
-        const subject = document.getElementById("concept-edit-subject").value;
-        const chapter = document.getElementById("concept-edit-chapter").value.trim().toUpperCase();
-        const title = document.getElementById("concept-edit-title").value.trim();
-        const subtitle = document.getElementById("concept-edit-sub").value.trim();
-        const content = document.getElementById("concept-edit-body").value.trim();
-        const urlInput = document.getElementById("concept-edit-img-url").value.trim();
-
-        if (!title || !content || !chapter) {
-          alert("Chapter, Topic Title, and Content are required.");
-          return;
-        }
-
-        const obj = {
-          id: id,
-          subject: subject,
-          chapter: chapter,
-          title: title,
-          subtitle: subtitle,
-          content: content,
-          imageUrl: currentConceptImageBase64 || urlInput,
-          timestamp: Date.now()
-        };
-
-        await putRecord("store_concepts", obj);
-        document.getElementById("modal-concept-editor").classList.remove("active");
-        document.getElementById("comp-subject-select").value = subject;
-        await handleCompendiumSubjectChange(subject);
-        document.getElementById("comp-chapter-select").value = chapter;
-        await renderMasterCompendiumView();
-      }
-
-      /* -------------------------------------------------------------
-       * 9. SELECTIVE 2-COLUMN PRINT ENGINE
-       * ------------------------------------------------------------- */
-      async function openPrintConfigModal() {
-        await updatePrintChapters();
-        await populatePrintMockDropdown();
-        pushHistoryState("modal-print-config");
-        document.getElementById("modal-print-config").classList.add("active");
-      }
-
-      async function populatePrintMockDropdown() {
-        const attempts = await getAllRecords("store_attempts");
-        const select = document.getElementById("print-mock-select");
-        select.innerHTML = "";
-        attempts.forEach(a => {
-          const opt = document.createElement("option");
-          opt.value = a.sessionId;
-          opt.innerText = `${a.title} (${new Date(a.timestamp).toLocaleDateString()})`;
-          select.appendChild(opt);
-        });
-      }
-
-      function handlePrintTypeChange(type) {
-        const isQ = type === "QUESTIONS" || type === "COMPENDIUM";
-        const isMock = type === "PAST_MOCK";
-        document.getElementById("print-sub-wrap").style.display = isQ ? "block" : "none";
-        document.getElementById("print-chap-wrap").style.display = isQ ? "block" : "none";
-        document.getElementById("print-mock-select-wrap").style.display = isMock ? "block" : "none";
-      }
-
-      async function updatePrintChapters() {
-        const sub = document.getElementById("print-subject").value;
-        const chapSelect = document.getElementById("print-chapter");
-        chapSelect.innerHTML = `<option value="ALL">All Chapters</option>`;
-
-        const allQs = await getAllRecords("store_questions");
-        const chaps = [...new Set(allQs.filter(q => sub === "ALL" || q.subject === sub).map(q => q.chapter))];
-
-        chaps.forEach(c => {
-          const opt = document.createElement("option");
-          opt.value = c;
-          opt.innerText = c;
-          chapSelect.appendChild(opt);
-        });
-      }
-
-      async function generateAndPrintSheet() {
-        document.getElementById("modal-print-config").classList.remove("active");
-        const pType = document.getElementById("print-type").value;
-        const sub = document.getElementById("print-subject").value;
-        const chap = document.getElementById("print-chapter").value;
-        const incAns = document.getElementById("print-include-ans").value === "YES";
-
-        const root = document.getElementById("print-sheet-root");
-        root.innerHTML = "";
-
-        if (pType === "QUESTIONS") {
-          const allQs = await getAllRecords("store_questions");
-          let pool = sub === "ALL" ? allQs : allQs.filter(q => q.subject === sub);
-          if (chap !== "ALL") pool = pool.filter(q => q.chapter === chap);
-
-          root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Practice Spool (${sub} - ${chap})</h2>`;
-          pool.forEach((q, idx) => {
-            const item = document.createElement("div");
-            item.className = "print-question";
-            let img = q.imageUrl ? `<br><img src="${q.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
-            item.innerHTML = `
-              <strong>Q${idx + 1}.</strong> ${formatRichText(q.questionText)}${img}<br>
-              ${q.options.map((opt, i) => `(${i + 1}) ${formatRichText(opt)} &nbsp;`).join(' ')}
-              ${incAns ? `<div style="font-size:10px; margin-top:4px;"><b>Answer:</b> Option ${q.correctIndex + 1} | <i>${q.explanation || ''}</i></div>` : ''}
-            `;
-            root.appendChild(item);
-          });
-        } else if (pType === "PAST_MOCK") {
-          const mockId = document.getElementById("print-mock-select").value;
-          const attempts = await getAllRecords("store_attempts");
-          const targetMock = attempts.find(a => a.sessionId === mockId);
-          if (!targetMock) return;
-
-          root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">${targetMock.title} - Score: ${targetMock.finalScore.toFixed(2)} (${new Date(targetMock.timestamp).toLocaleDateString()})</h2>`;
-          targetMock.questions.forEach((q, idx) => {
-            const resp = targetMock.userResponses[q.id] || {};
-            const item = document.createElement("div");
-            item.className = "print-question";
-            let img = q.imageUrl ? `<br><img src="${q.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
-            item.innerHTML = `
-              <strong>Q${idx + 1}.</strong> ${formatRichText(q.questionText)}${img}<br>
-              ${q.options.map((opt, i) => `(${i + 1}) ${formatRichText(opt)} &nbsp;`).join(' ')}
-              ${incAns ? `<div style="font-size:10px; margin-top:4px;"><b>Selected:</b> Option ${resp.selectedOption !== null ? resp.selectedOption + 1 : 'None'} | <b>Correct:</b> Option ${q.correctIndex + 1} | <i>${q.explanation || ''}</i></div>` : ''}
-            `;
-            root.appendChild(item);
-          });
-        } else if (pType === "COMPENDIUM") {
-          const dossiers = await getAllRecords("store_concepts");
-          let pool = sub === "ALL" ? dossiers : dossiers.filter(d => d.subject === sub);
-          if (chap !== "ALL") pool = pool.filter(d => d.chapter === chap);
-
-          root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Knowledge Compendium (${sub} - ${chap})</h2>`;
-          pool.forEach((t, idx) => {
-            const item = document.createElement("div");
-            item.className = "print-question";
-            let img = t.imageUrl ? `<br><img src="${t.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
-            item.innerHTML = `
-              <strong>${idx + 1}. ${t.title} [${t.chapter}]</strong> ${t.subtitle ? `<i>(${t.subtitle})</i>` : ''}<br>
-              ${formatRichText(t.content)}${img}
-            `;
-            root.appendChild(item);
-          });
-        } else if (pType === "VAULT") {
-          const vault = await getAllRecords("store_vault");
-          const allQs = await getAllRecords("store_questions");
-          root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Error Vault Revision Sheet</h2>`;
-          vault.forEach((v, idx) => {
-            const q = allQs.find(item => item.id === v.questionId);
-            if (!q) return;
-            const item = document.createElement("div");
-            item.className = "print-question";
-            let img = q.imageUrl ? `<br><img src="${q.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
-            item.innerHTML = `
-              <strong>Q${idx + 1}. [Box ${v.leitnerBox || 1} - ${v.errorTag}]</strong> ${formatRichText(q.questionText)}${img}<br>
-              ${q.options.map((opt, i) => `(${i + 1}) ${formatRichText(opt)} &nbsp;`).join(' ')}
-              <div style="font-size:10px; margin-top:4px;"><b>Correct: Option ${q.correctIndex + 1}</b> | ${q.explanation || ''}</div>
-            `;
-            root.appendChild(item);
-          });
-        }
-
-        window.print();
       }
 
       /* -------------------------------------------------------------
@@ -4027,7 +4549,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 12. COMMAND BUS TERMINAL (WITH AI REMEDY COMPILER)
+       * 12. HARDENED COMMAND BUS & AI DISPATCHER
        * ------------------------------------------------------------- */
       async function executeConsoleCommand() {
         const raw = document.getElementById("console-payload").value.trim();
@@ -4043,11 +4565,28 @@
           const database = await getDB();
           if (!database) throw new Error("IndexedDB instance unavailable.");
 
-          if (cmd.action === "AI_PRESCRIBE_REMEDY") {
-            const qIds = cmd.payload.questionIds || [];
-            const newQuestions = cmd.payload.newQuestions || [];
+          if (cmd.action === "INGEST_AND_LAUNCH_MOCK") {
+            const questions = (cmd.payload.questions || []).map(sanitizeQuestion);
+            if (questions.length === 0) {
+              alert("No questions found in payload to launch mock.");
+              return;
+            }
 
-            // Ingest any brand new questions first
+            const tx = database.transaction(["store_questions"], "readwrite");
+            const st = tx.objectStore("store_questions");
+            questions.forEach(q => st.put(q));
+            await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
+
+            compileAndLaunchArena(
+              cmd.payload.title || "AI Custom Practice Mock",
+              questions,
+              cmd.payload.durationMin || 15
+            );
+
+          } else if (cmd.action === "AI_PRESCRIBE_REMEDY") {
+            const qIds = cmd.payload.questionIds || [];
+            const newQuestions = (cmd.payload.newQuestions || []).map(sanitizeQuestion);
+
             if (newQuestions.length > 0) {
               const tx = database.transaction(["store_questions"], "readwrite");
               const st = tx.objectStore("store_questions");
@@ -4066,65 +4605,101 @@
               return;
             }
 
-            activeExam = {
-              sessionId: "remedy_" + Date.now(),
-              timestamp: Date.now(),
-              title: cmd.payload.title || "Targeted AI Remedial Blitz",
-              mockType: "CUSTOM",
-              isVaultSprint: false,
-              isSectionLocked: false,
-              sections: [{
-                id: "SEC_REMEDY",
-                name: "AI Remedial Blitz",
-                durationSec: (cmd.payload.durationMin || 10) * 60,
-                questions: remedialPool,
-                locked: false
-              }],
-              activeSectionIndex: 0,
-              currentQuestionIndex: 0,
-              questions: remedialPool.map((q, idx) => ({ ...q, sectionIndex: 0, sectionName: "AI Remedial Blitz", localNumber: idx + 1, globalNumber: idx + 1 })),
-              sectionRemainingSec: (cmd.payload.durationMin || 10) * 60,
-              currentQTimeSpentSec: 0,
-              userResponses: {},
-              isPaused: false
-            };
-
-            activeExam.questions.forEach(q => {
-              activeExam.userResponses[q.id] = {
-                selectedOption: null,
-                initialOption: null,
-                status: "unanswered",
-                switches: 0,
-                decisionTrail: [],
-                timeSpentSec: 0,
-                struck: []
-              };
-            });
-
-            await putRecord("store_active_session", { id: "current_session", session: activeExam });
-            hideMiniPlayer();
-
-            pushHistoryState("exam-arena");
-            document.getElementById("exam-arena").style.display = "flex";
-            renderActiveExamQuestion();
-            startExamTimers();
+            compileAndLaunchArena(
+              cmd.payload.title || "AI Prescribed Remedial Blitz",
+              remedialPool,
+              cmd.payload.durationMin || 10
+            );
 
           } else if (cmd.action === "BATCH_INGEST_QUESTIONS") {
-            const list = cmd.payload.questions || [];
+            const list = (cmd.payload.questions || []).map(sanitizeQuestion);
             const tx = database.transaction(["store_questions"], "readwrite");
             const st = tx.objectStore("store_questions");
             list.forEach(q => st.put(q));
             await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
-            alert(`Ingested ${list.length} questions successfully.`);
+            alert(`Ingested ${list.length} questions successfully into bank.`);
+
+          } else if (cmd.action === "BATCH_INGEST_COMPENDIUM") {
+            const dossiers = (cmd.payload.dossiers || []).map(sanitizeDossier);
+            const tx = database.transaction(["store_concepts"], "readwrite");
+            const st = tx.objectStore("store_concepts");
+            dossiers.forEach(d => st.put(d));
+            await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
+            alert(`Ingested ${dossiers.length} topic dossiers successfully.`);
+
+          } else if (cmd.action === "SAVE_MOCK_PRESET") {
+            const blueprint = sanitizeSavedMock(cmd.payload, Date.now());
+            await putRecord("store_saved_mocks", blueprint);
+            alert(`Saved mock preset: "${blueprint.title}".`);
+            await renderDashboardBlueprints();
+
           } else if (cmd.action === "HOTPATCH_CONFIG") {
             await putRecord("store_config", { key: cmd.target, value: cmd.payload });
             alert(`Patched config: ${cmd.target}`);
+
+          } else {
+            alert("Unknown Command Action: " + (cmd.action || "undefined"));
           }
+
           refreshDbInspector();
           renderDashboard();
         } catch(err) {
           alert("Command Execution Error: " + err.message);
         }
+      }
+
+      async function compileAndLaunchArena(title, questionsPool, durationMin) {
+        clearInterval(examTimerInterval);
+        clearInterval(questionTimerInterval);
+
+        activeExam = {
+          sessionId: "ai_mock_" + Date.now(),
+          timestamp: Date.now(),
+          title: title,
+          mockType: "CUSTOM",
+          isVaultSprint: false,
+          isSectionLocked: false,
+          sections: [{
+            id: "SEC_AI",
+            name: "AI Test Session",
+            durationSec: durationMin * 60,
+            questions: questionsPool,
+            locked: false
+          }],
+          activeSectionIndex: 0,
+          currentQuestionIndex: 0,
+          questions: questionsPool.map((q, idx) => ({ 
+            ...q, 
+            sectionIndex: 0, 
+            sectionName: "AI Test Session", 
+            localNumber: idx + 1, 
+            globalNumber: idx + 1 
+          })),
+          sectionRemainingSec: durationMin * 60,
+          currentQTimeSpentSec: 0,
+          userResponses: {},
+          isPaused: false
+        };
+
+        activeExam.questions.forEach(q => {
+          activeExam.userResponses[q.id] = {
+            selectedOption: null,
+            initialOption: null,
+            status: "unanswered",
+            switches: 0,
+            decisionTrail: [],
+            timeSpentSec: 0,
+            struck: []
+          };
+        });
+
+        await putRecord("store_active_session", { id: "current_session", session: activeExam });
+        hideMiniPlayer();
+
+        pushHistoryState("exam-arena");
+        document.getElementById("exam-arena").style.display = "flex";
+        renderActiveExamQuestion();
+        startExamTimers();
       }
 
       function loadSamplePayload(type) {
@@ -4167,6 +4742,8 @@
         const rec = await getRecord(sName, key);
         if (sName === "store_questions") {
           openEditQuestionModal(rec);
+        } else if (sName === "store_concepts") {
+          editSpecificTopicDossier(key);
         } else {
           alert(`Record Details (${key}):\n` + JSON.stringify(rec, null, 2));
         }
@@ -4174,10 +4751,7 @@
 
       async function wipeTestAttempts() {
         if (confirm("Permanently clear standard mock test history?")) {
-          const d = await getDB();
-          const tx = d.transaction(["store_attempts"], "readwrite");
-          tx.objectStore("store_attempts").clear();
-          await new Promise(r => tx.oncomplete = r);
+          await clearStore("store_attempts");
           alert("Standard test history cleared.");
           renderDashboard();
           refreshDbInspector();
@@ -4186,10 +4760,7 @@
 
       async function wipeErrorVault() {
         if (confirm("Permanently clear active Error Vault traps?")) {
-          const d = await getDB();
-          const tx = d.transaction(["store_vault"], "readwrite");
-          tx.objectStore("store_vault").clear();
-          await new Promise(r => tx.oncomplete = r);
+          await clearStore("store_vault");
           alert("Error Vault cleared.");
           renderVault();
           refreshDbInspector();
@@ -4198,73 +4769,267 @@
 
       async function factoryResetAll() {
         if (confirm("WARNING: Complete factory reset will wipe all data and re-seed defaults!")) {
-          const d = await getDB();
-          const tx = d.transaction(["store_questions", "store_attempts", "store_vault", "store_vault_sprints", "store_concepts", "store_notes", "store_active_session", "store_config"], "readwrite");
-          tx.objectStore("store_questions").clear();
-          tx.objectStore("store_attempts").clear();
-          tx.objectStore("store_vault").clear();
-          tx.objectStore("store_vault_sprints").clear();
-          tx.objectStore("store_concepts").clear();
-          tx.objectStore("store_notes").clear();
-          tx.objectStore("store_active_session").clear();
-          tx.objectStore("store_config").clear();
-          await new Promise(r => tx.oncomplete = r);
-          await seedData(d);
+          const storeKeys = [
+            "store_questions", "store_attempts", "store_vault", 
+            "store_vault_sprints", "store_concepts", "store_notes", 
+            "store_saved_mocks", "store_active_session", "store_config"
+          ];
+          for (const sName of storeKeys) {
+            await clearStore(sName);
+          }
+          await seedData();
           alert("Factory reset complete.");
           renderDashboard();
           refreshDbInspector();
         }
       }
 
-      async function exportFullBackup() {
-        const data = {
-          questions: await getAllRecords("store_questions"),
-          attempts: await getAllRecords("store_attempts"),
-          vault: await getAllRecords("store_vault"),
-          sprints: await getAllRecords("store_vault_sprints"),
-          concepts: await getAllRecords("store_concepts"),
-          notes: await getAllRecords("store_notes"),
-          config: await getAllRecords("store_config"),
-          exportedAt: new Date().toISOString()
+      /* -------------------------------------------------------------
+       * 13. UNIVERSAL TOUCH GESTURES (GLOBAL VIEWPORT ROUTER)
+       * ------------------------------------------------------------- */
+      function initGestureControllers() {
+        const attachSwipeHandler = (elementId, onLeftSwipe, onRightSwipe) => {
+          const el = document.getElementById(elementId);
+          if (!el) return;
+          let startX = 0, startY = 0;
+
+          el.addEventListener("touchstart", (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+          }, { passive: true });
+
+          el.addEventListener("touchend", (e) => {
+            const deltaX = e.changedTouches[0].clientX - startX;
+            const deltaY = e.changedTouches[0].clientY - startY;
+
+            if (Math.abs(deltaX) > 60 && Math.abs(deltaY) < 35) {
+              if (navigator.vibrate) navigator.vibrate(15);
+              if (deltaX < 0) onLeftSwipe();
+              else onRightSwipe();
+            }
+          }, { passive: true });
         };
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = `cgl_os_backup_${Date.now()}.json`;
-        a.click();
-      }
 
-      async function exportCleanMarkdownVault() {
-        const vault = await getAllRecords("store_vault");
-        const questions = await getAllRecords("store_questions");
-        let md = `# SSC CGL Error Vault Export\n\n`;
+        // Exam Arena Swipes
+        attachSwipeHandler("arena-body", () => document.getElementById("btn-q-save-next").click(), () => document.getElementById("btn-q-prev").click());
 
-        vault.forEach(v => {
-          const q = questions.find(item => item.id === v.questionId);
-          if (q) {
-            md += `### ${q.id} - ${q.chapter}\n`;
-            md += `**Error Tag:** #${v.errorTag || 'UNCLASSIFIED'} | **Box:** ${v.leitnerBox || 1}\n\n`;
-            md += `> ${q.questionText}\n\n`;
-            md += `**Solution:**\n${q.explanation}\n\n---\n\n`;
+        // Dojo Arena Swipes
+        attachSwipeHandler("dojo-arena-body", () => navDojoArena(1), () => navDojoArena(-1));
+
+        // Pop-out Topic Sheet Swipes
+        attachSwipeHandler("popout-sheet-body", () => navPopoutTopic(1), () => navPopoutTopic(-1));
+
+        // Global Viewport Gesture Router: Dashboard <-> Dojo <-> Console <-> Vault
+        const viewportRoot = document.getElementById("app-viewport-root");
+        let rootStartX = 0, rootStartY = 0;
+        const tabSequence = ["tab-dashboard", "tab-dojo", "tab-console", "tab-vault"];
+
+        viewportRoot.addEventListener("touchstart", (e) => {
+          rootStartX = e.touches[0].clientX;
+          rootStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        viewportRoot.addEventListener("touchend", (e) => {
+          // Guard: Ignore if an arena or any modal is currently open
+          const arenaView = document.getElementById("exam-arena");
+          const dojoView = document.getElementById("dojo-arena-view");
+          const openModals = document.querySelectorAll(".modal-overlay.active");
+          if (arenaView.style.display === "flex" || dojoView.style.display === "flex" || openModals.length > 0) {
+            return;
+          }
+
+          // Guard: Ignore if touch originated inside scrollable code textareas or sticky anchor bars
+          const target = e.target;
+          if (target.closest("textarea") || target.closest(".sticky-anchor-bar") || target.closest(".palette-scroll-body") || target.closest("#dash-blueprints-pills")) {
+            return;
+          }
+
+          const deltaX = e.changedTouches[0].clientX - rootStartX;
+          const deltaY = e.changedTouches[0].clientY - rootStartY;
+
+          if (Math.abs(deltaX) > 70 && Math.abs(deltaY) < 35) {
+            const activeTabEl = document.querySelector(".view-container.active");
+            if (!activeTabEl) return;
+            const currentIdx = tabSequence.indexOf(activeTabEl.id);
+            if (currentIdx === -1) return;
+
+            if (deltaX < 0 && currentIdx < tabSequence.length - 1) {
+              // Swipe Left: Forward tab
+              switchTab(tabSequence[currentIdx + 1], document.getElementById(`nav-btn-${tabSequence[currentIdx + 1]}`));
+            } else if (deltaX > 0 && currentIdx > 0) {
+              // Swipe Right: Backward tab
+              switchTab(tabSequence[currentIdx - 1], document.getElementById(`nav-btn-${tabSequence[currentIdx - 1]}`));
+            }
+          }
+        }, { passive: true });
+
+        // Hardware Gesture Shield
+        window.addEventListener("popstate", () => {
+          const openModals = document.querySelectorAll(".modal-overlay.active");
+          if (openModals.length > 0) {
+            openModals.forEach(m => m.classList.remove("active"));
+            return;
+          }
+
+          const arenaView = document.getElementById("exam-arena");
+          if (arenaView.style.display === "flex") {
+            document.getElementById("btn-arena-pause").click();
+            return;
+          }
+
+          const dojoView = document.getElementById("dojo-arena-view");
+          if (dojoView.style.display === "flex") {
+            exitDojoArena();
           }
         });
+      }
 
-        const blob = new Blob([md], { type: "text/plain;charset=utf-8" });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = `CGL_Vault_${Date.now()}.md`;
-        a.click();
+      function pushHistoryState(name) {
+        history.pushState({ panel: name }, "");
       }
 
       /* -------------------------------------------------------------
-       * 13. NAVIGATION & SYSTEM BOOT
+       * 14. SELECTIVE PRINT ENGINE
+       * ------------------------------------------------------------- */
+      async function openPrintConfigModal() {
+        await updatePrintChapters();
+        await populatePrintMockDropdown();
+        pushHistoryState("modal-print-config");
+        document.getElementById("modal-print-config").classList.add("active");
+      }
+
+      async function populatePrintMockDropdown() {
+        const attempts = await getAllRecords("store_attempts");
+        const select = document.getElementById("print-mock-select");
+        select.innerHTML = "";
+        attempts.forEach(a => {
+          const opt = document.createElement("option");
+          opt.value = a.sessionId;
+          opt.innerText = `${a.title} (${new Date(a.timestamp).toLocaleDateString()})`;
+          select.appendChild(opt);
+        });
+      }
+
+      function handlePrintTypeChange(type) {
+        const isQ = type === "QUESTIONS" || type === "COMPENDIUM";
+        const isMock = type === "PAST_MOCK";
+        document.getElementById("print-sub-wrap").style.display = isQ ? "block" : "none";
+        document.getElementById("print-chap-wrap").style.display = isQ ? "block" : "none";
+        document.getElementById("print-mock-select-wrap").style.display = isMock ? "block" : "none";
+      }
+
+      async function updatePrintChapters() {
+        const sub = document.getElementById("print-subject").value;
+        const chapSelect = document.getElementById("print-chapter");
+        chapSelect.innerHTML = `<option value="ALL">All Chapters</option>`;
+
+        const allQs = await getAllRecords("store_questions");
+        const chaps = [...new Set(allQs.filter(q => sub === "ALL" || q.subject === sub).map(q => q.chapter))];
+
+        chaps.forEach(c => {
+          const opt = document.createElement("option");
+          opt.value = c;
+          opt.innerText = c;
+          chapSelect.appendChild(opt);
+        });
+      }
+
+      async function generateAndPrintSheet() {
+        document.getElementById("modal-print-config").classList.remove("active");
+        const pType = document.getElementById("print-type").value;
+        const sub = document.getElementById("print-subject").value;
+        const chap = document.getElementById("print-chapter").value;
+        const incAns = document.getElementById("print-include-ans").value === "YES";
+
+        const root = document.getElementById("print-sheet-root");
+        root.innerHTML = "";
+
+        if (pType === "QUESTIONS") {
+          const allQs = await getAllRecords("store_questions");
+          let pool = sub === "ALL" ? allQs : allQs.filter(q => q.subject === sub);
+          if (chap !== "ALL") pool = pool.filter(q => q.chapter === chap);
+
+          root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Practice Spool (${sub} - ${chap})</h2>`;
+          pool.forEach((q, idx) => {
+            const item = document.createElement("div");
+            item.className = "print-question";
+            let img = q.imageUrl ? `<br><img src="${q.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
+            item.innerHTML = `
+              <strong>Q${idx + 1}.</strong> ${formatRichText(q.questionText)}${img}<br>
+              ${q.options.map((opt, i) => `(${i + 1})${formatRichText(opt)} &nbsp;`).join(' ')}
+              ${incAns ? `<div style="font-size:10px; margin-top:4px;"><b>Answer:</b> Option ${q.correctIndex + 1} \vert{} <i>${q.explanation || ''}</i></div>` : ''}
+            `;
+            root.appendChild(item);
+          });
+        } else if (pType === "PAST_MOCK") {
+          const mockId = document.getElementById("print-mock-select").value;
+          const attempts = await getAllRecords("store_attempts");
+          const targetMock = attempts.find(a => a.sessionId === mockId);
+          if (!targetMock) return;
+
+          root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">${targetMock.title} - Score: ${targetMock.finalScore.toFixed(2)} (${new Date(targetMock.timestamp).toLocaleDateString()})</h2>`;
+          targetMock.questions.forEach((q, idx) => {
+            const resp = targetMock.userResponses[q.id] || {};
+            const item = document.createElement("div");
+            item.className = "print-question";
+            let img = q.imageUrl ? `<br><img src="${q.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
+            item.innerHTML = `
+              <strong>Q${idx + 1}.</strong> ${formatRichText(q.questionText)}${img}<br>
+              ${q.options.map((opt, i) => `(${i + 1})${formatRichText(opt)} &nbsp;`).join(' ')}
+              ${incAns ? `<div style="font-size:10px; margin-top:4px;"><b>Selected:</b> Option ${resp.selectedOption !== null ? resp.selectedOption + 1 : 'None'} | <b>Correct:</b> Option ${q.correctIndex + 1} \vert{} <i>${q.explanation || ''}</i></div>` : ''}
+            `;
+            root.appendChild(item);
+          });
+        } else if (pType === "COMPENDIUM") {
+          const dossiers = await getAllRecords("store_concepts");
+          let pool = sub === "ALL" ? dossiers : dossiers.filter(d => d.subject === sub);
+          if (chap !== "ALL") pool = pool.filter(d => d.chapter === chap);
+
+          root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Knowledge Compendium (${sub} - ${chap})</h2>`;
+          pool.forEach((t, idx) => {
+            const item = document.createElement("div");
+            item.className = "print-question";
+            let img = t.imageUrl ? `<br><img src="${t.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
+            item.innerHTML = `
+              <strong>${idx + 1}. ${t.title} [${t.chapter}]</strong> ${t.subtitle ? `<i>(${t.subtitle})</i>` : ''}<br>
+              ${formatRichText(t.content)}${img}
+            `;
+            root.appendChild(item);
+          });
+        } else if (pType === "VAULT") {
+          const vault = await getAllRecords("store_vault");
+          const allQs = await getAllRecords("store_questions");
+          root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Error Vault Revision Sheet</h2>`;
+          vault.forEach((v, idx) => {
+            const q = allQs.find(item => item.id === v.questionId);
+            if (!q) return;
+            const item = document.createElement("div");
+            item.className = "print-question";
+            let img = q.imageUrl ? `<br><img src="${q.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
+            item.innerHTML = `
+              <strong>Q${idx + 1}. [Box ${v.leitnerBox || 1} - ${v.errorTag}]</strong> ${formatRichText(q.questionText)}${img}<br>
+              ${q.options.map((opt, i) => `(${i + 1})${formatRichText(opt)} &nbsp;`).join(' ')}
+              <div style="font-size:10px; margin-top:4px;"><b>Correct: Option ${q.correctIndex + 1}</b> | ${q.explanation || ''}</div>
+            `;
+            root.appendChild(item);
+          });
+        }
+
+        window.print();
+      }
+
+      /* -------------------------------------------------------------
+       * 15. NAVIGATION, TAB SWITCHING & SYSTEM BOOT
        * ------------------------------------------------------------- */
       function switchTab(tId, btn) {
         document.querySelectorAll(".view-container").forEach(el => el.classList.remove("active"));
         document.querySelectorAll(".nav-btn").forEach(el => el.classList.remove("active"));
 
-        document.getElementById(tId).classList.add("active");
-        if (btn) btn.classList.add("active");
+        const targetEl = document.getElementById(tId);
+        if (targetEl) targetEl.classList.add("active");
+
+        const targetNavBtn = btn || document.getElementById(`nav-btn-${tId}`);
+        if (targetNavBtn) targetNavBtn.classList.add("active");
 
         if (tId === "tab-dashboard") renderDashboard();
         if (tId === "tab-dojo") updateDojoChapters();
@@ -4277,9 +5042,9 @@
         shield.style.setProperty("display", "none", "important");
 
         await getDB();
-        renderDashboard();
-        updateDojoChapters();
-        renderVault();
+        await renderDashboard();
+        await updateDojoChapters();
+        await renderVault();
         initGestureControllers();
 
         const savedSessionRec = await getRecord("store_active_session", "current_session");
@@ -4299,10 +5064,15 @@
         updateCustomRowCount,
         updateCustomRowDuration,
         applyBlueprintPreset,
+        openSaveBlueprintModal,
+        saveCurrentBlueprint,
+        launchSavedBlueprint,
+        deleteSavedBlueprint,
         launchConfiguredMock,
         requestEndSectionEarly,
         confirmEndSectionEarly,
         resumeFromMiniPlayer,
+        reattemptMock,
         updateDojoChapters,
         updateDojoMethods,
         launchFilteredDojo,
@@ -4317,7 +5087,10 @@
         openPopoutTopicSheet,
         navPopoutTopic,
         autoSaveTopicScratchpad,
+        deleteCurrentTopicDossier,
+        insertDossierSnippet,
         openConceptEditorModal,
+        editSpecificTopicDossier,
         handleConceptImageUpload,
         saveConceptCard,
         openPrintConfigModal,
@@ -4339,6 +5112,9 @@
         openMasterLedgerExportModal,
         downloadLedgerJson,
         downloadLedgerMarkdown,
+        openBackupRestoreModal,
+        handleBackupFileSelect,
+        executeHydrationRestore,
         openHistoryArchiveModal,
         renderArchiveList,
         executeConsoleCommand,
