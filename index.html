@@ -20,7 +20,8 @@
       --bg-elevated: #131822;
       --bg-document: #0a0e16;
       --border-color: rgba(255, 255, 255, 0.08);
-      --border-focus: rgba(56, 189, 248, 0.45);
+      --border-glow: rgba(56, 189, 248, 0.25);
+      --border-focus: rgba(56, 189, 248, 0.5);
       --accent-blue: #388bfd;
       --accent-blue-hover: #1f6feb;
       --accent-cyan: #38bdf8;
@@ -77,6 +78,7 @@
       padding: 16px;
       margin-bottom: 14px;
       position: relative;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
     }
     .card-title {
       font-size: 13px;
@@ -112,6 +114,7 @@
     }
     .btn-danger { background: var(--status-red); color: white; }
     .btn-amber { background: var(--status-amber); color: #000; font-weight: 700; }
+    .btn-cyan { background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan); border: 1px solid rgba(56, 189, 248, 0.4); }
 
     /* DASHBOARD HERO HEADER */
     .hero-banner {
@@ -140,6 +143,36 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
+    }
+
+    /* TELEMETRY READINESS HERO DIAL & RADAR BAR */
+    .eri-dial-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #0b0f17;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+    }
+    .eri-dial-svg {
+      width: 68px;
+      height: 68px;
+      transform: rotate(-90deg);
+      flex-shrink: 0;
+    }
+    .trap-heat-bar {
+      display: flex;
+      height: 12px;
+      border-radius: 6px;
+      overflow: hidden;
+      background: var(--bg-elevated);
+      margin: 8px 0;
+    }
+    .trap-heat-seg {
+      height: 100%;
+      transition: width 0.3s ease;
     }
 
     /* BOTTOM NAVIGATION BAR */
@@ -649,6 +682,36 @@
       border-color: var(--accent-blue);
     }
 
+    /* SYNAPSE NODE TREE GRAPH VIEWPORT */
+    #synapse-tree-canvas-wrap {
+      width: 100%;
+      height: 72vh;
+      background: radial-gradient(circle at center, #101522 0%, #05070b 100%);
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      touch-action: none;
+    }
+    #synapse-tree-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .synapse-hud-card {
+      position: absolute;
+      bottom: 12px; left: 12px; right: 12px;
+      background: rgba(13, 17, 24, 0.94);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-glow);
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 10;
+    }
+
     /* PRINT SPOOLER */
     @media print {
       body { background: white !important; color: black !important; }
@@ -679,7 +742,7 @@
     </div>
   </div>
 
-  <!-- APPLICATION VIEWPORT ROOT (FOR GLOBAL GESTURE INTERCEPTOR) -->
+  <!-- APPLICATION VIEWPORT ROOT -->
   <div id="app-viewport-root">
 
     <!-- ==================== 1. TIMED EXAM & REVIEW ARENA ==================== -->
@@ -702,9 +765,14 @@
           <div style="font-size:10px; color:var(--text-muted);" id="hud-test-title">SSC CGL Mock</div>
         </div>
 
-        <button class="hud-icon-btn" id="btn-toggle-exam-palette" title="Open Question Palette">
-          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
-        </button>
+        <div style="display:flex; gap:6px;">
+          <button class="hud-icon-btn" id="btn-arena-research" style="display:none;" onclick="CGL_OS.openOmniResearchForCurrentQuestion()" title="Omni Deep Dive / Wikipedia / Math Plot">
+            🌐
+          </button>
+          <button class="hud-icon-btn" id="btn-toggle-exam-palette" title="Open Question Palette">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+          </button>
+        </div>
       </div>
 
       <div class="sectional-banner">
@@ -712,7 +780,10 @@
           <span class="badge" style="background:#1f6feb;" id="hud-section-badge">SECTION: QUANT</span>
           <span style="font-size:11px; color:var(--accent-cyan);" id="hud-section-qinfo">Q1 of 25</span>
         </div>
-        <span id="hud-pacing-status" style="font-family:var(--font-mono); color:var(--text-muted);">0s spent</span>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span id="hud-panic-flag" class="badge" style="background:#da3633; display:none;">⚡ PANIC SLIP</span>
+          <span id="hud-pacing-status" style="font-family:var(--font-mono); color:var(--text-muted);">0s spent</span>
+        </div>
       </div>
 
       <div id="arena-lock-toast" style="display:none; background:#d29922; color:#000; font-size:12px; font-weight:700; padding:6px 14px; text-align:center;"></div>
@@ -726,12 +797,19 @@
           </div>
         </div>
 
-        <!-- Telemetry & Hesitation Info in Review Mode -->
+        <!-- Telemetry & Decision Trail in Review Mode -->
         <div id="arena-review-telemetry-banner" style="display:none; margin-bottom:12px;"></div>
 
         <div class="q-text-canvas" id="arena-q-text"></div>
         <div class="q-image-container" id="arena-image-container" style="display:none;"></div>
         <div id="arena-options-container"></div>
+
+        <!-- Bi-Directional Concept Bridge Button in Review -->
+        <div id="arena-concept-bridge-box" style="display:none; margin:12px 0;">
+          <button class="btn btn-cyan" style="width:100%; padding:10px; font-size:13px;" id="btn-jump-to-concept">
+            📖 Jump to Underlying Theorem Sheet
+          </button>
+        </div>
 
         <!-- Solution & Mistake Tag Editor in Review Mode -->
         <div id="arena-review-solution-block" style="display:none; margin-top:14px; background:#0d1118; border:1px solid var(--border-color); border-radius:10px; padding:14px;"></div>
@@ -795,9 +873,12 @@
           <div style="font-size:14px; font-weight:800; color:var(--accent-cyan);" id="dojo-arena-title">Dojo Practice</div>
           <div style="font-size:10px; color:var(--text-muted);">Untimed Active Recall Mode</div>
         </div>
-        <button class="hud-icon-btn" onclick="CGL_OS.toggleDojoPalette(true)">
-          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
-        </button>
+        <div style="display:flex; gap:6px;">
+          <button class="hud-icon-btn" onclick="CGL_OS.openOmniResearchForDojoQuestion()" title="Omni Deep Dive">🌐</button>
+          <button class="hud-icon-btn" onclick="CGL_OS.toggleDojoPalette(true)">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+          </button>
+        </div>
       </div>
 
       <div class="sectional-banner">
@@ -805,7 +886,10 @@
           <span class="badge" style="background:#238636;" id="dojo-arena-chap-badge">QA_PERCENTAGE</span>
           <span class="badge" style="background:#151a24; color:#38bdf8;" id="dojo-arena-method-badge">General</span>
         </div>
-        <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openEditCurrentDojoQuestion()">Edit Question</button>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" id="btn-dojo-jump-concept" onclick="CGL_OS.jumpToConceptFromDojo()">📖 Sheet</button>
+          <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openEditCurrentDojoQuestion()">Edit</button>
+        </div>
       </div>
 
       <div id="dojo-theory-banner" style="display:none; background:#111622; padding:10px 14px; border-bottom:1px solid var(--border-color); font-size:12px; line-height:1.5;"></div>
@@ -889,6 +973,12 @@
       <!-- Sticky Sheets Tab Bar -->
       <div class="comp-tabs-bar" id="comp-studio-sheet-tabs"></div>
 
+      <!-- Bi-Directional Bridge: Questions Associated with this Sheet -->
+      <div id="comp-linked-questions-bar" style="background:#090e18; border-bottom:1px solid var(--border-color); padding:6px 14px; display:flex; justify-content:space-between; align-items:center; font-size:11px;">
+        <span style="color:var(--accent-cyan); font-weight:700;" id="comp-linked-q-count">0 Associated Questions Linked</span>
+        <button class="btn btn-secondary" style="padding:3px 8px; font-size:11px;" id="btn-drill-sheet-questions" onclick="CGL_OS.launchCurrentSheetQuestionsDrill()">⚡ Drill Sheet Qs</button>
+      </div>
+
       <!-- Living Document Canvas Body -->
       <div class="comp-document-canvas" id="comp-studio-canvas">
         <div id="comp-studio-doc-content"></div>
@@ -904,7 +994,42 @@
     </div>
 
 
-    <!-- ==================== 4. TAB 1: DASHBOARD ==================== -->
+    <!-- ==================== 4. INTERACTIVE SYNAPSE NODE TREE MODAL ==================== -->
+    <div class="modal-overlay" id="modal-synapse-tree">
+      <div class="modal-window" style="max-width:850px; max-height:94vh; padding:12px; display:flex; flex-direction:column;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+          <div>
+            <h3 style="font-size:16px; font-weight:800; color:var(--accent-cyan);">Synapse Knowledge Graph</h3>
+            <span style="font-size:11px; color:var(--text-muted);">Syllabus Hierarchy • Living Sheets • Trap Clusters</span>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <select id="synapse-filter-subject" class="form-control" style="padding:4px 8px; font-size:11px;" onchange="CGL_OS.filterSynapseTree(this.value)">
+              <option value="ALL">All Subjects</option>
+              <option value="QA">QA</option>
+              <option value="REAS">REAS</option>
+              <option value="ENG">ENG</option>
+              <option value="GA">GA</option>
+            </select>
+            <button class="btn btn-secondary" style="padding:4px 8px;" onclick="CGL_OS.resetSynapseGraphView()" title="Reset Zoom">⟲</button>
+            <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-synapse-tree').classList.remove('active')">✕</button>
+          </div>
+        </div>
+
+        <div id="synapse-tree-canvas-wrap">
+          <canvas id="synapse-tree-canvas"></canvas>
+          <div class="synapse-hud-card" id="synapse-hud-card" style="display:none;">
+            <div>
+              <b id="synapse-hud-title" style="font-size:13px; color:#fff;">Node Name</b>
+              <div id="synapse-hud-sub" style="font-size:11px; color:var(--accent-cyan);">Details</div>
+            </div>
+            <div style="display:flex; gap:6px;" id="synapse-hud-actions"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ==================== 5. TAB 1: DASHBOARD ==================== -->
     <div id="tab-dashboard" class="view-container active">
       <div class="hero-banner">
         <div class="hero-content">
@@ -919,6 +1044,30 @@
         </div>
       </div>
 
+      <!-- Exam Readiness Index (ERI) Hero Dial -->
+      <div class="eri-dial-wrap">
+        <svg class="eri-dial-svg" viewBox="0 0 36 36">
+          <path class="gauge-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          <path class="gauge-fill" id="eri-gauge-circle" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+        </svg>
+        <div style="flex:1;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Exam Readiness Index (ERI)</span>
+            <span class="badge" style="background:#151a24; color:var(--accent-cyan);" id="eri-status-tier">Calibrating</span>
+          </div>
+          <div style="font-size:24px; font-weight:800; color:#fff; margin:2px 0;" id="eri-score-val">0.0</div>
+          <div style="font-size:10px; color:var(--text-muted);" id="eri-breakdown-sub">Accuracy 40% • Velocity 30% • Vault Cleared 30%</div>
+        </div>
+      </div>
+
+      <!-- Neglect Index (Nc) Alert Banner -->
+      <div id="dash-neglect-alert" style="display:none; background:#1b1315; border:1px solid #da3633; border-radius:10px; padding:10px 14px; margin-bottom:14px; font-size:12px; color:#fca5a5; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <b>⚠️ High Neglect Warning:</b> <span id="dash-neglect-text">QA_TIME_WORK untouched for 8 days.</span>
+        </div>
+        <button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" id="btn-neglect-drill">5-Q Tuneup</button>
+      </div>
+
       <!-- Quick Launch Fixed Papers & Saved Blueprints Row -->
       <div style="margin-bottom:14px;">
         <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px; display:flex; justify-content:space-between;">
@@ -926,6 +1075,16 @@
           <span style="color:var(--accent-cyan); cursor:pointer;" onclick="CGL_OS.openCustomMockModal()">+ New Setup</span>
         </div>
         <div id="dash-blueprints-pills" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;"></div>
+      </div>
+
+      <!-- Cognitive Trap Distribution Matrix Strip -->
+      <div class="card" style="padding:12px; margin-bottom:14px;">
+        <div class="card-title" style="margin-bottom:4px;">
+          <span>Cognitive Trap Distribution</span>
+          <span style="font-size:10px; color:var(--accent-cyan);">Tap Segment to Drill Traps</span>
+        </div>
+        <div class="trap-heat-bar" id="dash-trap-heat-bar"></div>
+        <div id="dash-trap-legend" style="display:flex; flex-wrap:wrap; gap:8px; font-size:10px; color:var(--text-muted); margin-top:6px;"></div>
       </div>
 
       <!-- Master KPI Section with Animated Radial SVG Gauges -->
@@ -954,7 +1113,7 @@
           <div style="font-size:22px; font-weight:800;" id="kpi-total-mocks">0</div>
         </div>
 
-        <div class="card" style="margin-bottom:0; padding:12px; cursor:pointer;" onclick="alert('Quadrant-IV Time Trap: Occurs when you spend >90 seconds on a question and still get it incorrect. Identifying Q-IV traps stops catastrophic mark bleed.')" title="Tap for info on Q-IV Traps">
+        <div class="card" style="margin-bottom:0; padding:12px; cursor:pointer;" onclick="alert('Quadrant-IV Time Trap: Occurs when you spend >90 seconds on a question and still get it incorrect. Identifying Q-IV traps prevents catastrophic mark bleed.')" title="Tap for info on Q-IV Traps">
           <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; display:flex; justify-content:space-between;">
             <span>Q-IV Traps Hit</span>
             <span style="color:var(--accent-cyan); font-weight:bold;">ⓘ</span>
@@ -997,7 +1156,7 @@
     </div>
 
 
-    <!-- ==================== 5. TAB 2: DOJO & KNOWLEDGE COMPENDIUM ==================== -->
+    <!-- ==================== 6. TAB 2: DOJO & KNOWLEDGE COMPENDIUM ==================== -->
     <div id="tab-dojo" class="view-container">
       <div class="card" style="background:linear-gradient(135deg, #131b29, #090c12); border-color:#238636;">
         <h2 style="font-size:18px; font-weight:800;">Question Dojo & Practice Hub</h2>
@@ -1006,7 +1165,20 @@
         </p>
       </div>
 
-      <!-- Knowledge Compendium Launcher Card -->
+      <!-- Synapse Knowledge Tree Launcher Card -->
+      <div class="card" style="border-color:var(--accent-cyan);">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <b style="font-size:14px; color:var(--accent-cyan);">Synapse Knowledge Graph</b>
+            <p style="font-size:11px; color:var(--text-muted);">Interactive visual node tree linking chapters, living sheets & traps.</p>
+          </div>
+          <button class="btn btn-cyan" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openSynapseGraphModal()">
+            Open Tree
+          </button>
+        </div>
+      </div>
+
+      <!-- Living Knowledge Studio Launcher Card -->
       <div class="card" style="border-color:#38bdf8;">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <div>
@@ -1015,6 +1187,19 @@
           </div>
           <button class="btn" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openCompendiumStudio()">
             Open Studio
+          </button>
+        </div>
+      </div>
+
+      <!-- 30-Day Current Affairs Sweep Card -->
+      <div class="card" style="border-color:var(--status-purple);">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <b style="font-size:14px; color:var(--status-purple);">Current Affairs Sweep (GA_CA_ANNUAL)</b>
+            <p style="font-size:11px; color:var(--text-muted);">Review decaying news, summits, sports & awards in a 15-Q sweep.</p>
+          </div>
+          <button class="btn btn-secondary" style="padding:8px 12px; font-size:12px; color:var(--status-purple); border-color:var(--status-purple);" onclick="CGL_OS.launchCurrentAffairsSweep()">
+            Sweep CA
           </button>
         </div>
       </div>
@@ -1048,7 +1233,7 @@
         </button>
       </div>
     </div>
-    <!-- ==================== 6. TAB 3: COMMAND TERMINAL ==================== -->
+    <!-- ==================== 7. TAB 3: COMMAND TERMINAL ==================== -->
     <div id="tab-console" class="view-container">
       <div class="card">
         <div class="card-title">
@@ -1094,7 +1279,7 @@
     </div>
 
 
-    <!-- ==================== 7. TAB 4: ERROR VAULT & EXTRACTIONS ==================== -->
+    <!-- ==================== 8. TAB 4: ERROR VAULT & EXTRACTIONS ==================== -->
     <div id="tab-vault" class="view-container">
       <div class="card" style="border-color:#5a1e1e;">
         <div class="card-title" style="color:#f87171;">
@@ -1111,7 +1296,7 @@
           • <b>Box 1:</b> Daily Review Queue (Immediate intervention).<br>
           • <b>Box 2:</b> 4-Day Interval (Reinforced comprehension).<br>
           • <b>Box 3:</b> 14-Day Interval (Final mastery test).<br>
-          • Correct answers promote questions; a correct answer in Box 3 graduates and removes it permanently.
+          • Correct answers promote questions; solving a Box 3 question within 45s graduates and removes it permanently.
         </div>
 
         <button class="btn btn-danger" style="width:100%; margin-bottom:12px;" onclick="CGL_OS.launchVaultSprint()">
@@ -1147,7 +1332,7 @@
   </div> <!-- /#app-viewport-root -->
 
 
-  <!-- ==================== 8. STAGE 1: ANALYTICAL COCKPIT MODAL ==================== -->
+  <!-- ==================== 9. STAGE 1: ANALYTICAL COCKPIT MODAL ==================== -->
   <div class="modal-overlay" id="modal-mock-review">
     <div class="modal-window" style="max-width:700px; max-height:92vh;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1219,7 +1404,52 @@
   </div>
 
 
-  <!-- ==================== 9. INTERACTIVE SUBJECT DIAGNOSTIC MODAL ==================== -->
+  <!-- ==================== 10. OMNI-RESEARCH CONTEXT DRAWER MODAL ==================== -->
+  <div class="modal-overlay" id="modal-omni-research">
+    <div class="modal-window" style="max-width:540px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+        <div>
+          <h3 style="font-size:16px; font-weight:800; color:var(--accent-cyan);">Omni-Research Deep Dive</h3>
+          <span style="font-size:11px; color:var(--text-muted);" id="omni-research-query-sub">Query Context</span>
+        </div>
+        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-omni-research').classList.remove('active')">✕</button>
+      </div>
+
+      <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:10px; margin-bottom:12px; font-size:12px; line-height:1.5;">
+        <span style="color:var(--text-muted); font-size:10px; text-transform:uppercase; font-weight:700;">Active Context Payload:</span>
+        <div id="omni-research-prompt-preview" style="color:#fff; margin-top:4px; font-family:var(--font-mono); max-height:80px; overflow-y:auto;"></div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <a id="omni-link-wiki" class="btn btn-secondary" target="_blank" rel="noopener noreferrer" style="justify-content:flex-start; text-decoration:none;">
+          <span style="font-size:16px;">📖</span>
+          <div style="text-align:left;">
+            <div style="font-size:13px; font-weight:700;">Wikipedia Instant Query</div>
+            <div style="font-size:10px; color:var(--text-muted);">Authoritative historical events, constitutional articles, biology mechanisms</div>
+          </div>
+        </a>
+
+        <a id="omni-link-google" class="btn btn-secondary" target="_blank" rel="noopener noreferrer" style="justify-content:flex-start; text-decoration:none;">
+          <span style="font-size:16px;">🔍</span>
+          <div style="text-align:left;">
+            <div style="font-size:13px; font-weight:700;">Google Search & Image Diagrams</div>
+            <div style="font-size:10px; color:var(--text-muted);">Visual proofs, SSC PYQ discussions, and architectural maps</div>
+          </div>
+        </a>
+
+        <a id="omni-link-wolfram" class="btn btn-secondary" target="_blank" rel="noopener noreferrer" style="justify-content:flex-start; text-decoration:none;">
+          <span style="font-size:16px;">⚡</span>
+          <div style="text-align:left;">
+            <div style="font-size:13px; font-weight:700;">Wolfram Alpha / Math Resolver</div>
+            <div style="font-size:10px; color:var(--text-muted);">Exact algebraic solutions, roots, and geometric curve plotting</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ==================== 11. INTERACTIVE SUBJECT DIAGNOSTIC MODAL ==================== -->
   <div class="modal-overlay" id="modal-subject-diagnostic">
     <div class="modal-window" style="max-width:560px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1254,7 +1484,7 @@
   </div>
 
 
-  <!-- ==================== 10. COMPENDIUM OMNI-SEARCH MODAL ==================== -->
+  <!-- ==================== 12. COMPENDIUM OMNI-SEARCH MODAL ==================== -->
   <div class="modal-overlay" id="modal-comp-omni-search">
     <div class="modal-window" style="max-width:640px; max-height:85vh; display:flex; flex-direction:column;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1271,7 +1501,7 @@
   </div>
 
 
-  <!-- ==================== 11. MULTI-TIER AI EXPORT COCKPIT ==================== -->
+  <!-- ==================== 13. MULTI-TIER AI EXPORT COCKPIT ==================== -->
   <div class="modal-overlay" id="modal-ai-export">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1300,7 +1530,7 @@
   </div>
 
 
-  <!-- ==================== 12. MASTER LEDGER EXPORT MODAL ==================== -->
+  <!-- ==================== 14. MASTER LEDGER EXPORT MODAL ==================== -->
   <div class="modal-overlay" id="modal-ledger-export">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1327,7 +1557,7 @@
   </div>
 
 
-  <!-- ==================== 13. MOCK HISTORY ARCHIVE MODAL ==================== -->
+  <!-- ==================== 15. MOCK HISTORY ARCHIVE MODAL ==================== -->
   <div class="modal-overlay" id="modal-history-archive">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1347,7 +1577,7 @@
   </div>
 
 
-  <!-- ==================== 14. CHAPTER DEEP DIVE INSPECTOR ==================== -->
+  <!-- ==================== 16. CHAPTER DEEP DIVE INSPECTOR ==================== -->
   <div class="modal-overlay" id="modal-chapter-inspector">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1383,7 +1613,7 @@
   </div>
 
 
-  <!-- ==================== 15. SELECTIVE PRINT SPOOLER CONFIG ==================== -->
+  <!-- ==================== 17. SELECTIVE PRINT SPOOLER CONFIG ==================== -->
   <div class="modal-overlay" id="modal-print-config">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1437,7 +1667,7 @@
   </div>
 
 
-  <!-- ==================== 16. MULTI-SUBJECT CUSTOM MOCK BUILDER ==================== -->
+  <!-- ==================== 18. MULTI-SUBJECT CUSTOM MOCK BUILDER ==================== -->
   <div class="modal-overlay" id="modal-mock-builder">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1479,7 +1709,7 @@
   </div>
 
 
-  <!-- ==================== 17. SAVE BLUEPRINT / FIXED PAPER MODAL ==================== -->
+  <!-- ==================== 19. SAVE BLUEPRINT / FIXED PAPER MODAL ==================== -->
   <div class="modal-overlay" id="modal-save-blueprint">
     <div class="modal-window" style="max-width:440px;">
       <h3 style="font-size:16px; font-weight:800; margin-bottom:10px;" id="save-preset-modal-title">Save Mock Blueprint</h3>
@@ -1495,7 +1725,7 @@
   </div>
 
 
-  <!-- ==================== 18. TOPIC DOSSIER EDITOR ==================== -->
+  <!-- ==================== 20. TOPIC DOSSIER EDITOR ==================== -->
   <div class="modal-overlay" id="modal-concept-editor">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1554,7 +1784,7 @@
   </div>
 
 
-  <!-- ==================== 19. GUI QUESTION EDITOR ==================== -->
+  <!-- ==================== 21. GUI QUESTION EDITOR ==================== -->
   <div class="modal-overlay" id="modal-question-editor">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1589,6 +1819,11 @@
           <label>Method Type</label>
           <input type="text" id="edit-q-method" class="form-control" placeholder="e.g. Angle Bisector">
         </div>
+      </div>
+
+      <div class="form-group">
+        <label>Concept ID Bridge (Optional: Link to Living Sheet)</label>
+        <input type="text" id="edit-q-concept-id" class="form-control" placeholder="e.g. top_stress_qa_geometry_triangles">
       </div>
 
       <div class="form-group">
@@ -1630,7 +1865,7 @@
   </div>
 
 
-  <!-- ==================== 20. DISASTER RECOVERY RESTORE MODAL ==================== -->
+  <!-- ==================== 22. DISASTER RECOVERY RESTORE MODAL ==================== -->
   <div class="modal-overlay" id="modal-backup-restore">
     <div class="modal-window" style="max-width:480px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1664,7 +1899,7 @@
   </div>
 
 
-  <!-- ==================== 21. HARDENED PAUSE OVERLAY SHIELD ==================== -->
+  <!-- ==================== 23. HARDENED PAUSE OVERLAY SHIELD ==================== -->
   <div id="pause-shield" style="display:none !important; position:fixed !important; inset:0 !important; width:100vw !important; height:100vh !important; background:rgba(6, 8, 13, 0.98) !important; z-index:9999 !important; flex-direction:column !important; align-items:center !important; justify-content:center !important; padding:24px !important; text-align:center !important;">
     <h2 style="font-size:22px; font-weight:800; margin-bottom:8px; color:#fff;">TEST PAUSED</h2>
     <p style="font-size:13px; color:var(--text-muted); max-width:280px; margin-bottom:20px;">
@@ -1678,7 +1913,7 @@
   </div>
 
 
-  <!-- ==================== 22. BOTTOM NAVIGATION ==================== -->
+  <!-- ==================== 24. BOTTOM NAVIGATION ==================== -->
   <nav id="bottom-nav">
     <button class="nav-btn active" id="nav-btn-tab-dashboard" onclick="CGL_OS.switchTab('tab-dashboard', this)">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
@@ -1701,7 +1936,7 @@
   <div id="print-sheet-root" style="display:none;" class="print-page"></div>
 
 
-  <!-- ==================== 23. MASTER JAVASCRIPT RUNTIME ==================== -->
+  <!-- ==================== 25. MASTER JAVASCRIPT RUNTIME ==================== -->
   <script>
     const CGL_OS = (() => {
       const DB_NAME = "cgl_os_db";
@@ -1722,13 +1957,22 @@
       let currentCompSheets = [];
       let currentConceptImageBase64 = "";
 
+      // Synapse Graph Visualizer State
+      let synapseNodes = [];
+      let synapseLinks = [];
+      let synapseFilterSub = "ALL";
+      let synapsePanX = 0, synapsePanY = 0, synapseZoom = 1.0;
+      let synapseSelectedNode = null;
+      let isSynapseDragging = false;
+      let synapseDragStartX = 0, synapseDragStartY = 0;
+
       // Disaster Recovery Hydration State
       let pendingHydrationData = null;
 
       // Custom Mistake Tags State
       let customMistakeTags = ["CALCULATION_SLIP", "READING_TRAP", "FORMULA_AMNESIA", "CONCEPT_VOID", "RUSHED_PANIC"];
 
-      // 8 Restored Vault Questions from historical archive + Foundation Questions
+      // 8 Restored Vault Questions + Foundation Questions with Bi-Directional conceptId links
       const SEED_QUESTIONS = [
         {
           id: "q_cgl_ga_polity_014",
@@ -1736,6 +1980,7 @@
           chapter: "GA_POLITY",
           subtopic: "Judiciary",
           method: "Constitutional Articles",
+          conceptId: "top_ga_polity_judiciary",
           questionText: "Which Article of the Constitution of India provides for the establishment and constitution of the Supreme Court of India?",
           imageUrl: "",
           options: ["Article 124", "Article 131", "Article 214", "Article 143"],
@@ -1749,6 +1994,7 @@
           chapter: "QA_GEOMETRY",
           subtopic: "Circles",
           method: "Cyclic Quadrilateral Angles",
+          conceptId: "top_stress_qa_geometry_circles",
           questionText: "In a cyclic quadrilateral $ABCD$, the opposite angles $\\angle A$ and $\\angle C$ satisfy $\\angle A = (2x + 10)^\\circ$ and $\\angle C = (3x + 20)^\\circ$. What is the measure of $\\angle A$?",
           imageUrl: "",
           options: ["$60^\\circ$", "$70^\\circ$", "$80^\\circ$", "$75^\\circ$"],
@@ -1762,6 +2008,7 @@
           chapter: "QA_TIME_WORK",
           subtopic: "Pipes & Cisterns",
           method: "Combined Rate of Flow",
+          conceptId: "",
           questionText: "Pipe $A$ can fill a tank in $12\\text{ hours}$ and Pipe $B$ can fill it in $18\\text{ hours}$. If both pipes are opened simultaneously, in how many hours will the tank be full?",
           imageUrl: "",
           options: ["$7.2\\text{ hours}$", "$7.5\\text{ hours}$", "$8.0\\text{ hours}$", "$6.8\\text{ hours}$"],
@@ -1775,6 +2022,7 @@
           chapter: "REAS_ANALOGY",
           subtopic: "Number Analogy",
           method: "n(n + 1) Product Form",
+          conceptId: "",
           questionText: "Select the option that is related to the third number in the same way as the second number is related to the first number: **$14 : 210 :: 18 : \\underline{\\quad ? \\quad}$**",
           imageUrl: "",
           options: ["$324$", "$342$", "$360$", "$306$"],
@@ -1788,6 +2036,7 @@
           chapter: "GA_POLITY",
           subtopic: "Constitutional Amendments",
           method: "Electoral Reform Provisions",
+          conceptId: "top_ga_polity_judiciary",
           questionText: "Which Constitutional Amendment Act reduced the voting age for elections to the Lok Sabha and State Legislative Assemblies from 21 to 18 years?",
           imageUrl: "",
           options: ["42nd Amendment Act", "44th Amendment Act", "61st Amendment Act", "73rd Amendment Act"],
@@ -1801,6 +2050,7 @@
           chapter: "QA_GEOMETRY",
           subtopic: "Triangles & Incenters",
           method: "Internal Angle Bisector Angle",
+          conceptId: "top_qa_geo_triangles",
           questionText: "In $\\triangle ABC$, the bisectors of $\\angle B$ and $\\angle C$ intersect at point $I$ inside the triangle. If $\\angle BAC = 68^\\circ$, then find the measure of $\\angle BIC$.",
           imageUrl: "",
           options: ["$124^\\circ$", "$136^\\circ$", "$112^\\circ$", "$146^\\circ$"],
@@ -1814,6 +2064,7 @@
           chapter: "QA_PROFIT_LOSS",
           subtopic: "Dishonest Dealer",
           method: "Weight Discrepancy Gain",
+          conceptId: "",
           questionText: "A dishonest dealer professes to sell his goods at cost price but uses a weight of $920\\text{ g}$ for a $1\\text{ kg}$ weight. What is his actual gain percentage?",
           imageUrl: "",
           options: ["$8.00\\%$", "$8.69\\%$", "$9.20\\%$", "$7.85\\%$"],
@@ -1827,6 +2078,7 @@
           chapter: "REAS_ANALOGY",
           subtopic: "Number Operations",
           method: "Linear Scaling 5n + 2",
+          conceptId: "",
           questionText: "Select the pair that follows the identical numerical pattern: **$6 : 32 :: 2 : 12 :: 9 : \\underline{\\quad ? \\quad}$**",
           imageUrl: "",
           options: ["$45$", "$47$", "$49$", "$51$"],
@@ -1840,6 +2092,7 @@
           chapter: "QA_GEOMETRY",
           subtopic: "Triangles",
           method: "Angle Bisector Theorem",
+          conceptId: "top_qa_geo_triangles",
           questionText: "In a $\\triangle ABC$, the bisector of $\\angle A$ intersects $BC$ at $D$. If $AB = 12\\text{ cm}$, $AC = 15\\text{ cm}$, and $BC = 18\\text{ cm}$, find the length of $BD$.",
           imageUrl: "",
           options: ["$6\\text{ cm}$", "$8\\text{ cm}$", "$10\\text{ cm}$", "$7.5\\text{ cm}$"],
@@ -1853,6 +2106,7 @@
           chapter: "QA_ALGEBRA",
           subtopic: "Symmetric Expressions",
           method: "k^3 - 3k Expansion",
+          conceptId: "top_qa_alg_identities",
           questionText: "If $x + \\frac{1}{x} = 5$, find the numerical value of $x^3 + \\frac{1}{x^3}$.",
           imageUrl: "",
           options: ["$110$", "$125$", "$140$", "$115$"],
@@ -1866,6 +2120,7 @@
           chapter: "QA_PERCENTAGE",
           subtopic: "Successive Changes",
           method: "Formula vs Ratio Approach",
+          conceptId: "",
           questionText: "The length of a rectangle is increased by $20\\%$ and its breadth is decreased by $10\\%$. Find the net percentage change in its area.",
           imageUrl: "",
           options: ["$8\\%\\text{ increase}$", "$10\\%\\text{ increase}$", "$8\\%\\text{ decrease}$", "$12\\%\\text{ increase}$"],
@@ -1879,6 +2134,7 @@
           chapter: "REAS_CODING",
           subtopic: "Letter to Number",
           method: "Forward Alphabet Rank",
+          conceptId: "",
           questionText: "In a certain code language, **\"STRIKE\"** is coded as **\"19-20-18-9-11-5\"**. How will **\"CHAMP\"** be coded?",
           imageUrl: "",
           options: ["3-8-1-13-16", "3-8-2-14-16", "3-9-1-13-15", "4-8-1-12-16"],
@@ -1892,6 +2148,7 @@
           chapter: "ENG_OWS",
           subtopic: "Personal Traits",
           method: "Financial Vocabulary",
+          conceptId: "",
           questionText: "Select the option that can be used as a one-word substitute for: **\"A person who is unable to pay their debts.\"**",
           imageUrl: "",
           options: ["Insolvent", "Mercenary", "Stoic", "Ascetic"],
@@ -1905,12 +2162,27 @@
           chapter: "GA_POLITY",
           subtopic: "Judiciary",
           method: "Constitutional Articles",
+          conceptId: "top_ga_polity_judiciary",
           questionText: "Which Article of the Constitution of India empowers High Courts to issue writs for the enforcement of Fundamental Rights?",
           imageUrl: "",
           options: ["Article 32", "Article 131", "Article 226", "Article 143"],
           correctIndex: 2,
           explanation: "Article 226 empowers High Courts to issue writs. Article 32 gives writ powers strictly to the Supreme Court.",
           tags: ["Polity", "Writs"]
+        },
+        {
+          id: "q_ga_ca_001",
+          subject: "GA",
+          chapter: "GA_CA_ANNUAL",
+          subtopic: "Summits & Treaties",
+          method: "International Conventions",
+          conceptId: "top_ga_ca_annual_sample",
+          questionText: "Which country hosted the official plenary session of the 2026 World Economic Forum Annual Meeting in Davos?",
+          imageUrl: "",
+          options: ["Switzerland", "Germany", "France", "Austria"],
+          correctIndex: 0,
+          explanation: "The World Economic Forum Annual Meeting is held annually in Davos-Klosters, Switzerland.",
+          tags: ["CurrentAffairs", "Summits"]
         }
       ];
 
@@ -1927,7 +2199,7 @@
           timestamp: Date.now()
         },
         {
-          id: "top_qa_geo_circles",
+          id: "top_stress_qa_geometry_circles",
           subject: "QA",
           chapter: "QA_GEOMETRY",
           title: "Circles & Tangents",
@@ -1963,6 +2235,16 @@
           title: "Supreme Court & Writ Jurisdiction",
           subtitle: "Articles 32, 124, 131, 226",
           content: "### Constitutional Architecture\n• **Article 124:** Establishment and constitution of the Supreme Court of India.\n• **Article 131:** Original jurisdiction of the Supreme Court (Federal disputes between Union & States).\n• **Article 143:** Advisory jurisdiction of the Supreme Court on Presidential references.\n\n### The High Court Writ Advantage\n• **Article 32:** Supreme Court issues writs strictly for enforcement of Fundamental Rights.\n• **Article 226:** High Courts can issue writs for Fundamental Rights *and* for 'any other legal right'.",
+          imageUrl: "",
+          timestamp: Date.now()
+        },
+        {
+          id: "top_ga_ca_annual_sample",
+          subject: "GA",
+          chapter: "GA_CA_ANNUAL",
+          title: "Major Global Summits & Frameworks",
+          subtitle: "2026 Multilateral Engagements",
+          content: "### Multilateral Venues & Mandates\n• **World Economic Forum (WEF):** Annual meeting held in Davos-Klosters, Switzerland.\n• **G20 Troika Context:** Ongoing macroeconomic alignments, debt sustainability frameworks, and multilateral bank capital reforms.\n\n> [!tip] Annual CA Decay Principle\n> Memorize summit host countries, main adopted theme, and newly added member states.",
           imageUrl: "",
           timestamp: Date.now()
         }
@@ -2112,7 +2394,7 @@
             ];
             stores.forEach(s => {
               if (!d.objectStoreNames.contains(s.name)) {
-                d.createStore = d.createObjectStore(s.name, { keyPath: s.key });
+                d.createObjectStore(s.name, { keyPath: s.key });
               }
             });
           };
@@ -2363,6 +2645,7 @@
           chapter: q.chapter || "QA_GENERAL",
           subtopic: q.subtopic || "",
           method: q.method || "",
+          conceptId: q.conceptId || "",
           questionText: q.questionText || "",
           imageUrl: q.imageUrl || "",
           options: Array.isArray(q.options) && q.options.length === 4 ? q.options : ["Option 1", "Option 2", "Option 3", "Option 4"],
@@ -2498,8 +2781,11 @@ Target Candidate: Ankit (SSC CGL 2026 Tier 1 & Tier 2)
 ## 2. Active System Taxonomy & Chapters
 ${JSON.stringify(TAXONOMY, null, 2)}
 
-## 3. Supported JSON Action Contracts
-Your responses must be formulated strictly as executable JSON payloads conforming to one of the following schemas:
+## 3. Bi-Directional Bridge Keys (Concept IDs in Question Bank)
+${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.chapter, title: c.title })), null, 2)}
+
+## 4. Supported JSON Action Contracts
+Formulate responses strictly as valid JSON adhering to these contracts:
 
 ### A. INGEST_AND_LAUNCH_MOCK
 \`\`\`json
@@ -2515,6 +2801,7 @@ Your responses must be formulated strictly as executable JSON payloads conformin
         "chapter": "QA_GEOMETRY",
         "subtopic": "Circles",
         "method": "Common Tangents",
+        "conceptId": "top_stress_qa_geometry_circles",
         "questionText": "Question text in Markdown with KaTeX $...$",
         "imageUrl": "",
         "options": ["Opt 1", "Opt 2", "Opt 3", "Opt 4"],
@@ -2576,34 +2863,9 @@ Your responses must be formulated strictly as executable JSON payloads conformin
   }
 }
 \`\`\`
-
-### E. MODIFY_TAXONOMY
-\`\`\`json
-{
-  "action": "MODIFY_TAXONOMY",
-  "payload": {
-    "operation": "ADD_CHAPTER",
-    "subject": "QA",
-    "chapter": "QA_COORDINATE_GEOM"
-  }
-}
-\`\`\`
-
-### F. RAW_DB_OPERATION
-\`\`\`json
-{
-  "action": "RAW_DB_OPERATION",
-  "payload": {
-    "store": "store_questions",
-    "operation": "PUT",
-    "key": "q_custom_001",
-    "record": {}
-  }
-}
-\`\`\`
 `;
         navigator.clipboard.writeText(manifest);
-        alert("Live AI Introspection Manifest copied to clipboard! Paste it into a new AI session.");
+        alert("Live AI Introspection Manifest copied to clipboard! Paste it into your coaching chat.");
       }
       /* -------------------------------------------------------------
        * 3. MULTI-SUBJECT CUSTOM MOCK BUILDER & SAVED PRESETS
@@ -2814,7 +3076,6 @@ Your responses must be formulated strictly as executable JSON payloads conformin
             sections: parsedSections,
             activeSectionIndex: 0,
             currentQuestionIndex: 0,
-            // STRICT NORMALIZATION: Bounded sectionIndex
             questions: preset.questions.map((q, idx) => ({ 
               ...q, 
               sectionIndex: (typeof q.sectionIndex === "number" && q.sectionIndex >= 0 && q.sectionIndex < parsedSections.length) ? q.sectionIndex : 0,
@@ -3053,6 +3314,11 @@ Your responses must be formulated strictly as executable JSON payloads conformin
         const saveNextBtn = document.getElementById("btn-q-save-next");
         const telemBanner = document.getElementById("arena-review-telemetry-banner");
         const solutionBlock = document.getElementById("arena-review-solution-block");
+        const conceptBridgeBox = document.getElementById("arena-concept-bridge-box");
+        const researchBtn = document.getElementById("btn-arena-research");
+        const panicFlag = document.getElementById("hud-panic-flag");
+
+        researchBtn.style.display = "inline-flex";
 
         if (isRev) {
           pauseBtn.style.display = "none";
@@ -3068,6 +3334,7 @@ Your responses must be formulated strictly as executable JSON payloads conformin
             <span>🔴 Incorrect</span>
             <span>⚪ Unattempted</span>
           `;
+          panicFlag.style.display = resp.isPanicSlip ? "inline-block" : "none";
         } else {
           pauseBtn.style.display = "inline-flex";
           exitRevBtn.style.display = "none";
@@ -3075,6 +3342,7 @@ Your responses must be formulated strictly as executable JSON payloads conformin
           saveNextBtn.innerText = "Save & Next";
           document.getElementById("btn-submit-exam").style.display = "block";
           document.getElementById("palette-drawer-title").innerText = "Question Palette";
+          panicFlag.style.display = "none";
 
           if (activeExam.isSectionLocked) {
             lockBtn.style.display = "inline-flex";
@@ -3115,6 +3383,14 @@ Your responses must be formulated strictly as executable JSON payloads conformin
           imgBox.innerHTML = "";
         }
 
+        // Bi-Directional Concept Bridge Resolution
+        if (isRev && q.conceptId && q.conceptId.trim().length > 0) {
+          conceptBridgeBox.style.display = "block";
+          document.getElementById("btn-jump-to-concept").onclick = () => jumpToConceptFromReview(q.conceptId);
+        } else {
+          conceptBridgeBox.style.display = "none";
+        }
+
         // Review Mode Telemetry
         if (isRev) {
           const isAtt = resp.selectedOption !== null && resp.selectedOption !== undefined;
@@ -3133,6 +3409,7 @@ Your responses must be formulated strictly as executable JSON payloads conformin
                   <b>Hesitation Trail:</b> ${resp.decisionTrail.map(d => `Opt ${d.opt} (${d.atSec}s)`).join(' ➔ ')}
                 </div>
               ` : ''}
+              ${resp.isPanicSlip ? `<div style="margin-top:4px; color:var(--status-red); font-size:11px; font-weight:700;">⚠️ Detected as Panic Slip (<12s solve in final minutes).</div>` : ''}
             </div>
           `;
 
@@ -3472,6 +3749,12 @@ Your responses must be formulated strictly as executable JSON payloads conformin
           const resp = activeExam.userResponses[q.id];
           if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
             const isCorrect = resp.selectedOption === q.correctIndex;
+            
+            // Panic Blitz Detection: answered in under 12 seconds in the final 3 minutes of the section
+            if (resp.timeSpentSec < 12 && activeExam.sectionRemainingSec < 180) {
+              resp.isPanicSlip = true;
+            }
+
             if (isCorrect) {
               totalMarks += 2.0;
               correct++;
@@ -3479,7 +3762,7 @@ Your responses must be formulated strictly as executable JSON payloads conformin
                 switchDelta++;
               }
               if (activeExam.isVaultSprint) {
-                await advanceVaultBox(q.id);
+                await advanceVaultBox(q.id, resp.timeSpentSec);
               }
             } else {
               totalMarks -= 0.5;
@@ -3552,7 +3835,6 @@ Your responses must be formulated strictly as executable JSON payloads conformin
           ? JSON.parse(JSON.stringify(target.sections)).map(s => ({ ...s, locked: false })) 
           : [{ id: "SEC_1", name: "Section 1", durationSec: 900, locked: false }];
 
-        // STRICT FIX: Bounded sectionIndex assignment prevents single-question freeze
         activeExam = {
           sessionId: "mock_re_" + Date.now(),
           timestamp: Date.now(),
@@ -3625,12 +3907,103 @@ Your responses must be formulated strictly as executable JSON payloads conformin
       }
 
       /* -------------------------------------------------------------
-       * 5. FULL-SCREEN LIVING COMPENDIUM & KNOWLEDGE STUDIO
+       * 5. BI-DIRECTIONAL CONCEPT BRIDGE & OMNI-RESEARCH RESOLVER
+       * ------------------------------------------------------------- */
+      async function jumpToConceptFromReview(conceptId) {
+        const item = await getRecord("store_concepts", conceptId);
+        if (!item) {
+          alert("Linked living concept sheet not found.");
+          return;
+        }
+
+        activeCompSubject = item.subject;
+        activeCompChapter = item.chapter;
+        openCompendiumStudio();
+        setTimeout(() => {
+          const sheetIdx = currentCompSheets.findIndex(s => s.id === conceptId);
+          if (sheetIdx !== -1) {
+            activeCompSheetIndex = sheetIdx;
+            renderActiveCompSheet();
+          }
+        }, 150);
+      }
+
+      async function jumpToConceptFromDojo() {
+        if (!dojoExam) return;
+        const q = dojoExam.questions[dojoExam.currentIndex];
+        if (q && q.conceptId) {
+          jumpToConceptFromReview(q.conceptId);
+        } else {
+          // Fallback to chapter search
+          activeCompSubject = q.subject;
+          activeCompChapter = q.chapter;
+          openCompendiumStudio();
+        }
+      }
+
+      function openOmniResearchForCurrentQuestion() {
+        if (!activeExam) return;
+        const q = activeExam.questions[activeExam.currentQuestionIndex];
+        triggerOmniResearchDrawer(q);
+      }
+
+      function openOmniResearchForDojoQuestion() {
+        if (!dojoExam) return;
+        const q = dojoExam.questions[dojoExam.currentIndex];
+        triggerOmniResearchDrawer(q);
+      }
+
+      function triggerOmniResearchDrawer(q) {
+        if (!q) return;
+        const queryText = (q.subtopic || q.method || q.chapter).replace(/_/g, " ");
+        document.getElementById("omni-research-query-sub").innerText = `${q.subject} • ${q.chapter}`;
+        document.getElementById("omni-research-prompt-preview").innerText = q.questionText.slice(0, 160) + "...";
+
+        // Encode deep intent search URLs
+        const wikiUrl = `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(queryText + " SSC CGL")}`;
+        const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(q.questionText.slice(0, 100) + " " + queryText)}`;
+        
+        // Extract math formulas for Wolfram Alpha if present
+        let wolframQuery = queryText;
+        const mathMatch = q.questionText.match(/\$([^\$]+)\$/);
+        if (mathMatch && mathMatch[1]) {
+          wolframQuery = mathMatch[1].replace(/\\text\{.*?\}/g, "").replace(/\\/g, "");
+        }
+        const wolframUrl = `https://www.wolframalpha.com/input?i=${encodeURIComponent(wolframQuery)}`;
+
+        document.getElementById("omni-link-wiki").href = wikiUrl;
+        document.getElementById("omni-link-google").href = googleUrl;
+        document.getElementById("omni-link-wolfram").href = wolframUrl;
+
+        pushHistoryState("modal-omni-research");
+        document.getElementById("modal-omni-research").classList.add("active");
+      }
+
+      async function launchCurrentSheetQuestionsDrill() {
+        const sheet = currentCompSheets[activeCompSheetIndex];
+        if (!sheet) return;
+
+        const allQs = await getAllRecords("store_questions");
+        const linked = allQs.filter(q => q.conceptId === sheet.id || (q.chapter === sheet.chapter && q.subtopic === sheet.title));
+
+        if (linked.length === 0) {
+          alert(`No questions explicitly tagged to "${sheet.title}". Launching entire ${sheet.chapter} drill instead.`);
+          closeCompendiumStudio();
+          launchConfiguredMockDirect(sheet.subject, sheet.chapter, 5, 5);
+          return;
+        }
+
+        closeCompendiumStudio();
+        compileAndLaunchArena(`Concept Drill: ${sheet.title}`, linked, Math.max(5, Math.round(linked.length * 1.5)));
+      }
+
+      /* -------------------------------------------------------------
+       * 6. FULL-SCREEN LIVING COMPENDIUM & KNOWLEDGE STUDIO
        * ------------------------------------------------------------- */
       async function openCompendiumStudio() {
         pushHistoryState("compendium-fullscreen-view");
         document.getElementById("compendium-fullscreen-view").style.display = "flex";
-        await handleCompStudioSubjectChange("QA");
+        await handleCompStudioSubjectChange(activeCompSubject || "QA");
       }
 
       function closeCompendiumStudio() {
@@ -3686,6 +4059,7 @@ Your responses must be formulated strictly as executable JSON payloads conformin
             </div>
           `;
           document.getElementById("comp-studio-scratchpad").value = "";
+          document.getElementById("comp-linked-q-count").innerText = "0 Questions Linked";
           return;
         }
 
@@ -3709,13 +4083,17 @@ Your responses must be formulated strictly as executable JSON payloads conformin
         const sheet = currentCompSheets[activeCompSheetIndex];
         if (!sheet) return;
 
-        // Sync tab highlights
         document.querySelectorAll(".comp-sheet-tab").forEach((t, i) => {
           t.classList.toggle("active", i === activeCompSheetIndex);
         });
 
         document.getElementById("comp-studio-header-title").innerText = sheet.title;
         document.getElementById("comp-studio-header-sub").innerText = `${sheet.chapter} • Sheet ${activeCompSheetIndex + 1} of ${currentCompSheets.length}`;
+
+        // Compute linked questions count
+        const allQs = await getAllRecords("store_questions");
+        const linkedCount = allQs.filter(q => q.conceptId === sheet.id || (q.chapter === sheet.chapter && q.subtopic === sheet.title)).length;
+        document.getElementById("comp-linked-q-count").innerText = `${linkedCount} Associated Questions Linked`;
 
         let imgHtml = "";
         if (sheet.imageUrl && sheet.imageUrl.trim().length > 0) {
@@ -3924,7 +4302,267 @@ Your responses must be formulated strictly as executable JSON payloads conformin
       }
 
       /* -------------------------------------------------------------
-       * 6. UNTIMED DOJO ARENA
+       * 7. INTERACTIVE SYNAPSE NODE TREE (CANVAS 2D ENGINE)
+       * ------------------------------------------------------------- */
+      async function openSynapseGraphModal() {
+        pushHistoryState("modal-synapse-tree");
+        document.getElementById("modal-synapse-tree").classList.add("active");
+        await buildSynapseTopology();
+        initSynapseCanvas();
+      }
+
+      function filterSynapseTree(sub) {
+        synapseFilterSub = sub;
+        buildSynapseTopology().then(drawSynapseGraph);
+      }
+
+      function resetSynapseGraphView() {
+        synapsePanX = 0;
+        synapsePanY = 0;
+        synapseZoom = 1.0;
+        drawSynapseGraph();
+      }
+
+      async function buildSynapseTopology() {
+        synapseNodes = [];
+        synapseLinks = [];
+
+        const allQuestions = await getAllRecords("store_questions");
+        const allConcepts = await getAllRecords("store_concepts");
+        const allVault = await getAllRecords("store_vault");
+        const attempts = await getAllRecords("store_attempts");
+        const completed = attempts.filter(a => a.completed && !a.isVaultSprint);
+
+        // Root Node
+        synapseNodes.push({
+          id: "root",
+          label: "SSC CGL Syllabus",
+          type: "ROOT",
+          x: 400, y: 50,
+          radius: 22,
+          color: "#38bdf8"
+        });
+
+        const subjects = synapseFilterSub === "ALL" ? Object.keys(TAXONOMY) : [synapseFilterSub];
+        const subSpacing = 700 / (subjects.length + 1);
+
+        subjects.forEach((subKey, sIdx) => {
+          const subNodeId = `sub_${subKey}`;
+          const subX = 80 + (sIdx + 1) * subSpacing;
+          const subY = 160;
+
+          synapseNodes.push({
+            id: subNodeId,
+            label: subKey,
+            sub: TAXONOMY[subKey].name,
+            type: "SUBJECT",
+            subject: subKey,
+            x: subX, y: subY,
+            radius: 18,
+            color: "#1f6feb"
+          });
+          synapseLinks.push({ from: "root", to: subNodeId });
+
+          const chapters = TAXONOMY[subKey].chapters.slice(0, 5); // display top 5 chapters per branch for visual clarity
+          const chapSpacing = 160 / Math.max(1, chapters.length);
+
+          chapters.forEach((chap, cIdx) => {
+            const chapNodeId = `chap_${chap}`;
+            const chapX = subX - 70 + (cIdx * 35);
+            const chapY = subY + 110 + (cIdx * 20);
+
+            // Compute chapter health
+            const chapVaultCount = allVault.filter(v => v.chapter === chap).length;
+            const chapColor = chapVaultCount > 2 ? "var(--status-red)" : (chapVaultCount > 0 ? "var(--status-amber)" : "var(--status-green)");
+
+            synapseNodes.push({
+              id: chapNodeId,
+              label: chap.replace(`${subKey}_`, ""),
+              fullChap: chap,
+              type: "CHAPTER",
+              subject: subKey,
+              x: chapX, y: chapY,
+              radius: 14,
+              color: chapColor,
+              vaultCount: chapVaultCount
+            });
+            synapseLinks.push({ from: subNodeId, to: chapNodeId });
+
+            // Connect Topic Sheets
+            const sheets = allConcepts.filter(d => d.subject === subKey && d.chapter === chap);
+            sheets.forEach((sheet, shIdx) => {
+              const sheetNodeId = `sheet_${sheet.id}`;
+              const sheetX = chapX + (shIdx * 25) - 20;
+              const sheetY = chapY + 90;
+
+              synapseNodes.push({
+                id: sheetNodeId,
+                label: sheet.title.slice(0, 16) + "..",
+                fullTitle: sheet.title,
+                conceptId: sheet.id,
+                type: "SHEET",
+                subject: subKey,
+                chapter: chap,
+                x: sheetX, y: sheetY,
+                radius: 11,
+                color: "#a371f7"
+              });
+              synapseLinks.push({ from: chapNodeId, to: sheetNodeId });
+            });
+          });
+        });
+      }
+
+      function initSynapseCanvas() {
+        const wrap = document.getElementById("synapse-tree-canvas-wrap");
+        const canvas = document.getElementById("synapse-tree-canvas");
+        const rect = wrap.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+
+        synapsePanX = (rect.width - 800) / 2;
+        synapsePanY = 20;
+
+        canvas.onmousedown = (e) => startSynapseDrag(e.clientX, e.clientY);
+        canvas.onmousemove = (e) => moveSynapseDrag(e.clientX, e.clientY);
+        canvas.onmouseup = () => endSynapseDrag();
+
+        canvas.ontouchstart = (e) => {
+          if (e.touches.length === 1) startSynapseDrag(e.touches[0].clientX, e.touches[0].clientY);
+        };
+        canvas.ontouchmove = (e) => {
+          if (e.touches.length === 1) moveSynapseDrag(e.touches[0].clientX, e.touches[0].clientY);
+        };
+        canvas.ontouchend = () => endSynapseDrag();
+
+        canvas.onclick = (e) => handleSynapseNodeClick(e);
+
+        drawSynapseGraph();
+      }
+
+      function startSynapseDrag(clientX, clientY) {
+        isSynapseDragging = true;
+        synapseDragStartX = clientX - synapsePanX;
+        synapseDragStartY = clientY - synapsePanY;
+      }
+
+      function moveSynapseDrag(clientX, clientY) {
+        if (!isSynapseDragging) return;
+        synapsePanX = clientX - synapseDragStartX;
+        synapsePanY = clientY - synapseDragStartY;
+        drawSynapseGraph();
+      }
+
+      function endSynapseDrag() {
+        isSynapseDragging = false;
+      }
+
+      function handleSynapseNodeClick(e) {
+        const canvas = document.getElementById("synapse-tree-canvas");
+        const rect = canvas.getBoundingClientRect();
+        const clickX = (e.clientX - rect.left - synapsePanX) / synapseZoom;
+        const clickY = (e.clientY - rect.top - synapsePanY) / synapseZoom;
+
+        const hit = synapseNodes.find(node => {
+          const dx = node.x - clickX;
+          const dy = node.y - clickY;
+          return Math.sqrt(dx * dx + dy * dy) <= (node.radius + 6);
+        });
+
+        if (hit) {
+          synapseSelectedNode = hit;
+          showSynapseHud(hit);
+          drawSynapseGraph();
+        } else {
+          document.getElementById("synapse-hud-card").style.display = "none";
+        }
+      }
+
+      function showSynapseHud(node) {
+        const hud = document.getElementById("synapse-hud-card");
+        const title = document.getElementById("synapse-hud-title");
+        const sub = document.getElementById("synapse-hud-sub");
+        const actions = document.getElementById("synapse-hud-actions");
+        hud.style.display = "flex";
+        actions.innerHTML = "";
+
+        if (node.type === "SHEET") {
+          title.innerText = node.fullTitle;
+          sub.innerText = `Topic Sheet • ${node.chapter}`;
+          actions.innerHTML = `
+            <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.jumpToConceptFromReview('${node.conceptId}')">Open Sheet</button>
+            <button class="btn btn-cyan" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.launchDirectSheetDrill('${node.conceptId}', '${node.subject}', '${node.chapter}')">⚡ Drill Qs</button>
+          `;
+        } else if (node.type === "CHAPTER") {
+          title.innerText = node.fullChap;
+          sub.innerText = `Chapter Branch • ${node.vaultCount} Active Traps`;
+          actions.innerHTML = `
+            <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.launchConfiguredMockDirect('${node.subject}', '${node.fullChap}', 5, 5)">5-Q Blitz</button>
+          `;
+        } else {
+          title.innerText = node.label;
+          sub.innerText = node.sub || "Master Node";
+        }
+      }
+
+      function launchDirectSheetDrill(conceptId, subject, chapter) {
+        document.getElementById("modal-synapse-tree").classList.remove("active");
+        getAllRecords("store_questions").then(allQs => {
+          const linked = allQs.filter(q => q.conceptId === conceptId);
+          if (linked.length > 0) {
+            compileAndLaunchArena(`Drill: ${conceptId}`, linked, 5);
+          } else {
+            launchConfiguredMockDirect(subject, chapter, 5, 5);
+          }
+        });
+      }
+
+      function drawSynapseGraph() {
+        const canvas = document.getElementById("synapse-tree-canvas");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        ctx.save();
+        ctx.translate(synapsePanX, synapsePanY);
+        ctx.scale(synapseZoom, synapseZoom);
+
+        // Draw Links
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
+        ctx.lineWidth = 1.5;
+        synapseLinks.forEach(link => {
+          const fromNode = synapseNodes.find(n => n.id === link.from);
+          const toNode = synapseNodes.find(n => n.id === link.to);
+          if (fromNode && toNode) {
+            ctx.beginPath();
+            ctx.moveTo(fromNode.x, fromNode.y);
+            ctx.bezierCurveTo(fromNode.x, fromNode.y + 40, toNode.x, toNode.y - 40, toNode.x, toNode.y);
+            ctx.stroke();
+          }
+        });
+
+        // Draw Nodes
+        synapseNodes.forEach(node => {
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+          ctx.fillStyle = node.color || "#1f6feb";
+          ctx.fill();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = (synapseSelectedNode && synapseSelectedNode.id === node.id) ? "#ffffff" : "rgba(255,255,255,0.4)";
+          ctx.stroke();
+
+          // Labels
+          ctx.fillStyle = "#f0f6fc";
+          ctx.font = "10px -apple-system, BlinkMacSystemFont, sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText(node.label, node.x, node.y + node.radius + 12);
+        });
+
+        ctx.restore();
+      }
+
+      /* -------------------------------------------------------------
+       * 8. UNTIMED DOJO ARENA
        * ------------------------------------------------------------- */
       async function updateDojoChapters() {
         const sub = document.getElementById("dojo-nav-subject").value;
@@ -4178,7 +4816,22 @@ Your responses must be formulated strictly as executable JSON payloads conformin
       }
 
       /* -------------------------------------------------------------
-       * 7. STAGE 1: ANALYTICAL COCKPIT & MISTAKE TAGGING
+       * 9. CURRENT AFFAIRS MATRIX (GA_CA_ANNUAL)
+       * ------------------------------------------------------------- */
+      async function launchCurrentAffairsSweep() {
+        const allQuestions = await getAllRecords("store_questions");
+        const caQuestions = allQuestions.filter(q => q.chapter === "GA_CA_ANNUAL" || (q.tags && q.tags.includes("CurrentAffairs")));
+
+        if (caQuestions.length === 0) {
+          alert("Zero Current Affairs questions found in bank under GA_CA_ANNUAL.");
+          return;
+        }
+
+        compileAndLaunchArena("30-Day Current Affairs Sweep", caQuestions.slice(0, 15), 10);
+      }
+
+      /* -------------------------------------------------------------
+       * 10. STAGE 1: ANALYTICAL COCKPIT & MISTAKE TAGGING
        * ------------------------------------------------------------- */
       async function openMockReview(attemptOrId) {
         let att = typeof attemptOrId === "string" 
@@ -4303,7 +4956,7 @@ Your responses must be formulated strictly as executable JSON payloads conformin
       }
 
       /* -------------------------------------------------------------
-       * 8. INTERACTIVE SUBJECT DIAGNOSTIC MODAL
+       * 11. INTERACTIVE SUBJECT DIAGNOSTIC MODAL
        * ------------------------------------------------------------- */
       async function openSubjectDiagnosticModal(subKey) {
         const sub = TAXONOMY[subKey];
@@ -4321,7 +4974,7 @@ Your responses must be formulated strictly as executable JSON payloads conformin
           if (c.questions && Array.isArray(c.questions)) {
             c.questions.forEach(q => {
               if (q.subject === subKey) {
-                const resp = c.userResponses && c.userResponses[q.id] ? c.userResponses[q.id] : null;
+                const resp = (c.userResponses && typeof c.userResponses === "object") ? c.userResponses[q.id] : null;
                 if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
                   subAtt++;
                   if (resp.selectedOption === q.correctIndex) subCor++;
@@ -4350,7 +5003,7 @@ Your responses must be formulated strictly as executable JSON payloads conformin
             if (c.questions && Array.isArray(c.questions)) {
               c.questions.forEach(q => {
                 if (q.chapter === chap) {
-                  const resp = c.userResponses && c.userResponses[q.id] ? c.userResponses[q.id] : null;
+                  const resp = (c.userResponses && typeof c.userResponses === "object") ? c.userResponses[q.id] : null;
                   if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
                     cAtt++;
                     if (resp.selectedOption === q.correctIndex) cCor++;
@@ -4361,7 +5014,6 @@ Your responses must be formulated strictly as executable JSON payloads conformin
           });
 
           const cAcc = cAtt > 0 ? Math.round((cCor / cAtt) * 100) : 0;
-          const totalInBank = allQuestions.filter(q => q.chapter === chap).length;
 
           const div = document.createElement("div");
           div.className = "card";
@@ -4391,7 +5043,7 @@ Your responses must be formulated strictly as executable JSON payloads conformin
       }
 
       /* -------------------------------------------------------------
-       * 9. MULTI-TIER AI EXPORTS & GEM LEDGER
+       * 12. MULTI-TIER AI EXPORTS & GEM LEDGER
        * ------------------------------------------------------------- */
       function openAiExportModal() {
         if (!activeReviewAttempt) return;
@@ -4431,6 +5083,7 @@ Your responses must be formulated strictly as executable JSON payloads conformin
               return {
                 id: q.id,
                 chapter: q.chapter,
+                conceptId: q.conceptId || "",
                 text: q.questionText,
                 options: q.options,
                 userOption: r.selectedOption !== undefined ? r.selectedOption : null,
@@ -4495,7 +5148,7 @@ Your responses must be formulated strictly as executable JSON payloads conformin
         allQs.forEach((q, idx) => {
           txt += `--- [RECORD ${idx + 1}] ---\n`;
           txt += `ID: ${q.id}\n`;
-          txt += `SUBJECT: ${q.subject} | CHAPTER: ${q.chapter} | METHOD: ${q.method || q.subtopic || 'General'}\n`;
+          txt += `SUBJECT: ${q.subject} | CHAPTER: ${q.chapter} | CONCEPT_REF: ${q.conceptId || 'None'}\n`;
           txt += `QUESTION: ${q.questionText}\n`;
           q.options.forEach((opt, oIdx) => {
             txt += `OPTION ${oIdx + 1}: ${opt}\n`;
@@ -4537,15 +5190,20 @@ Your responses must be formulated strictly as executable JSON payloads conformin
       }
 
       /* -------------------------------------------------------------
-       * 10. DASHBOARD RENDER ENGINE (RADIAL SVG GAUGES & TICKETS)
+       * 13. DASHBOARD RENDER ENGINE (ERI DIAL & COGNITIVE HEAT STRIP)
        * ------------------------------------------------------------- */
       async function renderDashboard() {
         const attempts = await getAllRecords("store_attempts");
         const completed = attempts.filter(a => a.completed && !a.isVaultSprint);
+        const vaultRecords = await getAllRecords("store_vault");
 
         document.getElementById("kpi-total-mocks").innerText = completed.length;
 
         const circleGauge = document.getElementById("gauge-acc-circle");
+
+        let accPercent = 0;
+        let avgSpeed = 0;
+        let traps = 0;
 
         if (completed.length === 0) {
           document.getElementById("kpi-global-acc").innerText = "--";
@@ -4556,7 +5214,7 @@ Your responses must be formulated strictly as executable JSON payloads conformin
             circleGauge.style.stroke = "var(--border-color)";
           }
         } else {
-          let totalCor = 0, totalAtt = 0, totalSec = 0, traps = 0;
+          let totalCor = 0, totalAtt = 0, totalSec = 0;
           completed.forEach(c => {
             totalCor += (c.correctCount || 0);
             totalAtt += ((c.correctCount || 0) + (c.incorrectCount || 0));
@@ -4566,8 +5224,8 @@ Your responses must be formulated strictly as executable JSON payloads conformin
             }
           });
 
-          const accPercent = totalAtt > 0 ? Math.round((totalCor / totalAtt) * 100) : 0;
-          const avgSpeed = totalAtt > 0 ? Math.round(totalSec / totalAtt) : 0;
+          accPercent = totalAtt > 0 ? Math.round((totalCor / totalAtt) * 100) : 0;
+          avgSpeed = totalAtt > 0 ? Math.round(totalSec / totalAtt) : 0;
 
           document.getElementById("kpi-global-acc").innerText = `${accPercent}%`;
           document.getElementById("kpi-avg-speed").innerText = `${avgSpeed}s`;
@@ -4586,11 +5244,172 @@ Your responses must be formulated strictly as executable JSON payloads conformin
           else speedEl.innerHTML = `<span style="color:var(--status-red);">⚠️ Drag Alert (>60s / Q)</span>`;
         }
 
-        // DEFENSIVE RENDERING: Try/catch blocks guarantee DOM never breaks from single undefined errors
+        // 1. Calculate Exam Readiness Index (ERI)
+        calculateAndRenderERI(accPercent, avgSpeed, vaultRecords.length, completed.length);
+
+        // 2. Check Neglect Index (Nc)
+        checkAndRenderNeglectIndex(completed);
+
+        // 3. Render Cognitive Trap Distribution Bar
+        renderCognitiveTrapHeatStrip(vaultRecords);
+
         try { renderDashboardSubjectBatteries(completed); } catch(e) { console.error("Batteries error:", e); }
         try { renderRecentHistory(completed); } catch(e) { console.error("Recent history error:", e); }
         try { await renderDashboardBlueprints(); } catch(e) { console.error("Blueprints error:", e); }
         try { await renderDrilldownSubjectLevel(); } catch(e) { console.error("Drilldown error:", e); }
+      }
+
+      function calculateAndRenderERI(accPercent, avgSpeed, activeVaultTraps, completedCount) {
+        if (completedCount === 0) {
+          document.getElementById("eri-score-val").innerText = "--";
+          document.getElementById("eri-status-tier").innerText = "Calibrating";
+          return;
+        }
+
+        // Weight: Accuracy (40%), Velocity (30%), Vault Clearance (30%)
+        const accComponent = accPercent * 0.40;
+        
+        let velScore = 100;
+        if (avgSpeed > 45) velScore = Math.max(0, 100 - (avgSpeed - 45) * 2.5);
+        const velComponent = velScore * 0.30;
+
+        // More than 10 active traps penalizes vault clearance
+        const vaultClearScore = Math.max(0, 100 - (activeVaultTraps * 5));
+        const vaultComponent = vaultClearScore * 0.30;
+
+        const eri = Math.min(100, Math.max(0, accComponent + velComponent + vaultComponent)).toFixed(1);
+        document.getElementById("eri-score-val").innerText = eri;
+
+        const circle = document.getElementById("eri-gauge-circle");
+        circle.setAttribute("stroke-dasharray", `${eri}, 100`);
+
+        const tierBadge = document.getElementById("eri-status-tier");
+        if (eri >= 85) {
+          tierBadge.innerText = "Tier-1 Formidable";
+          tierBadge.style.color = "var(--status-green)";
+          circle.style.stroke = "var(--status-green-border)";
+        } else if (eri >= 70) {
+          tierBadge.innerText = "Competitive Form";
+          tierBadge.style.color = "var(--accent-cyan)";
+          circle.style.stroke = "var(--accent-cyan)";
+        } else {
+          tierBadge.innerText = "Vulnerable";
+          tierBadge.style.color = "var(--status-red)";
+          circle.style.stroke = "var(--status-red)";
+        }
+      }
+
+      function checkAndRenderNeglectIndex(completed) {
+        const alertBox = document.getElementById("dash-neglect-alert");
+        if (completed.length === 0) {
+          alertBox.style.display = "none";
+          return;
+        }
+
+        const now = Date.now();
+        const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+        let neglectedChap = null;
+        let maxNeglectTime = 0;
+
+        Object.keys(TAXONOMY).forEach(subKey => {
+          TAXONOMY[subKey].chapters.forEach(chap => {
+            let lastAttemptTime = 0;
+            completed.forEach(att => {
+              if (att.questions && att.questions.some(q => q.chapter === chap)) {
+                if (att.timestamp > lastAttemptTime) lastAttemptTime = att.timestamp;
+              }
+            });
+
+            const diff = now - lastAttemptTime;
+            if (diff > sevenDaysMs && diff > maxNeglectTime) {
+              maxNeglectTime = diff;
+              neglectedChap = { subKey, chap, days: Math.floor(diff / (24 * 60 * 60 * 1000)) };
+            }
+          });
+        });
+
+        if (neglectedChap) {
+          alertBox.style.display = "flex";
+          document.getElementById("dash-neglect-text").innerText = `${neglectedChap.chap} untouched for ${neglectedChap.days} days.`;
+          document.getElementById("btn-neglect-drill").onclick = () => launchConfiguredMockDirect(neglectedChap.subKey, neglectedChap.chap, 5, 5);
+        } else {
+          alertBox.style.display = "none";
+        }
+      }
+
+      function renderCognitiveTrapHeatStrip(vaultRecords) {
+        const bar = document.getElementById("dash-trap-heat-bar");
+        const legend = document.getElementById("dash-trap-legend");
+        bar.innerHTML = "";
+        legend.innerHTML = "";
+
+        if (vaultRecords.length === 0) {
+          bar.innerHTML = `<div class="trap-heat-seg" style="width:100%; background:var(--status-green);"></div>`;
+          legend.innerHTML = `<span style="color:var(--status-green);">Zero active cognitive traps logged!</span>`;
+          return;
+        }
+
+        const colors = {
+          CALCULATION_SLIP: "#da3633",
+          READING_TRAP: "#d29922",
+          FORMULA_AMNESIA: "#8957e5",
+          CONCEPT_VOID: "#38bdf8",
+          RUSHED_PANIC: "#f43f5e",
+          UNCLASSIFIED: "#484f58"
+        };
+
+        const counts = {};
+        vaultRecords.forEach(v => {
+          const t = v.errorTag || "UNCLASSIFIED";
+          counts[t] = (counts[t] || 0) + 1;
+        });
+
+        Object.keys(counts).forEach(tag => {
+          const percent = Math.round((counts[tag] / vaultRecords.length) * 100);
+          const segColor = colors[tag] || "#388bfd";
+
+          const seg = document.createElement("div");
+          seg.className = "trap-heat-seg";
+          seg.style.width = `${percent}%`;
+          seg.style.background = segColor;
+          seg.style.cursor = "pointer";
+          seg.title = `${tag}: ${counts[tag]} (${percent}%)`;
+          seg.onclick = () => filterVaultByMistakeTag(tag);
+          bar.appendChild(seg);
+
+          const legItem = document.createElement("span");
+          legItem.style.cursor = "pointer";
+          legItem.innerHTML = `<span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:${segColor}; margin-right:4px;"></span>${tag.replace(/_/g, ' ')} (${percent}%)`;
+          legItem.onclick = () => filterVaultByMistakeTag(tag);
+          legend.appendChild(legItem);
+        });
+      }
+
+      async function filterVaultByMistakeTag(tag) {
+        switchTab("tab-vault", document.getElementById("nav-btn-tab-vault"));
+        const vault = await getAllRecords("store_vault");
+        const filtered = vault.filter(v => v.errorTag === tag);
+        const container = document.getElementById("vault-list-container");
+        container.innerHTML = `<div style="font-size:12px; font-weight:700; color:var(--accent-cyan); margin-bottom:8px;">Filtered by: #${tag} (${filtered.length} Traps)</div>`;
+
+        const allQs = await getAllRecords("store_questions");
+        filtered.forEach(v => {
+          const q = allQs.find(item => item.id === v.questionId);
+          if (q) {
+            const div = document.createElement("div");
+            div.className = "card";
+            div.style.borderColor = "#da3633";
+            div.style.marginBottom = "8px";
+            div.innerHTML = `
+              <div style="font-size:13px; line-height:1.5;">${formatRichText(q.questionText)}</div>
+              <div style="margin-top:6px; display:flex; justify-content:space-between; align-items:center;">
+                <span class="badge" style="background:#da3633;">${v.errorTag}</span>
+                <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.advanceVaultBox('${v.questionId}')">Level Up</button>
+              </div>
+            `;
+            container.appendChild(div);
+          }
+        });
       }
 
       function renderDashboardSubjectBatteries(completed) {
@@ -4938,7 +5757,7 @@ Your responses must be formulated strictly as executable JSON payloads conformin
       }
 
       /* -------------------------------------------------------------
-       * 11. LEITNER VAULT SPRINT ENGINE & ISOLATED HISTORY
+       * 14. LEITNER VAULT SPRINT ENGINE & ADAPTIVE INTERVALS
        * ------------------------------------------------------------- */
       async function renderVault() {
         const vault = await getAllRecords("store_vault");
@@ -4977,7 +5796,7 @@ Your responses must be formulated strictly as executable JSON payloads conformin
             ${img}
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
               <span style="font-size:11px; color:var(--accent-cyan);">Correct: Option ${q.correctIndex + 1}</span>
-              <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.advanceVaultBox('${v.questionId}')">Promote (Level Up)</button>
+              <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.advanceVaultBox('${v.questionId}', 30)">Promote (Level Up)</button>
             </div>
           `;
           container.appendChild(div);
@@ -5018,16 +5837,25 @@ Your responses must be formulated strictly as executable JSON payloads conformin
         });
       }
 
-      async function advanceVaultBox(qId) {
+      async function advanceVaultBox(qId, timeSpentSec = 30) {
         const rec = await getRecord("store_vault", qId);
         if (rec) {
+          // Trap-breaker gatekeeper: cannot graduate out of Box 3 unless solved without hesitation (<45s)
+          if (rec.leitnerBox === 3 && timeSpentSec > 45) {
+            alert(`Correct, but velocity took ${timeSpentSec}s (>45s). Held in Box 3 for final hesitation clearance.`);
+            rec.lastAttempted = Date.now();
+            await putRecord("store_vault", rec);
+            renderVault();
+            return;
+          }
+
           rec.leitnerBox = (rec.leitnerBox || 1) + 1;
           if (rec.leitnerBox > 3) {
             await deleteRecordFromStore("store_vault", qId);
-            alert("Mastered! Question graduated out of Error Vault.");
+            alert("Mastered! Question graduated completely out of Error Vault.");
           } else {
             await putRecord("store_vault", rec);
-            alert(`Promoted to Leitner Box ${rec.leitnerBox}! Review scheduled.`);
+            alert(`Promoted to Leitner Box ${rec.leitnerBox}! Review interval scheduled.`);
           }
           renderVault();
         }
@@ -5096,7 +5924,7 @@ Your responses must be formulated strictly as executable JSON payloads conformin
       }
 
       /* -------------------------------------------------------------
-       * 12. QUESTION GUI EDITOR
+       * 15. QUESTION GUI EDITOR
        * ------------------------------------------------------------- */
       let currentQuestionImageBase64 = "";
 
@@ -5109,6 +5937,7 @@ Your responses must be formulated strictly as executable JSON payloads conformin
         document.getElementById("edit-q-chapter").value = isNew ? "QA_GEOMETRY" : qData.chapter;
         document.getElementById("edit-q-subtopic").value = isNew ? "" : (qData.subtopic || "");
         document.getElementById("edit-q-method").value = isNew ? "" : (qData.method || "");
+        document.getElementById("edit-q-concept-id").value = isNew ? "" : (qData.conceptId || "");
         document.getElementById("edit-q-text").value = isNew ? "" : qData.questionText;
         document.getElementById("edit-q-img-url").value = isNew ? "" : (qData.imageUrl || "");
         document.getElementById("edit-q-img-file").value = "";
@@ -5147,6 +5976,7 @@ Your responses must be formulated strictly as executable JSON payloads conformin
           chapter: document.getElementById("edit-q-chapter").value.trim().toUpperCase(),
           subtopic: document.getElementById("edit-q-subtopic").value.trim(),
           method: document.getElementById("edit-q-method").value.trim(),
+          conceptId: document.getElementById("edit-q-concept-id").value.trim(),
           questionText: document.getElementById("edit-q-text").value.trim(),
           imageUrl: currentQuestionImageBase64 || urlInput,
           options: [
@@ -5184,7 +6014,7 @@ Your responses must be formulated strictly as executable JSON payloads conformin
       }
 
       /* -------------------------------------------------------------
-       * 13. HARDENED COMMAND BUS & AI DISPATCHER
+       * 16. HARDENED COMMAND BUS & AI DISPATCHER
        * ------------------------------------------------------------- */
       async function executeConsoleCommand() {
         const raw = document.getElementById("console-payload").value.trim();
@@ -5438,7 +6268,7 @@ Your responses must be formulated strictly as executable JSON payloads conformin
       }
 
       /* -------------------------------------------------------------
-       * 14. UNIVERSAL TOUCH GESTURES (VIEWPORT & HARDWARE SHIELD)
+       * 17. UNIVERSAL TOUCH GESTURES (VIEWPORT & HARDWARE SHIELD)
        * ------------------------------------------------------------- */
       function initGestureControllers() {
         const attachSwipeHandler = (elementId, onLeftSwipe, onRightSwipe) => {
@@ -5492,7 +6322,7 @@ Your responses must be formulated strictly as executable JSON payloads conformin
           }
 
           const target = e.target;
-          if (target.closest("textarea") || target.closest(".sticky-anchor-bar") || target.closest(".palette-scroll-body") || target.closest("#dash-blueprints-pills")) {
+          if (target.closest("textarea") || target.closest(".sticky-anchor-bar") || target.closest(".palette-scroll-body") || target.closest("#dash-blueprints-pills") || target.closest("#synapse-tree-canvas-wrap")) {
             return;
           }
 
@@ -5513,7 +6343,7 @@ Your responses must be formulated strictly as executable JSON payloads conformin
           }
         }, { passive: true });
 
-        // Hardware Gesture Shield (Prevents WebAPK killing on back swipes)
+        // Hardware Gesture Shield (Intercepts back-swipes to prevent closing Chrome/WebAPK)
         window.addEventListener("popstate", () => {
           const openModals = document.querySelectorAll(".modal-overlay.active");
           if (openModals.length > 0) {
@@ -5549,7 +6379,7 @@ Your responses must be formulated strictly as executable JSON payloads conformin
       }
 
       /* -------------------------------------------------------------
-       * 15. SELECTIVE PRINT ENGINE
+       * 18. SELECTIVE PRINT ENGINE
        * ------------------------------------------------------------- */
       async function openPrintConfigModal() {
         await updatePrintChapters();
@@ -5679,7 +6509,7 @@ Your responses must be formulated strictly as executable JSON payloads conformin
       }
 
       /* -------------------------------------------------------------
-       * 16. NAVIGATION, TAB SWITCHING & SYSTEM BOOT
+       * 19. NAVIGATION, TAB SWITCHING & SYSTEM BOOT
        * ------------------------------------------------------------- */
       function switchTab(tId, btn) {
         document.querySelectorAll(".view-container").forEach(el => el.classList.remove("active"));
@@ -5735,6 +6565,16 @@ Your responses must be formulated strictly as executable JSON payloads conformin
         reattemptMock,
         enterFullScreenReviewArena,
         exitReviewArena,
+        jumpToConceptFromReview,
+        jumpToConceptFromDojo,
+        openOmniResearchForCurrentQuestion,
+        openOmniResearchForDojoQuestion,
+        launchCurrentSheetQuestionsDrill,
+        launchCurrentAffairsSweep,
+        openSynapseGraphModal,
+        filterSynapseTree,
+        resetSynapseGraphView,
+        launchDirectSheetDrill,
         updateDojoChapters,
         updateDojoMethods,
         launchFilteredDojo,
@@ -5770,6 +6610,7 @@ Your responses must be formulated strictly as executable JSON payloads conformin
         openMockReview,
         handleMistakeTagSelect,
         setMistakeTag,
+        filterVaultByMistakeTag,
         openAiExportModal,
         updateAiExportPreview,
         copyAiExportToClipboard,
