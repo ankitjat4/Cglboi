@@ -118,7 +118,7 @@
       width: 140px; height: 140px;
       background: radial-gradient(circle, rgba(56, 189, 248, 0.25) 0%, transparent 70%);
       border-radius: 50%;
-      pointer-events: none !important; /* Fixes touch intercept */
+      pointer-events: none !important;
       z-index: 0;
     }
     .hero-content {
@@ -210,6 +210,7 @@
       background: var(--bg-dark);
       z-index: 2000;
       flex-direction: column;
+      touch-action: pan-y;
     }
     .arena-header {
       background: #131720;
@@ -414,10 +415,51 @@
       box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
     }
 
+    /* HARDENED PAUSE SHIELD */
+    #pause-shield {
+      display: none !important;
+      position: fixed !important;
+      inset: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      background: rgba(10, 13, 18, 0.98) !important;
+      z-index: 9999 !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 24px !important;
+      text-align: center !important;
+    }
+
+    /* MOCK SCORECARDS */
+    .history-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .history-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-bottom: 10px;
+      background: var(--bg-elevated);
+      padding: 8px;
+      border-radius: 6px;
+      text-align: center;
+    }
+
     /* PRINT STYLES */
     @media print {
       body { background: white !important; color: black !important; }
-      #bottom-nav, #exam-arena, #dojo-arena-view, .btn, .card, .modal-overlay { display: none !important; }
+      #bottom-nav, #exam-arena, #dojo-arena-view, .btn, .card, .modal-overlay, #pause-shield { display: none !important; }
       .print-page { display: block !important; column-count: 2; column-gap: 20px; font-size: 12px; padding: 20px; }
       .print-question { break-inside: avoid; margin-bottom: 14px; border-bottom: 1px solid #ccc; padding-bottom: 8px; }
     }
@@ -482,16 +524,6 @@
     <div style="padding:14px; border-top:1px solid var(--border-color);">
       <button class="btn btn-danger" style="width:100%; font-size:14px; padding:12px;" id="btn-submit-exam">Submit Test</button>
     </div>
-  </div>
-
-  <!-- PAUSE SHIELD OVERLAY -->
-  <div id="pause-shield">
-    <h2 style="font-size:22px; font-weight:800; margin-bottom:8px;">TEST PAUSED</h2>
-    <p style="font-size:13px; color:var(--text-muted); max-width:280px; margin-bottom:20px;">
-      Timer halted. Telemetry & question index frozen in IndexedDB.
-    </p>
-    <button class="btn" style="width:200px;" id="btn-resume-exam">Resume Test</button>
-    <button class="btn btn-secondary" style="width:200px; margin-top:10px;" id="btn-exit-exam">Exit to Dashboard</button>
   </div>
 
 
@@ -726,10 +758,10 @@
       <!-- Leitner Explanation Card -->
       <div style="background:#1c1315; border:1px solid #4a1d20; border-radius:8px; padding:10px; font-size:11px; line-height:1.5; margin-bottom:12px; color:#fca5a5;">
         <b>How the Leitner Vault Works:</b><br>
-        • Questions enter here only when answered incorrectly during full mocks.<br>
-        • <b>Box 1:</b> Daily review.<br>
-        • <b>Box 2:</b> Review after 4 days.<br>
-        • <b>Box 3:</b> Final mastery check after 14 days.<br>
+        • Questions enter here only when answered incorrectly during full mocks[span_17](start_span)[span_17](end_span).<br>
+        • <b>Box 1:</b> Daily review[span_18](start_span)[span_18](end_span).<br>
+        • <b>Box 2:</b> Review after 4 days[span_19](start_span)[span_19](end_span).<br>
+        • <b>Box 3:</b> Final mastery check after 14 days[span_20](start_span)[span_20](end_span).<br>
         • Solving a Box 3 question graduates and clears it permanently from the vault.
       </div>
 
@@ -760,7 +792,10 @@
           <h3 style="font-size:16px; font-weight:800;" id="review-modal-title">Mock Forensic Review</h3>
           <span style="font-size:11px; color:var(--text-muted);" id="review-modal-date">Submitted on Date</span>
         </div>
-        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-mock-review').classList.remove('active')">✕ Close</button>
+        <div style="display:flex; gap:6px;">
+          <button class="btn" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openAiExportModal()">Export for AI</button>
+          <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-mock-review').classList.remove('active')">✕ Close</button>
+        </div>
       </div>
 
       <!-- Core Scorecard -->
@@ -813,7 +848,37 @@
   </div>
 
 
-  <!-- ==================== 8. MOCK HISTORY ARCHIVE MODAL ==================== -->
+  <!-- ==================== 8. MULTI-TIER AI EXPORT COCKPIT ==================== -->
+  <div class="modal-overlay" id="modal-ai-export">
+    <div class="modal-window">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+        <h3 style="font-size:16px; font-weight:800; color:#38bdf8;">Export Telemetry for Chat AI</h3>
+        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-ai-export').classList.remove('active')">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label>Select Export Granularity</label>
+        <select id="ai-export-mode" class="form-control" onchange="CGL_OS.updateAiExportPreview()">
+          <option value="DEBRIEF">1. Compact Tactical Debrief (Pacing, Penalty Drag, Mistakes)</option>
+          <option value="DEEP_AUDIT">2. Deep Forensic Audit (Full Qs, Option Trails, Time per Q)</option>
+          <option value="Q_BANK">3. Question Bank Slice Only (Clean Questions & Options)</option>
+          <option value="LONGITUDINAL">4. 14-Day Longitudinal Audit (All Mocks & Error Vault)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Payload Preview</label>
+        <textarea id="ai-export-preview" class="form-control" style="height:180px; font-family:var(--font-mono); font-size:11px; color:#38bdf8;" readonly></textarea>
+      </div>
+
+      <button class="btn" style="width:100%; padding:12px;" onclick="CGL_OS.copyAiExportToClipboard()">
+        Copy Audit Pack to Clipboard
+      </button>
+    </div>
+  </div>
+
+
+  <!-- ==================== 9. MOCK HISTORY ARCHIVE MODAL ==================== -->
   <div class="modal-overlay" id="modal-history-archive">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -833,7 +898,43 @@
   </div>
 
 
-  <!-- ==================== 9. FULL-SCREEN CONCEPT & FORMULA HUB ==================== -->
+  <!-- ==================== 10. CHAPTER DEEP DIVE INSPECTOR ==================== -->
+  <div class="modal-overlay" id="modal-chapter-inspector">
+    <div class="modal-window">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+        <div>
+          <h3 style="font-size:16px; font-weight:800;" id="insp-chapter-title">QA_GEOMETRY</h3>
+          <span style="font-size:11px; color:var(--text-muted);" id="insp-subject-title">Quantitative Aptitude</span>
+        </div>
+        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-chapter-inspector').classList.remove('active')">✕</button>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:12px; text-align:center;">
+        <div style="background:var(--bg-elevated); padding:8px; border-radius:6px;">
+          <div style="font-size:10px; color:var(--text-muted);">ACCURACY</div>
+          <b style="font-size:16px; color:var(--status-green);" id="insp-acc">0%</b>
+        </div>
+        <div style="background:var(--bg-elevated); padding:8px; border-radius:6px;">
+          <div style="font-size:10px; color:var(--text-muted);">AVG SPEED</div>
+          <b style="font-size:16px;" id="insp-speed">0s</b>
+        </div>
+        <div style="background:var(--bg-elevated); padding:8px; border-radius:6px;">
+          <div style="font-size:10px; color:var(--text-muted);">NEGLECT (Nc)</div>
+          <b style="font-size:16px; color:#f87171;" id="insp-nc">0.00</b>
+        </div>
+      </div>
+
+      <button class="btn" style="width:100%; margin-bottom:12px; font-size:13px;" id="btn-launch-chapter-blitz">
+        Launch 5-Question Blitz on This Chapter
+      </button>
+
+      <div class="card-title">Historical Vulnerabilities in This Chapter</div>
+      <div id="insp-vulnerability-list" style="max-height:160px; overflow-y:auto; font-size:12px; margin-bottom:12px;"></div>
+    </div>
+  </div>
+
+
+  <!-- ==================== 11. CONCEPT & FORMULA HUB ==================== -->
   <div class="modal-overlay" id="modal-concept-hub">
     <div class="modal-window" style="max-width:700px; max-height:92vh;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -863,7 +964,7 @@
   </div>
 
 
-  <!-- ==================== 10. SELECTIVE PRINT SPOOLER CONFIG ==================== -->
+  <!-- ==================== 12. SELECTIVE PRINT CONFIG ==================== -->
   <div class="modal-overlay" id="modal-print-config">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -911,7 +1012,7 @@
   </div>
 
 
-  <!-- ==================== 11. FORMULA & CONCEPT EDITOR MODAL ==================== -->
+  <!-- ==================== 13. FORMULA & CONCEPT EDITOR MODAL ==================== -->
   <div class="modal-overlay" id="modal-formula-editor">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -954,7 +1055,7 @@
   </div>
 
 
-  <!-- ==================== 12. CUSTOM MOCK BUILDER MODAL ==================== -->
+  <!-- ==================== 14. CUSTOM MOCK BUILDER MODAL ==================== -->
   <div class="modal-overlay" id="modal-mock-builder">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1009,7 +1110,7 @@
   </div>
 
 
-  <!-- ==================== 13. GUI QUESTION EDITOR MODAL ==================== -->
+  <!-- ==================== 15. GUI QUESTION EDITOR MODAL ==================== -->
   <div class="modal-overlay" id="modal-question-editor">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1091,7 +1192,18 @@
   </div>
 
 
-  <!-- ==================== 14. BOTTOM NAVIGATION ==================== -->
+  <!-- ==================== 16. HARDENED PAUSE SHIELD OVERLAY ==================== -->
+  <div id="pause-shield" style="display:none !important;">
+    <h2 style="font-size:22px; font-weight:800; margin-bottom:8px; color:#fff;">TEST PAUSED</h2>
+    <p style="font-size:13px; color:var(--text-muted); max-width:280px; margin-bottom:20px;">
+      Timer halted. Telemetry & question index frozen safely in IndexedDB[span_21](start_span)[span_21](end_span).
+    </p>
+    <button class="btn" style="width:200px;" id="btn-resume-exam">Resume Test</button>
+    <button class="btn btn-secondary" style="width:200px; margin-top:10px;" id="btn-exit-exam">Exit to Dashboard</button>
+  </div>
+
+
+  <!-- ==================== 17. BOTTOM NAVIGATION ==================== -->
   <nav id="bottom-nav">
     <button class="nav-btn active" onclick="CGL_OS.switchTab('tab-dashboard', this)">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
@@ -1114,11 +1226,11 @@
   <div id="print-sheet-root" style="display:none;" class="print-page"></div>
 
 
-  <!-- ==================== 15. RUNTIME JAVASCRIPT ENGINE ==================== -->
+  <!-- ==================== 18. RUNTIME JAVASCRIPT ENGINE ==================== -->
   <script>
     const CGL_OS = (() => {
       const DB_NAME = "cgl_os_db";
-      const DB_VERSION = 4;
+      const DB_VERSION = 5;
       let db = null;
 
       let activeExam = null;
@@ -1231,18 +1343,22 @@
       const TAXONOMY = {
         QA: {
           name: "Quantitative Aptitude",
+          weight: 25,
           chapters: ["QA_NUM_SYS", "QA_PERCENTAGE", "QA_PROFIT_LOSS", "QA_SI_CI", "QA_RATIO_PROP", "QA_TIME_WORK", "QA_SPEED_DIST", "QA_ALGEBRA", "QA_GEOMETRY", "QA_MENSURATION", "QA_TRIGONOMETRY"]
         },
         REAS: {
           name: "General Intelligence & Reasoning",
+          weight: 25,
           chapters: ["REAS_ANALOGY", "REAS_SERIES", "REAS_CODING", "REAS_BLOOD_REL", "REAS_SYLLOGISM", "REAS_ORDER_RANK", "REAS_FIGURES", "REAS_DICE_CUBE"]
         },
         ENG: {
           name: "English Comprehension",
+          weight: 25,
           chapters: ["ENG_SYN_ANT", "ENG_OWS", "ENG_IDIOMS", "ENG_SPOTTING", "ENG_IMPROVE", "ENG_ACTIVE_PASS", "ENG_DIRECT_INDR", "ENG_CLOZE_TEST", "ENG_READING_COMP"]
         },
         GA: {
           name: "General Awareness",
+          weight: 25,
           chapters: ["GA_POLITY", "GA_HISTORY_MOD", "GA_HISTORY_ANC", "GA_GEOGRAPHY_IN", "GA_ECONOMY", "GA_PHYSICS", "GA_CHEMISTRY", "GA_BIOLOGY", "GA_CA_ANNUAL"]
         }
       };
@@ -1267,7 +1383,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 2. STORAGE ENGINE (INDEXEDDB VERSION 4)
+       * 2. STORAGE ENGINE (INDEXEDDB VERSION 5)
        * ------------------------------------------------------------- */
       function initDB() {
         return new Promise((resolve, reject) => {
@@ -1311,7 +1427,14 @@
           SEED_FORMULAS.forEach(f => store.put(f));
           await new Promise(r => tx.oncomplete = r);
         }
-        // Note: store_vault is kept strictly EMPTY on fresh boot (no fake errors)
+
+        // Auto-sanitize store_attempts to purge accidental Vault Sprint contamination
+        const attempts = await getAllRecords("store_attempts");
+        for (const a of attempts) {
+          if (a.isVaultSprint || (a.title && a.title.includes("Trap-Breaker Sprint"))) {
+            await deleteRecordFromStore("store_attempts", a.sessionId);
+          }
+        }
       }
 
       function getStoreCount(sName) {
@@ -1351,9 +1474,10 @@
       }
 
       /* -------------------------------------------------------------
-       * 3. TIMED EXAM ARENA CONTROLLER
+       * 3. TIMED ARENA CONTROLLER & HARDENED PAUSE CONTROLLER
        * ------------------------------------------------------------- */
       function openCustomMockModal() {
+        pushHistoryState("modal-mock-builder");
         document.getElementById("modal-mock-builder").classList.add("active");
       }
 
@@ -1448,11 +1572,13 @@
             initialOption: null,
             status: "unanswered",
             switches: 0,
+            decisionTrail: [],
             timeSpentSec: 0,
             struck: []
           };
         });
 
+        pushHistoryState("exam-arena");
         document.getElementById("exam-arena").style.display = "flex";
         renderActiveExamQuestion();
         startExamTimers();
@@ -1463,7 +1589,7 @@
         clearInterval(questionTimerInterval);
 
         examTimerInterval = setInterval(() => {
-          if (activeExam.isPaused) return;
+          if (!activeExam || activeExam.isPaused) return;
 
           activeExam.sectionRemainingSec--;
           const m = Math.floor(activeExam.sectionRemainingSec / 60);
@@ -1491,7 +1617,7 @@
         }, 1000);
 
         questionTimerInterval = setInterval(() => {
-          if (activeExam.isPaused) return;
+          if (!activeExam || activeExam.isPaused) return;
           activeExam.currentQTimeSpentSec++;
           const m = Math.floor(activeExam.currentQTimeSpentSec / 60);
           const s = activeExam.currentQTimeSpentSec % 60;
@@ -1535,6 +1661,7 @@
             if (resp.selectedOption !== null && resp.selectedOption !== idx) resp.switches++;
 
             resp.selectedOption = idx;
+            resp.decisionTrail.push({ opt: idx + 1, atSec: activeExam.currentQTimeSpentSec });
             renderActiveExamQuestion();
           });
 
@@ -1642,23 +1769,32 @@
         document.getElementById("exam-count-unans").innerText = unans;
       }
 
+      // Hardened Pause Overlay Handlers
       document.getElementById("btn-arena-pause").addEventListener("click", async () => {
+        if (!activeExam) return;
         activeExam.isPaused = true;
         clearInterval(examTimerInterval);
         clearInterval(questionTimerInterval);
         await putRecord("store_attempts", activeExam);
-        document.getElementById("pause-shield").style.display = "flex";
+
+        const shield = document.getElementById("pause-shield");
+        shield.style.setProperty("display", "flex", "important");
       });
 
       document.getElementById("btn-resume-exam").addEventListener("click", () => {
-        document.getElementById("pause-shield").style.display = "none";
-        activeExam.isPaused = false;
-        startExamTimers();
+        const shield = document.getElementById("pause-shield");
+        shield.style.setProperty("display", "none", "important");
+        if (activeExam) {
+          activeExam.isPaused = false;
+          startExamTimers();
+        }
       });
 
       document.getElementById("btn-exit-exam").addEventListener("click", () => {
-        document.getElementById("pause-shield").style.display = "none";
+        const shield = document.getElementById("pause-shield");
+        shield.style.setProperty("display", "none", "important");
         document.getElementById("exam-arena").style.display = "none";
+        activeExam = null;
         renderDashboard();
       });
 
@@ -1687,7 +1823,6 @@
               if (resp.initialOption !== null && resp.initialOption !== q.correctIndex) {
                 switchDelta++;
               }
-              // If this was a Vault Sprint, promote to next Leitner Box automatically
               if (activeExam.isVaultSprint) {
                 await advanceVaultBox(q.id);
               }
@@ -1700,13 +1835,12 @@
                 switchDelta--;
               }
 
-              // Ingest mistake strictly if regular mock, or demote to Box 1 if sprint
               if (!activeExam.isVaultSprint) {
                 await putRecord("store_vault", {
                   questionId: q.id,
                   chapter: q.chapter,
                   subject: q.subject,
-                  errorTag: "UNCLASSIFIED", // User classifies in review
+                  errorTag: "UNCLASSIFIED",
                   leitnerBox: 1,
                   lastAttempted: Date.now()
                 });
@@ -1727,7 +1861,7 @@
         activeExam.penaltyDrag = penaltyDrag;
         activeExam.switchDelta = switchDelta;
 
-        // CRITICAL: Do NOT pollute main scorecard history if this was a Vault Sprint!
+        // Isolate Vault Sprints from polluting standard scorecard history
         if (!activeExam.isVaultSprint) {
           await putRecord("store_attempts", activeExam);
         }
@@ -1787,12 +1921,8 @@
 
         const allQs = await getAllRecords("store_questions");
         let pool = allQs.filter(q => q.subject === sub);
-        if (chap !== "ALL") {
-          pool = pool.filter(q => q.chapter === chap);
-        }
-        if (method !== "ALL") {
-          pool = pool.filter(q => q.method === method);
-        }
+        if (chap !== "ALL") pool = pool.filter(q => q.chapter === chap);
+        if (method !== "ALL") pool = pool.filter(q => q.method === method);
 
         if (pool.length === 0) {
           alert("No questions found matching this selection.");
@@ -1821,6 +1951,7 @@
           };
         });
 
+        pushHistoryState("dojo-arena-view");
         document.getElementById("dojo-arena-view").style.display = "flex";
         renderDojoArenaQuestion();
       }
@@ -1978,7 +2109,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 5. TESTBOOK FORENSIC REVIEW & INTERACTIVE TILES
+       * 5. TESTBOOK FORENSICS, DECISION TRAILS & AI EXPORTER
        * ------------------------------------------------------------- */
       async function openMockReview(attemptOrId) {
         let att = typeof attemptOrId === "string" 
@@ -2002,6 +2133,7 @@
         document.getElementById("rev-traps").innerText = att.q4Traps || 0;
 
         filterReviewQuestions("ALL");
+        pushHistoryState("modal-mock-review");
         document.getElementById("modal-mock-review").classList.add("active");
       }
 
@@ -2037,6 +2169,15 @@
             : (isAtt ? `<span class="badge" style="background:#da3633;">Incorrect (-0.5)</span>`
             : `<span class="badge" style="background:#21262d;">Unattempted (0)</span>`);
 
+          let decisionTrailHtml = "";
+          if (resp.decisionTrail && resp.decisionTrail.length > 1) {
+            decisionTrailHtml = `
+              <div style="background:#171b26; border:1px solid #38bdf8; border-radius:6px; padding:6px 10px; margin:6px 0; font-size:11px; color:#38bdf8;">
+                <b>Hesitation Trail:</b> ${resp.decisionTrail.map(t => `Option ${t.opt} (${t.atSec}s)`).join(' ➔ ')}
+              </div>
+            `;
+          }
+
           card.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
               <div><b>Q${idx + 1}.</b> <span class="badge" style="background:#1f6feb;">${q.chapter}</span></div>
@@ -2053,6 +2194,7 @@
                 ` : ''}
               </div>
             </div>
+            ${decisionTrailHtml}
             <div style="font-size:14px; line-height:1.5; margin-bottom:10px;">${formatRichText(q.questionText)}</div>
             <div style="font-size:13px; margin-bottom:8px;">
               ${q.options.map((opt, oIdx) => `
@@ -2090,12 +2232,77 @@
         renderVault();
       }
 
+      /* Multi-Tier AI Exporter */
+      function openAiExportModal() {
+        if (!activeReviewAttempt) return;
+        pushHistoryState("modal-ai-export");
+        document.getElementById("modal-ai-export").classList.add("active");
+        updateAiExportPreview();
+      }
+
+      async function updateAiExportPreview() {
+        const mode = document.getElementById("ai-export-mode").value;
+        const att = activeReviewAttempt;
+        let payload = "";
+
+        if (mode === "DEBRIEF") {
+          payload = `# SSC CGL Mock Session Audit Pack\n` +
+            `• Title: ${att.title} | Date: ${new Date(att.timestamp).toLocaleDateString()}\n` +
+            `• Score: ${att.finalScore.toFixed(2)} | Accuracy: ${Math.round((att.correctCount / (att.correctCount + att.incorrectCount || 1)) * 100)}%\n` +
+            `• Penalty Burn: -${(att.penaltyDrag || 0).toFixed(2)} | 2nd Guess Delta: ${att.switchDelta || 0} Net | Q-IV Traps: ${att.q4Traps || 0}\n\n` +
+            `### Failed Chapters Inventory:\n` +
+            att.questions.filter(q => att.userResponses[q.id].selectedOption !== null && att.userResponses[q.id].selectedOption !== q.correctIndex)
+              .map(q => `- [${q.chapter}] Time Spent: ${att.userResponses[q.id].timeSpentSec}s`).join('\n');
+        } else if (mode === "DEEP_AUDIT") {
+          payload = JSON.stringify({
+            sessionMeta: { title: att.title, timestamp: att.timestamp, finalScore: att.finalScore },
+            telemetry: att.questions.map(q => ({
+              id: q.id,
+              chapter: q.chapter,
+              questionText: q.questionText,
+              userOption: att.userResponses[q.id].selectedOption,
+              correctIndex: q.correctIndex,
+              isCorrect: att.userResponses[q.id].selectedOption === q.correctIndex,
+              timeSpentSec: att.userResponses[q.id].timeSpentSec,
+              decisionTrail: att.userResponses[q.id].decisionTrail
+            }))
+          }, null, 2);
+        } else if (mode === "Q_BANK") {
+          payload = JSON.stringify(att.questions.map(q => ({
+            id: q.id,
+            subject: q.subject,
+            chapter: q.chapter,
+            questionText: q.questionText,
+            options: q.options,
+            correctIndex: q.correctIndex,
+            explanation: q.explanation
+          })), null, 2);
+        } else if (mode === "LONGITUDINAL") {
+          const allAtt = await getAllRecords("store_attempts");
+          const vault = await getAllRecords("store_vault");
+          payload = `# SSC CGL 14-Day Longitudinal Strategy Audit\n` +
+            `• Total Standard Mocks: ${allAtt.length}\n` +
+            `• Total Active Vault Traps: ${vault.length}\n` +
+            `• Active Traps Breakdown:\n` +
+            vault.map(v => `- [${v.chapter}] Error: ${v.errorTag} | Box ${v.leitnerBox}`).join('\n');
+        }
+
+        document.getElementById("ai-export-preview").value = payload;
+      }
+
+      function copyAiExportToClipboard() {
+        const text = document.getElementById("ai-export-preview").value;
+        navigator.clipboard.writeText(text);
+        alert("Telemetry pack copied! Paste directly into chat with Gemini for tactical analysis.");
+        document.getElementById("modal-ai-export").classList.remove("active");
+      }
+
       /* -------------------------------------------------------------
-       * 6. TAB 1: DASHBOARD & ARCHIVE MODAL
+       * 6. TAB 1: DASHBOARD, ARCHIVE & CHAPTER INSPECTOR
        * ------------------------------------------------------------- */
       async function renderDashboard() {
         const attempts = await getAllRecords("store_attempts");
-        const completed = attempts.filter(a => a.completed);
+        const completed = attempts.filter(a => a.completed && !a.isVaultSprint);
 
         document.getElementById("kpi-total-mocks").innerText = completed.length;
 
@@ -2131,7 +2338,6 @@
         }
 
         container.innerHTML = "";
-        // Show only the 3 most recent mocks to prevent dashboard clutter
         completed.slice(-3).reverse().forEach(att => {
           const card = document.createElement("div");
           card.className = "history-card";
@@ -2167,13 +2373,14 @@
       }
 
       function openHistoryArchiveModal() {
+        pushHistoryState("modal-history-archive");
         document.getElementById("modal-history-archive").classList.add("active");
         renderArchiveList("ALL");
       }
 
       async function renderArchiveList(filterType) {
         const attempts = await getAllRecords("store_attempts");
-        const completed = attempts.filter(a => a.completed);
+        const completed = attempts.filter(a => a.completed && !a.isVaultSprint);
         const container = document.getElementById("archive-list-container");
         container.innerHTML = "";
 
@@ -2215,7 +2422,7 @@
         list.innerHTML = "";
 
         const attempts = await getAllRecords("store_attempts");
-        const completed = attempts.filter(a => a.completed);
+        const completed = attempts.filter(a => a.completed && !a.isVaultSprint);
 
         Object.keys(TAXONOMY).forEach(subKey => {
           const sub = TAXONOMY[subKey];
@@ -2267,7 +2474,7 @@
         list.innerHTML = "";
 
         const attempts = await getAllRecords("store_attempts");
-        const completed = attempts.filter(a => a.completed);
+        const completed = attempts.filter(a => a.completed && !a.isVaultSprint);
         const allQuestions = await getAllRecords("store_questions");
 
         sub.chapters.forEach(chap => {
@@ -2292,6 +2499,7 @@
           div.className = "card";
           div.style.padding = "12px";
           div.style.marginBottom = "8px";
+          div.style.cursor = "pointer";
 
           div.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -2308,14 +2516,108 @@
               </div>
             </div>
           `;
+          div.addEventListener("click", () => openChapterInspector(subKey, chap, chapAtt, chapCor, chapSec));
           list.appendChild(div);
         });
+      }
+
+      async function openChapterInspector(subKey, chap, attCount, corCount, secCount) {
+        document.getElementById("insp-chapter-title").innerText = chap;
+        document.getElementById("insp-subject-title").innerText = TAXONOMY[subKey] ? TAXONOMY[subKey].name : subKey;
+
+        const acc = attCount > 0 ? Math.round((corCount / attCount) * 100) : 0;
+        const avgSpeed = attCount > 0 ? Math.round(secCount / attCount) : 0;
+        document.getElementById("insp-acc").innerText = attCount > 0 ? `${acc}%` : "--";
+        document.getElementById("insp-speed").innerText = attCount > 0 ? `${avgSpeed}s` : "--";
+
+        // Nc calculation over 14-day window
+        const nc = attCount > 0 ? Math.max(0, (1 - (attCount / 50))).toFixed(2) : "1.00";
+        document.getElementById("insp-nc").innerText = nc;
+
+        // Pull historical failed questions in this chapter
+        const vault = await getAllRecords("store_vault");
+        const allQs = await getAllRecords("store_questions");
+        const vList = document.getElementById("insp-vulnerability-list");
+        vList.innerHTML = "";
+
+        const chapterVault = vault.filter(v => allQs.some(q => q.id === v.questionId && q.chapter === chap));
+        if (chapterVault.length === 0) {
+          vList.innerHTML = `<span style="color:var(--status-green);">Zero active errors logged in this chapter!</span>`;
+        } else {
+          chapterVault.forEach(v => {
+            const q = allQs.find(item => item.id === v.questionId);
+            if (q) {
+              const item = document.createElement("div");
+              item.style.padding = "4px 0";
+              item.style.borderBottom = "1px solid var(--border-color)";
+              item.innerHTML = `• ${q.questionText.slice(0, 75)}... <span style="color:var(--status-red);">[${v.errorTag}]</span>`;
+              vList.appendChild(item);
+            }
+          });
+        }
+
+        document.getElementById("btn-launch-chapter-blitz").onclick = () => {
+          document.getElementById("modal-chapter-inspector").classList.remove("active");
+          launchConfiguredMockDirect(subKey, chap, 5, 5);
+        };
+
+        pushHistoryState("modal-chapter-inspector");
+        document.getElementById("modal-chapter-inspector").classList.add("active");
+      }
+
+      async function launchConfiguredMockDirect(sub, chap, count, durMin) {
+        const allQuestions = await getAllRecords("store_questions");
+        const pool = allQuestions.filter(q => q.chapter === chap);
+        if (pool.length === 0) {
+          alert("No questions in bank for this chapter.");
+          return;
+        }
+
+        activeExam = {
+          sessionId: "blitz_" + Date.now(),
+          timestamp: Date.now(),
+          title: `${chap} Blitz Drill`,
+          mockType: "CUSTOM",
+          isVaultSprint: false,
+          isSectionLocked: false,
+          sections: [{
+            id: "SEC_" + chap,
+            name: chap,
+            durationSec: durMin * 60,
+            questions: pool.slice(0, count)
+          }],
+          activeSectionIndex: 0,
+          currentQuestionIndex: 0,
+          questions: pool.slice(0, count).map((q, idx) => ({ ...q, sectionIndex: 0, sectionName: chap, localNumber: idx + 1 })),
+          sectionRemainingSec: durMin * 60,
+          currentQTimeSpentSec: 0,
+          userResponses: {},
+          isPaused: false
+        };
+
+        activeExam.questions.forEach(q => {
+          activeExam.userResponses[q.id] = {
+            selectedOption: null,
+            initialOption: null,
+            status: "unanswered",
+            switches: 0,
+            decisionTrail: [],
+            timeSpentSec: 0,
+            struck: []
+          };
+        });
+
+        pushHistoryState("exam-arena");
+        document.getElementById("exam-arena").style.display = "flex";
+        renderActiveExamQuestion();
+        startExamTimers();
       }
 
       /* -------------------------------------------------------------
        * 7. FULL-SCREEN CONCEPT & FORMULA HUB
        * ------------------------------------------------------------- */
       function openConceptHubModal() {
+        pushHistoryState("modal-concept-hub");
         document.getElementById("modal-concept-hub").classList.add("active");
         renderConceptHubCards();
       }
@@ -2368,6 +2670,7 @@
 
       async function openFormulaEditorModal() {
         await populateFormulaChapterDropdown();
+        pushHistoryState("modal-formula-editor");
         document.getElementById("modal-formula-editor").classList.add("active");
       }
 
@@ -2448,6 +2751,7 @@
        * ------------------------------------------------------------- */
       function openPrintConfigModal() {
         updatePrintChapters();
+        pushHistoryState("modal-print-config");
         document.getElementById("modal-print-config").classList.add("active");
       }
 
@@ -2533,7 +2837,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 9. SPHERICAL SPACED REPETITION ENGINE
+       * 9. LEITNER ERROR VAULT SPRINT ENGINE
        * ------------------------------------------------------------- */
       async function renderVault() {
         const vault = await getAllRecords("store_vault");
@@ -2602,7 +2906,7 @@
         req.onsuccess = async () => {
           const rec = req.result;
           if (rec) {
-            rec.leitnerBox = 1; // Reset to daily review
+            rec.leitnerBox = 1;
             await putRecord("store_vault", rec);
           }
         };
@@ -2622,7 +2926,7 @@
           sessionId: "vault_sprint_" + Date.now(),
           timestamp: Date.now(),
           title: "Trap-Breaker Sprint",
-          isVaultSprint: true, // Prevents history pollution
+          isVaultSprint: true,
           isSectionLocked: false,
           sections: [{
             id: "SEC_VAULT",
@@ -2645,89 +2949,72 @@
             initialOption: null,
             status: "unanswered",
             switches: 0,
+            decisionTrail: [],
             timeSpentSec: 0,
             struck: []
           };
         });
 
+        pushHistoryState("exam-arena");
         document.getElementById("exam-arena").style.display = "flex";
         renderActiveExamQuestion();
         startExamTimers();
       }
 
       /* -------------------------------------------------------------
-       * 10. QUESTION EDITOR, DB STUDIO & CONSOLE
+       * 10. TOUCH SWIPING & HARDWARE BACK SHIELD
        * ------------------------------------------------------------- */
-      function openEditQuestionModal(qData) {
-        const isNew = !qData;
-        document.getElementById("editor-title").innerText = isNew ? "Add New Question" : "Edit Question";
-        document.getElementById("edit-q-id").value = isNew ? "q_cgl_" + Date.now() : qData.id;
-        document.getElementById("edit-q-subject").value = isNew ? "QA" : qData.subject;
-        document.getElementById("edit-q-chapter").value = isNew ? "QA_GEOMETRY" : qData.chapter;
-        document.getElementById("edit-q-subtopic").value = isNew ? "" : (qData.subtopic || "");
-        document.getElementById("edit-q-method").value = isNew ? "" : (qData.method || "");
-        document.getElementById("edit-q-text").value = isNew ? "" : qData.questionText;
+      let touchStartX = 0;
+      let touchStartY = 0;
 
-        document.getElementById("edit-opt-0").value = isNew ? "" : (qData.options[0] || "");
-        document.getElementById("edit-opt-1").value = isNew ? "" : (qData.options[1] || "");
-        document.getElementById("edit-opt-2").value = isNew ? "" : (qData.options[2] || "");
-        document.getElementById("edit-opt-3").value = isNew ? "" : (qData.options[3] || "");
+      function initGestureControllers() {
+        const arena = document.getElementById("exam-arena");
+        arena.addEventListener("touchstart", (e) => {
+          touchStartX = e.changedTouches[0].screenX;
+          touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
 
-        document.getElementById("edit-q-correct").value = isNew ? "0" : qData.correctIndex;
-        document.getElementById("edit-q-explanation").value = isNew ? "" : (qData.explanation || "");
-
-        document.getElementById("btn-delete-q").style.display = isNew ? "none" : "block";
-        document.getElementById("modal-question-editor").classList.add("active");
-      }
-
-      function openEditCurrentDojoQuestion() {
-        if (!dojoExam) return;
-        openEditQuestionModal(dojoExam.questions[dojoExam.currentIndex]);
-      }
-
-      async function saveQuestionEditor() {
-        const id = document.getElementById("edit-q-id").value;
-        const qObj = {
-          id: id,
-          subject: document.getElementById("edit-q-subject").value,
-          chapter: document.getElementById("edit-q-chapter").value.trim(),
-          subtopic: document.getElementById("edit-q-subtopic").value.trim(),
-          method: document.getElementById("edit-q-method").value.trim(),
-          questionText: document.getElementById("edit-q-text").value.trim(),
-          options: [
-            document.getElementById("edit-opt-0").value.trim(),
-            document.getElementById("edit-opt-1").value.trim(),
-            document.getElementById("edit-opt-2").value.trim(),
-            document.getElementById("edit-opt-3").value.trim()
-          ],
-          correctIndex: parseInt(document.getElementById("edit-q-correct").value),
-          explanation: document.getElementById("edit-q-explanation").value.trim(),
-          tags: ["UserSaved"]
-        };
-
-        await putRecord("store_questions", qObj);
-        document.getElementById("modal-question-editor").classList.remove("active");
-        if (dojoExam) {
-          dojoExam.questions[dojoExam.currentIndex] = qObj;
-          renderDojoArenaQuestion();
-        }
-        refreshDbInspector();
-      }
-
-      async function deleteCurrentEditingQuestion() {
-        const id = document.getElementById("edit-q-id").value;
-        if (confirm(`Delete question ${id}?`)) {
-          await deleteRecordFromStore("store_questions", id);
-          document.getElementById("modal-question-editor").classList.remove("active");
-          if (dojoExam) {
-            dojoExam.questions = dojoExam.questions.filter(q => q.id !== id);
-            if (dojoExam.currentIndex >= dojoExam.questions.length) dojoExam.currentIndex = 0;
-            renderDojoArenaQuestion();
+        arena.addEventListener("touchend", (e) => {
+          const deltaX = e.changedTouches[0].screenX - touchStartX;
+          const deltaY = e.changedTouches[0].screenY - touchStartY;
+          if (Math.abs(deltaX) > 60 && Math.abs(deltaY) < 40) {
+            if (deltaX < 0) {
+              document.getElementById("btn-q-save-next").click(); // Swipe Left
+            } else {
+              document.getElementById("btn-q-prev").click(); // Swipe Right
+            }
           }
-          refreshDbInspector();
-        }
+        }, { passive: true });
+
+        // Hardware / Gesture Back Button Shield
+        window.addEventListener("popstate", (e) => {
+          const openModals = document.querySelectorAll(".modal-overlay.active");
+          if (openModals.length > 0) {
+            openModals.forEach(m => m.classList.remove("active"));
+            return;
+          }
+
+          const arenaView = document.getElementById("exam-arena");
+          if (arenaView.style.display === "flex") {
+            document.getElementById("btn-arena-pause").click();
+            return;
+          }
+
+          const dojoView = document.getElementById("dojo-arena-view");
+          if (dojoView.style.display === "flex") {
+            exitDojoArena();
+            return;
+          }
+        });
       }
 
+      function pushHistoryState(name) {
+        history.pushState({ panel: name }, "");
+      }
+
+      /* -------------------------------------------------------------
+       * 11. COMMAND BUS & DIRECT OVERRIDES
+       * ------------------------------------------------------------- */
       async function executeConsoleCommand() {
         const raw = document.getElementById("console-payload").value.trim();
         try {
@@ -2738,10 +3025,56 @@
             const st = tx.objectStore("store_questions");
             list.forEach(q => st.put(q));
             await new Promise(r => tx.oncomplete = r);
-            alert(`Ingested ${list.length} questions successfully.`);
+            alert(`Ingested ${list.length} questions successfully[span_22](start_span)[span_22](end_span).`);
+          } else if (cmd.action === "INGEST_AND_LAUNCH_MOCK") {
+            const questions = cmd.payload.questions || [];
+            const tx = db.transaction(["store_questions"], "readwrite");
+            const st = tx.objectStore("store_questions");
+            questions.forEach(q => st.put(q));
+            await new Promise(r => tx.oncomplete = r);
+
+            // Instant Arena Launch
+            activeExam = {
+              sessionId: "ai_mock_" + Date.now(),
+              timestamp: Date.now(),
+              title: cmd.payload.title || "Targeted AI Practice Mock",
+              mockType: "CUSTOM",
+              isVaultSprint: false,
+              isSectionLocked: false,
+              sections: [{
+                id: "SEC_AI",
+                name: "AI Practice",
+                durationSec: (cmd.payload.durationMin || 15) * 60,
+                questions: questions
+              }],
+              activeSectionIndex: 0,
+              currentQuestionIndex: 0,
+              questions: questions.map((q, idx) => ({ ...q, sectionIndex: 0, sectionName: "AI Practice", localNumber: idx + 1 })),
+              sectionRemainingSec: (cmd.payload.durationMin || 15) * 60,
+              currentQTimeSpentSec: 0,
+              userResponses: {},
+              isPaused: false
+            };
+
+            activeExam.questions.forEach(q => {
+              activeExam.userResponses[q.id] = {
+                selectedOption: null,
+                initialOption: null,
+                status: "unanswered",
+                switches: 0,
+                decisionTrail: [],
+                timeSpentSec: 0,
+                struck: []
+              };
+            });
+
+            pushHistoryState("exam-arena");
+            document.getElementById("exam-arena").style.display = "flex";
+            renderActiveExamQuestion();
+            startExamTimers();
           } else if (cmd.action === "HOTPATCH_CONFIG") {
             await putRecord("store_config", { key: cmd.target, value: cmd.payload });
-            alert(`Patched config: ${cmd.target}`);
+            alert(`Patched config: ${cmd.target}[span_23](start_span)[span_23](end_span)`);
           }
           refreshDbInspector();
         } catch(e) {
@@ -2751,20 +3084,22 @@
 
       function loadSamplePayload(type) {
         const sample = {
-          action: "BATCH_INGEST_QUESTIONS",
+          action: "INGEST_AND_LAUNCH_MOCK",
           payload: {
+            title: "Arithmetic Profit & Geometry Blitz",
+            durationMin: 12,
             questions: [
               {
-                id: "q_sample_" + Date.now(),
+                id: "q_qa_pl_fast_01",
                 subject: "QA",
                 chapter: "QA_PROFIT_LOSS",
-                subtopic: "Faulty Weight Balance",
-                method: "Cost Price vs Stated Weight Ratio",
-                questionText: "A dishonest dealer professes to sell goods at cost price, but uses a false weight of $900\\text{ g}$ for a kilogram. Find gain percentage.",
-                options: ["$10\\%$", "$11\\frac{1}{9}\\%$", "$9\\frac{1}{11}\\%$", "$12.5\\%$"],
-                correctIndex: 1,
-                explanation: "Profit $\\% = \\frac{\\text{Error}}{\\text{True Value} - \\text{Error}} \\times 100 = \\frac{100}{900} \\times 100 = 11\\frac{1}{9}\\%$.",
-                tags: ["ProfitLoss"]
+                subtopic: "Successive Discounts",
+                method: "Multiplication Factor",
+                questionText: "Find the single discount equivalent to a discount series of $10\\%$, $20\\%$, and $25\\%$.",
+                options: ["$46\\%$", "$45\\%$", "$55\\%$", "$54\\%$"],
+                correctIndex: 0,
+                explanation: "Net factor $= 0.9 \\times 0.8 \\times 0.75 = 0.54$. Equivalent discount $= 100 - 54 = 46\\%$.",
+                tags: ["ProfitLoss", "Discount"]
               }
             ]
           }
@@ -2828,7 +3163,7 @@
       }
 
       async function factoryResetAll() {
-        if (confirm("WARNING: Complete factory reset will wipe all data!")) {
+        if (confirm("WARNING: Complete factory reset will wipe all questions, error vaults, and attempts!")) {
           const tx = db.transaction(["store_questions", "store_attempts", "store_vault", "store_formulas", "store_config"], "readwrite");
           tx.objectStore("store_questions").clear();
           tx.objectStore("store_attempts").clear();
@@ -2882,7 +3217,81 @@
       }
 
       /* -------------------------------------------------------------
-       * 11. NAVIGATION & INITIALIZATION
+       * 12. QUESTION GUI EDITOR
+       * ------------------------------------------------------------- */
+      function openEditQuestionModal(qData) {
+        const isNew = !qData;
+        document.getElementById("editor-title").innerText = isNew ? "Add New Question" : "Edit Question";
+        document.getElementById("edit-q-id").value = isNew ? "q_cgl_" + Date.now() : qData.id;
+        document.getElementById("edit-q-subject").value = isNew ? "QA" : qData.subject;
+        document.getElementById("edit-q-chapter").value = isNew ? "QA_GEOMETRY" : qData.chapter;
+        document.getElementById("edit-q-subtopic").value = isNew ? "" : (qData.subtopic || "");
+        document.getElementById("edit-q-method").value = isNew ? "" : (qData.method || "");
+        document.getElementById("edit-q-text").value = isNew ? "" : qData.questionText;
+
+        document.getElementById("edit-opt-0").value = isNew ? "" : (qData.options[0] || "");
+        document.getElementById("edit-opt-1").value = isNew ? "" : (qData.options[1] || "");
+        document.getElementById("edit-opt-2").value = isNew ? "" : (qData.options[2] || "");
+        document.getElementById("edit-opt-3").value = isNew ? "" : (qData.options[3] || "");
+
+        document.getElementById("edit-q-correct").value = isNew ? "0" : qData.correctIndex;
+        document.getElementById("edit-q-explanation").value = isNew ? "" : (qData.explanation || "");
+
+        document.getElementById("btn-delete-q").style.display = isNew ? "none" : "block";
+        pushHistoryState("modal-question-editor");
+        document.getElementById("modal-question-editor").classList.add("active");
+      }
+
+      function openEditCurrentDojoQuestion() {
+        if (!dojoExam) return;
+        openEditQuestionModal(dojoExam.questions[dojoExam.currentIndex]);
+      }
+
+      async function saveQuestionEditor() {
+        const id = document.getElementById("edit-q-id").value;
+        const qObj = {
+          id: id,
+          subject: document.getElementById("edit-q-subject").value,
+          chapter: document.getElementById("edit-q-chapter").value.trim(),
+          subtopic: document.getElementById("edit-q-subtopic").value.trim(),
+          method: document.getElementById("edit-q-method").value.trim(),
+          questionText: document.getElementById("edit-q-text").value.trim(),
+          options: [
+            document.getElementById("edit-opt-0").value.trim(),
+            document.getElementById("edit-opt-1").value.trim(),
+            document.getElementById("edit-opt-2").value.trim(),
+            document.getElementById("edit-opt-3").value.trim()
+          ],
+          correctIndex: parseInt(document.getElementById("edit-q-correct").value),
+          explanation: document.getElementById("edit-q-explanation").value.trim(),
+          tags: ["UserSaved"]
+        };
+
+        await putRecord("store_questions", qObj);
+        document.getElementById("modal-question-editor").classList.remove("active");
+        if (dojoExam) {
+          dojoExam.questions[dojoExam.currentIndex] = qObj;
+          renderDojoArenaQuestion();
+        }
+        refreshDbInspector();
+      }
+
+      async function deleteCurrentEditingQuestion() {
+        const id = document.getElementById("edit-q-id").value;
+        if (confirm(`Delete question ${id}?`)) {
+          await deleteRecordFromStore("store_questions", id);
+          document.getElementById("modal-question-editor").classList.remove("active");
+          if (dojoExam) {
+            dojoExam.questions = dojoExam.questions.filter(q => q.id !== id);
+            if (dojoExam.currentIndex >= dojoExam.questions.length) dojoExam.currentIndex = 0;
+            renderDojoArenaQuestion();
+          }
+          refreshDbInspector();
+        }
+      }
+
+      /* -------------------------------------------------------------
+       * 13. NAVIGATION & SYSTEM BOOT
        * ------------------------------------------------------------- */
       function switchTab(tId, btn) {
         document.querySelectorAll(".view-container").forEach(el => el.classList.remove("active"));
@@ -2898,9 +3307,14 @@
       }
 
       window.addEventListener("DOMContentLoaded", async () => {
+        // Defensive Pause-Shield sanitization
+        const shield = document.getElementById("pause-shield");
+        shield.style.setProperty("display", "none", "important");
+
         await initDB();
         renderDashboard();
         updateDojoChapters();
+        initGestureControllers();
       });
 
       return {
@@ -2934,6 +3348,9 @@
         openMockReview,
         filterReviewQuestions,
         setMistakeTag,
+        openAiExportModal,
+        updateAiExportPreview,
+        copyAiExportToClipboard,
         openHistoryArchiveModal,
         renderArchiveList,
         executeConsoleCommand,
