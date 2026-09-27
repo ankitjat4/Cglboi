@@ -19,6 +19,7 @@
       --bg-card: #111726;
       --bg-elevated: #1b2234;
       --border-color: #263147;
+      --border-accent: rgba(56, 189, 248, 0.2);
       --accent-blue: #388bfd;
       --accent-blue-hover: #1f6feb;
       --accent-cyan: #38bdf8;
@@ -198,7 +199,7 @@
       border-radius: 14px;
       padding: 18px;
       width: 100%;
-      max-width: 620px;
+      max-width: 600px;
       max-height: 90vh;
       overflow-y: auto;
     }
@@ -425,13 +426,13 @@
     }
     .palette-cell {
       height: 40px;
-      border-radius: 8px;
+      border-radius: 8px; /* Tactile Squircle */
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
       font-size: 13px;
-      background: #1f6feb;
+      background: #1f6feb; /* TCS Blue */
       color: #fff;
       cursor: pointer;
       border: 2px solid transparent;
@@ -732,8 +733,8 @@
     <div class="card" style="border-color:#38bdf8;">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <b style="font-size:14px; color:#38bdf8;">Concept & Knowledge Hub</b>
-          <p style="font-size:11px; color:var(--text-muted);">Math theorems, English vocab with images, rules & notes.</p>
+          <b style="font-size:14px; color:#38bdf8;">Concept & Knowledge Dojo</b>
+          <p style="font-size:11px; color:var(--text-muted);">Swipeable formulas, visual vocab with images, rules & notes.</p>
         </div>
         <button class="btn" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openConceptHubModal()">
           Open Hub
@@ -827,10 +828,10 @@
       <!-- Leitner System Explainer -->
       <div style="background:#1c1315; border:1px solid #4a1d20; border-radius:8px; padding:10px; font-size:11px; line-height:1.5; margin-bottom:12px; color:#fca5a5;">
         <b>How the Leitner Vault Works:</b><br>
-        • Questions log here only when answered incorrectly during full mocks[span_27](start_span)[span_27](end_span).<br>
-        • <b>Box 1:</b> Daily review queue[span_28](start_span)[span_28](end_span).<br>
-        • <b>Box 2:</b> Review interval: 4 days[span_29](start_span)[span_29](end_span).<br>
-        • <b>Box 3:</b> Final mastery interval: 14 days[span_30](start_span)[span_30](end_span).<br>
+        • Questions log here only when answered incorrectly during full mocks[span_3](start_span)[span_3](end_span).<br>
+        • <b>Box 1:</b> Daily review queue[span_4](start_span)[span_4](end_span).<br>
+        • <b>Box 2:</b> Review interval: 4 days[span_5](start_span)[span_5](end_span).<br>
+        • <b>Box 3:</b> Final mastery interval: 14 days[span_6](start_span)[span_6](end_span).<br>
         • Solving a Box 3 question graduates and clears it permanently from the vault.
       </div>
 
@@ -1045,7 +1046,7 @@
   </div>
 
 
-  <!-- ==================== 11. CONCEPT DOJO (SWIPEABLE HUBS & NOTEBOOK) ==================== -->
+  <!-- ==================== 11. CONCEPT DOJO (SWIPEABLE CANVAS & DYNAMIC CATEGORIES) ==================== -->
   <div class="modal-overlay" id="modal-concept-hub">
     <div class="modal-window" style="max-width:720px; max-height:92vh;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1053,7 +1054,7 @@
         <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-concept-hub').classList.remove('active')">✕</button>
       </div>
 
-      <!-- Category Filter Tabs & Dynamic Tag Creator -->
+      <!-- Category Filter Tabs & Dynamic Category Creator -->
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
         <select id="hub-category-select" class="form-control" style="width:70%;" onchange="CGL_OS.changeHubCategory(this.value)"></select>
         <button class="btn" style="padding:8px 10px; font-size:11px;" onclick="CGL_OS.openConceptEditorModal()">+ New Item</button>
@@ -1335,7 +1336,7 @@
   <div id="pause-shield" style="display:none !important;">
     <h2 style="font-size:22px; font-weight:800; margin-bottom:8px; color:#fff;">TEST PAUSED</h2>
     <p style="font-size:13px; color:var(--text-muted); max-width:280px; margin-bottom:20px;">
-      Timer halted. Telemetry & question index frozen safely in IndexedDB[span_31](start_span)[span_31](end_span).
+      Timer halted. Telemetry & question index frozen safely in IndexedDB[span_7](start_span)[span_7](end_span).
     </p>
     <button class="btn" style="width:220px;" onclick="CGL_OS.resumeTestFromModal()">Resume Now</button>
     <button class="btn btn-secondary" style="width:220px; margin-top:10px;" onclick="CGL_OS.minimizeTestToApp()">Minimize to App (Explore)</button>
@@ -1966,6 +1967,7 @@
             renderActiveExamQuestion();
           });
 
+          // Strikethrough Distractors
           let timer;
           card.addEventListener("touchstart", () => {
             timer = setTimeout(() => {
@@ -2025,6 +2027,7 @@
         }
       });
 
+      // Mark for Review Toggle Implementation
       document.getElementById("btn-q-review").addEventListener("click", () => {
         const q = activeExam.questions[activeExam.currentQuestionIndex];
         const resp = activeExam.userResponses[q.id];
@@ -2095,7 +2098,7 @@
             (isMarked ? " marked" : "") +
             (activeExam.questions[activeExam.currentQuestionIndex].id === q.id ? " current" : "");
 
-          cell.innerText = q.globalNumber;
+          cell.innerText = q.globalNumber; // Clear sequential continuous numbering
           if (isAnswered) ans++; else unans++;
 
           cell.addEventListener("click", () => {
@@ -2111,7 +2114,7 @@
         document.getElementById("exam-count-unans").innerText = unans;
       }
 
-      /* Hardened Pause Overlay & Minimize Routine */
+      /* Hardened Pause & Minimize Modal */
       document.getElementById("btn-arena-pause").addEventListener("click", () => {
         if (!activeExam) return;
         activeExam.isPaused = true;
@@ -2136,6 +2139,7 @@
         shield.style.setProperty("display", "none", "important");
         document.getElementById("exam-arena").style.display = "none";
 
+        // Write snapshot to store_active_session in IndexedDB
         await putRecord("store_active_session", { id: "active_mock", data: activeExam });
         updateActiveTestDock(activeExam);
       }
@@ -2254,6 +2258,7 @@
         activeExam.penaltyDrag = penaltyDrag;
         activeExam.switchDelta = switchDelta;
 
+        // Clear active session dock
         document.getElementById("active-test-dock").style.display = "none";
         await deleteRecordFromStore("store_active_session", "active_mock");
 
@@ -2276,6 +2281,7 @@
         openMockReview(activeExam);
       }
 
+      /* Universal Swiping Physics */
       function setupSwipe(element, onSwipeLeft, onSwipeRight) {
         if (!element) return;
         let startX = 0, startY = 0;
@@ -3267,7 +3273,6 @@
         pushHistoryState("exam-arena");
         document.getElementById("exam-arena").style.display = "flex";
         renderActiveExamQuestion();
-        renderPaletteSectionTabs();
         startExamTimers();
       }
 
@@ -3371,7 +3376,7 @@
             for (const q of list) {
               await putRecord("store_questions", q);
             }
-            alert(`Ingested ${list.length} questions successfully[span_32](start_span)[span_32](end_span).`);
+            alert(`Ingested ${list.length} questions successfully[span_8](start_span)[span_8](end_span).`);
           } else if (cmd.action === "INGEST_AND_LAUNCH_MOCK") {
             const questions = cmd.payload.questions || [];
             for (const q of questions) {
@@ -3421,7 +3426,7 @@
             startExamTimers();
           } else if (cmd.action === "HOTPATCH_CONFIG") {
             await putRecord("store_config", { key: cmd.target, value: cmd.payload });
-            alert(`Patched config: ${cmd.target}[span_33](start_span)[span_33](end_span)`);
+            alert(`Patched config: ${cmd.target}[span_9](start_span)[span_9](end_span)`);
           }
           refreshDbInspector();
         } catch(e) {
