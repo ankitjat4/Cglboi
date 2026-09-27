@@ -13,6 +13,7 @@
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 
   <style>
+    /* === ZONE 1: CSS & DESIGN SYSTEM === */
     :root {
       --bg-dark: #0a0d12;
       --bg-card: #131720;
@@ -100,7 +101,7 @@
     }
     .btn-danger { background: var(--status-red); }
 
-    /* DASHBOARD HERO HEADER */
+    /* DASHBOARD HERO HEADER & HIT-BOX FIX */
     .hero-banner {
       background: linear-gradient(135deg, #161e2e 0%, #0d121c 100%);
       border: 1px solid #388bfd;
@@ -114,9 +115,18 @@
       content: "";
       position: absolute;
       top: -30px; right: -30px;
-      width: 130px; height: 130px;
-      background: radial-gradient(circle, rgba(56, 189, 248, 0.22) 0%, transparent 70%);
+      width: 140px; height: 140px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.25) 0%, transparent 70%);
       border-radius: 50%;
+      pointer-events: none !important; /* Fixes touch intercept */
+      z-index: 0;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
     }
 
     /* BOTTOM NAVIGATION */
@@ -169,7 +179,7 @@
       border-radius: 14px;
       padding: 18px;
       width: 100%;
-      max-width: 580px;
+      max-width: 600px;
       max-height: 90vh;
       overflow-y: auto;
     }
@@ -192,7 +202,7 @@
       font-size: 14px;
     }
 
-    /* FULL-SCREEN SIMULATOR ARENAS */
+    /* FULL-SCREEN SIMULATORS */
     #exam-arena, #dojo-arena-view {
       display: none;
       position: fixed;
@@ -322,7 +332,7 @@
       z-index: 2100;
     }
 
-    /* PALETTE DRAWER (TIGHT PACKING 6-COLUMN GRID) */
+    /* PALETTE DRAWER & CHAPTER HEADERS */
     .palette-drawer-ui {
       position: fixed;
       top: 0; right: -100%; bottom: 0;
@@ -386,50 +396,29 @@
       justify-content: space-between;
     }
 
-    /* PAUSE SHIELD */
-    #pause-shield {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(10, 13, 18, 0.98);
-      z-index: 3000;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      text-align: center;
-    }
-
-    /* MOCK HISTORY ITEMS */
-    .history-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 14px;
-      margin-bottom: 10px;
-    }
-    .history-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-    .history-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 6px;
-      margin-bottom: 10px;
-      background: var(--bg-elevated);
+    /* INTERACTIVE FORENSIC TILES IN REVIEW */
+    .forensic-tile {
+      background: #1a1523;
+      border: 1px solid #3d2d52;
       padding: 8px;
-      border-radius: 6px;
-      text-align: center;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .forensic-tile:hover {
+      border-color: var(--accent-cyan);
+      background: #231b30;
+    }
+    .forensic-tile.active-filter {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
     }
 
-    /* PRINT LAYOUT */
+    /* PRINT STYLES */
     @media print {
       body { background: white !important; color: black !important; }
-      #bottom-nav, #exam-arena, #dojo-arena-view, .btn, .card { display: none !important; }
-      .print-page { display: block !important; column-count: 2; column-gap: 20px; font-size: 12px; }
+      #bottom-nav, #exam-arena, #dojo-arena-view, .btn, .card, .modal-overlay { display: none !important; }
+      .print-page { display: block !important; column-count: 2; column-gap: 20px; font-size: 12px; padding: 20px; }
       .print-question { break-inside: avoid; margin-bottom: 14px; border-bottom: 1px solid #ccc; padding-bottom: 8px; }
     }
   </style>
@@ -524,7 +513,7 @@
     <div class="sectional-banner">
       <div style="display:flex; gap:6px; align-items:center;">
         <span class="badge" style="background:#238636;" id="dojo-arena-chap-badge">QA_PERCENTAGE</span>
-        <span class="badge" style="background:#1c2230; color:#38bdf8;" id="dojo-arena-method-badge">Successive Change</span>
+        <span class="badge" style="background:#1c2230; color:#38bdf8;" id="dojo-arena-method-badge">General</span>
       </div>
       <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openEditCurrentDojoQuestion()">Edit Question</button>
     </div>
@@ -561,7 +550,7 @@
     </div>
   </div>
 
-  <!-- DOJO PALETTE DRAWER (SUPPORTS CHAPTER-SEGMENTED GRIDS) -->
+  <!-- DOJO PALETTE DRAWER (CHAPTER SEGMENTED) -->
   <div class="drawer-overlay" id="dojo-drawer-overlay" onclick="CGL_OS.toggleDojoPalette(false)"></div>
   <div class="palette-drawer-ui" id="dojo-palette-drawer">
     <div style="padding:14px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
@@ -574,15 +563,15 @@
 
   <!-- ==================== 3. TAB 1: DASHBOARD ==================== -->
   <div id="tab-dashboard" class="view-container active">
-    <!-- Candidate Hero Header -->
+    <!-- Hero Banner with Protected Hit-Box -->
     <div class="hero-banner">
-      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+      <div class="hero-content">
         <div>
           <span class="badge" style="background:#238636; margin-bottom:6px;">SSC CGL 2026 CANDIDATE</span>
           <h2 style="font-size:20px; font-weight:800; color:#fff;">Welcome back, Ankit</h2>
           <p style="font-size:12px; color:var(--accent-cyan); margin-top:2px;">Target: Tier 1 & Tier 2 Master Preparation</p>
         </div>
-        <button class="btn" id="btn-dash-launch-mock" onclick="CGL_OS.openCustomMockModal()" style="padding:8px 14px; font-size:12px; box-shadow:0 0 12px rgba(56,139,253,0.5);">
+        <button class="btn" id="btn-dash-launch-mock" onclick="CGL_OS.openCustomMockModal()" style="padding:10px 16px; font-size:13px; box-shadow:0 0 14px rgba(56,139,253,0.5); z-index:5;">
           Launch Mock
         </button>
       </div>
@@ -591,7 +580,7 @@
     <!-- Master KPIs -->
     <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; margin-bottom:14px;">
       <div class="card" style="margin-bottom:0; padding:12px;">
-        <div style="font-size:11px; color:var(--text-muted);">Total Mocks Given</div>
+        <div style="font-size:11px; color:var(--text-muted);">Standard Mocks Taken</div>
         <div style="font-size:24px; font-weight:800;" id="kpi-total-mocks">0</div>
       </div>
       <div class="card" style="margin-bottom:0; padding:12px;">
@@ -608,18 +597,20 @@
       </div>
     </div>
 
-    <!-- Testbook-Style Mock History -->
+    <!-- Recent Mocks & History Archive -->
     <div class="card">
       <div class="card-title">
-        <span>Recent Mock History & Scorecards</span>
-        <span class="badge" style="background:#1f6feb;" id="history-count-badge">0 Tests</span>
+        <span>Recent Mock Scorecards</span>
+        <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.openHistoryArchiveModal()">
+          Open History Archive
+        </button>
       </div>
       <div id="mock-history-container">
         <p style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">No mocks submitted yet. Launch your first mock above.</p>
       </div>
     </div>
 
-    <!-- Dynamic Syllabus Taxonomy Drill-Down -->
+    <!-- Syllabus Taxonomy Drill-Down -->
     <div class="card">
       <div class="card-title">
         <span>Syllabus Taxonomy Deep Dive</span>
@@ -631,28 +622,29 @@
   </div>
 
 
-  <!-- ==================== 4. TAB 2: ACTIVE RECALL DOJO & FORMULA HUB ==================== -->
+  <!-- ==================== 4. TAB 2: DOJO & KNOWLEDGE HUB ==================== -->
   <div id="tab-dojo" class="view-container">
     <div class="card" style="background:linear-gradient(135deg, #162438, #0d121c); border-color:#238636;">
-      <h2 style="font-size:18px; font-weight:800;">Question Dojo & Formula Hub</h2>
+      <h2 style="font-size:18px; font-weight:800;">Question Dojo & Practice Hub</h2>
       <p style="font-size:12px; color:var(--text-muted); margin-top:2px;">
-        Categorized by Subject, Chapter, Subtopic & Solving Method.
+        Untimed active recall, question editing, and targeted method drilling.
       </p>
     </div>
 
-    <!-- Master Formula Hub Card -->
+    <!-- Master Concept Vault Button Card -->
     <div class="card" style="border-color:#38bdf8;">
-      <div class="card-title" style="color:#38bdf8;">
-        <span>Formula & Concept Vault</span>
-        <div style="display:flex; gap:6px;">
-          <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openFormulaEditorModal()">+ Add Formula</button>
-          <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.toggleFormulaSheet()">Toggle</button>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <b style="font-size:14px; color:#38bdf8;">Formula & Concept Knowledge Hub</b>
+          <p style="font-size:11px; color:var(--text-muted);">Math theorems, English vocabulary, reasoning rules & tricks.</p>
         </div>
+        <button class="btn" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openConceptHubModal()">
+          Open Hub
+        </button>
       </div>
-      <div id="formula-sheet-content" style="display:none; font-size:13px; line-height:1.6; margin-top:10px;"></div>
     </div>
 
-    <!-- Hierarchical Taxonomy Dojo Navigator -->
+    <!-- Module & Method Selector -->
     <div class="card">
       <div class="card-title">Select Module & Method to Practice</div>
       
@@ -683,7 +675,7 @@
   </div>
 
 
-  <!-- ==================== 5. TAB 3: COMMAND TERMINAL & DB STUDIO ==================== -->
+  <!-- ==================== 5. TAB 3: COMMAND TERMINAL ==================== -->
   <div id="tab-console" class="view-container">
     <div class="card">
       <div class="card-title">JSON Command Bus</div>
@@ -724,15 +716,23 @@
   <div id="tab-vault" class="view-container">
     <div class="card" style="border-color:#5a1e1e;">
       <div class="card-title" style="color:#f87171;">
-        <span>Authentic Spaced-Repetition Error Vault</span>
+        <span>Spaced-Repetition Error Vault</span>
         <div style="display:flex; gap:6px; align-items:center;">
           <span class="badge" style="background:#da3633;" id="vault-count-badge">0 Traps</span>
-          <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.wipeErrorVault()">Clear Vault</button>
+          <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.wipeErrorVault()">Clear</button>
         </div>
       </div>
-      <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
-        Zero fake records. Questions enter here only when answered incorrectly in mocks. Retrying and solving moves them to higher Leitner review intervals.
-      </p>
+      
+      <!-- Leitner Explanation Card -->
+      <div style="background:#1c1315; border:1px solid #4a1d20; border-radius:8px; padding:10px; font-size:11px; line-height:1.5; margin-bottom:12px; color:#fca5a5;">
+        <b>How the Leitner Vault Works:</b><br>
+        • Questions enter here only when answered incorrectly during full mocks.<br>
+        • <b>Box 1:</b> Daily review.<br>
+        • <b>Box 2:</b> Review after 4 days.<br>
+        • <b>Box 3:</b> Final mastery check after 14 days.<br>
+        • Solving a Box 3 question graduates and clears it permanently from the vault.
+      </div>
+
       <button class="btn btn-danger" style="width:100%; margin-bottom:12px;" onclick="CGL_OS.launchVaultSprint()">
         Launch Trap-Breaker Sprint (Failed Qs Only)
       </button>
@@ -745,8 +745,8 @@
         <button class="btn btn-secondary" style="font-size:12px;" onclick="CGL_OS.exportFullBackup()">Export DB (.json)</button>
         <button class="btn btn-secondary" style="font-size:12px;" onclick="CGL_OS.exportObsidianMarkdown()">Export Vault (.md)</button>
       </div>
-      <button class="btn btn-secondary" style="width:100%; font-size:12px;" onclick="CGL_OS.spoolAndroidPrint()">
-        Print Native 2-Column Sheet (A4 PDF)
+      <button class="btn btn-secondary" style="width:100%; font-size:12px;" onclick="CGL_OS.openPrintConfigModal()">
+        Configure & Spool Native Print Sheet (A4 PDF)
       </button>
     </div>
   </div>
@@ -783,19 +783,19 @@
         </div>
       </div>
 
-      <!-- Deep Cognitive Telemetry Bar -->
+      <!-- Interactive Clickable Telemetry Filter Tiles -->
       <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:14px; text-align:center;">
-        <div style="background:#1a1523; border:1px solid #3d2d52; padding:6px; border-radius:6px;">
-          <div style="font-size:9px; color:var(--status-purple);">PENALTY DRAG</div>
-          <div style="font-size:13px; font-weight:700; color:#f87171;" id="rev-penalty">-0.00</div>
+        <div class="forensic-tile" onclick="CGL_OS.filterReviewQuestions('PENALTY')">
+          <div style="font-size:9px; color:var(--status-purple);">PENALTY DRAG (TAP)</div>
+          <div style="font-size:14px; font-weight:800; color:#f87171;" id="rev-penalty">-0.00</div>
         </div>
-        <div style="background:#1a1523; border:1px solid #3d2d52; padding:6px; border-radius:6px;">
-          <div style="font-size:9px; color:var(--status-purple);">2ND GUESS DELTA</div>
-          <div style="font-size:13px; font-weight:700; color:#38bdf8;" id="rev-switch-delta">0 Net</div>
+        <div class="forensic-tile" onclick="CGL_OS.filterReviewQuestions('SWITCH')">
+          <div style="font-size:9px; color:var(--status-purple);">2ND GUESS (TAP)</div>
+          <div style="font-size:14px; font-weight:800; color:#38bdf8;" id="rev-switch-delta">0 Net</div>
         </div>
-        <div style="background:#1a1523; border:1px solid #3d2d52; padding:6px; border-radius:6px;">
-          <div style="font-size:9px; color:var(--status-purple);">Q-IV TIME TRAPS</div>
-          <div style="font-size:13px; font-weight:700; color:var(--status-red);" id="rev-traps">0</div>
+        <div class="forensic-tile" onclick="CGL_OS.filterReviewQuestions('TRAPS')">
+          <div style="font-size:9px; color:var(--status-purple);">Q-IV TRAPS (TAP)</div>
+          <div style="font-size:14px; font-weight:800; color:var(--status-red);" id="rev-traps">0</div>
         </div>
       </div>
 
@@ -813,7 +813,148 @@
   </div>
 
 
-  <!-- ==================== 8. CUSTOM MOCK BUILDER MODAL ==================== -->
+  <!-- ==================== 8. MOCK HISTORY ARCHIVE MODAL ==================== -->
+  <div class="modal-overlay" id="modal-history-archive">
+    <div class="modal-window">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+        <h3 style="font-size:16px; font-weight:800;">Master Test History Archive</h3>
+        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-history-archive').classList.remove('active')">✕ Close</button>
+      </div>
+
+      <div style="display:flex; gap:6px; margin-bottom:12px; overflow-x:auto;">
+        <button class="btn btn-secondary" style="font-size:11px; padding:6px 10px;" onclick="CGL_OS.renderArchiveList('ALL')">All Tests</button>
+        <button class="btn btn-secondary" style="font-size:11px; padding:6px 10px;" onclick="CGL_OS.renderArchiveList('TIER_1')">Tier-1 Full</button>
+        <button class="btn btn-secondary" style="font-size:11px; padding:6px 10px;" onclick="CGL_OS.renderArchiveList('SECTIONAL')">Sectionals</button>
+        <button class="btn btn-secondary" style="font-size:11px; padding:6px 10px;" onclick="CGL_OS.renderArchiveList('CUSTOM')">Custom</button>
+      </div>
+
+      <div id="archive-list-container"></div>
+    </div>
+  </div>
+
+
+  <!-- ==================== 9. FULL-SCREEN CONCEPT & FORMULA HUB ==================== -->
+  <div class="modal-overlay" id="modal-concept-hub">
+    <div class="modal-window" style="max-width:700px; max-height:92vh;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+        <div>
+          <h3 style="font-size:16px; font-weight:800; color:#38bdf8;">Concept & Formula Hub</h3>
+          <span style="font-size:11px; color:var(--text-muted);">Math Theorems • Vocab Lists • Reasoning Tricks</span>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openFormulaEditorModal()">+ Add New Card</button>
+          <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-concept-hub').classList.remove('active')">✕</button>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <select id="hub-filter-sub" class="form-control" style="width:40%;" onchange="CGL_OS.renderConceptHubCards()">
+          <option value="ALL">All Subjects</option>
+          <option value="QA">QA (Math)</option>
+          <option value="REAS">Reasoning</option>
+          <option value="ENG">English</option>
+          <option value="GA">General Awareness</option>
+        </select>
+        <input type="text" id="hub-search-box" class="form-control" placeholder="Search keywords..." oninput="CGL_OS.renderConceptHubCards()">
+      </div>
+
+      <div id="concept-hub-card-list"></div>
+    </div>
+  </div>
+
+
+  <!-- ==================== 10. SELECTIVE PRINT SPOOLER CONFIG ==================== -->
+  <div class="modal-overlay" id="modal-print-config">
+    <div class="modal-window">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h3 style="font-size:16px; font-weight:800;">Configure Print Spooler</h3>
+        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-print-config').classList.remove('active')">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label>Print Content Type</label>
+        <select id="print-type" class="form-control" onchange="CGL_OS.handlePrintTypeChange(this.value)">
+          <option value="QUESTIONS">Question Bank Practice Paper</option>
+          <option value="FORMULAS">Formulas & Concept Cheat Sheet</option>
+          <option value="VAULT">Spaced-Repetition Error Vault Traps</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="print-sub-wrap">
+        <label>Subject Scope</label>
+        <select id="print-subject" class="form-control" onchange="CGL_OS.updatePrintChapters()">
+          <option value="ALL">All Subjects</option>
+          <option value="QA">Quantitative Aptitude</option>
+          <option value="REAS">Reasoning</option>
+          <option value="ENG">English</option>
+          <option value="GA">General Awareness</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="print-chap-wrap">
+        <label>Chapter Scope</label>
+        <select id="print-chapter" class="form-control"></select>
+      </div>
+
+      <div class="form-group">
+        <label>Include Answer Keys & Detailed Explanations</label>
+        <select id="print-include-ans" class="form-control">
+          <option value="YES">Yes (Appended to Question Blocks)</option>
+          <option value="NO">No (Exam Practice Mode Only)</option>
+        </select>
+      </div>
+
+      <button class="btn" style="width:100%; margin-top:8px; padding:12px;" onclick="CGL_OS.generateAndPrintSheet()">
+        Generate & Print Native 2-Column Sheet
+      </button>
+    </div>
+  </div>
+
+
+  <!-- ==================== 11. FORMULA & CONCEPT EDITOR MODAL ==================== -->
+  <div class="modal-overlay" id="modal-formula-editor">
+    <div class="modal-window">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h3 style="font-size:16px; font-weight:800;">Add Knowledge / Formula Card</h3>
+        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-formula-editor').classList.remove('active')">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label>Subject</label>
+        <select id="form-formula-sub" class="form-control" onchange="CGL_OS.handleFormulaSubjectChange(this.value)">
+          <option value="QA">QA (Quantitative)</option>
+          <option value="REAS">REAS (Reasoning)</option>
+          <option value="ENG">ENG (English)</option>
+          <option value="GA">GA (General Awareness)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Select Chapter Tag</label>
+        <select id="form-formula-chap" class="form-control" onchange="CGL_OS.handleFormulaChapterChange(this.value)"></select>
+      </div>
+
+      <div class="form-group" id="form-formula-new-chap-wrap" style="display:none;">
+        <label style="color:var(--accent-cyan);">New Custom Chapter Tag</label>
+        <input type="text" id="form-formula-new-chap" class="form-control" placeholder="e.g. QA_COORDINATE">
+      </div>
+
+      <div class="form-group">
+        <label>Card Title / Concept Name</label>
+        <input type="text" id="form-formula-method" class="form-control" placeholder="e.g. Successive Percentage Formula">
+      </div>
+
+      <div class="form-group">
+        <label>Card Content (KaTeX in $...$ or $$...$$, Markdown bullets)</label>
+        <textarea id="form-formula-text" class="form-control" style="height:120px;" placeholder="• Bullet points or formulas..."></textarea>
+      </div>
+
+      <button class="btn" style="width:100%;" onclick="CGL_OS.saveFormulaCard()">Save to Knowledge Hub</button>
+    </div>
+  </div>
+
+
+  <!-- ==================== 12. CUSTOM MOCK BUILDER MODAL ==================== -->
   <div class="modal-overlay" id="modal-mock-builder">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -868,50 +1009,7 @@
   </div>
 
 
-  <!-- ==================== 9. FORMULA EDITOR MODAL ==================== -->
-  <div class="modal-overlay" id="modal-formula-editor">
-    <div class="modal-window">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-        <h3 style="font-size:16px; font-weight:800;">Add Formula or Concept Card</h3>
-        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-formula-editor').classList.remove('active')">✕</button>
-      </div>
-
-      <div class="form-group">
-        <label>Subject</label>
-        <select id="form-formula-sub" class="form-control" onchange="CGL_OS.handleFormulaSubjectChange(this.value)">
-          <option value="QA">QA</option>
-          <option value="REAS">REAS</option>
-          <option value="ENG">ENG</option>
-          <option value="GA">GA</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>Select Chapter Tag</label>
-        <select id="form-formula-chap" class="form-control" onchange="CGL_OS.handleFormulaChapterChange(this.value)"></select>
-      </div>
-
-      <div class="form-group" id="form-formula-new-chap-wrap" style="display:none;">
-        <label style="color:var(--accent-cyan);">New Custom Chapter Tag Name</label>
-        <input type="text" id="form-formula-new-chap" class="form-control" placeholder="e.g. QA_COORDINATE">
-      </div>
-
-      <div class="form-group">
-        <label>Method / Subtopic Title</label>
-        <input type="text" id="form-formula-method" class="form-control" placeholder="e.g. Successive Percentage Formula">
-      </div>
-
-      <div class="form-group">
-        <label>Formula & Concept Content (LaTeX in $...$ or $$...$$)</label>
-        <textarea id="form-formula-text" class="form-control" style="height:110px;" placeholder="Net change = $a + b + \frac{ab}{100}$%"></textarea>
-      </div>
-
-      <button class="btn" style="width:100%;" onclick="CGL_OS.saveFormulaCard()">Save to Concept Vault</button>
-    </div>
-  </div>
-
-
-  <!-- ==================== 10. GUI QUESTION EDITOR MODAL ==================== -->
+  <!-- ==================== 13. GUI QUESTION EDITOR MODAL ==================== -->
   <div class="modal-overlay" id="modal-question-editor">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -944,12 +1042,12 @@
         </div>
         <div class="form-group">
           <label>Method Type</label>
-          <input type="text" id="edit-q-method" class="form-control" placeholder="e.g. Angle Bisector Theorem">
+          <input type="text" id="edit-q-method" class="form-control" placeholder="e.g. Angle Bisector">
         </div>
       </div>
 
       <div class="form-group">
-        <label>Question Text (KaTeX math in $...$ or $$...$$)</label>
+        <label>Question Text (KaTeX in $...$ or $$...$$)</label>
         <textarea id="edit-q-text" class="form-control" style="height:90px;"></textarea>
       </div>
 
@@ -993,7 +1091,7 @@
   </div>
 
 
-  <!-- ==================== 11. BOTTOM NAVIGATION ==================== -->
+  <!-- ==================== 14. BOTTOM NAVIGATION ==================== -->
   <nav id="bottom-nav">
     <button class="nav-btn active" onclick="CGL_OS.switchTab('tab-dashboard', this)">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
@@ -1016,7 +1114,7 @@
   <div id="print-sheet-root" style="display:none;" class="print-page"></div>
 
 
-  <!-- ==================== 12. RUNTIME ENGINE ==================== -->
+  <!-- ==================== 15. RUNTIME JAVASCRIPT ENGINE ==================== -->
   <script>
     const CGL_OS = (() => {
       const DB_NAME = "cgl_os_db";
@@ -1029,6 +1127,7 @@
       let dojoExam = null;
       let activeReviewAttempt = null;
 
+      // Seed Questions
       const SEED_QUESTIONS = [
         {
           id: "q_qa_geo_001",
@@ -1104,6 +1203,7 @@
         }
       ];
 
+      // Knowledge Hub Initial Seeds
       const SEED_FORMULAS = [
         {
           id: "f_qa_perc_01",
@@ -1120,11 +1220,11 @@
           content: "If $x + \\frac{1}{x} = k$, then:<br>• $x^2 + \\frac{1}{x^2} = k^2 - 2$<br>• $x^3 + \\frac{1}{x^3} = k^3 - 3k$<br>• $x^4 + \\frac{1}{x^4} = (k^2 - 2)^2 - 2$"
         },
         {
-          id: "f_qa_geo_01",
-          subject: "QA",
-          chapter: "QA_GEOMETRY",
-          method: "Internal Angle Bisector",
-          content: "In $\\triangle ABC$ with angle bisector $AD$ on side $BC$:<br>$$\\frac{BD}{DC} = \\frac{AB}{AC}$$"
+          id: "f_eng_vocab_01",
+          subject: "ENG",
+          chapter: "ENG_OWS",
+          method: "High-Frequency Root Words",
+          content: "• <b>-cide:</b> Killing (Homicide, Regicide, Patricide)<br>• <b>Phil-:</b> Love / Attraction (Bibliophile, Philanthropist)<br>• <b>Omni-:</b> All (Omniscient, Omnipotent, Omnipresent)"
         }
       ];
 
@@ -1211,6 +1311,7 @@
           SEED_FORMULAS.forEach(f => store.put(f));
           await new Promise(r => tx.oncomplete = r);
         }
+        // Note: store_vault is kept strictly EMPTY on fresh boot (no fake errors)
       }
 
       function getStoreCount(sName) {
@@ -1250,7 +1351,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 3. TIMED ARENA CONTROLLER
+       * 3. TIMED EXAM ARENA CONTROLLER
        * ------------------------------------------------------------- */
       function openCustomMockModal() {
         document.getElementById("modal-mock-builder").classList.add("active");
@@ -1328,6 +1429,8 @@
           sessionId: "mock_" + Date.now(),
           timestamp: Date.now(),
           title: sub === "ALL" ? "SSC CGL Full Mock" : `${sub} Sectional Mock`,
+          mockType: sub === "ALL" ? "TIER_1" : "SECTIONAL",
+          isVaultSprint: false,
           isSectionLocked: isLock,
           sections: sections,
           activeSectionIndex: 0,
@@ -1379,7 +1482,7 @@
               activeExam.sectionRemainingSec = nextSec.durationSec;
               const nextIdx = activeExam.questions.findIndex(q => q.sectionIndex === activeExam.activeSectionIndex);
               if (nextIdx !== -1) activeExam.currentQuestionIndex = nextIdx;
-              alert(`Section time expired! Automatically moved to: ${nextSec.name}`);
+              alert(`Section time expired! Switched to: ${nextSec.name}`);
               renderActiveExamQuestion();
             } else {
               submitExamSession();
@@ -1577,11 +1680,16 @@
         for (const q of activeExam.questions) {
           const resp = activeExam.userResponses[q.id];
           if (resp.selectedOption !== null) {
-            if (resp.selectedOption === q.correctIndex) {
+            const isCorrect = resp.selectedOption === q.correctIndex;
+            if (isCorrect) {
               totalMarks += 2.0;
               correct++;
               if (resp.initialOption !== null && resp.initialOption !== q.correctIndex) {
                 switchDelta++;
+              }
+              // If this was a Vault Sprint, promote to next Leitner Box automatically
+              if (activeExam.isVaultSprint) {
+                await advanceVaultBox(q.id);
               }
             } else {
               totalMarks -= 0.5;
@@ -1592,15 +1700,19 @@
                 switchDelta--;
               }
 
-              // Ingest strictly failed question into Spaced-Repetition Error Vault
-              await putRecord("store_vault", {
-                questionId: q.id,
-                chapter: q.chapter,
-                subject: q.subject,
-                errorTag: resp.timeSpentSec > 90 ? "CALCULATION_SLIP" : "READING_TRAP",
-                leitnerBox: 1,
-                lastAttempted: Date.now()
-              });
+              // Ingest mistake strictly if regular mock, or demote to Box 1 if sprint
+              if (!activeExam.isVaultSprint) {
+                await putRecord("store_vault", {
+                  questionId: q.id,
+                  chapter: q.chapter,
+                  subject: q.subject,
+                  errorTag: "UNCLASSIFIED", // User classifies in review
+                  leitnerBox: 1,
+                  lastAttempted: Date.now()
+                });
+              } else {
+                await demoteVaultBox(q.id);
+              }
 
               if (resp.timeSpentSec > 90) traps++;
             }
@@ -1615,11 +1727,14 @@
         activeExam.penaltyDrag = penaltyDrag;
         activeExam.switchDelta = switchDelta;
 
-        await putRecord("store_attempts", activeExam);
-        document.getElementById("exam-arena").style.display = "none";
+        // CRITICAL: Do NOT pollute main scorecard history if this was a Vault Sprint!
+        if (!activeExam.isVaultSprint) {
+          await putRecord("store_attempts", activeExam);
+        }
 
+        document.getElementById("exam-arena").style.display = "none";
         renderDashboard();
-        openMockReview(activeExam.sessionId);
+        openMockReview(activeExam);
       }
 
       /* -------------------------------------------------------------
@@ -1684,7 +1799,6 @@
           return;
         }
 
-        // Pull theory formula card if exists
         const allFormulas = await getAllRecords("store_formulas");
         const matchedFormula = allFormulas.find(f => f.chapter === chap || (method !== "ALL" && f.method === method));
 
@@ -1824,7 +1938,6 @@
         scrollBody.innerHTML = "";
         document.getElementById("dojo-palette-count-badge").innerText = `${dojoExam.questions.length} Qs`;
 
-        // Group questions by Chapter for structured display
         const grouped = {};
         dojoExam.questions.forEach((q, idx) => {
           const ch = q.chapter || "GENERAL";
@@ -1865,14 +1978,16 @@
       }
 
       /* -------------------------------------------------------------
-       * 5. TESTBOOK-GRADE MOCK FORENSIC ANALYZER
+       * 5. TESTBOOK FORENSIC REVIEW & INTERACTIVE TILES
        * ------------------------------------------------------------- */
-      async function openMockReview(sessionId) {
-        const attempts = await getAllRecords("store_attempts");
-        const att = attempts.find(a => a.sessionId === sessionId);
-        if (!att) return;
+      async function openMockReview(attemptOrId) {
+        let att = typeof attemptOrId === "string" 
+          ? (await getAllRecords("store_attempts")).find(a => a.sessionId === attemptOrId)
+          : attemptOrId;
 
+        if (!att) return;
         activeReviewAttempt = att;
+
         document.getElementById("review-modal-title").innerText = att.title || "SSC CGL Mock Analysis";
         document.getElementById("review-modal-date").innerText = new Date(att.timestamp || Date.now()).toLocaleString();
         document.getElementById("rev-score").innerText = (att.finalScore || 0).toFixed(2);
@@ -1890,18 +2005,28 @@
         document.getElementById("modal-mock-review").classList.add("active");
       }
 
-      function filterReviewQuestions(filter) {
+      async function filterReviewQuestions(filter) {
         const list = document.getElementById("review-questions-list");
         list.innerHTML = "";
+
+        const vaultRecords = await getAllRecords("store_vault");
 
         activeReviewAttempt.questions.forEach((q, idx) => {
           const resp = activeReviewAttempt.userResponses[q.id] || {};
           const isAtt = resp.selectedOption !== null && resp.selectedOption !== undefined;
           const isCor = resp.selectedOption === q.correctIndex;
+          const isTrap = isAtt && !isCor && (resp.timeSpentSec > 90);
+          const isSwitch = resp.switches > 0;
 
           if (filter === "INCORRECT" && (!isAtt || isCor)) return;
           if (filter === "CORRECT" && !isCor) return;
           if (filter === "UNANSWERED" && isAtt) return;
+          if (filter === "PENALTY" && (!isAtt || isCor)) return;
+          if (filter === "SWITCH" && !isSwitch) return;
+          if (filter === "TRAPS" && !isTrap) return;
+
+          const existingVault = vaultRecords.find(v => v.questionId === q.id);
+          const currentTag = existingVault ? existingVault.errorTag : "UNCLASSIFIED";
 
           const card = document.createElement("div");
           card.className = "card";
@@ -1915,7 +2040,18 @@
           card.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
               <div><b>Q${idx + 1}.</b> <span class="badge" style="background:#1f6feb;">${q.chapter}</span></div>
-              <div>${statusBadge}</div>
+              <div style="display:flex; gap:6px; align-items:center;">
+                ${statusBadge}
+                ${!isCor && isAtt ? `
+                  <select onchange="CGL_OS.setMistakeTag('${q.id}', this.value)" style="background:#21262d; color:#fff; border:1px solid #da3633; font-size:11px; padding:2px 4px; border-radius:4px;">
+                    <option value="UNCLASSIFIED" ${currentTag==='UNCLASSIFIED'?'selected':''}>Tag Mistake...</option>
+                    <option value="CALCULATION_SLIP" ${currentTag==='CALCULATION_SLIP'?'selected':''}>Calculation Slip</option>
+                    <option value="READING_TRAP" ${currentTag==='READING_TRAP'?'selected':''}>Reading Trap</option>
+                    <option value="FORMULA_AMNESIA" ${currentTag==='FORMULA_AMNESIA'?'selected':''}>Formula Amnesia</option>
+                    <option value="CONCEPT_VOID" ${currentTag==='CONCEPT_VOID'?'selected':''}>Concept Void</option>
+                  </select>
+                ` : ''}
+              </div>
             </div>
             <div style="font-size:14px; line-height:1.5; margin-bottom:10px;">${formatRichText(q.questionText)}</div>
             <div style="font-size:13px; margin-bottom:8px;">
@@ -1937,8 +2073,25 @@
         });
       }
 
+      async function setMistakeTag(qId, tag) {
+        const vault = await getAllRecords("store_vault");
+        const rec = vault.find(v => v.questionId === qId);
+        if (rec) {
+          rec.errorTag = tag;
+          await putRecord("store_vault", rec);
+        } else {
+          await putRecord("store_vault", {
+            questionId: qId,
+            errorTag: tag,
+            leitnerBox: 1,
+            lastAttempted: Date.now()
+          });
+        }
+        renderVault();
+      }
+
       /* -------------------------------------------------------------
-       * 6. TAB 1: DASHBOARD
+       * 6. TAB 1: DASHBOARD & ARCHIVE MODAL
        * ------------------------------------------------------------- */
       async function renderDashboard() {
         const attempts = await getAllRecords("store_attempts");
@@ -1966,21 +2119,20 @@
           document.getElementById("kpi-traps-hit").innerText = traps;
         }
 
-        renderHistoryCards(completed);
+        renderRecentHistory(completed);
         renderDrilldownSubjectLevel();
       }
 
-      function renderHistoryCards(completed) {
+      function renderRecentHistory(completed) {
         const container = document.getElementById("mock-history-container");
-        document.getElementById("history-count-badge").innerText = `${completed.length} Tests`;
-
         if (completed.length === 0) {
           container.innerHTML = `<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">No mocks submitted yet. Launch your first mock above.</p>`;
           return;
         }
 
         container.innerHTML = "";
-        completed.slice().reverse().forEach(att => {
+        // Show only the 3 most recent mocks to prevent dashboard clutter
+        completed.slice(-3).reverse().forEach(att => {
           const card = document.createElement("div");
           card.className = "history-card";
           card.innerHTML = `
@@ -2011,6 +2163,47 @@
             </div>
           `;
           container.appendChild(card);
+        });
+      }
+
+      function openHistoryArchiveModal() {
+        document.getElementById("modal-history-archive").classList.add("active");
+        renderArchiveList("ALL");
+      }
+
+      async function renderArchiveList(filterType) {
+        const attempts = await getAllRecords("store_attempts");
+        const completed = attempts.filter(a => a.completed);
+        const container = document.getElementById("archive-list-container");
+        container.innerHTML = "";
+
+        let list = completed.slice().reverse();
+        if (filterType !== "ALL") {
+          list = list.filter(a => a.mockType === filterType);
+        }
+
+        if (list.length === 0) {
+          container.innerHTML = `<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:12px;">No tests found in this category.</p>`;
+          return;
+        }
+
+        list.forEach(att => {
+          const div = document.createElement("div");
+          div.className = "card";
+          div.style.marginBottom = "8px";
+          div.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <b style="font-size:14px;">${att.title}</b>
+                <div style="font-size:11px; color:var(--text-muted);">${new Date(att.timestamp).toLocaleString()}</div>
+              </div>
+              <div style="text-align:right;">
+                <span style="font-size:14px; font-weight:800; color:var(--accent-cyan);">${(att.finalScore || 0).toFixed(2)} pts</span><br>
+                <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px; margin-top:4px;" onclick="CGL_OS.openMockReview('${att.sessionId}')">Inspect</button>
+              </div>
+            </div>
+          `;
+          container.appendChild(div);
         });
       }
 
@@ -2120,38 +2313,57 @@
       }
 
       /* -------------------------------------------------------------
-       * 7. FORMULA HUB & DYNAMIC CHAPTER SELECTOR
+       * 7. FULL-SCREEN CONCEPT & FORMULA HUB
        * ------------------------------------------------------------- */
-      async function renderFormulaSheet() {
-        const formulas = await getAllRecords("store_formulas");
-        const container = document.getElementById("formula-sheet-content");
-        container.innerHTML = "";
+      function openConceptHubModal() {
+        document.getElementById("modal-concept-hub").classList.add("active");
+        renderConceptHubCards();
+      }
 
-        if (formulas.length === 0) {
-          container.innerHTML = "<p style='color:var(--text-muted);'>No formulas added yet. Tap '+ Add Formula' to create one.</p>";
+      async function renderConceptHubCards() {
+        const sub = document.getElementById("hub-filter-sub").value;
+        const qSearch = document.getElementById("hub-search-box").value.trim().toLowerCase();
+        const allFormulas = await getAllRecords("store_formulas");
+        const list = document.getElementById("concept-hub-card-list");
+        list.innerHTML = "";
+
+        let filtered = sub === "ALL" ? allFormulas : allFormulas.filter(f => f.subject === sub);
+        if (qSearch) {
+          filtered = filtered.filter(f => 
+            (f.chapter && f.chapter.toLowerCase().includes(qSearch)) ||
+            (f.method && f.method.toLowerCase().includes(qSearch)) ||
+            (f.content && f.content.toLowerCase().includes(qSearch))
+          );
+        }
+
+        if (filtered.length === 0) {
+          list.innerHTML = `<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:16px;">No concept cards found.</p>`;
           return;
         }
 
-        formulas.forEach(f => {
+        filtered.forEach(f => {
           const div = document.createElement("div");
-          div.style.padding = "8px";
-          div.style.borderBottom = "1px solid var(--border-color)";
+          div.className = "card";
+          div.style.marginBottom = "10px";
           div.innerHTML = `
-            <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--accent-cyan); margin-bottom:4px;">
-              <b>${f.chapter}</b>
-              <span>${f.method || ''}</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span class="badge" style="background:#1f6feb;">${f.chapter}</span>
+              <span style="font-weight:700; font-size:12px; color:var(--accent-cyan);">${f.method || 'General Rule'}</span>
             </div>
-            <div>${formatRichText(f.content)}</div>
+            <div style="font-size:13px; line-height:1.6;">${formatRichText(f.content)}</div>
+            <div style="text-align:right; margin-top:6px;">
+              <button class="btn btn-secondary" style="padding:2px 8px; font-size:10px; color:var(--status-red);" onclick="CGL_OS.deleteFormulaCard('${f.id}')">Delete</button>
+            </div>
           `;
-          container.appendChild(div);
+          list.appendChild(div);
         });
       }
 
-      function toggleFormulaSheet() {
-        const el = document.getElementById("formula-sheet-content");
-        const isOpen = el.style.display === "block";
-        el.style.display = isOpen ? "none" : "block";
-        if (!isOpen) renderFormulaSheet();
+      async function deleteFormulaCard(id) {
+        if (confirm("Delete this concept card?")) {
+          await deleteRecordFromStore("store_formulas", id);
+          renderConceptHubCards();
+        }
       }
 
       async function openFormulaEditorModal() {
@@ -2194,11 +2406,7 @@
 
       function handleFormulaChapterChange(val) {
         const wrap = document.getElementById("form-formula-new-chap-wrap");
-        if (val === "__CREATE_NEW__") {
-          wrap.style.display = "block";
-        } else {
-          wrap.style.display = "none";
-        }
+        wrap.style.display = val === "__CREATE_NEW__" ? "block" : "none";
       }
 
       async function saveFormulaCard() {
@@ -2217,7 +2425,7 @@
         const content = document.getElementById("form-formula-text").value.trim();
 
         if (!chap || !content) {
-          alert("Chapter and Formula content are required.");
+          alert("Chapter tag and content are required.");
           return;
         }
 
@@ -2231,12 +2439,224 @@
 
         await putRecord("store_formulas", obj);
         document.getElementById("modal-formula-editor").classList.remove("active");
-        renderFormulaSheet();
-        alert("Formula saved into Concept Vault!");
+        renderConceptHubCards();
+        alert("Saved to Knowledge Hub!");
       }
 
       /* -------------------------------------------------------------
-       * 8. QUESTION EDITOR MODAL
+       * 8. SELECTIVE PRINT SPOOLER ENGINE
+       * ------------------------------------------------------------- */
+      function openPrintConfigModal() {
+        updatePrintChapters();
+        document.getElementById("modal-print-config").classList.add("active");
+      }
+
+      function handlePrintTypeChange(type) {
+        const isQ = type === "QUESTIONS";
+        document.getElementById("print-sub-wrap").style.display = isQ ? "block" : "none";
+        document.getElementById("print-chap-wrap").style.display = isQ ? "block" : "none";
+      }
+
+      async function updatePrintChapters() {
+        const sub = document.getElementById("print-subject").value;
+        const chapSelect = document.getElementById("print-chapter");
+        chapSelect.innerHTML = `<option value="ALL">All Chapters</option>`;
+
+        const allQs = await getAllRecords("store_questions");
+        const chaps = [...new Set(allQs.filter(q => sub === "ALL" || q.subject === sub).map(q => q.chapter))];
+
+        chaps.forEach(c => {
+          const opt = document.createElement("option");
+          opt.value = c;
+          opt.innerText = c;
+          chapSelect.appendChild(opt);
+        });
+      }
+
+      async function generateAndPrintSheet() {
+        document.getElementById("modal-print-config").classList.remove("active");
+        const pType = document.getElementById("print-type").value;
+        const sub = document.getElementById("print-subject").value;
+        const chap = document.getElementById("print-chapter").value;
+        const incAns = document.getElementById("print-include-ans").value === "YES";
+
+        const root = document.getElementById("print-sheet-root");
+        root.innerHTML = "";
+
+        if (pType === "QUESTIONS") {
+          const allQs = await getAllRecords("store_questions");
+          let pool = sub === "ALL" ? allQs : allQs.filter(q => q.subject === sub);
+          if (chap !== "ALL") pool = pool.filter(q => q.chapter === chap);
+
+          root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Practice Spool (${sub} - ${chap})</h2>`;
+          pool.forEach((q, idx) => {
+            const item = document.createElement("div");
+            item.className = "print-question";
+            item.innerHTML = `
+              <strong>Q${idx + 1}.</strong> ${formatRichText(q.questionText)}<br>
+              ${q.options.map((opt, i) => `(${i + 1}) ${formatRichText(opt)} &nbsp;`).join(' ')}
+              ${incAns ? `<div style="font-size:11px; margin-top:4px;"><b>Answer:</b> Option ${q.correctIndex + 1} | <i>${q.explanation || ''}</i></div>` : ''}
+            `;
+            root.appendChild(item);
+          });
+        } else if (pType === "FORMULAS") {
+          const formulas = await getAllRecords("store_formulas");
+          root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Formula & Concept Cheat Sheet</h2>`;
+          formulas.forEach((f, idx) => {
+            const item = document.createElement("div");
+            item.className = "print-question";
+            item.innerHTML = `
+              <strong>${idx + 1}. [${f.chapter}] ${f.method || ''}</strong><br>
+              ${formatRichText(f.content)}
+            `;
+            root.appendChild(item);
+          });
+        } else if (pType === "VAULT") {
+          const vault = await getAllRecords("store_vault");
+          const allQs = await getAllRecords("store_questions");
+          root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Error Vault Revision Sheet</h2>`;
+          vault.forEach((v, idx) => {
+            const q = allQs.find(item => item.id === v.questionId);
+            if (!q) return;
+            const item = document.createElement("div");
+            item.className = "print-question";
+            item.innerHTML = `
+              <strong>Q${idx + 1}. [Box ${v.leitnerBox || 1} - ${v.errorTag}]</strong> ${formatRichText(q.questionText)}<br>
+              ${q.options.map((opt, i) => `(${i + 1}) ${formatRichText(opt)} &nbsp;`).join(' ')}
+              <div style="font-size:11px; margin-top:4px;"><b>Correct: Option ${q.correctIndex + 1}</b> | ${q.explanation || ''}</div>
+            `;
+            root.appendChild(item);
+          });
+        }
+
+        window.print();
+      }
+
+      /* -------------------------------------------------------------
+       * 9. SPHERICAL SPACED REPETITION ENGINE
+       * ------------------------------------------------------------- */
+      async function renderVault() {
+        const vault = await getAllRecords("store_vault");
+        const questions = await getAllRecords("store_questions");
+        const container = document.getElementById("vault-list-container");
+        container.innerHTML = "";
+
+        const validTraps = [];
+        for (const v of vault) {
+          const q = questions.find(item => item.id === v.questionId);
+          if (q) validTraps.push({ v, q });
+          else await deleteRecordFromStore("store_vault", v.questionId);
+        }
+
+        document.getElementById("vault-count-badge").innerText = `${validTraps.length} Traps`;
+
+        if (validTraps.length === 0) {
+          container.innerHTML = `<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:12px;">Error Vault is clear. Zero failed questions recorded.</div>`;
+          return;
+        }
+
+        validTraps.forEach(({ v, q }) => {
+          const div = document.createElement("div");
+          div.className = "card";
+          div.style.borderColor = "#da3633";
+          div.style.marginBottom = "8px";
+          div.innerHTML = `
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <span class="badge" style="background:#da3633;">${v.errorTag || 'UNCLASSIFIED'}</span>
+              <span class="badge" style="background:#21262d; color:#a371f7;">Leitner Box ${v.leitnerBox || 1} / 3</span>
+            </div>
+            <div style="font-size:13px; line-height:1.5;">${formatRichText(q.questionText)}</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+              <span style="font-size:11px; color:var(--accent-cyan);">Correct: Option ${q.correctIndex + 1}</span>
+              <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.advanceVaultBox('${v.questionId}')">Promote (Level Up)</button>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+      }
+
+      async function advanceVaultBox(qId) {
+        const tx = db.transaction(["store_vault"], "readwrite");
+        const store = tx.objectStore("store_vault");
+        const req = store.get(qId);
+        req.onsuccess = async () => {
+          const rec = req.result;
+          if (rec) {
+            rec.leitnerBox = (rec.leitnerBox || 1) + 1;
+            if (rec.leitnerBox > 3) {
+              await deleteRecordFromStore("store_vault", qId);
+              alert("Mastered! Question successfully graduated out of the Error Vault.");
+            } else {
+              await putRecord("store_vault", rec);
+              alert(`Promoted to Leitner Box ${rec.leitnerBox}! Review scheduled.`);
+            }
+            renderVault();
+          }
+        };
+      }
+
+      async function demoteVaultBox(qId) {
+        const tx = db.transaction(["store_vault"], "readwrite");
+        const store = tx.objectStore("store_vault");
+        const req = store.get(qId);
+        req.onsuccess = async () => {
+          const rec = req.result;
+          if (rec) {
+            rec.leitnerBox = 1; // Reset to daily review
+            await putRecord("store_vault", rec);
+          }
+        };
+      }
+
+      async function launchVaultSprint() {
+        const vault = await getAllRecords("store_vault");
+        const questions = await getAllRecords("store_questions");
+        const failedQs = questions.filter(q => vault.some(v => v.questionId === q.id));
+
+        if (failedQs.length === 0) {
+          alert("Error Vault is clear! No failed questions recorded.");
+          return;
+        }
+
+        activeExam = {
+          sessionId: "vault_sprint_" + Date.now(),
+          timestamp: Date.now(),
+          title: "Trap-Breaker Sprint",
+          isVaultSprint: true, // Prevents history pollution
+          isSectionLocked: false,
+          sections: [{
+            id: "SEC_VAULT",
+            name: "Error Vault Traps",
+            durationSec: failedQs.length * 60,
+            questions: failedQs
+          }],
+          activeSectionIndex: 0,
+          currentQuestionIndex: 0,
+          questions: failedQs.map((q, idx) => ({ ...q, sectionIndex: 0, sectionName: "Error Vault", localNumber: idx + 1 })),
+          sectionRemainingSec: failedQs.length * 60,
+          currentQTimeSpentSec: 0,
+          userResponses: {},
+          isPaused: false
+        };
+
+        activeExam.questions.forEach(q => {
+          activeExam.userResponses[q.id] = {
+            selectedOption: null,
+            initialOption: null,
+            status: "unanswered",
+            switches: 0,
+            timeSpentSec: 0,
+            struck: []
+          };
+        });
+
+        document.getElementById("exam-arena").style.display = "flex";
+        renderActiveExamQuestion();
+        startExamTimers();
+      }
+
+      /* -------------------------------------------------------------
+       * 10. QUESTION EDITOR, DB STUDIO & CONSOLE
        * ------------------------------------------------------------- */
       function openEditQuestionModal(qData) {
         const isNew = !qData;
@@ -2308,9 +2728,6 @@
         }
       }
 
-      /* -------------------------------------------------------------
-       * 9. TAB 3: COMMAND TERMINAL & DB STUDIO
-       * ------------------------------------------------------------- */
       async function executeConsoleCommand() {
         const raw = document.getElementById("console-payload").value.trim();
         try {
@@ -2338,16 +2755,16 @@
           payload: {
             questions: [
               {
-                id: "q_qa_prop_" + Date.now(),
+                id: "q_sample_" + Date.now(),
                 subject: "QA",
                 chapter: "QA_PROFIT_LOSS",
                 subtopic: "Faulty Weight Balance",
                 method: "Cost Price vs Stated Weight Ratio",
-                questionText: "A dishonest dealer professes to sell his goods at cost price, but uses a false weight of $900\\text{ g}$ for a kilogram. Find his gain percentage.",
+                questionText: "A dishonest dealer professes to sell goods at cost price, but uses a false weight of $900\\text{ g}$ for a kilogram. Find gain percentage.",
                 options: ["$10\\%$", "$11\\frac{1}{9}\\%$", "$9\\frac{1}{11}\\%$", "$12.5\\%$"],
                 correctIndex: 1,
                 explanation: "Profit $\\% = \\frac{\\text{Error}}{\\text{True Value} - \\text{Error}} \\times 100 = \\frac{100}{900} \\times 100 = 11\\frac{1}{9}\\%$.",
-                tags: ["ProfitLoss", "DishonestDealer"]
+                tags: ["ProfitLoss"]
               }
             ]
           }
@@ -2404,14 +2821,14 @@
           const tx = db.transaction(["store_vault"], "readwrite");
           tx.objectStore("store_vault").clear();
           await new Promise(r => tx.oncomplete = r);
-          alert("Error Vault has been completely cleared.");
+          alert("Error Vault cleared.");
           renderVault();
           refreshDbInspector();
         }
       }
 
       async function factoryResetAll() {
-        if (confirm("WARNING: Complete factory reset will wipe all questions, error vaults, and attempts!")) {
+        if (confirm("WARNING: Complete factory reset will wipe all data!")) {
           const tx = db.transaction(["store_questions", "store_attempts", "store_vault", "store_formulas", "store_config"], "readwrite");
           tx.objectStore("store_questions").clear();
           tx.objectStore("store_attempts").clear();
@@ -2424,137 +2841,6 @@
           renderDashboard();
           refreshDbInspector();
         }
-      }
-
-      /* -------------------------------------------------------------
-       * 10. AUTHENTIC ERROR VAULT WITH SELF-CLEANING
-       * ------------------------------------------------------------- */
-      async function renderVault() {
-        const vault = await getAllRecords("store_vault");
-        const questions = await getAllRecords("store_questions");
-        const container = document.getElementById("vault-list-container");
-        container.innerHTML = "";
-
-        // Purge orphan records where question no longer exists in store_questions
-        const validTraps = [];
-        for (const v of vault) {
-          const q = questions.find(item => item.id === v.questionId);
-          if (q) {
-            validTraps.push({ v, q });
-          } else {
-            await deleteRecordFromStore("store_vault", v.questionId);
-          }
-        }
-
-        document.getElementById("vault-count-badge").innerText = `${validTraps.length} Traps`;
-
-        if (validTraps.length === 0) {
-          container.innerHTML = `<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">Error Vault is clear. Zero failed questions recorded.</div>`;
-          return;
-        }
-
-        validTraps.forEach(({ v, q }) => {
-          const div = document.createElement("div");
-          div.className = "card";
-          div.style.borderColor = "#da3633";
-          div.style.marginBottom = "8px";
-          div.innerHTML = `
-            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-              <span class="badge" style="background:#da3633;">${v.errorTag || 'ERROR'}</span>
-              <span class="badge" style="background:#21262d; color:#a371f7;">Leitner Box ${v.leitnerBox || 1}</span>
-            </div>
-            <div style="font-size:13px; line-height:1.5;">${formatRichText(q.questionText)}</div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-              <span style="font-size:11px; color:var(--accent-cyan);">Correct: Option ${q.correctIndex + 1}</span>
-              <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.resolveVaultTrap('${v.questionId}')">Mark Resolved (Level Up)</button>
-            </div>
-          `;
-          container.appendChild(div);
-        });
-      }
-
-      async function resolveVaultTrap(qId) {
-        const tx = db.transaction(["store_vault"], "readwrite");
-        const store = tx.objectStore("store_vault");
-        const req = store.get(qId);
-        req.onsuccess = async () => {
-          const rec = req.result;
-          if (rec) {
-            rec.leitnerBox = (rec.leitnerBox || 1) + 1;
-            if (rec.leitnerBox > 3) {
-              await deleteRecordFromStore("store_vault", qId);
-              alert("Mastered! Question graduated out of Error Vault.");
-            } else {
-              await putRecord("store_vault", rec);
-              alert(`Promoted to Leitner Box ${rec.leitnerBox}! Review scheduled.`);
-            }
-            renderVault();
-          }
-        };
-      }
-
-      async function launchVaultSprint() {
-        const vault = await getAllRecords("store_vault");
-        const questions = await getAllRecords("store_questions");
-        const failedQs = questions.filter(q => vault.some(v => v.questionId === q.id));
-
-        if (failedQs.length === 0) {
-          alert("Error Vault is empty! No failed questions logged.");
-          return;
-        }
-
-        activeExam = {
-          sessionId: "vault_sprint_" + Date.now(),
-          timestamp: Date.now(),
-          title: "Trap-Breaker Sprint",
-          isSectionLocked: false,
-          sections: [{
-            id: "SEC_VAULT",
-            name: "Error Vault Traps",
-            durationSec: failedQs.length * 60,
-            questions: failedQs
-          }],
-          activeSectionIndex: 0,
-          currentQuestionIndex: 0,
-          questions: failedQs.map((q, idx) => ({ ...q, sectionIndex: 0, sectionName: "Error Vault", localNumber: idx + 1 })),
-          sectionRemainingSec: failedQs.length * 60,
-          currentQTimeSpentSec: 0,
-          userResponses: {},
-          isPaused: false
-        };
-
-        activeExam.questions.forEach(q => {
-          activeExam.userResponses[q.id] = {
-            selectedOption: null,
-            initialOption: null,
-            status: "unanswered",
-            switches: 0,
-            timeSpentSec: 0,
-            struck: []
-          };
-        });
-
-        document.getElementById("exam-arena").style.display = "flex";
-        renderActiveExamQuestion();
-        startExamTimers();
-      }
-
-      async function spoolAndroidPrint() {
-        const questions = await getAllRecords("store_questions");
-        const root = document.getElementById("print-sheet-root");
-        root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Revision Spool - ${new Date().toLocaleDateString()}</h2>`;
-
-        questions.forEach((q, idx) => {
-          const item = document.createElement("div");
-          item.className = "print-question";
-          item.innerHTML = `
-            <strong>Q${idx + 1}.</strong> ${formatRichText(q.questionText)}<br>
-            ${q.options.map((opt, i) => `(${i + 1})${formatRichText(opt)} &nbsp;`).join(' ')}
-          `;
-          root.appendChild(item);
-        });
-
-        window.print();
       }
 
       async function exportFullBackup() {
@@ -2582,7 +2868,7 @@
           const q = questions.find(item => item.id === v.questionId);
           if (q) {
             md += `### ${q.chapter} - ${q.id}\n`;
-            md += `**Tag:** #${v.errorTag || 'ERROR'} | **Leitner Box:** ${v.leitnerBox || 1}\n\n`;
+            md += `**Tag:** #${v.errorTag || 'UNCLASSIFIED'} | **Leitner Box:** ${v.leitnerBox || 1}\n\n`;
             md += `> ${q.questionText}\n\n`;
             md += `**Solution:**\n${q.explanation}\n\n---\n\n`;
           }
@@ -2606,7 +2892,7 @@
         if (btn) btn.classList.add("active");
 
         if (tId === "tab-dashboard") renderDashboard();
-        if (tId === "tab-dojo") { updateDojoChapters(); renderFormulaSheet(); }
+        if (tId === "tab-dojo") updateDojoChapters();
         if (tId === "tab-console") refreshDbInspector();
         if (tId === "tab-vault") renderVault();
       }
@@ -2630,17 +2916,26 @@
         toggleDojoMethod,
         autoSaveDojoAnnotation,
         toggleDojoPalette,
+        openConceptHubModal,
+        renderConceptHubCards,
+        deleteFormulaCard,
         openFormulaEditorModal,
         handleFormulaSubjectChange,
         handleFormulaChapterChange,
         saveFormulaCard,
-        toggleFormulaSheet,
+        openPrintConfigModal,
+        handlePrintTypeChange,
+        updatePrintChapters,
+        generateAndPrintSheet,
         openEditQuestionModal,
         openEditCurrentDojoQuestion,
         saveQuestionEditor,
         deleteCurrentEditingQuestion,
         openMockReview,
         filterReviewQuestions,
+        setMistakeTag,
+        openHistoryArchiveModal,
+        renderArchiveList,
         executeConsoleCommand,
         loadSamplePayload,
         refreshDbInspector,
@@ -2650,9 +2945,8 @@
         factoryResetAll,
         renderDashboard,
         renderVault,
-        resolveVaultTrap,
+        advanceVaultBox,
         launchVaultSprint,
-        spoolAndroidPrint,
         exportFullBackup,
         exportObsidianMarkdown
       };
