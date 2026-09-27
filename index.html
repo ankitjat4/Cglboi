@@ -113,7 +113,7 @@
     .btn-danger { background: var(--status-red); }
     .btn-amber { background: var(--status-amber); color: #000; font-weight: 700; }
 
-    /* DASHBOARD HERO BANNER */
+    /* DASHBOARD HERO HEADER */
     .hero-banner {
       background: linear-gradient(135deg, #131926 0%, #090c12 100%);
       border: 1px solid rgba(56, 139, 253, 0.35);
@@ -173,7 +173,7 @@
     .nav-btn.active { color: var(--accent-blue); }
     .nav-btn svg { width: 22px; height: 22px; stroke-width: 2; }
 
-    /* FLOATING MINI-PLAYER DOCK */
+    /* FLOATING ACTIVE TEST MINI-PLAYER DOCK */
     #mini-player-dock {
       display: none;
       position: fixed;
@@ -199,7 +199,7 @@
       animation: pulse 1.5s infinite;
     }
 
-    /* MODAL OVERLAYS */
+    /* MODAL WINDOW OVERLAYS */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -242,8 +242,8 @@
     }
     .form-control:focus { outline: none; border-color: var(--border-focus); }
 
-    /* FULL-SCREEN SIMULATOR ARENAS & COMPENDIUM CANVAS */
-    #exam-arena, #dojo-arena-view, #compendium-fullscreen-view {
+    /* FULL-SCREEN SIMULATOR ARENAS */
+    #exam-arena, #dojo-arena-view {
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -386,7 +386,7 @@
       z-index: 2100;
     }
 
-    /* SLIDING PALETTE DRAWER & NODES */
+    /* SLIDING PALETTE DRAWER & CELLS */
     .palette-drawer-ui {
       position: fixed;
       top: 0; right: -100%; bottom: 0;
@@ -442,15 +442,18 @@
     .palette-cell.locked-cell { background: #151922; color: #484f58; cursor: not-allowed; border-color: rgba(255,255,255,0.03); }
     .palette-cell.current { border-color: #ffffff; box-shadow: 0 0 10px rgba(255,255,255,0.8); }
 
-    .chapter-section-header {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--accent-cyan);
-      margin: 12px 0 6px 0;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 4px;
-      display: flex;
-      justify-content: space-between;
+    /* INTERACTIVE FORENSIC TILES IN REVIEW */
+    .forensic-tile {
+      background: #151422;
+      border: 1px solid #36294a;
+      padding: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .forensic-tile:hover {
+      border-color: var(--accent-cyan);
+      background: #1e1930;
     }
 
     /* HARDENED PAUSE OVERLAY SHIELD */
@@ -499,15 +502,15 @@
       border: 1px solid var(--border-color);
     }
 
-    /* FULL-SCREEN LIVING COMPENDIUM STYLING (A4 CANVAS RATIO) */
+    /* LIVING DOCUMENT COMPENDIUM STYLES (A4 CANVAS RATIO) */
     .document-page-canvas {
       background: var(--bg-document);
       border: 1px solid var(--border-color);
-      border-radius: 14px;
+      border-radius: 12px;
       padding: 24px 20px;
-      margin-bottom: 24px;
-      line-height: 1.75;
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+      margin-bottom: 20px;
+      line-height: 1.7;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
     }
     .document-meta-header {
       border-bottom: 1px solid var(--border-color);
@@ -548,13 +551,13 @@
       border-color: var(--accent-blue);
     }
 
-    /* Admonitions */
+    /* Admonition / Callout Blocks */
     .callout-box {
       border-left: 3px solid var(--accent-cyan);
       background: rgba(56, 189, 248, 0.08);
       border-radius: 4px 8px 8px 4px;
       padding: 10px 12px;
-      margin: 14px 0;
+      margin: 12px 0;
       font-size: 13px;
       line-height: 1.5;
     }
@@ -581,7 +584,7 @@
     }
     .document-table th { background: var(--bg-elevated); color: var(--accent-cyan); }
 
-    /* SVG Radial Gauges */
+    /* SVG Radial Accuracy Gauges */
     .gauge-wrapper {
       display: flex;
       align-items: center;
@@ -605,7 +608,7 @@
       transition: stroke-dashoffset 0.6s ease;
     }
 
-    /* Battery Mastery Meters */
+    /* Battery Mastery Progress Meters */
     .battery-bar-container {
       background: var(--bg-elevated);
       height: 8px;
@@ -621,10 +624,10 @@
       transition: width 0.4s ease;
     }
 
-    /* PRINT STYLES */
+    /* PRINT SPOOLER */
     @media print {
       body { background: white !important; color: black !important; }
-      #bottom-nav, #exam-arena, #dojo-arena-view, #compendium-fullscreen-view, .btn, .card, .modal-overlay, #pause-shield, #mini-player-dock { display: none !important; }
+      #bottom-nav, #exam-arena, #dojo-arena-view, .btn, .card, .modal-overlay, #pause-shield, #mini-player-dock { display: none !important; }
       .print-page { display: block !important; column-count: 2; column-gap: 20px; font-size: 11px; padding: 20px; }
       .print-question { break-inside: avoid; margin-bottom: 14px; border-bottom: 1px solid #ccc; padding-bottom: 8px; }
       .print-vocab-item { break-inside: avoid; border: 1px solid #ddd; padding: 6px; margin-bottom: 8px; border-radius: 4px; }
@@ -654,7 +657,7 @@
   <!-- APPLICATION VIEWPORT ROOT (FOR GLOBAL GESTURE INTERCEPTOR) -->
   <div id="app-viewport-root">
 
-    <!-- ==================== 1. TIMED EXAM & REVIEW ARENA ==================== -->
+    <!-- ==================== 1. TIMED EXAM ARENA ==================== -->
     <div id="exam-arena">
       <div class="arena-header">
         <div style="display:flex; align-items:center; gap:8px;">
@@ -663,9 +666,6 @@
           </button>
           <button class="btn btn-amber" id="btn-arena-early-lock" style="padding:4px 10px; font-size:11px; display:none;" onclick="CGL_OS.requestEndSectionEarly()">
             🔒 Lock Section Early
-          </button>
-          <button class="btn btn-secondary" id="btn-arena-exit-review" style="padding:4px 10px; font-size:11px; display:none;" onclick="CGL_OS.exitReviewArena()">
-            ✕ Exit Review
           </button>
         </div>
 
@@ -698,15 +698,9 @@
           </div>
         </div>
 
-        <!-- Hesitation & Review Metadata Header (Active in Review Mode) -->
-        <div id="arena-review-meta-box" style="display:none; margin-bottom:12px;"></div>
-
         <div class="q-text-canvas" id="arena-q-text"></div>
         <div class="q-image-container" id="arena-image-container" style="display:none;"></div>
         <div id="arena-options-container"></div>
-
-        <!-- Solution & Explanation Panel (Active in Review Mode) -->
-        <div id="arena-review-solution-box" style="display:none; background:#0a0e16; border-left:3px solid var(--accent-cyan); border-radius:6px; padding:12px; margin-top:14px; font-size:13px; line-height:1.6;"></div>
       </div>
 
       <div class="arena-footer">
@@ -824,64 +818,6 @@
     </div>
 
 
-    <!-- ==================== 2B. FULL-SCREEN LIVING COMPENDIUM STUDIO ==================== -->
-    <div id="compendium-fullscreen-view">
-      <div class="arena-header">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <button class="hud-icon-btn" onclick="CGL_OS.exitCompendiumFullscreen()">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-          </button>
-          <div>
-            <div style="font-size:14px; font-weight:800; color:var(--accent-cyan);" id="comp-studio-title">Knowledge Studio</div>
-            <div style="font-size:10px; color:var(--text-muted);" id="comp-studio-sub">Master Living Dossiers</div>
-          </div>
-        </div>
-
-        <div style="display:flex; gap:6px;">
-          <button class="btn btn-secondary" style="padding:6px 10px; font-size:11px;" onclick="CGL_OS.openConceptEditorModal(true)">+ New Sheet</button>
-          <button class="hud-icon-btn" onclick="CGL_OS.toggleCompendiumOmniSearch(true)">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-          </button>
-        </div>
-      </div>
-
-      <!-- Subject & Chapter Navigation Toolbar -->
-      <div style="background:#0e131d; border-bottom:1px solid var(--border-color); padding:8px 14px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between;">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <select id="comp-studio-subject-select" class="form-control" style="width:100px; padding:6px; font-size:12px;" onchange="CGL_OS.handleStudioSubjectChange(this.value)">
-            <option value="QA">QA</option>
-            <option value="REAS">REAS</option>
-            <option value="ENG">ENG</option>
-            <option value="GA">GA</option>
-          </select>
-          <select id="comp-studio-chapter-select" class="form-control" style="width:160px; padding:6px; font-size:12px;" onchange="CGL_OS.handleStudioChapterChange(this.value)"></select>
-          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.openRenameChapterPrompt()" title="Rename Active Chapter">✎</button>
-        </div>
-        <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.openCreateNewChapterPrompt()">+ New Chapter</button>
-      </div>
-
-      <!-- Sheet Tabs Row for Current Chapter -->
-      <div class="sticky-anchor-bar" id="comp-studio-sheet-tabs"></div>
-
-      <!-- Full-Screen Living Document Reading Canvas -->
-      <div class="arena-body" id="comp-studio-body" style="padding:14px; flex:1;">
-        <div id="comp-studio-doc-canvas"></div>
-      </div>
-    </div>
-
-    <!-- OMNI-SEARCH MODAL DRAWER FOR COMPENDIUM -->
-    <div class="modal-overlay" id="modal-compendium-omni-search">
-      <div class="modal-window" style="max-width:680px; max-height:85vh;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-          <h3 style="font-size:15px; font-weight:800; color:var(--accent-cyan);">Omni-Search Compendium</h3>
-          <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-compendium-omni-search').classList.remove('active')">✕</button>
-        </div>
-        <input type="text" id="comp-omni-search-input" class="form-control" placeholder="Search across all subjects, formulas, theorems, rules..." oninput="CGL_OS.executeOmniSearch(this.value)">
-        <div id="comp-omni-search-results" style="margin-top:12px; max-height:60vh; overflow-y:auto;"></div>
-      </div>
-    </div>
-
-
     <!-- ==================== 3. TAB 1: DASHBOARD ==================== -->
     <div id="tab-dashboard" class="view-container active">
       <div class="hero-banner">
@@ -897,7 +833,7 @@
         </div>
       </div>
 
-      <!-- Quick Launch Saved Blueprints & Frozen Papers Row -->
+      <!-- Quick Launch Fixed Papers & Saved Blueprints Row -->
       <div style="margin-bottom:14px;">
         <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px; display:flex; justify-content:space-between;">
           <span>Saved Papers & Blueprints</span>
@@ -932,11 +868,8 @@
           <div style="font-size:22px; font-weight:800;" id="kpi-total-mocks">0</div>
         </div>
 
-        <div class="card" style="margin-bottom:0; padding:12px;" onclick="CGL_OS.showTrapInfoPrompt()" style="cursor:pointer;">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase;">Q-IV Traps Hit</div>
-            <span style="font-size:10px; color:var(--accent-cyan);">What's this?</span>
-          </div>
+        <div class="card" style="margin-bottom:0; padding:12px;">
+          <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase;">Q-IV Traps Hit</div>
           <div style="font-size:22px; font-weight:800; color:var(--status-red);" id="kpi-traps-hit">0</div>
         </div>
       </div>
@@ -945,7 +878,7 @@
       <div class="card">
         <div class="card-title">
           <span>Subject Mastery Matrix</span>
-          <span style="font-size:10px; color:var(--accent-cyan);">Tap Subject for Deep Diagnostic</span>
+          <span style="font-size:10px; color:var(--accent-cyan);">Tap to Inspect</span>
         </div>
         <div id="dash-subject-batteries"></div>
       </div>
@@ -989,10 +922,10 @@
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <div>
             <b style="font-size:14px; color:#38bdf8;">Knowledge & Topic Compendium</b>
-            <p style="font-size:11px; color:var(--text-muted);">Living document cheat sheets, theorem dossiers & multi-sheet reader.</p>
+            <p style="font-size:11px; color:var(--text-muted);">Living document cheat sheets, theorem dossiers & pop-out topic sheets.</p>
           </div>
-          <button class="btn" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openCompendiumFullscreen()">
-            Open Studio
+          <button class="btn" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openKnowledgeCompendiumModal()">
+            Open Compendium
           </button>
         </div>
       </div>
@@ -1032,11 +965,11 @@
     <div id="tab-console" class="view-container">
       <div class="card">
         <div class="card-title">JSON Command Bus & AI Dispatch</div>
-        <textarea class="form-control" id="console-payload" style="height:140px; font-family:var(--font-mono); font-size:12px; color:#38bdf8;" placeholder='Paste AI command payload here (e.g. AI_PRESCRIBE_REMEDY, INGEST_AND_LAUNCH_MOCK, MODIFY_TAXONOMY)...'></textarea>
+        <textarea class="form-control" id="console-payload" style="height:140px; font-family:var(--font-mono); font-size:12px; color:#38bdf8;" placeholder='Paste AI command payload here (e.g. AI_PRESCRIBE_REMEDY, INGEST_AND_LAUNCH_MOCK, BATCH_INGEST)...'></textarea>
         <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
           <button class="btn" onclick="CGL_OS.executeConsoleCommand()">Execute Command</button>
-          <button class="btn btn-secondary" onclick="document.getElementById('console-payload').value=''">Clear</button>
-          <button class="btn btn-secondary" style="color:var(--accent-cyan); border-color:var(--accent-cyan);" onclick="CGL_OS.copyLiveSystemManifestToClipboard()">📋 Copy Live AI Manifest</button>
+          <button class="btn btn-secondary" onclick="document.getElementById('console-payload').value=''">Clear Console</button>
+          <button class="btn btn-secondary" onclick="CGL_OS.loadSamplePayload('REMEDY')">Sample AI Remedy</button>
           <button class="btn btn-secondary" onclick="CGL_OS.openMasterLedgerExportModal()">Export Bank for Gem</button>
         </div>
       </div>
@@ -1123,29 +1056,23 @@
   </div> <!-- /#app-viewport-root -->
 
 
-  <!-- ==================== 7. TWO-STAGE FORENSIC COCKPIT MODAL ==================== -->
+  <!-- ==================== 7. TESTBOOK MOCK SOLUTION ANALYZER ==================== -->
   <div class="modal-overlay" id="modal-mock-review">
-    <div class="modal-window" style="max-width:680px; max-height:92vh;">
+    <div class="modal-window" style="max-width:700px; max-height:92vh;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
         <div>
-          <h3 style="font-size:16px; font-weight:800;" id="review-modal-title">Mock Forensic Cockpit</h3>
+          <h3 style="font-size:16px; font-weight:800;" id="review-modal-title">Mock Forensic Review</h3>
           <span style="font-size:11px; color:var(--text-muted);" id="review-modal-date">Submitted on Date</span>
         </div>
-        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-mock-review').classList.remove('active')">✕ Close</button>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--accent-cyan);" id="btn-review-save-fixed">📌 Freeze Paper</button>
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--status-green);" id="btn-review-reattempt">🔁 Re-attempt</button>
+          <button class="btn" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openAiExportModal()">Export for AI</button>
+          <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-mock-review').classList.remove('active')">✕ Close</button>
+        </div>
       </div>
 
-      <!-- Action Button Row -->
-      <div style="display:flex; gap:8px; margin-bottom:14px;">
-        <button class="btn" style="flex:1; padding:12px; font-size:13px;" id="btn-cockpit-enter-arena">
-          📖 Enter Full-Screen Review Arena
-        </button>
-        <button class="btn btn-secondary" style="padding:8px 12px; font-size:12px; color:var(--status-green);" id="btn-review-reattempt">🔁 Re-attempt</button>
-        <button class="btn btn-secondary" style="padding:8px 12px; font-size:12px; color:var(--accent-cyan);" id="btn-review-save-fixed">📌 Freeze</button>
-        <button class="btn btn-secondary" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openAiExportModal()">AI Export</button>
-      </div>
-
-      <!-- Core Scorecard Metrics -->
-      <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:12px; text-align:center;">
+      <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:10px; text-align:center;">
         <div style="background:var(--bg-elevated); padding:8px; border-radius:6px;">
           <div style="font-size:10px; color:var(--text-muted);">SCORE</div>
           <div style="font-size:18px; font-weight:800;" id="rev-score">0</div>
@@ -1164,55 +1091,29 @@
         </div>
       </div>
 
-      <!-- Time & Pacing Audit -->
-      <div class="card" style="padding:12px; margin-bottom:12px;">
-        <div class="card-title"><span>⏱ Time & Pacing Audit</span></div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12px;">
-          <div>Time Allocated: <b id="cockpit-time-allocated">60m 00s</b></div>
-          <div>Time Spent: <b id="cockpit-time-spent">48m 12s</b></div>
-          <div>Average Velocity: <b id="cockpit-avg-velocity">42s / Q</b></div>
-          <div>Penalty Drag: <b id="cockpit-penalty-drag" style="color:var(--status-red);">-0.00 pts</b></div>
+      <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:14px; text-align:center;">
+        <div class="forensic-tile" onclick="CGL_OS.filterReviewQuestions('PENALTY')">
+          <div style="font-size:9px; color:var(--status-purple);">PENALTY DRAG (TAP)</div>
+          <div style="font-size:14px; font-weight:800; color:#f87171;" id="rev-penalty">-0.00</div>
+        </div>
+        <div class="forensic-tile" onclick="CGL_OS.filterReviewQuestions('SWITCH')">
+          <div style="font-size:9px; color:var(--status-purple);">2ND GUESS (TAP)</div>
+          <div style="font-size:14px; font-weight:800; color:#38bdf8;" id="rev-switch-delta">0 Net</div>
+        </div>
+        <div class="forensic-tile" onclick="CGL_OS.filterReviewQuestions('TRAPS')">
+          <div style="font-size:9px; color:var(--status-purple);">Q-IV TRAPS (TAP)</div>
+          <div style="font-size:14px; font-weight:800; color:var(--status-red);" id="rev-traps">0</div>
         </div>
       </div>
 
-      <!-- Sectional Quadrant Comparison -->
-      <div class="card" style="padding:12px; margin-bottom:12px;">
-        <div class="card-title"><span>Sectional Efficiency Comparison</span></div>
-        <div id="cockpit-sectional-comparison-list"></div>
+      <div style="display:flex; gap:6px; margin-bottom:12px; overflow-x:auto;">
+        <button class="btn btn-secondary" style="font-size:11px; padding:6px 10px;" onclick="CGL_OS.filterReviewQuestions('ALL')">All Qs</button>
+        <button class="btn btn-danger" style="font-size:11px; padding:6px 10px;" onclick="CGL_OS.filterReviewQuestions('INCORRECT')">Incorrect Only</button>
+        <button class="btn btn-secondary" style="font-size:11px; padding:6px 10px; color:var(--status-green);" onclick="CGL_OS.filterReviewQuestions('CORRECT')">Correct</button>
+        <button class="btn btn-secondary" style="font-size:11px; padding:6px 10px;" onclick="CGL_OS.filterReviewQuestions('UNANSWERED')">Unattempted</button>
       </div>
 
-      <!-- Mistake Tags Audit -->
-      <div class="card" style="padding:12px; margin-bottom:0;">
-        <div class="card-title"><span>Cognitive Vulnerability & Mistake Distribution</span></div>
-        <div id="cockpit-mistake-tags-list" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- ==================== 7B. SUBJECT DIAGNOSTIC MODAL SHEET ==================== -->
-  <div class="modal-overlay" id="modal-subject-diagnostic">
-    <div class="modal-window" style="max-width:550px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
-        <div>
-          <h3 style="font-size:16px; font-weight:800; color:var(--accent-cyan);" id="diag-subject-title">QA Diagnostic</h3>
-          <span style="font-size:11px; color:var(--text-muted);" id="diag-subject-name">Quantitative Aptitude</span>
-        </div>
-        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-subject-diagnostic').classList.remove('active')">✕</button>
-      </div>
-
-      <div style="display:flex; align-items:center; justify-content:space-between; background:var(--bg-elevated); padding:12px; border-radius:8px; margin-bottom:14px;">
-        <div>
-          <div style="font-size:11px; color:var(--text-muted);">Subject Master Accuracy</div>
-          <div style="font-size:24px; font-weight:800;" id="diag-subject-acc">0%</div>
-        </div>
-        <button class="btn" id="btn-diag-launch-blitz" style="padding:8px 12px; font-size:12px;">
-          ⚡ Launch 10-Q Subject Blitz
-        </button>
-      </div>
-
-      <div class="card-title"><span>Chapter Breakdown & Coverage</span></div>
-      <div id="diag-chapter-breakdown-list" style="max-height:260px; overflow-y:auto;"></div>
+      <div id="review-questions-list"></div>
     </div>
   </div>
 
@@ -1329,6 +1230,72 @@
   </div>
 
 
+  <!-- ==================== 11. HYBRID LIVING DOCUMENT COMPENDIUM ==================== -->
+  <div class="modal-overlay" id="modal-knowledge-compendium">
+    <div class="modal-window" style="max-width:850px; max-height:94vh;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+        <div>
+          <h3 style="font-size:16px; font-weight:800; color:#38bdf8;">Knowledge & Topic Compendium</h3>
+          <span style="font-size:11px; color:var(--text-muted);">Living document master view with pop-out topic sheets</span>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openConceptEditorModal(true)">+ Add Topic Dossier</button>
+          <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-knowledge-compendium').classList.remove('active')">✕</button>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 120px 1fr; gap:8px; margin-bottom:10px;">
+        <select id="comp-subject-select" class="form-control" onchange="CGL_OS.handleCompendiumSubjectChange(this.value)">
+          <option value="QA">QA</option>
+          <option value="REAS">REAS</option>
+          <option value="ENG">ENG</option>
+          <option value="GA">GA</option>
+        </select>
+        <select id="comp-chapter-select" class="form-control" onchange="CGL_OS.renderMasterCompendiumView()"></select>
+      </div>
+
+      <div class="sticky-anchor-bar" id="comp-anchor-bar"></div>
+      <div id="comp-scroll-canvas" style="min-height:300px;"></div>
+    </div>
+  </div>
+
+  <!-- POP-OUT DEDICATED TOPIC SHEET MODAL (WITH HORIZONTAL SWIPE) -->
+  <div class="modal-overlay" id="modal-popout-sheet">
+    <div class="modal-window" style="max-width:760px; max-height:94vh; display:flex; flex-direction:column;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+        <div>
+          <span class="badge" style="background:#1f6feb;" id="popout-topic-badge">QA_GEOMETRY</span>
+          <span style="font-size:11px; color:var(--text-muted); margin-left:6px;" id="popout-topic-counter">Topic 1 of 4</span>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.openConceptEditorModal(false)">Edit</button>
+          <button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.deleteCurrentTopicDossier()">🗑 Delete</button>
+          <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-popout-sheet').classList.remove('active')">✕</button>
+        </div>
+      </div>
+
+      <div class="arena-body" id="popout-sheet-body" style="padding:10px 4px; flex:1;">
+        <h2 style="font-size:20px; font-weight:800; color:#fff;" id="popout-sheet-title">Topic Title</h2>
+        <div style="font-size:12px; color:#a371f7; font-family:var(--font-mono); margin:4px 0 12px 0;" id="popout-sheet-sub">Subtopic</div>
+        
+        <div class="q-image-container" id="popout-sheet-image" style="display:none;"></div>
+        <div style="font-size:14px; line-height:1.65; color:var(--text-main);" id="popout-sheet-content"></div>
+
+        <div style="margin-top:20px; border-top:1px solid var(--border-color); padding-top:12px;">
+          <label style="font-size:11px; font-weight:700; color:var(--text-muted);">Topic Revision Cue / Scratchpad</label>
+          <textarea id="popout-sheet-scratchpad" class="form-control" style="height:70px; margin-top:4px;" placeholder="Personal formula reminder, trap notes..." oninput="CGL_OS.autoSaveTopicScratchpad(this.value)"></textarea>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:10px; margin-top:8px;">
+        <button class="btn btn-secondary" onclick="CGL_OS.navPopoutTopic(-1)">◄ Previous Topic</button>
+        <span style="font-size:11px; color:var(--text-muted);">Swipe left / right to navigate</span>
+        <button class="btn btn-secondary" onclick="CGL_OS.navPopoutTopic(1)">Next Topic ►</button>
+      </div>
+    </div>
+  </div>
+
+
   <!-- ==================== 12. SELECTIVE PRINT SPOOLER CONFIG ==================== -->
   <div class="modal-overlay" id="modal-print-config">
     <div class="modal-window">
@@ -1418,7 +1385,7 @@
       </div>
 
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px;">
-        <button class="btn btn-secondary" onclick="CGL_OS.openSaveBlueprintModal('DYNAMIC_BLUEPRINT')">Save as Dynamic Blueprint</button>
+        <button class="btn btn-secondary" onclick="CGL_OS.openSaveBlueprintModal()">Save as Dynamic Blueprint</button>
         <button class="btn" onclick="CGL_OS.launchConfiguredMock()">Launch Arena</button>
       </div>
     </div>
@@ -1651,7 +1618,7 @@
   <script>
     const CGL_OS = (() => {
       const DB_NAME = "cgl_os_db";
-      const DB_VERSION = 12;
+      const DB_VERSION = 11;
       let db = null;
       let dbInitPromise = null;
 
@@ -1661,11 +1628,9 @@
       let dojoExam = null;
       let activeReviewAttempt = null;
 
-      // Full-Screen Living Compendium Studio State
-      let studioCurrentSubject = "QA";
-      let studioCurrentChapter = "QA_GEOMETRY";
-      let studioChapterSheets = [];
-      let studioActiveSheetIndex = 0;
+      // Knowledge Compendium & Pop-out State
+      let compendiumTopics = [];
+      let currentPopoutTopicIndex = 0;
       let currentConceptImageBase64 = "";
 
       // Disaster Recovery Hydration State
@@ -1674,7 +1639,7 @@
       // Custom Mistake Tags State
       let customMistakeTags = ["CALCULATION_SLIP", "READING_TRAP", "FORMULA_AMNESIA", "CONCEPT_VOID", "RUSHED_PANIC"];
 
-      // 8 Restored Vault Questions from user markdown export[span_1](start_span)[span_1](end_span) + Foundation Pool
+      // 8 Restored Vault Questions from historical archive + Foundation Questions
       const SEED_QUESTIONS = [
         {
           id: "q_cgl_ga_polity_014",
@@ -1860,7 +1825,7 @@
         }
       ];
 
-      // Pre-Seeded Living Document Topic Dossiers (Multi-Sheet Chapters)
+      // Pre-Seeded Living Document Topic Dossiers
       const SEED_TOPIC_DOSSIERS = [
         {
           id: "top_qa_geo_triangles",
@@ -1930,7 +1895,7 @@
         }
       ];
 
-      let TAXONOMY = {
+      const TAXONOMY = {
         QA: {
           name: "Quantitative Aptitude",
           weight: 25,
@@ -1960,7 +1925,7 @@
         if (!str) return "";
         let out = String(str);
 
-        // Callout Admonitions
+        // Callout Admonition Blocks
         out = out.replace(/^>\s*\[!trap\]\s*(.*)$/gm, '<div class="callout-box trap"><b>⚠️ Trapping Point:</b> $1</div>');
         out = out.replace(/^>\s*\[!formula\]\s*(.*)$/gm, '<div class="callout-box formula"><b>⚡ Formula:</b> $1</div>');
         out = out.replace(/^>\s*\[!tip\]\s*(.*)$/gm, '<div class="callout-box"><b>💡 Tip:</b> $1</div>');
@@ -2020,7 +1985,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 2. SELF-HEALING ASYNC STORAGE ENGINE (VERSION 12)
+       * 2. SELF-HEALING ASYNC STORAGE ENGINE (VERSION 11)
        * ------------------------------------------------------------- */
       function getDB() {
         if (db) return Promise.resolve(db);
@@ -2080,7 +2045,7 @@
         SEED_QUESTIONS.forEach(q => stQ.put(q));
         await new Promise(r => txQ.oncomplete = r);
 
-        // 2. Seed 8 Vault Items[span_2](start_span)[span_2](end_span)
+        // 2. Seed 8 Vault Items[span_1](start_span)[span_1](end_span)
         const historicalVaultKeys = [
           { questionId: "q_cgl_ga_polity_014", chapter: "GA_POLITY", subject: "GA", errorTag: "CONCEPT_VOID" },
           { questionId: "q_cgl_qa_geom_011", chapter: "QA_GEOMETRY", subject: "QA", errorTag: "CALCULATION_SLIP" },
@@ -2118,12 +2083,7 @@
         SEED_SAVED_MOCKS.forEach(b => stB.put(b));
         await new Promise(r => txB.oncomplete = r);
 
-        // 5. Taxonomy & Custom Mistake Tags config
-        const savedTaxonomy = await getRecord("store_config", "system_taxonomy");
-        if (savedTaxonomy && savedTaxonomy.value) {
-          TAXONOMY = savedTaxonomy.value;
-        }
-
+        // 5. Custom Mistake Tags config
         const savedMistakeConfig = await getRecord("store_config", "custom_mistake_tags");
         if (savedMistakeConfig && Array.isArray(savedMistakeConfig.value)) {
           customMistakeTags = [...new Set([...customMistakeTags, ...savedMistakeConfig.value])];
@@ -2279,7 +2239,7 @@
           stores.store_config = raw.config || raw.store_config || [];
         }
 
-        // Schema Sanitizers
+        // Defensive Schema Sanitizers (Guarantees no undefined crashes on dashboard renders)
         stores.store_questions = (stores.store_questions || []).map(sanitizeQuestion);
         stores.store_concepts = (stores.store_concepts || []).map(sanitizeDossier);
         stores.store_vault = (stores.store_vault || []).map(sanitizeVaultEntry);
@@ -2384,7 +2344,7 @@
             }
           }
 
-          // Hydrate stores
+          // Write Hydrated Stores
           for (const sName of storeKeys) {
             const items = pendingHydrationData[sName] || [];
             if (items.length > 0 && d.objectStoreNames.contains(sName)) {
@@ -2403,134 +2363,6 @@
         } catch(err) {
           alert("Hydration Error: " + err.message);
         }
-      }
-
-      /* -------------------------------------------------------------
-       * 2C. RUNTIME SYSTEM INTROSPECTION (LIVE AI MANIFEST)
-       * ------------------------------------------------------------- */
-      async function copyLiveSystemManifestToClipboard() {
-        const questions = await getAllRecords("store_questions");
-        const vault = await getAllRecords("store_vault");
-        const dossiers = await getAllRecords("store_concepts");
-        const presets = await getAllRecords("store_saved_mocks");
-        const attempts = await getAllRecords("store_attempts");
-
-        const subCounts = { QA: 0, REAS: 0, ENG: 0, GA: 0 };
-        questions.forEach(q => { if (subCounts[q.subject] !== undefined) subCounts[q.subject]++; });
-
-        const manifest = `# SSC CGL INTELLIGENCE OS: RUNTIME SYSTEM MANIFEST & AI API SPEC
-Generated: ${new Date().toISOString()} | Engine Version: ${DB_VERSION} | IndexedDB: ${DB_NAME}
-
-## 1. CURRENT REPOSITORY STATE SNAPSHOT
-• Questions in Bank: ${questions.length} (QA: ${subCounts.QA}, REAS: ${subCounts.REAS}, ENG: ${subCounts.ENG}, GA: ${subCounts.GA})
-• Active Error Vault Traps: ${vault.length}
-• Master Compendium Topic Sheets: ${dossiers.length}
-• Saved Blueprints & Fixed Papers: ${presets.length}
-• Mock Tests Logged: ${attempts.length}
-
-## 2. ACTIVE TAXONOMY SCHEMA
-${Object.keys(TAXONOMY).map(sub => `• **${sub} (${TAXONOMY[sub].name}):**${TAXONOMY[sub].chapters.join(', ')}`).join('\n')}
-
-## 3. SUPPORTED COMMAND ACTIONS (RAW JSON CONTRACTS)
-
-### ACTION 1: INGEST_AND_LAUNCH_MOCK
-Directly compiles and boots a multi-section arena immediately:
-\`\`\`json
-{
-  "action": "INGEST_AND_LAUNCH_MOCK",
-  "payload": {
-    "title": "Mock Title Here",
-    "durationMin": 15,
-    "questions": [
-      {
-        "id": "unique_q_id",
-        "subject": "QA",
-        "chapter": "QA_GEOMETRY",
-        "subtopic": "Triangles",
-        "method": "Angle Bisector",
-        "questionText": "Question text in Markdown & KaTeX $...$",
-        "imageUrl": "",
-        "options": ["Opt 1", "Opt 2", "Opt 3", "Opt 4"],
-        "correctIndex": 0,
-        "explanation": "Detailed solution with KaTeX",
-        "tags": ["AI_Generated"]
-      }
-    ]
-  }
-}
-\`\`\`
-
-### ACTION 2: AI_PRESCRIBE_REMEDY
-Pulls existing botched questions from user's vault + appends fresh diagnostic questions:
-\`\`\`json
-{
-  "action": "AI_PRESCRIBE_REMEDY",
-  "payload": {
-    "title": "Remedial Blitz Title",
-    "durationMin": 10,
-    "questionIds": ["q_cgl_qa_geom_011", "q_cgl_qa_tw_010"],
-    "newQuestions": [ ... ]
-  }
-}
-\`\`\`
-
-### ACTION 3: BATCH_INGEST_COMPENDIUM
-Ingests living document topic sheets into the Full-Screen Knowledge Studio:
-\`\`\`json
-{
-  "action": "BATCH_INGEST_COMPENDIUM",
-  "payload": {
-    "dossiers": [
-      {
-        "id": "unique_top_id",
-        "subject": "QA",
-        "chapter": "QA_GEOMETRY",
-        "title": "Sheet Title",
-        "subtitle": "Subtopic cue",
-        "content": "Full Markdown with tables, KaTeX, and callouts: > [!formula] or > [!trap]",
-        "imageUrl": ""
-      }
-    ]
-  }
-}
-\`\`\`
-
-### ACTION 4: MODIFY_TAXONOMY
-Dynamically alters subjects and chapters in runtime IndexedDB:
-\`\`\`json
-{
-  "action": "MODIFY_TAXONOMY",
-  "payload": {
-    "operation": "ADD_CHAPTER" | "RENAME_CHAPTER" | "DELETE_CHAPTER" | "ADD_SUBJECT",
-    "subject": "QA",
-    "chapter": "QA_NEW_CHAPTER_NAME"
-  }
-}
-\`\`\`
-
-### ACTION 5: RAW_DB_OPERATION
-Direct CRUD manipulation of any internal IndexedDB store:
-\`\`\`json
-{
-  "action": "RAW_DB_OPERATION",
-  "payload": {
-    "store": "store_questions" | "store_attempts" | "store_vault" | "store_concepts" | "store_saved_mocks",
-    "operation": "PUT" | "DELETE" | "CLEAR",
-    "key": "primary_key_id",
-    "record": { ... }
-  }
-}
-\`\`\`
-
----
-*INSTRUCTION FOR THE AI MODEL:* You are the tactical AI coaching engine for Ankit's SSC CGL OS. You have full administrative authority over this system. When responding to commands or generating practice sets, output ONLY an executable JSON object conforming to the contracts above.`;
-
-        await navigator.clipboard.writeText(manifest);
-        alert("Live AI System Manifest copied to clipboard! Paste it into a new chat with any AI model to grant it full operational context.");
-      }
-
-      function showTrapInfoPrompt() {
-        alert("Quadrant-IV (Q-IV) Time Traps:\n\nThese occur when you spend more than 90 seconds on a single question and still mark the wrong answer.\n\nThey represent severe score drains (wasted time + negative marking penalty). The system flags them in crimson to help you calibrate skipping discipline.");
       }
 
 /* ==================== END OF PART 1 ==================== */
@@ -2644,7 +2476,7 @@ Direct CRUD manipulation of any internal IndexedDB store:
 
         if (mode === "FIXED_PAPER") {
           modalTitle.innerText = "Freeze Mock as Fixed Paper";
-          titleInput.placeholder = "e.g. CGL Tier 1 2024 Replica (Exact Questions)";
+          titleInput.placeholder = "e.g. CGL 2024 Tier 1 Replica (Exact Questions)";
         } else {
           modalTitle.innerText = "Save Dynamic Blueprint Ruleset";
           titleInput.placeholder = "e.g. Speed Blitz Alpha (QA + REAS)";
@@ -2729,22 +2561,6 @@ Direct CRUD manipulation of any internal IndexedDB store:
         if (!preset) return;
 
         if (preset.type === "FIXED_PAPER" && preset.questions && preset.questions.length > 0) {
-          const sections = preset.sections && preset.sections.length > 0
-            ? JSON.parse(JSON.stringify(preset.sections)).map(s => ({ ...s, locked: false }))
-            : [{ id: "SEC_1", name: "Paper Arena", durationSec: 900, locked: false, questionCount: preset.questions.length }];
-
-          // Strict sectionIndex normalization prevents blocking at question 1
-          const normalizedQuestions = preset.questions.map((q, idx) => {
-            let sIdx = typeof q.sectionIndex === "number" && q.sectionIndex < sections.length ? q.sectionIndex : 0;
-            return {
-              ...q,
-              sectionIndex: sIdx,
-              sectionName: sections[sIdx] ? sections[sIdx].name : "Paper Arena",
-              localNumber: idx + 1,
-              globalNumber: idx + 1
-            };
-          });
-
           activeExam = {
             sessionId: "fixed_mock_" + Date.now(),
             timestamp: Date.now(),
@@ -2752,13 +2568,14 @@ Direct CRUD manipulation of any internal IndexedDB store:
             mockType: "CUSTOM",
             signatureTag: "FIXED_PAPER",
             isVaultSprint: false,
-            isReviewMode: false,
             isSectionLocked: !!preset.isSectionLocked,
-            sections: sections,
+            sections: preset.sections && preset.sections.length > 0 
+              ? JSON.parse(JSON.stringify(preset.sections)).map(s => ({ ...s, locked: false }))
+              : [{ id: "SEC_1", name: "Paper Arena", durationSec: 900, locked: false }],
             activeSectionIndex: 0,
             currentQuestionIndex: 0,
-            questions: normalizedQuestions,
-            sectionRemainingSec: sections[0].durationSec || 900,
+            questions: preset.questions.map((q, idx) => ({ ...q, globalNumber: idx + 1 })),
+            sectionRemainingSec: preset.sections && preset.sections[0] ? preset.sections[0].durationSec : 900,
             currentQTimeSpentSec: 0,
             userResponses: {},
             isPaused: false
@@ -2852,7 +2669,6 @@ Direct CRUD manipulation of any internal IndexedDB store:
           mockType: isStandardTier1 ? "TIER_1" : (isSingleSectional ? "SECTIONAL" : "CUSTOM"),
           signatureTag: `CUSTOM_${signatureTags.join('_')}`,
           isVaultSprint: false,
-          isReviewMode: false,
           isSectionLocked: isLock,
           sections: sections,
           activeSectionIndex: 0,
@@ -2893,7 +2709,7 @@ Direct CRUD manipulation of any internal IndexedDB store:
         clearInterval(questionTimerInterval);
 
         examTimerInterval = setInterval(() => {
-          if (!activeExam || activeExam.isPaused || activeExam.isReviewMode) return;
+          if (!activeExam || activeExam.isPaused) return;
 
           activeExam.sectionRemainingSec--;
           const m = Math.floor(activeExam.sectionRemainingSec / 60);
@@ -2911,7 +2727,7 @@ Direct CRUD manipulation of any internal IndexedDB store:
         }, 1000);
 
         questionTimerInterval = setInterval(() => {
-          if (!activeExam || activeExam.isPaused || activeExam.isReviewMode) return;
+          if (!activeExam || activeExam.isPaused) return;
           activeExam.currentQTimeSpentSec++;
           const m = Math.floor(activeExam.currentQTimeSpentSec / 60);
           const s = activeExam.currentQTimeSpentSec % 60;
@@ -2926,7 +2742,7 @@ Direct CRUD manipulation of any internal IndexedDB store:
       }
 
       function requestEndSectionEarly() {
-        if (!activeExam || activeExam.isReviewMode) return;
+        if (!activeExam) return;
         const curSec = activeExam.sections[activeExam.activeSectionIndex];
         const m = Math.floor(activeExam.sectionRemainingSec / 60);
         const s = activeExam.sectionRemainingSec % 60;
@@ -2944,7 +2760,7 @@ Direct CRUD manipulation of any internal IndexedDB store:
       }
 
       function handleSectionLockTransition(isAutoExpired) {
-        if (!activeExam || activeExam.isReviewMode) return;
+        if (!activeExam) return;
         activeExam.sections[activeExam.activeSectionIndex].locked = true;
 
         if (activeExam.activeSectionIndex < activeExam.sections.length - 1) {
@@ -2973,91 +2789,37 @@ Direct CRUD manipulation of any internal IndexedDB store:
 
       function renderActiveExamQuestion() {
         const q = activeExam.questions[activeExam.currentQuestionIndex];
-        const resp = activeExam.userResponses[q.id] || {};
+        const resp = activeExam.userResponses[q.id];
         const secQs = activeExam.questions.filter(item => item.sectionIndex === q.sectionIndex);
 
         const lockBtn = document.getElementById("btn-arena-early-lock");
         const drawerLockBtn = document.getElementById("btn-drawer-early-lock");
-        const exitRevBtn = document.getElementById("btn-arena-exit-review");
-        const revMetaBox = document.getElementById("arena-review-meta-box");
-        const revSolBox = document.getElementById("arena-review-solution-box");
-        const markRevBtn = document.getElementById("btn-q-review");
-        const clockEl = document.getElementById("hud-countdown");
-
-        if (activeExam.isReviewMode) {
+        if (activeExam.isSectionLocked) {
+          lockBtn.style.display = "inline-flex";
+          drawerLockBtn.style.display = "block";
+          const isLast = activeExam.activeSectionIndex === activeExam.sections.length - 1;
+          lockBtn.innerText = isLast ? "🔒 Submit Final Section" : "🔒 End Section Early";
+          drawerLockBtn.innerText = isLast ? "🔒 Lock & Submit Final Section" : "🔒 End & Advance Section Early";
+        } else {
           lockBtn.style.display = "none";
           drawerLockBtn.style.display = "none";
-          exitRevBtn.style.display = "inline-flex";
-          markRevBtn.style.display = "none";
-          clockEl.innerText = "REVIEW";
-          clockEl.className = "hud-timer";
-
-          // Review Mode Metadata & Solution Render
-          revMetaBox.style.display = "block";
-          const isAtt = resp.selectedOption !== null && resp.selectedOption !== undefined;
-          const isCor = resp.selectedOption === q.correctIndex;
-
-          let optionsHtml = `<option value="UNCLASSIFIED">Tag Mistake...</option>`;
-          customMistakeTags.forEach(t => {
-            optionsHtml += `<option value="${t}" ${resp.mistakeTag === t ? 'selected' : ''}>${t.replace(/_/g, ' ')}</option>`;
-          });
-
-          revMetaBox.innerHTML = `
-            <div style="background:#0e131d; border:1px solid var(--border-color); border-radius:8px; padding:8px 12px; display:flex; justify-content:space-between; align-items:center;">
-              <div>
-                <span class="badge" style="background:${isCor ? 'var(--status-green)' : (isAtt ? 'var(--status-red)' : 'var(--bg-elevated)')};">
-                  ${isCor ? '✓ Correct (+2.0)' : (isAtt ? '✗ Incorrect (-0.5)' : '○ Unattempted (0)')}
-                </span>
-                <span style="font-size:11px; color:var(--text-muted); margin-left:8px;">Spent: ${resp.timeSpentSec || 0}s</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span style="font-size:10px; color:var(--text-muted);">Mistake:</span>
-                <select style="background:#151a24; color:#fff; border:1px solid #da3633; font-size:11px; padding:2px 6px; border-radius:4px;" onchange="CGL_OS.setMistakeTag('${q.id}', this.value)">
-                  ${optionsHtml}
-                </select>
-              </div>
-            </div>
-            ${resp.decisionTrail && resp.decisionTrail.length > 0 ? `
-              <div style="background:#090d16; border:1px solid var(--accent-cyan); border-radius:6px; padding:6px 10px; font-size:11px; color:var(--accent-cyan); margin-top:6px;">
-                <b>Hesitation Trail:</b> ${resp.decisionTrail.map(t => `Opt ${t.opt} (${t.atSec}s)`).join(' ➔ ')}
-              </div>
-            ` : ''}
-          `;
-
-          revSolBox.style.display = "block";
-          revSolBox.innerHTML = `<b>Solution & Step-by-Step Method:</b><br>${formatRichText(q.explanation || 'No detailed explanation registered.')}`;
-        } else {
-          exitRevBtn.style.display = "none";
-          revMetaBox.style.display = "none";
-          revSolBox.style.display = "none";
-          markRevBtn.style.display = "inline-flex";
-
-          if (activeExam.isSectionLocked) {
-            lockBtn.style.display = "inline-flex";
-            drawerLockBtn.style.display = "block";
-            const isLast = activeExam.activeSectionIndex === activeExam.sections.length - 1;
-            lockBtn.innerText = isLast ? "🔒 Submit Final Section" : "🔒 End Section Early";
-            drawerLockBtn.innerText = isLast ? "🔒 Lock & Submit Final Section" : "🔒 End & Advance Section Early";
-          } else {
-            lockBtn.style.display = "none";
-            drawerLockBtn.style.display = "none";
-          }
-
-          if (resp.status === "marked") {
-            markRevBtn.style.color = "#fff";
-            markRevBtn.style.background = "var(--status-purple)";
-            markRevBtn.innerText = "Unmark Review";
-          } else {
-            markRevBtn.style.color = "var(--status-purple)";
-            markRevBtn.style.background = "var(--bg-elevated)";
-            markRevBtn.innerText = "Mark Review";
-          }
         }
 
         document.getElementById("hud-section-badge").innerText = `${q.sectionName.toUpperCase()}`;
         document.getElementById("hud-section-qinfo").innerText = `Sec Q${q.localNumber} of ${secQs.length} (Global Q${q.globalNumber})`;
         document.getElementById("arena-q-num").innerText = `Q${q.globalNumber}`;
         document.getElementById("arena-q-text").innerHTML = formatRichText(q.questionText);
+
+        const revBtn = document.getElementById("btn-q-review");
+        if (resp.status === "marked") {
+          revBtn.style.color = "#fff";
+          revBtn.style.background = "var(--status-purple)";
+          revBtn.innerText = "Unmark Review";
+        } else {
+          revBtn.style.color = "var(--status-purple)";
+          revBtn.style.background = "var(--bg-elevated)";
+          revBtn.innerText = "Mark Review";
+        }
 
         const imgBox = document.getElementById("arena-image-container");
         if (q.imageUrl && q.imageUrl.trim().length > 0) {
@@ -3073,75 +2835,62 @@ Direct CRUD manipulation of any internal IndexedDB store:
 
         q.options.forEach((optText, idx) => {
           const card = document.createElement("div");
-          card.className = "opt-card";
-
-          if (activeExam.isReviewMode) {
-            if (idx === q.correctIndex) card.classList.add("correct-peek");
-            else if (resp.selectedOption === idx) card.classList.add("wrong-peek");
-          } else {
-            if (resp.selectedOption === idx) card.classList.add("selected");
-            if (resp.struck && resp.struck.includes(idx)) card.classList.add("struck-through");
-          }
+          card.className = "opt-card" +
+            (resp.selectedOption === idx ? " selected" : "") +
+            (resp.struck.includes(idx) ? " struck-through" : "");
 
           card.innerHTML = `
             <span style="font-weight:700; color:var(--text-muted); font-size:13px;">${idx + 1}.</span>
             <div style="flex:1;">${formatRichText(optText)}</div>
-            ${activeExam.isReviewMode && idx === q.correctIndex ? '<span style="color:var(--status-green); font-size:11px; font-weight:700;">✓ Correct</span>' : ''}
-            ${activeExam.isReviewMode && resp.selectedOption === idx && idx !== q.correctIndex ? '<span style="color:var(--status-red); font-size:11px; font-weight:700;">✗ Your Pick</span>' : ''}
           `;
 
-          if (!activeExam.isReviewMode) {
-            card.addEventListener("click", () => {
-              if (resp.struck && resp.struck.includes(idx)) return;
-              if (navigator.vibrate) navigator.vibrate(15);
+          card.addEventListener("click", () => {
+            if (resp.struck.includes(idx)) return;
+            if (navigator.vibrate) navigator.vibrate(15);
 
-              if (resp.initialOption === null) resp.initialOption = idx;
-              if (resp.selectedOption !== null && resp.selectedOption !== idx) resp.switches++;
+            if (resp.initialOption === null) resp.initialOption = idx;
+            if (resp.selectedOption !== null && resp.selectedOption !== idx) resp.switches++;
 
-              resp.selectedOption = idx;
-              resp.decisionTrail.push({ opt: idx + 1, atSec: activeExam.currentQTimeSpentSec });
-              if (resp.status !== "marked") resp.status = "answered";
-              renderActiveExamQuestion();
-            });
+            resp.selectedOption = idx;
+            resp.decisionTrail.push({ opt: idx + 1, atSec: activeExam.currentQTimeSpentSec });
+            if (resp.status !== "marked") resp.status = "answered";
+            renderActiveExamQuestion();
+          });
 
-            let timer;
-            card.addEventListener("touchstart", () => {
-              timer = setTimeout(() => {
-                if (navigator.vibrate) navigator.vibrate([25, 40]);
-                if (!resp.struck) resp.struck = [];
-                if (resp.struck.includes(idx)) {
-                  resp.struck = resp.struck.filter(i => i !== idx);
-                } else {
-                  resp.struck.push(idx);
-                  if (resp.selectedOption === idx) {
-                    resp.selectedOption = null;
-                    if (resp.status === "answered") resp.status = "unanswered";
-                  }
+          let timer;
+          card.addEventListener("touchstart", () => {
+            timer = setTimeout(() => {
+              if (navigator.vibrate) navigator.vibrate([25, 40]);
+              if (resp.struck.includes(idx)) {
+                resp.struck = resp.struck.filter(i => i !== idx);
+              } else {
+                resp.struck.push(idx);
+                if (resp.selectedOption === idx) {
+                  resp.selectedOption = null;
+                  if (resp.status === "answered") resp.status = "unanswered";
                 }
-                renderActiveExamQuestion();
-              }, 550);
-            });
-            card.addEventListener("touchend", () => clearTimeout(timer));
-          }
+              }
+              renderActiveExamQuestion();
+            }, 550);
+          });
+          card.addEventListener("touchend", () => clearTimeout(timer));
 
           container.appendChild(card);
         });
 
-        if (!activeExam.isReviewMode) {
-          activeExam.currentQTimeSpentSec = 0;
-        }
+        activeExam.currentQTimeSpentSec = 0;
       }
 
       document.getElementById("btn-q-save-next").addEventListener("click", () => {
         const q = activeExam.questions[activeExam.currentQuestionIndex];
         const resp = activeExam.userResponses[q.id];
-        if (!activeExam.isReviewMode && resp.selectedOption !== null && resp.status !== "marked") {
+        if (resp.selectedOption !== null && resp.status !== "marked") {
           resp.status = "answered";
         }
 
         const nextIdx = activeExam.currentQuestionIndex + 1;
         if (nextIdx < activeExam.questions.length) {
-          if (activeExam.isReviewMode || !activeExam.isSectionLocked || activeExam.questions[nextIdx].sectionIndex === activeExam.activeSectionIndex) {
+          if (!activeExam.isSectionLocked || activeExam.questions[nextIdx].sectionIndex === activeExam.activeSectionIndex) {
             activeExam.currentQuestionIndex = nextIdx;
             renderActiveExamQuestion();
             return;
@@ -3153,7 +2902,7 @@ Direct CRUD manipulation of any internal IndexedDB store:
       document.getElementById("btn-q-prev").addEventListener("click", () => {
         const prevIdx = activeExam.currentQuestionIndex - 1;
         if (prevIdx >= 0) {
-          if (activeExam.isReviewMode || !activeExam.isSectionLocked || activeExam.questions[prevIdx].sectionIndex === activeExam.activeSectionIndex) {
+          if (!activeExam.isSectionLocked || activeExam.questions[prevIdx].sectionIndex === activeExam.activeSectionIndex) {
             activeExam.currentQuestionIndex = prevIdx;
             renderActiveExamQuestion();
           }
@@ -3200,15 +2949,17 @@ Direct CRUD manipulation of any internal IndexedDB store:
           const tabBtn = document.createElement("button");
           tabBtn.className = "anchor-pill" + (sIdx === activeExam.activeSectionIndex ? " active" : "");
           
-          if (!activeExam.isReviewMode && activeExam.isSectionLocked && sec.locked) {
+          if (activeExam.isSectionLocked && sec.locked) {
             tabBtn.innerText = `🔒 ${sec.name.split(" ")[0]}`;
             tabBtn.style.opacity = "0.5";
             tabBtn.style.cursor = "not-allowed";
           } else {
             tabBtn.innerText = sec.name.split(" ")[0];
             tabBtn.addEventListener("click", () => {
-              if (!activeExam.isReviewMode && activeExam.isSectionLocked && sIdx !== activeExam.activeSectionIndex) {
-                alert("Sectional lock is active! Sections must be completed sequentially.");
+              if (activeExam.isSectionLocked) {
+                if (sIdx !== activeExam.activeSectionIndex) {
+                  alert("Sectional lock is active! Sections must be completed sequentially.");
+                }
                 return;
               }
               activeExam.activeSectionIndex = sIdx;
@@ -3219,39 +2970,24 @@ Direct CRUD manipulation of any internal IndexedDB store:
         });
 
         let ans = 0, marked = 0, unans = 0;
-        const targetSec = filterSectionIndex !== null ? filterSectionIndex : (!activeExam.isReviewMode && activeExam.isSectionLocked ? activeExam.activeSectionIndex : null);
+        const targetSec = filterSectionIndex !== null ? filterSectionIndex : (activeExam.isSectionLocked ? activeExam.activeSectionIndex : null);
         const displayedQs = targetSec !== null ? activeExam.questions.filter(q => q.sectionIndex === targetSec) : activeExam.questions;
 
         activeExam.questions.forEach(q => {
-          const resp = activeExam.userResponses[q.id] || {};
+          const resp = activeExam.userResponses[q.id];
           if (resp.status === "answered") ans++;
           else if (resp.status === "marked") marked++;
           else unans++;
         });
 
         displayedQs.forEach(q => {
-          const resp = activeExam.userResponses[q.id] || {};
-          const isSecLocked = !activeExam.isReviewMode && activeExam.sections[q.sectionIndex] && activeExam.sections[q.sectionIndex].locked;
+          const resp = activeExam.userResponses[q.id];
+          const isSecLocked = activeExam.sections[q.sectionIndex] && activeExam.sections[q.sectionIndex].locked;
 
           const cell = document.createElement("div");
-          cell.className = "palette-cell";
-
-          if (activeExam.isReviewMode) {
-            const isAtt = resp.selectedOption !== null && resp.selectedOption !== undefined;
-            const isCor = resp.selectedOption === q.correctIndex;
-            if (isCor) cell.classList.add("answered");
-            else if (isAtt) { cell.style.background = "var(--status-red)"; cell.style.borderColor = "var(--status-red)"; }
-            else cell.classList.add("unanswered");
-          } else {
-            if (isSecLocked) cell.classList.add("locked-cell");
-            else if (resp.status === "answered") cell.classList.add("answered");
-            else if (resp.status === "marked") cell.classList.add("marked");
-            else cell.classList.add("unanswered");
-          }
-
-          if (activeExam.questions[activeExam.currentQuestionIndex].id === q.id) {
-            cell.classList.add("current");
-          }
+          cell.className = "palette-cell" +
+            (isSecLocked ? " locked-cell" : (resp.status === "answered" ? " answered" : (resp.status === "marked" ? " marked" : " unanswered"))) +
+            (activeExam.questions[activeExam.currentQuestionIndex].id === q.id ? " current" : "");
 
           cell.innerText = q.globalNumber;
 
@@ -3274,7 +3010,7 @@ Direct CRUD manipulation of any internal IndexedDB store:
       }
 
       document.getElementById("btn-arena-pause").addEventListener("click", async () => {
-        if (!activeExam || activeExam.isReviewMode) return;
+        if (!activeExam) return;
         activeExam.isPaused = true;
         clearInterval(examTimerInterval);
         clearInterval(questionTimerInterval);
@@ -3315,7 +3051,7 @@ Direct CRUD manipulation of any internal IndexedDB store:
       });
 
       function updateMiniPlayerDock() {
-        if (!activeExam || activeExam.isReviewMode) {
+        if (!activeExam) {
           hideMiniPlayer();
           return;
         }
@@ -3447,22 +3183,6 @@ Direct CRUD manipulation of any internal IndexedDB store:
         const modalArchive = document.getElementById("modal-history-archive");
         if (modalArchive) modalArchive.classList.remove("active");
 
-        const sections = target.sections && target.sections.length > 0
-          ? JSON.parse(JSON.stringify(target.sections)).map(s => ({ ...s, locked: false }))
-          : [{ id: "SEC_1", name: "Section 1", durationSec: 900, locked: false, questionCount: target.questions.length }];
-
-        // Re-assign sectionIndex properly to every question to prevent freezing at question 1
-        const normalizedQuestions = target.questions.map((q, idx) => {
-          let sIdx = typeof q.sectionIndex === "number" && q.sectionIndex < sections.length ? q.sectionIndex : 0;
-          return {
-            ...q,
-            sectionIndex: sIdx,
-            sectionName: sections[sIdx] ? sections[sIdx].name : "Section 1",
-            localNumber: idx + 1,
-            globalNumber: idx + 1
-          };
-        });
-
         activeExam = {
           sessionId: "mock_re_" + Date.now(),
           timestamp: Date.now(),
@@ -3470,13 +3190,12 @@ Direct CRUD manipulation of any internal IndexedDB store:
           mockType: target.mockType || "CUSTOM",
           signatureTag: target.signatureTag || "",
           isVaultSprint: false,
-          isReviewMode: false,
-          isSectionLocked: !!target.isSectionLocked,
-          sections: sections,
+          isSectionLocked: target.isSectionLocked || false,
+          sections: target.sections ? JSON.parse(JSON.stringify(target.sections)).map(s => ({ ...s, locked: false })) : [{ id: "SEC_1", name: "Section 1", durationSec: 900, locked: false }],
           activeSectionIndex: 0,
           currentQuestionIndex: 0,
-          questions: normalizedQuestions,
-          sectionRemainingSec: sections[0].durationSec || 900,
+          questions: target.questions.map((q, idx) => ({ ...q, globalNumber: idx + 1 })),
+          sectionRemainingSec: target.sections && target.sections[0] ? target.sections[0].durationSec : 900,
           currentQTimeSpentSec: 0,
           userResponses: {},
           isPaused: false
@@ -3503,59 +3222,1937 @@ Direct CRUD manipulation of any internal IndexedDB store:
         startExamTimers();
       }
 
-/* ==================== END OF PART 2 ==================== */
-/* Part 3 will resume immediately below */
       /* -------------------------------------------------------------
-       * 13. TWO-STAGE FORENSIC REVIEW ARENA CONTROLLERS
+       * 5. LIVING DOCUMENT COMPENDIUM & POPOUT TOPIC SHEETS
        * ------------------------------------------------------------- */
-      async function enterReviewArena() {
-        if (!activeReviewAttempt) return;
-        document.getElementById("modal-mock-review").classList.remove("active");
+      async function openKnowledgeCompendiumModal() {
+        pushHistoryState("modal-knowledge-compendium");
+        document.getElementById("modal-knowledge-compendium").classList.add("active");
+        await handleCompendiumSubjectChange("QA");
+      }
 
-        const sections = activeReviewAttempt.sections && activeReviewAttempt.sections.length > 0
-          ? JSON.parse(JSON.stringify(activeReviewAttempt.sections)).map(s => ({ ...s, locked: false }))
-          : [{ id: "SEC_1", name: "Section 1", durationSec: 900, locked: false, questionCount: activeReviewAttempt.questions.length }];
+      async function handleCompendiumSubjectChange(sub) {
+        const chapSelect = document.getElementById("comp-chapter-select");
+        chapSelect.innerHTML = "";
 
-        const normalizedQuestions = activeReviewAttempt.questions.map((q, idx) => {
-          let sIdx = typeof q.sectionIndex === "number" && q.sectionIndex < sections.length ? q.sectionIndex : 0;
-          return {
-            ...q,
-            sectionIndex: sIdx,
-            sectionName: sections[sIdx] ? sections[sIdx].name : "Section 1",
-            localNumber: idx + 1,
-            globalNumber: idx + 1
+        const allDossiers = await getAllRecords("store_concepts");
+        const canonChaps = TAXONOMY[sub] ? TAXONOMY[sub].chapters : [];
+        const existingChaps = [...new Set(allDossiers.filter(d => d.subject === sub).map(d => d.chapter))];
+        const combined = [...new Set([...canonChaps, ...existingChaps])];
+
+        combined.forEach(c => {
+          const opt = document.createElement("option");
+          opt.value = c;
+          opt.innerText = c;
+          chapSelect.appendChild(opt);
+        });
+
+        renderMasterCompendiumView();
+      }
+
+      async function renderMasterCompendiumView() {
+        const sub = document.getElementById("comp-subject-select").value;
+        const chap = document.getElementById("comp-chapter-select").value;
+        const allDossiers = await getAllRecords("store_concepts");
+        compendiumTopics = allDossiers.filter(d => d.subject === sub && d.chapter === chap);
+
+        const anchorBar = document.getElementById("comp-anchor-bar");
+        const canvas = document.getElementById("comp-scroll-canvas");
+        anchorBar.innerHTML = "";
+        canvas.innerHTML = "";
+
+        if (compendiumTopics.length === 0) {
+          canvas.innerHTML = `
+            <div style="text-align:center; padding:40px 14px; color:var(--text-muted);">
+              <p style="font-size:14px; margin-bottom:10px;">No living documents or dossiers logged under <b>${chap}</b>.</p>
+              <button class="btn" style="font-size:12px;" onclick="CGL_OS.openConceptEditorModal(true)">+ Create First Topic Dossier</button>
+            </div>
+          `;
+          return;
+        }
+
+        compendiumTopics.forEach((t, idx) => {
+          const a = document.createElement("a");
+          a.className = "anchor-pill";
+          a.innerText = t.title;
+          a.href = `#doc_page_${idx}`;
+          anchorBar.appendChild(a);
+
+          const page = document.createElement("div");
+          page.className = "document-page-canvas";
+          page.id = `doc_page_${idx}`;
+
+          let imgHtml = "";
+          if (t.imageUrl && t.imageUrl.trim().length > 0) {
+            imgHtml = `<div style="text-align:center; margin:14px 0;"><img src="${t.imageUrl}" style="max-height:240px; max-width:100%; border-radius:8px; border:1px solid var(--border-color);"></div>`;
+          }
+
+          page.innerHTML = `
+            <div class="document-meta-header">
+              <div>
+                <span class="badge" style="background:#1f6feb;">${t.chapter}</span>
+                <span style="font-size:11px; color:var(--text-muted); margin-left:6px;">Topic #${idx + 1}</span>
+              </div>
+              <div style="display:flex; gap:6px;">
+                <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.editSpecificTopicDossier('${t.id}')">Edit</button>
+                <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.openPopoutTopicSheet(${idx})">⤢ Pop Out Sheet</button>
+              </div>
+            </div>
+            <h2 style="font-size:18px; font-weight:800; color:#fff; margin-bottom:2px;">${t.title}</h2>
+            ${t.subtitle ? `<div style="font-size:12px; color:var(--accent-cyan); font-family:var(--font-mono); margin-bottom:12px;">${t.subtitle}</div>` : ''}
+            ${imgHtml}
+            <div style="font-size:13.5px; line-height:1.65; margin-top:8px;">${formatRichText(t.content)}</div>
+          `;
+          canvas.appendChild(page);
+        });
+      }
+
+      function openPopoutTopicSheet(idx) {
+        if (!compendiumTopics || compendiumTopics.length === 0) return;
+        currentPopoutTopicIndex = idx;
+        renderPopoutTopicSheet();
+        pushHistoryState("modal-popout-sheet");
+        document.getElementById("modal-popout-sheet").classList.add("active");
+      }
+
+      async function renderPopoutTopicSheet() {
+        if (currentPopoutTopicIndex < 0) currentPopoutTopicIndex = compendiumTopics.length - 1;
+        if (currentPopoutTopicIndex >= compendiumTopics.length) currentPopoutTopicIndex = 0;
+
+        const t = compendiumTopics[currentPopoutTopicIndex];
+        document.getElementById("popout-topic-badge").innerText = t.chapter;
+        document.getElementById("popout-topic-counter").innerText = `Topic ${currentPopoutTopicIndex + 1} of ${compendiumTopics.length}`;
+        document.getElementById("popout-sheet-title").innerText = t.title;
+        document.getElementById("popout-sheet-sub").innerText = t.subtitle || "";
+        document.getElementById("popout-sheet-content").innerHTML = formatRichText(t.content);
+
+        const imgBox = document.getElementById("popout-sheet-image");
+        if (t.imageUrl && t.imageUrl.trim().length > 0) {
+          imgBox.style.display = "block";
+          imgBox.innerHTML = `<img src="${t.imageUrl}" style="max-height:240px; max-width:100%; border-radius:8px; border:1px solid var(--border-color);">`;
+        } else {
+          imgBox.style.display = "none";
+          imgBox.innerHTML = "";
+        }
+
+        const noteKey = `scratch_${t.id}`;
+        const savedNote = await getRecord("store_notes", noteKey);
+        document.getElementById("popout-sheet-scratchpad").value = savedNote ? savedNote.content : "";
+      }
+
+      function navPopoutTopic(step) {
+        currentPopoutTopicIndex += step;
+        renderPopoutTopicSheet();
+      }
+
+      async function autoSaveTopicScratchpad(val) {
+        const t = compendiumTopics[currentPopoutTopicIndex];
+        if (!t) return;
+        await putRecord("store_notes", { id: `scratch_${t.id}`, content: val, timestamp: Date.now() });
+      }
+
+      async function deleteCurrentTopicDossier() {
+        if (!compendiumTopics || compendiumTopics.length === 0) return;
+        const curr = compendiumTopics[currentPopoutTopicIndex];
+        if (confirm(`Permanently delete dossier: "${curr.title}"?`)) {
+          await deleteRecordFromStore("store_concepts", curr.id);
+          document.getElementById("modal-popout-sheet").classList.remove("active");
+          await renderMasterCompendiumView();
+        }
+      }
+
+      function insertDossierSnippet(type) {
+        const textarea = document.getElementById("concept-edit-body");
+        let snippet = "";
+        if (type === "FORMULA") snippet = "\n> [!formula] Key Identity\n> $$a^2 + b^2 = c^2$$\n";
+        if (type === "TRAP") snippet = "\n> [!trap] Common TCS Trap\n> Verify whether radius or diameter is specified.\n";
+        if (type === "TABLE") snippet = "\n| Condition | Method | Shortcut |\n| :--- | :--- | :--- |\n| Case 1 | Direct Tangent | $2\\sqrt{r_1 r_2}$ |\n";
+        textarea.value += snippet;
+        textarea.focus();
+      }
+
+      function openConceptEditorModal(isNew = true) {
+        currentConceptImageBase64 = "";
+        document.getElementById("concept-editor-title").innerText = isNew ? "Add Topic Dossier" : "Edit Topic Dossier";
+
+        if (isNew || compendiumTopics.length === 0) {
+          document.getElementById("concept-edit-id").value = "top_" + Date.now();
+          document.getElementById("concept-edit-subject").value = document.getElementById("comp-subject-select").value || "QA";
+          document.getElementById("concept-edit-chapter").value = document.getElementById("comp-chapter-select").value || "QA_GEOMETRY";
+          document.getElementById("concept-edit-title").value = "";
+          document.getElementById("concept-edit-sub").value = "";
+          document.getElementById("concept-edit-body").value = "";
+          document.getElementById("concept-edit-img-url").value = "";
+          document.getElementById("concept-edit-img-file").value = "";
+        } else {
+          const curr = compendiumTopics[currentPopoutTopicIndex];
+          document.getElementById("concept-edit-id").value = curr.id;
+          document.getElementById("concept-edit-subject").value = curr.subject;
+          document.getElementById("concept-edit-chapter").value = curr.chapter;
+          document.getElementById("concept-edit-title").value = curr.title;
+          document.getElementById("concept-edit-sub").value = curr.subtitle || "";
+          document.getElementById("concept-edit-body").value = curr.content;
+          document.getElementById("concept-edit-img-url").value = curr.imageUrl || "";
+          document.getElementById("concept-edit-img-file").value = "";
+        }
+
+        pushHistoryState("modal-concept-editor");
+        document.getElementById("modal-concept-editor").classList.add("active");
+      }
+
+      async function editSpecificTopicDossier(id) {
+        const item = await getRecord("store_concepts", id);
+        if (!item) return;
+
+        currentConceptImageBase64 = "";
+        document.getElementById("concept-editor-title").innerText = "Edit Topic Dossier";
+        document.getElementById("concept-edit-id").value = item.id;
+        document.getElementById("concept-edit-subject").value = item.subject;
+        document.getElementById("concept-edit-chapter").value = item.chapter;
+        document.getElementById("concept-edit-title").value = item.title;
+        document.getElementById("concept-edit-sub").value = item.subtitle || "";
+        document.getElementById("concept-edit-body").value = item.content;
+        document.getElementById("concept-edit-img-url").value = item.imageUrl || "";
+        document.getElementById("concept-edit-img-file").value = "";
+
+        pushHistoryState("modal-concept-editor");
+        document.getElementById("modal-concept-editor").classList.add("active");
+      }
+
+      async function handleConceptImageUpload(input) {
+        if (input.files && input.files[0]) {
+          currentConceptImageBase64 = await compressImageFile(input.files[0]);
+        }
+      }
+
+      async function saveConceptCard() {
+        const id = document.getElementById("concept-edit-id").value;
+        const subject = document.getElementById("concept-edit-subject").value;
+        const chapter = document.getElementById("concept-edit-chapter").value.trim().toUpperCase();
+        const title = document.getElementById("concept-edit-title").value.trim();
+        const subtitle = document.getElementById("concept-edit-sub").value.trim();
+        const content = document.getElementById("concept-edit-body").value.trim();
+        const urlInput = document.getElementById("concept-edit-img-url").value.trim();
+
+        if (!title || !content || !chapter) {
+          alert("Chapter, Topic Title, and Content are required.");
+          return;
+        }
+
+        const obj = {
+          id: id,
+          subject: subject,
+          chapter: chapter,
+          title: title,
+          subtitle: subtitle,
+          content: content,
+          imageUrl: currentConceptImageBase64 || urlInput,
+          timestamp: Date.now()
+        };
+
+        await putRecord("store_concepts", obj);
+        document.getElementById("modal-concept-editor").classList.remove("active");
+        document.getElementById("comp-subject-select").value = subject;
+        await handleCompendiumSubjectChange(subject);
+        document.getElementById("comp-chapter-select").value = chapter;
+        await renderMasterCompendiumView();
+      }
+
+      /* -------------------------------------------------------------
+       * 6. UNTIMED DOJO ARENA
+       * ------------------------------------------------------------- */
+      async function updateDojoChapters() {
+        const sub = document.getElementById("dojo-nav-subject").value;
+        const chapSelect = document.getElementById("dojo-nav-chapter");
+        chapSelect.innerHTML = `<option value="ALL">Entire ${sub} (All Chapters)</option>`;
+
+        const allQs = await getAllRecords("store_questions");
+        const availableChaps = [...new Set(allQs.filter(q => q.subject === sub).map(q => q.chapter))];
+        const chaps = availableChaps.length > 0 ? availableChaps : (TAXONOMY[sub] ? TAXONOMY[sub].chapters : []);
+
+        chaps.forEach(c => {
+          const opt = document.createElement("option");
+          opt.value = c;
+          opt.innerText = c;
+          chapSelect.appendChild(opt);
+        });
+
+        updateDojoMethods();
+      }
+
+      async function updateDojoMethods() {
+        const sub = document.getElementById("dojo-nav-subject").value;
+        const chap = document.getElementById("dojo-nav-chapter").value;
+        const methodSelect = document.getElementById("dojo-nav-method");
+        methodSelect.innerHTML = `<option value="ALL">All Methods & Types in Scope</option>`;
+
+        const allQs = await getAllRecords("store_questions");
+        let pool = allQs.filter(q => q.subject === sub);
+        if (chap !== "ALL") pool = pool.filter(q => q.chapter === chap);
+
+        const methods = [...new Set(pool.filter(q => q.method).map(q => q.method))];
+        methods.forEach(m => {
+          const opt = document.createElement("option");
+          opt.value = m;
+          opt.innerText = m;
+          methodSelect.appendChild(opt);
+        });
+      }
+
+      async function launchFilteredDojo() {
+        const sub = document.getElementById("dojo-nav-subject").value;
+        const chap = document.getElementById("dojo-nav-chapter").value;
+        const method = document.getElementById("dojo-nav-method").value;
+
+        const allQs = await getAllRecords("store_questions");
+        let pool = allQs.filter(q => q.subject === sub);
+        if (chap !== "ALL") pool = pool.filter(q => q.chapter === chap);
+        if (method !== "ALL") pool = pool.filter(q => q.method === method);
+
+        if (pool.length === 0) {
+          alert("No questions found matching this selection.");
+          return;
+        }
+
+        pool.sort((a, b) => {
+          if (a.subject !== b.subject) return a.subject.localeCompare(b.subject);
+          if (a.chapter !== b.chapter) return a.chapter.localeCompare(b.chapter);
+          const subA = a.subtopic || "";
+          const subB = b.subtopic || "";
+          if (subA !== subB) return subA.localeCompare(subB);
+          const methA = a.method || "";
+          const methB = b.method || "";
+          return methA.localeCompare(methB);
+        });
+
+        const allDossiers = await getAllRecords("store_concepts");
+        const matchedDossier = allDossiers.find(c => c.chapter === chap || (method !== "ALL" && c.title === method));
+
+        dojoExam = {
+          subject: sub,
+          chapter: chap,
+          method: method,
+          title: chap === "ALL" ? `${sub} • Entire Subject Dojo` : (method !== "ALL" ? `${chap} • ${method}` : `${chap} Dojo`),
+          formulaBrief: matchedDossier ? matchedDossier.content : null,
+          questions: pool,
+          currentIndex: 0,
+          userResponses: {}
+        };
+
+        dojoExam.questions.forEach((q, idx) => {
+          q.dojoSequentialNum = idx + 1;
+          dojoExam.userResponses[q.id] = {
+            selectedOption: null,
+            status: "unanswered",
+            revealed: false
           };
         });
 
+        pushHistoryState("dojo-arena-view");
+        document.getElementById("dojo-arena-view").style.display = "flex";
+        renderDojoArenaQuestion();
+      }
+
+      function exitDojoArena() {
+        document.getElementById("dojo-arena-view").style.display = "none";
+      }
+
+      function renderDojoArenaQuestion() {
+        const q = dojoExam.questions[dojoExam.currentIndex];
+        const resp = dojoExam.userResponses[q.id];
+
+        document.getElementById("dojo-arena-title").innerText = dojoExam.title;
+        document.getElementById("dojo-arena-chap-badge").innerText = q.chapter;
+        document.getElementById("dojo-arena-method-badge").innerText = q.method || q.subtopic || "General";
+        document.getElementById("dojo-arena-qnum").innerText = q.dojoSequentialNum;
+        document.getElementById("dojo-arena-total-tag").innerText = `Question ${q.dojoSequentialNum} of ${dojoExam.questions.length}`;
+        document.getElementById("dojo-arena-qtext").innerHTML = formatRichText(q.questionText);
+
+        const imgBox = document.getElementById("dojo-image-container");
+        if (q.imageUrl && q.imageUrl.trim().length > 0) {
+          imgBox.style.display = "block";
+          imgBox.innerHTML = `<img src="${q.imageUrl}" alt="Diagram">`;
+        } else {
+          imgBox.style.display = "none";
+          imgBox.innerHTML = "";
+        }
+
+        const theoryBanner = document.getElementById("dojo-theory-banner");
+        if (dojoExam.formulaBrief) {
+          theoryBanner.style.display = "block";
+          theoryBanner.innerHTML = `<strong>Concept Brief:</strong> ${formatRichText(dojoExam.formulaBrief)}`;
+        } else {
+          theoryBanner.style.display = "none";
+        }
+
+        const fb = document.getElementById("dojo-arena-feedback");
+        fb.style.display = "none";
+
+        const mb = document.getElementById("dojo-arena-method-box");
+        mb.style.display = resp.revealed ? "block" : "none";
+        mb.innerHTML = `<strong>Solution & Method:</strong><br>${formatRichText(q.explanation || 'No method registered.')}`;
+
+        document.getElementById("dojo-arena-annotation").value = q.annotation || "";
+
+        const optContainer = document.getElementById("dojo-arena-options");
+        optContainer.innerHTML = "";
+
+        q.options.forEach((optText, idx) => {
+          const card = document.createElement("div");
+          card.className = "opt-card" + (resp.selectedOption === idx ? " selected" : "");
+
+          if (resp.selectedOption !== null) {
+            if (idx === q.correctIndex) card.classList.add("correct-peek");
+            else if (resp.selectedOption === idx) card.classList.add("wrong-peek");
+          }
+
+          card.innerHTML = `
+            <span style="font-weight:700; color:var(--text-muted); font-size:13px;">${idx + 1}.</span>
+            <div style="flex:1;">${formatRichText(optText)}</div>
+          `;
+
+          card.addEventListener("click", () => {
+            resp.selectedOption = idx;
+            resp.status = "answered";
+            if (navigator.vibrate) navigator.vibrate(idx === q.correctIndex ? 25 : [40, 40]);
+
+            fb.style.display = "block";
+            if (idx === q.correctIndex) {
+              fb.style.background = "rgba(35, 134, 54, 0.22)";
+              fb.style.color = "var(--status-green)";
+              fb.innerText = "✓ Correct Answer!";
+            } else {
+              fb.style.background = "rgba(218, 54, 51, 0.22)";
+              fb.style.color = "var(--status-red)";
+              fb.innerText = `✗ Incorrect. Correct is Option ${q.correctIndex + 1}.`;
+            }
+            renderDojoArenaQuestion();
+          });
+
+          optContainer.appendChild(card);
+        });
+      }
+
+      function navDojoArena(step) {
+        const next = dojoExam.currentIndex + step;
+        if (next >= 0 && next < dojoExam.questions.length) {
+          dojoExam.currentIndex = next;
+          renderDojoArenaQuestion();
+        }
+      }
+
+      function toggleDojoMethod() {
+        const q = dojoExam.questions[dojoExam.currentIndex];
+        const resp = dojoExam.userResponses[q.id];
+        resp.revealed = !resp.revealed;
+        const mb = document.getElementById("dojo-arena-method-box");
+        mb.style.display = resp.revealed ? "block" : "none";
+      }
+
+      async function autoSaveDojoAnnotation(val) {
+        if (!dojoExam) return;
+        const q = dojoExam.questions[dojoExam.currentIndex];
+        q.annotation = val;
+        await putRecord("store_questions", q);
+      }
+
+      function toggleDojoPalette(open) {
+        const drawer = document.getElementById("dojo-palette-drawer");
+        const overlay = document.getElementById("dojo-drawer-overlay");
+
+        if (open) {
+          renderDojoPaletteGrid();
+          drawer.classList.add("open");
+          overlay.classList.add("active");
+        } else {
+          drawer.classList.remove("open");
+          overlay.classList.remove("active");
+        }
+      }
+
+      function renderDojoPaletteGrid() {
+        const scrollBody = document.getElementById("dojo-palette-scroll-body");
+        scrollBody.innerHTML = "";
+        document.getElementById("dojo-palette-count-badge").innerText = `${dojoExam.questions.length} Qs`;
+
+        const grouped = {};
+        dojoExam.questions.forEach((q, idx) => {
+          const ch = q.chapter || "GENERAL";
+          if (!grouped[ch]) grouped[ch] = [];
+          grouped[ch].push({ q, idx });
+        });
+
+        Object.keys(grouped).forEach(chapterKey => {
+          const items = grouped[chapterKey];
+
+          const header = document.createElement("div");
+          header.className = "chapter-section-header";
+          header.innerHTML = `<span>${chapterKey}</span><span>${items.length} Qs</span>`;
+          scrollBody.appendChild(header);
+
+          const grid = document.createElement("div");
+          grid.className = "palette-grid";
+
+          items.forEach(item => {
+            const resp = dojoExam.userResponses[item.q.id];
+            const cell = document.createElement("div");
+            cell.className = "palette-cell" +
+              (resp.status === "answered" ? " answered" : " unanswered") +
+              (item.idx === dojoExam.currentIndex ? " current" : "");
+
+            cell.innerText = item.q.dojoSequentialNum;
+            cell.addEventListener("click", () => {
+              dojoExam.currentIndex = item.idx;
+              toggleDojoPalette(false);
+              renderDojoArenaQuestion();
+            });
+
+            grid.appendChild(cell);
+          });
+
+          scrollBody.appendChild(grid);
+        });
+      }
+
+      /* -------------------------------------------------------------
+       * 7. TESTBOOK FORENSICS, DECISION TRAILS & MISTAKE TAGGING
+       * ------------------------------------------------------------- */
+      async function openMockReview(attemptOrId) {
+        let att = typeof attemptOrId === "string" 
+          ? (await getAllRecords("store_attempts")).find(a => a.sessionId === attemptOrId)
+          : attemptOrId;
+
+        if (!att) return;
+        activeReviewAttempt = att;
+
+        document.getElementById("review-modal-title").innerText = att.title || "SSC CGL Mock Analysis";
+        document.getElementById("review-modal-date").innerText = new Date(att.timestamp || Date.now()).toLocaleString();
+        document.getElementById("rev-score").innerText = (att.finalScore || 0).toFixed(2);
+
+        const totalAtt = (att.correctCount || 0) + (att.incorrectCount || 0);
+        document.getElementById("rev-acc").innerText = totalAtt > 0 ? `${Math.round((att.correctCount / totalAtt) * 100)}%` : "0%";
+        document.getElementById("rev-cor").innerText = att.correctCount || 0;
+        document.getElementById("rev-inc").innerText = att.incorrectCount || 0;
+
+        document.getElementById("rev-penalty").innerText = `-${(att.penaltyDrag || 0).toFixed(2)}`;
+        document.getElementById("rev-switch-delta").innerText = `${att.switchDelta > 0 ? '+' : ''}${att.switchDelta || 0} Net`;
+        document.getElementById("rev-traps").innerText = att.q4Traps || 0;
+
+        document.getElementById("btn-review-reattempt").onclick = () => reattemptMock(att.sessionId);
+        document.getElementById("btn-review-save-fixed").onclick = () => openSaveBlueprintModal("FIXED_PAPER", att.sessionId);
+
+        filterReviewQuestions("ALL");
+        pushHistoryState("modal-mock-review");
+        document.getElementById("modal-mock-review").classList.add("active");
+      }
+
+      async function filterReviewQuestions(filter) {
+        const list = document.getElementById("review-questions-list");
+        list.innerHTML = "";
+
+        const vaultRecords = await getAllRecords("store_vault");
+
+        activeReviewAttempt.questions.forEach((q, idx) => {
+          const resp = activeReviewAttempt.userResponses && activeReviewAttempt.userResponses[q.id] ? activeReviewAttempt.userResponses[q.id] : {};
+          const isAtt = resp.selectedOption !== null && resp.selectedOption !== undefined;
+          const isCor = resp.selectedOption === q.correctIndex;
+          const isTrap = isAtt && !isCor && (resp.timeSpentSec > 90);
+          const isSwitch = resp.switches > 0;
+
+          if (filter === "INCORRECT" && (!isAtt || isCor)) return;
+          if (filter === "CORRECT" && !isCor) return;
+          if (filter === "UNANSWERED" && isAtt) return;
+          if (filter === "PENALTY" && (!isAtt || isCor)) return;
+          if (filter === "SWITCH" && !isSwitch) return;
+          if (filter === "TRAPS" && !isTrap) return;
+
+          const existingVault = vaultRecords.find(v => v.questionId === q.id);
+          const currentTag = existingVault ? existingVault.errorTag : "UNCLASSIFIED";
+
+          const card = document.createElement("div");
+          card.className = "card";
+          card.style.marginBottom = "10px";
+          card.style.borderColor = isCor ? "var(--status-green)" : (isAtt ? "var(--status-red)" : "var(--border-color)");
+
+          let statusBadge = isCor ? `<span class="badge" style="background:#238636;">Correct (+2)</span>`
+            : (isAtt ? `<span class="badge" style="background:#da3633;">Incorrect (-0.5)</span>`
+            : `<span class="badge" style="background:#151a24;">Unattempted (0)</span>`);
+
+          let decisionTrailHtml = "";
+          if (resp.decisionTrail && resp.decisionTrail.length > 0) {
+            decisionTrailHtml = `
+              <div style="background:#090d16; border:1px solid #38bdf8; border-radius:6px; padding:6px 10px; margin:6px 0; font-size:11px; color:#38bdf8;">
+                <b>Decision Trail:</b> ${resp.decisionTrail.map(t => `Opt ${t.opt} (${t.atSec}s)`).join(' ➔ ')}
+              </div>
+            `;
+          }
+
+          let imgHtml = "";
+          if (q.imageUrl && q.imageUrl.trim().length > 0) {
+            imgHtml = `<div style="text-align:center; margin:8px 0;"><img src="${q.imageUrl}" style="max-height:180px; max-width:100%; border-radius:6px; border:1px solid var(--border-color);"></div>`;
+          }
+
+          let optionsHtml = `<option value="UNCLASSIFIED" ${currentTag==='UNCLASSIFIED'?'selected':''}>Tag Mistake...</option>`;
+          customMistakeTags.forEach(t => {
+            optionsHtml += `<option value="${t}" ${currentTag===t?'selected':''}>${t.replace(/_/g, ' ')}</option>`;
+          });
+          optionsHtml += `<option value="__NEW_TAG__">+ Create New Tag...</option>`;
+
+          card.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <div><b>Q${q.globalNumber || (idx + 1)}.</b> <span class="badge" style="background:#1f6feb;">${q.chapter}</span></div>
+              <div style="display:flex; gap:6px; align-items:center;">
+                ${statusBadge}
+                ${!isCor && isAtt ? `
+                  <select onchange="CGL_OS.handleMistakeTagSelect('${q.id}', this.value)" style="background:#151a24; color:#fff; border:1px solid #da3633; font-size:11px; padding:2px 4px; border-radius:4px;">
+                    ${optionsHtml}
+                  </select>
+                ` : ''}
+              </div>
+            </div>
+            ${decisionTrailHtml}
+            <div style="font-size:14px; line-height:1.5; margin-bottom:10px;">${formatRichText(q.questionText)}</div>
+            ${imgHtml}
+            <div style="font-size:13px; margin-bottom:8px;">
+              ${q.options.map((opt, oIdx) => `
+                <div style="padding:6px 10px; border-radius:6px; margin:4px 0; font-size:13px;
+                  background:${oIdx === q.correctIndex ? 'rgba(35, 134, 54, 0.25)' : (oIdx === resp.selectedOption ? 'rgba(218, 54, 51, 0.25)' : 'var(--bg-elevated)')};
+                  border:1px solid ${oIdx === q.correctIndex ? 'var(--status-green)' : (oIdx === resp.selectedOption ? 'var(--status-red)' : 'transparent')};">
+                  <b>${oIdx + 1}.</b> ${formatRichText(opt)}
+                  ${oIdx === q.correctIndex ? ' (Correct Answer)' : ''}
+                  ${oIdx === resp.selectedOption && !isCor ? ' (Your Choice)' : ''}
+                </div>
+              `).join('')}
+            </div>
+            <div style="font-size:12px; color:var(--text-muted); background:#07090e; padding:8px; border-radius:6px; margin-top:8px;">
+              <b>Method & Explanation:</b><br>${formatRichText(q.explanation || 'No explanation recorded.')}
+            </div>
+          `;
+          list.appendChild(card);
+        });
+      }
+
+      async function handleMistakeTagSelect(qId, val) {
+        if (val === "__NEW_TAG__") {
+          const raw = prompt("Enter new custom mistake tag (e.g., RUSHED_PANIC):");
+          if (!raw || !raw.trim()) return;
+          const formatted = raw.trim().toUpperCase().replace(/\s+/g, '_');
+          if (!customMistakeTags.includes(formatted)) {
+            customMistakeTags.push(formatted);
+            await putRecord("store_config", { key: "custom_mistake_tags", value: customMistakeTags });
+          }
+          await setMistakeTag(qId, formatted);
+          filterReviewQuestions("ALL");
+        } else {
+          await setMistakeTag(qId, val);
+        }
+      }
+
+      async function setMistakeTag(qId, tag) {
+        const vault = await getAllRecords("store_vault");
+        const rec = vault.find(v => v.questionId === qId);
+        if (rec) {
+          rec.errorTag = tag;
+          await putRecord("store_vault", rec);
+        } else {
+          await putRecord("store_vault", {
+            questionId: qId,
+            errorTag: tag,
+            leitnerBox: 1,
+            lastAttempted: Date.now()
+          });
+        }
+        renderVault();
+      }
+
+      /* -------------------------------------------------------------
+       * 8. MULTI-TIER AI EXPORTS & GEM LEDGER
+       * ------------------------------------------------------------- */
+      function openAiExportModal() {
+        if (!activeReviewAttempt) return;
+        pushHistoryState("modal-ai-export");
+        document.getElementById("modal-ai-export").classList.add("active");
+        updateAiExportPreview();
+      }
+
+      async function updateAiExportPreview() {
+        const mode = document.getElementById("ai-export-mode").value;
+        const att = activeReviewAttempt;
+        let payload = "";
+
+        if (mode === "LEAN_GEM") {
+          payload = JSON.stringify({
+            action: "FEEDBACK_AUDIT",
+            mockTitle: att.title,
+            score: att.finalScore,
+            penalty: att.penaltyDrag,
+            traps: att.q4Traps,
+            telemetry: att.questions.map(q => {
+              const r = att.userResponses && att.userResponses[q.id] ? att.userResponses[q.id] : {};
+              return {
+                id: q.id,
+                sel: r.selectedOption !== undefined ? r.selectedOption : null,
+                cor: q.correctIndex,
+                t: r.timeSpentSec || 0,
+                trail: (r.decisionTrail || []).map(d => d.opt)
+              };
+            })
+          }, null, 2);
+        } else if (mode === "DEEP_AUDIT") {
+          payload = JSON.stringify({
+            meta: { title: att.title, timestamp: att.timestamp, finalScore: att.finalScore },
+            questions: att.questions.map(q => {
+              const r = att.userResponses && att.userResponses[q.id] ? att.userResponses[q.id] : {};
+              return {
+                id: q.id,
+                chapter: q.chapter,
+                text: q.questionText,
+                options: q.options,
+                userOption: r.selectedOption !== undefined ? r.selectedOption : null,
+                correctIndex: q.correctIndex,
+                timeSpentSec: r.timeSpentSec || 0,
+                decisionTrail: r.decisionTrail || [],
+                explanation: q.explanation
+              };
+            })
+          }, null, 2);
+        } else if (mode === "LONGITUDINAL") {
+          const allAtt = await getAllRecords("store_attempts");
+          const vault = await getAllRecords("store_vault");
+          payload = `# SSC CGL Strategic Telemetry Audit\n` +
+            `• Completed Standard Mocks: ${allAtt.length}\n` +
+            `• Active Leitner Vault Traps: ${vault.length}\n` +
+            `• Active Traps Inventory:\n` +
+            vault.map(v => `- [${v.chapter}] Tag: ${v.errorTag} | Box ${v.leitnerBox}`).join('\n');
+        }
+
+        document.getElementById("ai-export-preview").value = payload;
+      }
+
+      function copyAiExportToClipboard() {
+        const text = document.getElementById("ai-export-preview").value;
+        navigator.clipboard.writeText(text);
+        alert("Payload copied! Paste into chat with Gemini to diagnose vulnerabilities and generate remedies.");
+        document.getElementById("modal-ai-export").classList.remove("active");
+      }
+
+      function openMasterLedgerExportModal() {
+        pushHistoryState("modal-ledger-export");
+        document.getElementById("modal-ledger-export").classList.add("active");
+      }
+
+      async function downloadLedgerJson() {
+        const includeImages = document.getElementById("ledger-include-images").checked;
+        const allQs = await getAllRecords("store_questions");
+        const sanitized = allQs.map(q => {
+          if (!includeImages) {
+            const copy = { ...q };
+            if (copy.imageUrl && copy.imageUrl.startsWith("data:image")) {
+              copy.imageUrl = "[BASE64_IMAGE_OMITTED_FOR_LIGHTWEIGHT_LEDGER]";
+            }
+            return copy;
+          }
+          return q;
+        });
+
+        const blob = new Blob([JSON.stringify(sanitized, null, 2)], { type: "application/json" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `cgl_master_bank_ledger_${Date.now()}.json`;
+        a.click();
+        document.getElementById("modal-ledger-export").classList.remove("active");
+      }
+
+      async function downloadLedgerMarkdown() {
+        const allQs = await getAllRecords("store_questions");
+        let txt = `# SSC CGL MASTER QUESTION BANK REFERENCE LEDGER\nGenerated on: ${new Date().toISOString()}\nTotal Questions: ${allQs.length}\n\n`;
+
+        allQs.forEach((q, idx) => {
+          txt += `--- [RECORD ${idx + 1}] ---\n`;
+          txt += `ID: ${q.id}\n`;
+          txt += `SUBJECT: ${q.subject} | CHAPTER: ${q.chapter} | METHOD: ${q.method || q.subtopic || 'General'}\n`;
+          txt += `QUESTION: ${q.questionText}\n`;
+          q.options.forEach((opt, oIdx) => {
+            txt += `OPTION ${oIdx + 1}: ${opt}\n`;
+          });
+          txt += `CORRECT OPTION: ${q.correctIndex + 1}\n`;
+          txt += `EXPLANATION: ${q.explanation || 'None'}\n`;
+          if (q.annotation) txt += `USER ANNOTATION: ${q.annotation}\n`;
+          txt += `\n`;
+        });
+
+        const blob = new Blob([txt], { type: "text/plain;charset=utf-8" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `cgl_master_bank_gem_pack_${Date.now()}.txt`;
+        a.click();
+        document.getElementById("modal-ledger-export").classList.remove("active");
+      }
+
+      async function exportCleanMarkdownVault() {
+        const vault = await getAllRecords("store_vault");
+        const questions = await getAllRecords("store_questions");
+        let md = `# SSC CGL Error Vault Export\n\n`;
+
+        vault.forEach(v => {
+          const q = questions.find(item => item.id === v.questionId);
+          if (q) {
+            md += `### ${q.id} - ${q.chapter}\n`;
+            md += `**Error Tag:** #${v.errorTag || 'UNCLASSIFIED'} | **Box:** ${v.leitnerBox || 1}\n\n`;
+            md += `> ${q.questionText}\n\n`;
+            md += `**Solution:**\n${q.explanation}\n\n---\n\n`;
+          }
+        });
+
+        const blob = new Blob([md], { type: "text/plain;charset=utf-8" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `CGL_Vault_${Date.now()}.md`;
+        a.click();
+      }
+
+      /* -------------------------------------------------------------
+       * 9. DASHBOARD RENDER ENGINE (RADIAL SVG GAUGES & TICKETS)
+       * ------------------------------------------------------------- */
+      async function renderDashboard() {
+        const attempts = await getAllRecords("store_attempts");
+        const completed = attempts.filter(a => a.completed && !a.isVaultSprint);
+
+        document.getElementById("kpi-total-mocks").innerText = completed.length;
+
+        const circleGauge = document.getElementById("gauge-acc-circle");
+
+        if (completed.length === 0) {
+          document.getElementById("kpi-global-acc").innerText = "--";
+          document.getElementById("kpi-avg-speed").innerText = "--";
+          document.getElementById("kpi-traps-hit").innerText = "0";
+          if (circleGauge) {
+            circleGauge.setAttribute("stroke-dasharray", "0, 100");
+            circleGauge.style.stroke = "var(--border-color)";
+          }
+        } else {
+          let totalCor = 0, totalAtt = 0, totalSec = 0, traps = 0;
+          completed.forEach(c => {
+            totalCor += (c.correctCount || 0);
+            totalAtt += ((c.correctCount || 0) + (c.incorrectCount || 0));
+            traps += (c.q4Traps || 0);
+            if (c.userResponses && typeof c.userResponses === "object") {
+              Object.values(c.userResponses).forEach(r => totalSec += (r ? (r.timeSpentSec || 0) : 0));
+            }
+          });
+
+          const accPercent = totalAtt > 0 ? Math.round((totalCor / totalAtt) * 100) : 0;
+          const avgSpeed = totalAtt > 0 ? Math.round(totalSec / totalAtt) : 0;
+
+          document.getElementById("kpi-global-acc").innerText = `${accPercent}%`;
+          document.getElementById("kpi-avg-speed").innerText = `${avgSpeed}s`;
+          document.getElementById("kpi-traps-hit").innerText = traps;
+
+          if (circleGauge) {
+            circleGauge.setAttribute("stroke-dasharray", `${accPercent}, 100`);
+            if (accPercent >= 80) circleGauge.style.stroke = "var(--status-green-border)";
+            else if (accPercent >= 65) circleGauge.style.stroke = "var(--status-amber)";
+            else circleGauge.style.stroke = "var(--status-red)";
+          }
+
+          const speedEl = document.getElementById("kpi-speed-benchmark");
+          if (avgSpeed <= 45) speedEl.innerHTML = `<span style="color:var(--status-green);">⚡ Elite Speed Zone (≤45s)</span>`;
+          else if (avgSpeed <= 60) speedEl.innerHTML = `<span style="color:var(--status-amber);">Pacing Acceptable (46-60s)</span>`;
+          else speedEl.innerHTML = `<span style="color:var(--status-red);">⚠️ Drag Alert (>60s / Q)</span>`;
+        }
+
+        try { renderDashboardSubjectBatteries(completed); } catch(e) { console.error("Batteries error:", e); }
+        try { renderRecentHistory(completed); } catch(e) { console.error("Recent history error:", e); }
+        try { await renderDashboardBlueprints(); } catch(e) { console.error("Blueprints error:", e); }
+        try { await renderDrilldownSubjectLevel(); } catch(e) { console.error("Drilldown error:", e); }
+      }
+
+      function renderDashboardSubjectBatteries(completed) {
+        const container = document.getElementById("dash-subject-batteries");
+        container.innerHTML = "";
+
+        Object.keys(TAXONOMY).forEach(subKey => {
+          let subAtt = 0, subCor = 0;
+          completed.forEach(c => {
+            if (c.questions && Array.isArray(c.questions)) {
+              c.questions.forEach(q => {
+                if (q.subject === subKey) {
+                  const resp = c.userResponses && c.userResponses[q.id] ? c.userResponses[q.id] : null;
+                  if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
+                    subAtt++;
+                    if (resp.selectedOption === q.correctIndex) subCor++;
+                  }
+                }
+              });
+            }
+          });
+
+          const acc = subAtt > 0 ? Math.round((subCor / subAtt) * 100) : 0;
+          const div = document.createElement("div");
+          div.style.marginBottom = "8px";
+          div.style.cursor = "pointer";
+          div.innerHTML = `
+            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:2px;">
+              <span style="font-weight:700;">${TAXONOMY[subKey].name} (${subKey})</span>
+              <span style="font-family:var(--font-mono); color:${acc >= 80 ? 'var(--status-green)' : (acc >= 60 ? 'var(--status-amber)' : 'var(--text-muted)')};">${subAtt > 0 ? `${acc}% (${subAtt} Qs)` : '0%'}</span>
+            </div>
+            <div class="battery-bar-container">
+              <div class="battery-bar-fill" style="width:${acc}%; background:${acc >= 80 ? 'var(--status-green)' : (acc >= 60 ? 'var(--status-amber)' : 'var(--accent-blue)')};"></div>
+            </div>
+          `;
+          div.addEventListener("click", () => renderDrilldownChapterLevel(subKey));
+          container.appendChild(div);
+        });
+      }
+
+      function renderRecentHistory(completed) {
+        const container = document.getElementById("mock-history-container");
+        if (completed.length === 0) {
+          container.innerHTML = `<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">No mocks submitted yet. Launch your first mock above.</p>`;
+          return;
+        }
+
+        container.innerHTML = "";
+        completed.slice(-3).reverse().forEach(att => {
+          const secScores = {};
+          if (att.questions && Array.isArray(att.questions) && att.userResponses) {
+            att.questions.forEach(q => {
+              const secName = q.subject || "GEN";
+              if (!secScores[secName]) secScores[secName] = 0;
+              const resp = att.userResponses[q.id];
+              if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
+                if (resp.selectedOption === q.correctIndex) secScores[secName] += 2.0;
+                else secScores[secName] -= 0.5;
+              }
+            });
+          }
+
+          const card = document.createElement("div");
+          card.className = "ticket-card";
+          card.innerHTML = `
+            <div class="ticket-header">
+              <div>
+                <b style="font-size:14px; color:#fff;">${att.title || 'SSC CGL Mock'}</b>
+                <div style="font-size:11px; color:var(--text-muted);">${new Date(att.timestamp || Date.now()).toLocaleDateString()}</div>
+              </div>
+              <div style="text-align:right;">
+                <span style="font-size:16px; font-weight:800; color:var(--accent-cyan);">${(att.finalScore || 0).toFixed(2)} pts</span>
+              </div>
+            </div>
+
+            <div class="ticket-pills-row">
+              ${Object.keys(secScores).map(k => `<span class="ticket-sec-pill"><b>${k}:</b> ${secScores[k].toFixed(1)}</span>`).join('')}
+              <span class="ticket-sec-pill" style="color:var(--status-red);">Traps: ${att.q4Traps || 0}</span>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:10px;">
+              <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.openSaveBlueprintModal('FIXED_PAPER', '${att.sessionId}')">📌 Freeze Paper</button>
+              <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.reattemptMock('${att.sessionId}')">🔁 Re-attempt</button>
+              <button class="btn btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openMockReview('${att.sessionId}')">Inspect Solutions</button>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      }
+
+      function openHistoryArchiveModal() {
+        pushHistoryState("modal-history-archive");
+        document.getElementById("modal-history-archive").classList.add("active");
+        renderArchiveList("ALL");
+      }
+
+      async function renderArchiveList(filterType) {
+        const attempts = await getAllRecords("store_attempts");
+        const completed = attempts.filter(a => a.completed && !a.isVaultSprint);
+        const container = document.getElementById("archive-list-container");
+        container.innerHTML = "";
+
+        let list = completed.slice().reverse();
+        if (filterType !== "ALL") {
+          list = list.filter(a => a.mockType === filterType);
+        }
+
+        if (list.length === 0) {
+          container.innerHTML = `<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:12px;">No tests found in this category.</p>`;
+          return;
+        }
+
+        list.forEach(att => {
+          const div = document.createElement("div");
+          div.className = "card";
+          div.style.marginBottom = "8px";
+          div.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <b style="font-size:14px;">${att.title}</b>
+                  ${att.signatureTag ? `<span class="badge" style="background:#1f6feb; font-size:9px;">${att.signatureTag}</span>` : ''}
+                </div>
+                <div style="font-size:11px; color:var(--text-muted);">${new Date(att.timestamp).toLocaleString()}</div>
+              </div>
+              <div style="text-align:right;">
+                <span style="font-size:14px; font-weight:800; color:var(--accent-cyan);">${(att.finalScore || 0).toFixed(2)} pts</span><br>
+                <div style="display:flex; gap:4px; margin-top:4px;">
+                  <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px; color:var(--accent-cyan);" onclick="CGL_OS.openSaveBlueprintModal('FIXED_PAPER', '${att.sessionId}')" title="Freeze Paper">📌</button>
+                  <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px;" onclick="CGL_OS.reattemptMock('${att.sessionId}')" title="Re-attempt">🔁</button>
+                  <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openMockReview('${att.sessionId}')">Inspect</button>
+                </div>
+              </div>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+      }
+
+      async function renderDrilldownSubjectLevel() {
+        document.getElementById("drilldown-breadcrumb").innerText = "Global";
+        document.getElementById("drill-level-tag").innerText = "LEVEL: SUBJECT";
+
+        const list = document.getElementById("drilldown-list");
+        list.innerHTML = "";
+
+        const attempts = await getAllRecords("store_attempts");
+        const completed = attempts.filter(a => a.completed && !a.isVaultSprint);
+
+        Object.keys(TAXONOMY).forEach(subKey => {
+          const sub = TAXONOMY[subKey];
+          let subAtt = 0, subCor = 0;
+
+          completed.forEach(c => {
+            if (c.questions && Array.isArray(c.questions)) {
+              c.questions.forEach(q => {
+                if (q.subject === subKey) {
+                  const resp = c.userResponses && c.userResponses[q.id] ? c.userResponses[q.id] : null;
+                  if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
+                    subAtt++;
+                    if (resp.selectedOption === q.correctIndex) subCor++;
+                  }
+                }
+              });
+            }
+          });
+
+          const div = document.createElement("div");
+          div.className = "card";
+          div.style.padding = "12px";
+          div.style.marginBottom = "8px";
+          div.style.cursor = "pointer";
+          div.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-weight:700;">${sub.name} (${subKey})</div>
+                <div style="font-size:11px; color:var(--text-muted);">${sub.chapters.length} Standard Chapters</div>
+              </div>
+              <div style="text-align:right;">
+                <span class="badge" style="background:#151a24; color:#38bdf8;">
+                  ${subAtt > 0 ? `Acc: ${Math.round((subCor / subAtt) * 100)}%` : "Unattempted"}
+                </span>
+              </div>
+            </div>
+          `;
+          div.addEventListener("click", () => renderDrilldownChapterLevel(subKey));
+          list.appendChild(div);
+        });
+      }
+
+      async function renderDrilldownChapterLevel(subKey) {
+        const sub = TAXONOMY[subKey];
+        document.getElementById("drilldown-breadcrumb").innerHTML = `<span onclick="CGL_OS.renderDashboard()">Global</span> &gt; <b>${subKey}</b>`;
+        document.getElementById("drill-level-tag").innerText = "LEVEL: CHAPTERS";
+
+        const list = document.getElementById("drilldown-list");
+        list.innerHTML = "";
+
+        const attempts = await getAllRecords("store_attempts");
+        const completed = attempts.filter(a => a.completed && !a.isVaultSprint);
+        const allQuestions = await getAllRecords("store_questions");
+
+        sub.chapters.forEach(chap => {
+          let chapAtt = 0, chapCor = 0, chapSec = 0;
+          completed.forEach(c => {
+            if (c.questions && Array.isArray(c.questions)) {
+              c.questions.forEach(q => {
+                if (q.chapter === chap) {
+                  const resp = c.userResponses && c.userResponses[q.id] ? c.userResponses[q.id] : null;
+                  if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
+                    chapAtt++;
+                    chapSec += (resp.timeSpentSec || 0);
+                    if (resp.selectedOption === q.correctIndex) chapCor++;
+                  }
+                }
+              });
+            }
+          });
+
+          const totalInBank = allQuestions.filter(q => q.chapter === chap).length;
+          const div = document.createElement("div");
+          div.className = "card";
+          div.style.padding = "12px";
+          div.style.marginBottom = "8px";
+          div.style.cursor = "pointer";
+
+          div.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-weight:700; font-family:var(--font-mono); font-size:13px;">${chap}</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
+                  Bank: ${totalInBank} Qs • ${chapAtt > 0 ? `Speed: ${Math.round(chapSec / chapAtt)}s` : "No solve data"}
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <span class="badge" style="background:${chapAtt > 0 ? '#1b4d2e' : '#151a24'}; color:${chapAtt > 0 ? '#4ade80' : '#8b949e'};">
+                  ${chapAtt > 0 ? `Acc: ${Math.round((chapCor / chapAtt) * 100)}%` : "Unattempted"}
+                </span>
+              </div>
+            </div>
+          `;
+          div.addEventListener("click", () => openChapterInspector(subKey, chap, chapAtt, chapCor, chapSec));
+          list.appendChild(div);
+        });
+      }
+
+      async function openChapterInspector(subKey, chap, attCount, corCount, secCount) {
+        document.getElementById("insp-chapter-title").innerText = chap;
+        document.getElementById("insp-subject-title").innerText = TAXONOMY[subKey] ? TAXONOMY[subKey].name : subKey;
+
+        const acc = attCount > 0 ? Math.round((corCount / attCount) * 100) : 0;
+        const avgSpeed = attCount > 0 ? Math.round(secCount / attCount) : 0;
+        document.getElementById("insp-acc").innerText = attCount > 0 ? `${acc}%` : "--";
+        document.getElementById("insp-speed").innerText = attCount > 0 ? `${avgSpeed}s` : "--";
+
+        const nc = attCount > 0 ? Math.max(0, (1 - (attCount / 50))).toFixed(2) : "1.00";
+        document.getElementById("insp-nc").innerText = nc;
+
+        const vault = await getAllRecords("store_vault");
+        const allQs = await getAllRecords("store_questions");
+        const vList = document.getElementById("insp-vulnerability-list");
+        vList.innerHTML = "";
+
+        const chapterVault = vault.filter(v => allQs.some(q => q.id === v.questionId && q.chapter === chap));
+        if (chapterVault.length === 0) {
+          vList.innerHTML = `<span style="color:var(--status-green);">Zero active errors logged in this chapter!</span>`;
+        } else {
+          chapterVault.forEach(v => {
+            const q = allQs.find(item => item.id === v.questionId);
+            if (q) {
+              const item = document.createElement("div");
+              item.style.padding = "4px 0";
+              item.style.borderBottom = "1px solid var(--border-color)";
+              item.innerHTML = `• ${q.questionText.slice(0, 75)}... <span style="color:var(--status-red);">[${v.errorTag}]</span>`;
+              vList.appendChild(item);
+            }
+          });
+        }
+
+        document.getElementById("btn-launch-chapter-blitz").onclick = () => {
+          document.getElementById("modal-chapter-inspector").classList.remove("active");
+          launchConfiguredMockDirect(subKey, chap, 5, 5);
+        };
+
+        pushHistoryState("modal-chapter-inspector");
+        document.getElementById("modal-chapter-inspector").classList.add("active");
+      }
+
+      async function launchConfiguredMockDirect(sub, chap, count, durMin) {
+        const allQuestions = await getAllRecords("store_questions");
+        const pool = allQuestions.filter(q => q.chapter === chap);
+        if (pool.length === 0) {
+          alert("No questions in bank for this chapter.");
+          return;
+        }
+
         activeExam = {
-          sessionId: activeReviewAttempt.sessionId,
-          title: `Review: ${activeReviewAttempt.title}`,
-          isReviewMode: true,
+          sessionId: "blitz_" + Date.now(),
+          timestamp: Date.now(),
+          title: `${chap} Blitz Drill`,
+          mockType: "CUSTOM",
+          isVaultSprint: false,
           isSectionLocked: false,
-          sections: sections,
+          sections: [{
+            id: "SEC_" + chap,
+            name: chap,
+            durationSec: durMin * 60,
+            questions: pool.slice(0, count),
+            locked: false
+          }],
           activeSectionIndex: 0,
           currentQuestionIndex: 0,
-          questions: normalizedQuestions,
-          sectionRemainingSec: 0,
+          questions: pool.slice(0, count).map((q, idx) => ({ ...q, sectionIndex: 0, sectionName: chap, localNumber: idx + 1, globalNumber: idx + 1 })),
+          sectionRemainingSec: durMin * 60,
           currentQTimeSpentSec: 0,
-          userResponses: activeReviewAttempt.userResponses || {},
+          userResponses: {},
           isPaused: false
         };
+
+        activeExam.questions.forEach(q => {
+          activeExam.userResponses[q.id] = {
+            selectedOption: null,
+            initialOption: null,
+            status: "unanswered",
+            switches: 0,
+            decisionTrail: [],
+            timeSpentSec: 0,
+            struck: []
+          };
+        });
+
+        await putRecord("store_active_session", { id: "current_session", session: activeExam });
+        hideMiniPlayer();
 
         pushHistoryState("exam-arena");
         document.getElementById("exam-arena").style.display = "flex";
         renderActiveExamQuestion();
-      }
-
-      function exitReviewArena() {
-        document.getElementById("exam-arena").style.display = "none";
-        activeExam = null;
-        if (activeReviewAttempt) openMockReview(activeReviewAttempt);
+        startExamTimers();
       }
 
       /* -------------------------------------------------------------
-       * 14. EXPORT & BOOT RETURN OBJECT
+       * 10. LEITNER VAULT SPRINT ENGINE & ISOLATED HISTORY
        * ------------------------------------------------------------- */
+      async function renderVault() {
+        const vault = await getAllRecords("store_vault");
+        const questions = await getAllRecords("store_questions");
+        const container = document.getElementById("vault-list-container");
+        container.innerHTML = "";
+
+        const validTraps = [];
+        for (const v of vault) {
+          const q = questions.find(item => item.id === v.questionId);
+          if (q) validTraps.push({ v, q });
+          else await deleteRecordFromStore("store_vault", v.questionId);
+        }
+
+        document.getElementById("vault-count-badge").innerText = `${validTraps.length} Traps`;
+
+        if (validTraps.length === 0) {
+          container.innerHTML = `<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:12px;">Error Vault is clear. Zero failed questions recorded.</div>`;
+          return;
+        }
+
+        validTraps.forEach(({ v, q }) => {
+          const div = document.createElement("div");
+          div.className = "card";
+          div.style.borderColor = "#da3633";
+          div.style.marginBottom = "8px";
+
+          let img = q.imageUrl ? `<div style="text-align:center; margin:6px 0;"><img src="${q.imageUrl}" style="max-height:140px; max-width:100%; border-radius:6px;"></div>` : '';
+
+          div.innerHTML = `
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <span class="badge" style="background:#da3633;">${v.errorTag || 'UNCLASSIFIED'}</span>
+              <span class="badge" style="background:#151a24; color:#a371f7;">Leitner Box ${v.leitnerBox || 1} / 3</span>
+            </div>
+            <div style="font-size:13px; line-height:1.5;">${formatRichText(q.questionText)}</div>
+            ${img}
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+              <span style="font-size:11px; color:var(--accent-cyan);">Correct: Option ${q.correctIndex + 1}</span>
+              <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.advanceVaultBox('${v.questionId}')">Promote (Level Up)</button>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+
+        renderVaultSprintHistory();
+      }
+
+      async function renderVaultSprintHistory() {
+        const sprints = await getAllRecords("store_vault_sprints");
+        const list = document.getElementById("vault-sprint-history-list");
+        document.getElementById("vault-sprint-count-badge").innerText = `${sprints.length} Sprints`;
+        list.innerHTML = "";
+
+        if (sprints.length === 0) {
+          list.innerHTML = `<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">No sprints recorded yet.</p>`;
+          return;
+        }
+
+        sprints.slice().reverse().forEach(s => {
+          const div = document.createElement("div");
+          div.style.padding = "6px 8px";
+          div.style.borderBottom = "1px solid var(--border-color)";
+          div.style.fontSize = "12px";
+          div.style.display = "flex";
+          div.style.justifyContent = "space-between";
+          div.innerHTML = `
+            <div>
+              <b>Trap Sprint (${s.totalQuestions} Qs)</b><br>
+              <span style="font-size:10px; color:var(--text-muted);">${new Date(s.timestamp).toLocaleString()}</span>
+            </div>
+            <div style="text-align:right;">
+              <span style="color:var(--status-green); font-weight:700;">Acc: ${s.accuracy}%</span><br>
+              <span style="font-size:10px; color:var(--text-muted);">${s.correctCount} Cor / ${s.incorrectCount} Inc</span>
+            </div>
+          `;
+          list.appendChild(div);
+        });
+      }
+
+      async function advanceVaultBox(qId) {
+        const rec = await getRecord("store_vault", qId);
+        if (rec) {
+          rec.leitnerBox = (rec.leitnerBox || 1) + 1;
+          if (rec.leitnerBox > 3) {
+            await deleteRecordFromStore("store_vault", qId);
+            alert("Mastered! Question graduated out of Error Vault.");
+          } else {
+            await putRecord("store_vault", rec);
+            alert(`Promoted to Leitner Box ${rec.leitnerBox}! Review scheduled.`);
+          }
+          renderVault();
+        }
+      }
+
+      async function demoteVaultBox(qId) {
+        const rec = await getRecord("store_vault", qId);
+        if (rec) {
+          rec.leitnerBox = 1;
+          await putRecord("store_vault", rec);
+        }
+      }
+
+      async function launchVaultSprint() {
+        const vault = await getAllRecords("store_vault");
+        const questions = await getAllRecords("store_questions");
+        const failedQs = questions.filter(q => vault.some(v => v.questionId === q.id));
+
+        if (failedQs.length === 0) {
+          alert("Error Vault is clear! Zero failed questions logged.");
+          return;
+        }
+
+        activeExam = {
+          sessionId: "vault_sprint_" + Date.now(),
+          timestamp: Date.now(),
+          title: "Trap-Breaker Sprint",
+          isVaultSprint: true,
+          isSectionLocked: false,
+          sections: [{
+            id: "SEC_VAULT",
+            name: "Error Vault Traps",
+            durationSec: failedQs.length * 60,
+            questions: failedQs,
+            locked: false
+          }],
+          activeSectionIndex: 0,
+          currentQuestionIndex: 0,
+          questions: failedQs.map((q, idx) => ({ ...q, sectionIndex: 0, sectionName: "Error Vault", localNumber: idx + 1, globalNumber: idx + 1 })),
+          sectionRemainingSec: failedQs.length * 60,
+          currentQTimeSpentSec: 0,
+          userResponses: {},
+          isPaused: false
+        };
+
+        activeExam.questions.forEach(q => {
+          activeExam.userResponses[q.id] = {
+            selectedOption: null,
+            initialOption: null,
+            status: "unanswered",
+            switches: 0,
+            decisionTrail: [],
+            timeSpentSec: 0,
+            struck: []
+          };
+        });
+
+        await putRecord("store_active_session", { id: "current_session", session: activeExam });
+        hideMiniPlayer();
+
+        pushHistoryState("exam-arena");
+        document.getElementById("exam-arena").style.display = "flex";
+        renderActiveExamQuestion();
+        startExamTimers();
+      }
+
+      /* -------------------------------------------------------------
+       * 11. QUESTION GUI EDITOR
+       * ------------------------------------------------------------- */
+      let currentQuestionImageBase64 = "";
+
+      function openEditQuestionModal(qData) {
+        const isNew = !qData;
+        currentQuestionImageBase64 = "";
+        document.getElementById("editor-title").innerText = isNew ? "Add New Question" : "Edit Question";
+        document.getElementById("edit-q-id").value = isNew ? "q_cgl_" + Date.now() : qData.id;
+        document.getElementById("edit-q-subject").value = isNew ? "QA" : qData.subject;
+        document.getElementById("edit-q-chapter").value = isNew ? "QA_GEOMETRY" : qData.chapter;
+        document.getElementById("edit-q-subtopic").value = isNew ? "" : (qData.subtopic || "");
+        document.getElementById("edit-q-method").value = isNew ? "" : (qData.method || "");
+        document.getElementById("edit-q-text").value = isNew ? "" : qData.questionText;
+        document.getElementById("edit-q-img-url").value = isNew ? "" : (qData.imageUrl || "");
+        document.getElementById("edit-q-img-file").value = "";
+
+        document.getElementById("edit-opt-0").value = isNew ? "" : (qData.options[0] || "");
+        document.getElementById("edit-opt-1").value = isNew ? "" : (qData.options[1] || "");
+        document.getElementById("edit-opt-2").value = isNew ? "" : (qData.options[2] || "");
+        document.getElementById("edit-opt-3").value = isNew ? "" : (qData.options[3] || "");
+
+        document.getElementById("edit-q-correct").value = isNew ? "0" : qData.correctIndex;
+        document.getElementById("edit-q-explanation").value = isNew ? "" : (qData.explanation || "");
+
+        document.getElementById("btn-delete-q").style.display = isNew ? "none" : "block";
+        pushHistoryState("modal-question-editor");
+        document.getElementById("modal-question-editor").classList.add("active");
+      }
+
+      function openEditCurrentDojoQuestion() {
+        if (!dojoExam) return;
+        openEditQuestionModal(dojoExam.questions[dojoExam.currentIndex]);
+      }
+
+      async function handleQuestionImageUpload(input) {
+        if (input.files && input.files[0]) {
+          currentQuestionImageBase64 = await compressImageFile(input.files[0]);
+        }
+      }
+
+      async function saveQuestionEditor() {
+        const id = document.getElementById("edit-q-id").value;
+        const urlInput = document.getElementById("edit-q-img-url").value.trim();
+
+        const qObj = {
+          id: id,
+          subject: document.getElementById("edit-q-subject").value,
+          chapter: document.getElementById("edit-q-chapter").value.trim().toUpperCase(),
+          subtopic: document.getElementById("edit-q-subtopic").value.trim(),
+          method: document.getElementById("edit-q-method").value.trim(),
+          questionText: document.getElementById("edit-q-text").value.trim(),
+          imageUrl: currentQuestionImageBase64 || urlInput,
+          options: [
+            document.getElementById("edit-opt-0").value.trim(),
+            document.getElementById("edit-opt-1").value.trim(),
+            document.getElementById("edit-opt-2").value.trim(),
+            document.getElementById("edit-opt-3").value.trim()
+          ],
+          correctIndex: parseInt(document.getElementById("edit-q-correct").value),
+          explanation: document.getElementById("edit-q-explanation").value.trim(),
+          tags: ["UserSaved"]
+        };
+
+        await putRecord("store_questions", qObj);
+        document.getElementById("modal-question-editor").classList.remove("active");
+        if (dojoExam) {
+          dojoExam.questions[dojoExam.currentIndex] = qObj;
+          renderDojoArenaQuestion();
+        }
+        refreshDbInspector();
+      }
+
+      async function deleteCurrentEditingQuestion() {
+        const id = document.getElementById("edit-q-id").value;
+        if (confirm(`Delete question ${id}?`)) {
+          await deleteRecordFromStore("store_questions", id);
+          document.getElementById("modal-question-editor").classList.remove("active");
+          if (dojoExam) {
+            dojoExam.questions = dojoExam.questions.filter(q => q.id !== id);
+            if (dojoExam.currentIndex >= dojoExam.questions.length) dojoExam.currentIndex = 0;
+            renderDojoArenaQuestion();
+          }
+          refreshDbInspector();
+        }
+      }
+
+      /* -------------------------------------------------------------
+       * 12. HARDENED COMMAND BUS & AI DISPATCHER
+       * ------------------------------------------------------------- */
+      async function executeConsoleCommand() {
+        const raw = document.getElementById("console-payload").value.trim();
+        let cmd;
+        try {
+          cmd = JSON.parse(raw);
+        } catch (err) {
+          alert("Invalid JSON Syntax: " + err.message);
+          return;
+        }
+
+        try {
+          const database = await getDB();
+          if (!database) throw new Error("IndexedDB instance unavailable.");
+
+          if (cmd.action === "INGEST_AND_LAUNCH_MOCK") {
+            const questions = (cmd.payload.questions || []).map(sanitizeQuestion);
+            if (questions.length === 0) {
+              alert("No questions found in payload to launch mock.");
+              return;
+            }
+
+            const tx = database.transaction(["store_questions"], "readwrite");
+            const st = tx.objectStore("store_questions");
+            questions.forEach(q => st.put(q));
+            await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
+
+            compileAndLaunchArena(
+              cmd.payload.title || "AI Custom Practice Mock",
+              questions,
+              cmd.payload.durationMin || 15
+            );
+
+          } else if (cmd.action === "AI_PRESCRIBE_REMEDY") {
+            const qIds = cmd.payload.questionIds || [];
+            const newQuestions = (cmd.payload.newQuestions || []).map(sanitizeQuestion);
+
+            if (newQuestions.length > 0) {
+              const tx = database.transaction(["store_questions"], "readwrite");
+              const st = tx.objectStore("store_questions");
+              newQuestions.forEach(q => st.put(q));
+              await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
+            }
+
+            const allQs = await getAllRecords("store_questions");
+            let remedialPool = allQs.filter(q => qIds.includes(q.id));
+            if (newQuestions.length > 0) {
+              remedialPool = [...remedialPool, ...newQuestions];
+            }
+
+            if (remedialPool.length === 0) {
+              alert("Could not compile remedy pool. No matching questions found in bank.");
+              return;
+            }
+
+            compileAndLaunchArena(
+              cmd.payload.title || "AI Prescribed Remedial Blitz",
+              remedialPool,
+              cmd.payload.durationMin || 10
+            );
+
+          } else if (cmd.action === "BATCH_INGEST_QUESTIONS") {
+            const list = (cmd.payload.questions || []).map(sanitizeQuestion);
+            const tx = database.transaction(["store_questions"], "readwrite");
+            const st = tx.objectStore("store_questions");
+            list.forEach(q => st.put(q));
+            await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
+            alert(`Ingested ${list.length} questions successfully into bank.`);
+
+          } else if (cmd.action === "BATCH_INGEST_COMPENDIUM") {
+            const dossiers = (cmd.payload.dossiers || []).map(sanitizeDossier);
+            const tx = database.transaction(["store_concepts"], "readwrite");
+            const st = tx.objectStore("store_concepts");
+            dossiers.forEach(d => st.put(d));
+            await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
+            alert(`Ingested ${dossiers.length} topic dossiers successfully.`);
+
+          } else if (cmd.action === "SAVE_MOCK_PRESET") {
+            const preset = sanitizeSavedMock(cmd.payload, Date.now());
+            await putRecord("store_saved_mocks", preset);
+            alert(`Saved mock setup: "${preset.title}".`);
+            await renderDashboardBlueprints();
+
+          } else if (cmd.action === "HOTPATCH_CONFIG") {
+            await putRecord("store_config", { key: cmd.target, value: cmd.payload });
+            alert(`Patched config: ${cmd.target}`);
+
+          } else {
+            alert("Unknown Command Action: " + (cmd.action || "undefined"));
+          }
+
+          refreshDbInspector();
+          renderDashboard();
+        } catch(err) {
+          alert("Command Execution Error: " + err.message);
+        }
+      }
+
+      async function compileAndLaunchArena(title, questionsPool, durationMin) {
+        clearInterval(examTimerInterval);
+        clearInterval(questionTimerInterval);
+
+        activeExam = {
+          sessionId: "ai_mock_" + Date.now(),
+          timestamp: Date.now(),
+          title: title,
+          mockType: "CUSTOM",
+          isVaultSprint: false,
+          isSectionLocked: false,
+          sections: [{
+            id: "SEC_AI",
+            name: "AI Test Session",
+            durationSec: durationMin * 60,
+            questions: questionsPool,
+            locked: false
+          }],
+          activeSectionIndex: 0,
+          currentQuestionIndex: 0,
+          questions: questionsPool.map((q, idx) => ({ 
+            ...q, 
+            sectionIndex: 0, 
+            sectionName: "AI Test Session", 
+            localNumber: idx + 1, 
+            globalNumber: idx + 1 
+          })),
+          sectionRemainingSec: durationMin * 60,
+          currentQTimeSpentSec: 0,
+          userResponses: {},
+          isPaused: false
+        };
+
+        activeExam.questions.forEach(q => {
+          activeExam.userResponses[q.id] = {
+            selectedOption: null,
+            initialOption: null,
+            status: "unanswered",
+            switches: 0,
+            decisionTrail: [],
+            timeSpentSec: 0,
+            struck: []
+          };
+        });
+
+        await putRecord("store_active_session", { id: "current_session", session: activeExam });
+        hideMiniPlayer();
+
+        pushHistoryState("exam-arena");
+        document.getElementById("exam-arena").style.display = "flex";
+        renderActiveExamQuestion();
+        startExamTimers();
+      }
+
+      function loadSamplePayload(type) {
+        if (type === "REMEDY") {
+          const sample = {
+            action: "AI_PRESCRIBE_REMEDY",
+            payload: {
+              title: "Geometry & Time-Work Remedial Blitz",
+              durationMin: 10,
+              questionIds: ["q_cgl_qa_geom_011", "q_cgl_qa_tw_010", "q_qa_geom_002"],
+              newQuestions: []
+            }
+          };
+          document.getElementById("console-payload").value = JSON.stringify(sample, null, 2);
+        }
+      }
+
+      async function refreshDbInspector() {
+        const storeName = document.getElementById("db-store-select").value;
+        const records = await getAllRecords(storeName);
+        const list = document.getElementById("db-inspector-list");
+        list.innerHTML = "";
+
+        records.forEach(rec => {
+          const key = rec.id || rec.sessionId || rec.questionId || rec.key;
+          const row = document.createElement("div");
+          row.style.display = "flex";
+          row.style.justifyContent = "space-between";
+          row.style.padding = "6px 0";
+          row.style.borderBottom = "1px solid var(--border-color)";
+          row.innerHTML = `
+            <span style="font-family:var(--font-mono);">${key}</span>
+            <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.editDbRecordModal('${storeName}', '${key}')">Inspect</button>
+          `;
+          list.appendChild(row);
+        });
+      }
+
+      async function editDbRecordModal(sName, key) {
+        const rec = await getRecord(sName, key);
+        if (sName === "store_questions") {
+          openEditQuestionModal(rec);
+        } else if (sName === "store_concepts") {
+          editSpecificTopicDossier(key);
+        } else {
+          alert(`Record Details (${key}):\n` + JSON.stringify(rec, null, 2));
+        }
+      }
+
+      async function wipeTestAttempts() {
+        if (confirm("Permanently clear standard mock test history?")) {
+          await clearStore("store_attempts");
+          alert("Standard test history cleared.");
+          renderDashboard();
+          refreshDbInspector();
+        }
+      }
+
+      async function wipeErrorVault() {
+        if (confirm("Permanently clear active Error Vault traps?")) {
+          await clearStore("store_vault");
+          alert("Error Vault cleared.");
+          renderVault();
+          refreshDbInspector();
+        }
+      }
+
+      async function factoryResetAll() {
+        if (confirm("WARNING: Complete factory reset will wipe all data and re-seed defaults!")) {
+          const storeKeys = [
+            "store_questions", "store_attempts", "store_vault", 
+            "store_vault_sprints", "store_concepts", "store_notes", 
+            "store_saved_mocks", "store_active_session", "store_config"
+          ];
+          for (const sName of storeKeys) {
+            await clearStore(sName);
+          }
+          await seedData();
+          alert("Factory reset complete.");
+          renderDashboard();
+          refreshDbInspector();
+        }
+      }
+
+      /* -------------------------------------------------------------
+       * 13. UNIVERSAL TOUCH GESTURES (GLOBAL VIEWPORT ROUTER)
+       * ------------------------------------------------------------- */
+      function initGestureControllers() {
+        const attachSwipeHandler = (elementId, onLeftSwipe, onRightSwipe) => {
+          const el = document.getElementById(elementId);
+          if (!el) return;
+          let startX = 0, startY = 0;
+
+          el.addEventListener("touchstart", (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+          }, { passive: true });
+
+          el.addEventListener("touchend", (e) => {
+            const deltaX = e.changedTouches[0].clientX - startX;
+            const deltaY = e.changedTouches[0].clientY - startY;
+
+            if (Math.abs(deltaX) > 60 && Math.abs(deltaY) < 35) {
+              if (navigator.vibrate) navigator.vibrate(15);
+              if (deltaX < 0) onLeftSwipe();
+              else onRightSwipe();
+            }
+          }, { passive: true });
+        };
+
+        // Exam Arena Swipes
+        attachSwipeHandler("arena-body", () => document.getElementById("btn-q-save-next").click(), () => document.getElementById("btn-q-prev").click());
+
+        // Dojo Arena Swipes
+        attachSwipeHandler("dojo-arena-body", () => navDojoArena(1), () => navDojoArena(-1));
+
+        // Pop-out Topic Sheet Swipes
+        attachSwipeHandler("popout-sheet-body", () => navPopoutTopic(1), () => navPopoutTopic(-1));
+
+        // Global Viewport Gesture Router: Dashboard <-> Dojo <-> Console <-> Vault
+        const viewportRoot = document.getElementById("app-viewport-root");
+        let rootStartX = 0, rootStartY = 0;
+        const tabSequence = ["tab-dashboard", "tab-dojo", "tab-console", "tab-vault"];
+
+        viewportRoot.addEventListener("touchstart", (e) => {
+          rootStartX = e.touches[0].clientX;
+          rootStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        viewportRoot.addEventListener("touchend", (e) => {
+          const arenaView = document.getElementById("exam-arena");
+          const dojoView = document.getElementById("dojo-arena-view");
+          const openModals = document.querySelectorAll(".modal-overlay.active");
+          if (arenaView.style.display === "flex" || dojoView.style.display === "flex" || openModals.length > 0) {
+            return;
+          }
+
+          const target = e.target;
+          if (target.closest("textarea") || target.closest(".sticky-anchor-bar") || target.closest(".palette-scroll-body") || target.closest("#dash-blueprints-pills")) {
+            return;
+          }
+
+          const deltaX = e.changedTouches[0].clientX - rootStartX;
+          const deltaY = e.changedTouches[0].clientY - rootStartY;
+
+          if (Math.abs(deltaX) > 70 && Math.abs(deltaY) < 35) {
+            const activeTabEl = document.querySelector(".view-container.active");
+            if (!activeTabEl) return;
+            const currentIdx = tabSequence.indexOf(activeTabEl.id);
+            if (currentIdx === -1) return;
+
+            if (deltaX < 0 && currentIdx < tabSequence.length - 1) {
+              switchTab(tabSequence[currentIdx + 1], document.getElementById(`nav-btn-${tabSequence[currentIdx + 1]}`));
+            } else if (deltaX > 0 && currentIdx > 0) {
+              switchTab(tabSequence[currentIdx - 1], document.getElementById(`nav-btn-${tabSequence[currentIdx - 1]}`));
+            }
+          }
+        }, { passive: true });
+
+        // Hardware Gesture Shield
+        window.addEventListener("popstate", () => {
+          const openModals = document.querySelectorAll(".modal-overlay.active");
+          if (openModals.length > 0) {
+            openModals.forEach(m => m.classList.remove("active"));
+            return;
+          }
+
+          const arenaView = document.getElementById("exam-arena");
+          if (arenaView.style.display === "flex") {
+            document.getElementById("btn-arena-pause").click();
+            return;
+          }
+
+          const dojoView = document.getElementById("dojo-arena-view");
+          if (dojoView.style.display === "flex") {
+            exitDojoArena();
+          }
+        });
+      }
+
+      function pushHistoryState(name) {
+        history.pushState({ panel: name }, "");
+      }
+
+      /* -------------------------------------------------------------
+       * 14. SELECTIVE PRINT ENGINE
+       * ------------------------------------------------------------- */
+      async function openPrintConfigModal() {
+        await updatePrintChapters();
+        await populatePrintMockDropdown();
+        pushHistoryState("modal-print-config");
+        document.getElementById("modal-print-config").classList.add("active");
+      }
+
+      async function populatePrintMockDropdown() {
+        const attempts = await getAllRecords("store_attempts");
+        const select = document.getElementById("print-mock-select");
+        select.innerHTML = "";
+        attempts.forEach(a => {
+          const opt = document.createElement("option");
+          opt.value = a.sessionId;
+          opt.innerText = `${a.title} (${new Date(a.timestamp).toLocaleDateString()})`;
+          select.appendChild(opt);
+        });
+      }
+
+      function handlePrintTypeChange(type) {
+        const isQ = type === "QUESTIONS" || type === "COMPENDIUM";
+        const isMock = type === "PAST_MOCK";
+        document.getElementById("print-sub-wrap").style.display = isQ ? "block" : "none";
+        document.getElementById("print-chap-wrap").style.display = isQ ? "block" : "none";
+        document.getElementById("print-mock-select-wrap").style.display = isMock ? "block" : "none";
+      }
+
+      async function updatePrintChapters() {
+        const sub = document.getElementById("print-subject").value;
+        const chapSelect = document.getElementById("print-chapter");
+        chapSelect.innerHTML = `<option value="ALL">All Chapters</option>`;
+
+        const allQs = await getAllRecords("store_questions");
+        const chaps = [...new Set(allQs.filter(q => sub === "ALL" || q.subject === sub).map(q => q.chapter))];
+
+        chaps.forEach(c => {
+          const opt = document.createElement("option");
+          opt.value = c;
+          opt.innerText = c;
+          chapSelect.appendChild(opt);
+        });
+      }
+
+      async function generateAndPrintSheet() {
+        document.getElementById("modal-print-config").classList.remove("active");
+        const pType = document.getElementById("print-type").value;
+        const sub = document.getElementById("print-subject").value;
+        const chap = document.getElementById("print-chapter").value;
+        const incAns = document.getElementById("print-include-ans").value === "YES";
+
+        const root = document.getElementById("print-sheet-root");
+        root.innerHTML = "";
+
+        if (pType === "QUESTIONS") {
+          const allQs = await getAllRecords("store_questions");
+          let pool = sub === "ALL" ? allQs : allQs.filter(q => q.subject === sub);
+          if (chap !== "ALL") pool = pool.filter(q => q.chapter === chap);
+
+          root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Practice Spool (${sub} - ${chap})</h2>`;
+          pool.forEach((q, idx) => {
+            const item = document.createElement("div");
+            item.className = "print-question";
+            let img = q.imageUrl ? `<br><img src="${q.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
+            item.innerHTML = `
+              <strong>Q${idx + 1}.</strong> ${formatRichText(q.questionText)}${img}<br>
+              ${q.options.map((opt, i) => `(${i + 1})${formatRichText(opt)} &nbsp;`).join(' ')}
+              ${incAns ? `<div style="font-size:10px; margin-top:4px;"><b>Answer:</b> Option ${q.correctIndex + 1} \vert{} <i>${q.explanation || ''}</i></div>` : ''}
+            `;
+            root.appendChild(item);
+          });
+        } else if (pType === "PAST_MOCK") {
+          const mockId = document.getElementById("print-mock-select").value;
+          const attempts = await getAllRecords("store_attempts");
+          const targetMock = attempts.find(a => a.sessionId === mockId);
+          if (!targetMock) return;
+
+          root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">${targetMock.title} - Score: ${targetMock.finalScore.toFixed(2)} (${new Date(targetMock.timestamp).toLocaleDateString()})</h2>`;
+          targetMock.questions.forEach((q, idx) => {
+            const resp = targetMock.userResponses && targetMock.userResponses[q.id] ? targetMock.userResponses[q.id] : {};
+            const item = document.createElement("div");
+            item.className = "print-question";
+            let img = q.imageUrl ? `<br><img src="${q.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
+            item.innerHTML = `
+              <strong>Q${idx + 1}.</strong> ${formatRichText(q.questionText)}${img}<br>
+              ${q.options.map((opt, i) => `(${i + 1})${formatRichText(opt)} &nbsp;`).join(' ')}
+              ${incAns ? `<div style="font-size:10px; margin-top:4px;"><b>Selected:</b> Option ${resp.selectedOption !== null && resp.selectedOption !== undefined ? resp.selectedOption + 1 : 'None'} | <b>Correct:</b> Option ${q.correctIndex + 1} \vert{} <i>${q.explanation || ''}</i></div>` : ''}
+            `;
+            root.appendChild(item);
+          });
+        } else if (pType === "COMPENDIUM") {
+          const dossiers = await getAllRecords("store_concepts");
+          let pool = sub === "ALL" ? dossiers : dossiers.filter(d => d.subject === sub);
+          if (chap !== "ALL") pool = pool.filter(d => d.chapter === chap);
+
+          root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Knowledge Compendium (${sub} - ${chap})</h2>`;
+          pool.forEach((t, idx) => {
+            const item = document.createElement("div");
+            item.className = "print-question";
+            let img = t.imageUrl ? `<br><img src="${t.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
+            item.innerHTML = `
+              <strong>${idx + 1}. ${t.title} [${t.chapter}]</strong> ${t.subtitle ? `<i>(${t.subtitle})</i>` : ''}<br>
+              ${formatRichText(t.content)}${img}
+            `;
+            root.appendChild(item);
+          });
+        } else if (pType === "VAULT") {
+          const vault = await getAllRecords("store_vault");
+          const allQs = await getAllRecords("store_questions");
+          root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Error Vault Revision Sheet</h2>`;
+          vault.forEach((v, idx) => {
+            const q = allQs.find(item => item.id === v.questionId);
+            if (!q) return;
+            const item = document.createElement("div");
+            item.className = "print-question";
+            let img = q.imageUrl ? `<br><img src="${q.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
+            item.innerHTML = `
+              <strong>Q${idx + 1}. [Box ${v.leitnerBox || 1} - ${v.errorTag}]</strong> ${formatRichText(q.questionText)}${img}<br>
+              ${q.options.map((opt, i) => `(${i + 1})${formatRichText(opt)} &nbsp;`).join(' ')}
+              <div style="font-size:10px; margin-top:4px;"><b>Correct: Option ${q.correctIndex + 1}</b> | ${q.explanation || ''}</div>
+            `;
+            root.appendChild(item);
+          });
+        }
+
+        window.print();
+      }
+
+      /* -------------------------------------------------------------
+       * 15. NAVIGATION, TAB SWITCHING & SYSTEM BOOT
+       * ------------------------------------------------------------- */
+      function switchTab(tId, btn) {
+        document.querySelectorAll(".view-container").forEach(el => el.classList.remove("active"));
+        document.querySelectorAll(".nav-btn").forEach(el => el.classList.remove("active"));
+
+        const targetEl = document.getElementById(tId);
+        if (targetEl) targetEl.classList.add("active");
+
+        const targetNavBtn = btn || document.getElementById(`nav-btn-${tId}`);
+        if (targetNavBtn) targetNavBtn.classList.add("active");
+
+        if (tId === "tab-dashboard") renderDashboard();
+        if (tId === "tab-dojo") updateDojoChapters();
+        if (tId === "tab-console") refreshDbInspector();
+        if (tId === "tab-vault") renderVault();
+      }
+
+      window.addEventListener("DOMContentLoaded", async () => {
+        const shield = document.getElementById("pause-shield");
+        shield.style.setProperty("display", "none", "important");
+
+        await getDB();
+        await renderDashboard();
+        await updateDojoChapters();
+        await renderVault();
+        initGestureControllers();
+
+        const savedSessionRec = await getRecord("store_active_session", "current_session");
+        if (savedSessionRec && savedSessionRec.session && !savedSessionRec.session.completed) {
+          activeExam = savedSessionRec.session;
+          activeExam.isPaused = true;
+          updateMiniPlayerDock();
+        }
+      });
+
       return {
         switchTab,
         openCustomMockModal,
@@ -3582,19 +5179,13 @@ Direct CRUD manipulation of any internal IndexedDB store:
         toggleDojoMethod,
         autoSaveDojoAnnotation,
         toggleDojoPalette,
-        openCompendiumFullscreen,
-        exitCompendiumFullscreen,
-        handleStudioSubjectChange,
-        handleStudioChapterChange,
-        renderStudioChapterSheets,
-        selectStudioSheet,
-        navStudioSheet,
-        autoSaveStudioScratchpad,
-        deleteCurrentStudioSheet,
-        openRenameChapterPrompt,
-        openCreateNewChapterPrompt,
-        toggleCompendiumOmniSearch,
-        executeOmniSearch,
+        openKnowledgeCompendiumModal,
+        handleCompendiumSubjectChange,
+        renderMasterCompendiumView,
+        openPopoutTopicSheet,
+        navPopoutTopic,
+        autoSaveTopicScratchpad,
+        deleteCurrentTopicDossier,
         insertDossierSnippet,
         openConceptEditorModal,
         editSpecificTopicDossier,
@@ -3610,10 +5201,6 @@ Direct CRUD manipulation of any internal IndexedDB store:
         saveQuestionEditor,
         deleteCurrentEditingQuestion,
         openMockReview,
-        enterReviewArena,
-        exitReviewArena,
-        openSubjectDiagnostic,
-        launchSubjectBlitz,
         filterReviewQuestions,
         handleMistakeTagSelect,
         setMistakeTag,
@@ -3626,8 +5213,6 @@ Direct CRUD manipulation of any internal IndexedDB store:
         openBackupRestoreModal,
         handleBackupFileSelect,
         executeHydrationRestore,
-        copyLiveSystemManifestToClipboard,
-        showTrapInfoPrompt,
         openHistoryArchiveModal,
         renderArchiveList,
         executeConsoleCommand,
