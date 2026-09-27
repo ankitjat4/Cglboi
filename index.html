@@ -113,7 +113,7 @@
     .btn-danger { background: var(--status-red); }
     .btn-amber { background: var(--status-amber); color: #000; font-weight: 700; }
 
-    /* DASHBOARD HERO HEADER */
+    /* DASHBOARD HERO BANNER */
     .hero-banner {
       background: linear-gradient(135deg, #131926 0%, #090c12 100%);
       border: 1px solid rgba(56, 139, 253, 0.35);
@@ -173,7 +173,7 @@
     .nav-btn.active { color: var(--accent-blue); }
     .nav-btn svg { width: 22px; height: 22px; stroke-width: 2; }
 
-    /* FLOATING ACTIVE TEST MINI-PLAYER DOCK */
+    /* FLOATING MINI-PLAYER DOCK */
     #mini-player-dock {
       display: none;
       position: fixed;
@@ -199,7 +199,7 @@
       animation: pulse 1.5s infinite;
     }
 
-    /* MODAL WINDOW OVERLAYS */
+    /* MODAL OVERLAYS */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -242,7 +242,7 @@
     }
     .form-control:focus { outline: none; border-color: var(--border-focus); }
 
-    /* FULL-SCREEN SIMULATOR ARENAS */
+    /* FULL-SCREEN SIMULATOR ARENAS & COMPENDIUM CANVAS */
     #exam-arena, #dojo-arena-view, #compendium-fullscreen-view {
       display: none;
       position: fixed;
@@ -386,7 +386,7 @@
       z-index: 2100;
     }
 
-    /* SLIDING PALETTE DRAWER & CELLS */
+    /* SLIDING PALETTE DRAWER & NODES */
     .palette-drawer-ui {
       position: fixed;
       top: 0; right: -100%; bottom: 0;
@@ -442,18 +442,15 @@
     .palette-cell.locked-cell { background: #151922; color: #484f58; cursor: not-allowed; border-color: rgba(255,255,255,0.03); }
     .palette-cell.current { border-color: #ffffff; box-shadow: 0 0 10px rgba(255,255,255,0.8); }
 
-    /* FORENSIC TILES */
-    .forensic-tile {
-      background: #151422;
-      border: 1px solid #36294a;
-      padding: 8px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .forensic-tile:hover {
-      border-color: var(--accent-cyan);
-      background: #1e1930;
+    .chapter-section-header {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      margin: 12px 0 6px 0;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
     }
 
     /* HARDENED PAUSE OVERLAY SHIELD */
@@ -624,7 +621,7 @@
       transition: width 0.4s ease;
     }
 
-    /* PRINT SPOOLER */
+    /* PRINT STYLES */
     @media print {
       body { background: white !important; color: black !important; }
       #bottom-nav, #exam-arena, #dojo-arena-view, #compendium-fullscreen-view, .btn, .card, .modal-overlay, #pause-shield, #mini-player-dock { display: none !important; }
@@ -654,7 +651,7 @@
     </div>
   </div>
 
-  <!-- APPLICATION VIEWPORT ROOT -->
+  <!-- APPLICATION VIEWPORT ROOT (FOR GLOBAL GESTURE INTERCEPTOR) -->
   <div id="app-viewport-root">
 
     <!-- ==================== 1. TIMED EXAM & REVIEW ARENA ==================== -->
@@ -701,14 +698,14 @@
           </div>
         </div>
 
-        <!-- Hesitation & Review Metadata Header (Active only in Review Arena Mode) -->
+        <!-- Hesitation & Review Metadata Header (Active in Review Mode) -->
         <div id="arena-review-meta-box" style="display:none; margin-bottom:12px;"></div>
 
         <div class="q-text-canvas" id="arena-q-text"></div>
         <div class="q-image-container" id="arena-image-container" style="display:none;"></div>
         <div id="arena-options-container"></div>
 
-        <!-- Solution & Explanation Panel (Active only in Review Arena Mode) -->
+        <!-- Solution & Explanation Panel (Active in Review Mode) -->
         <div id="arena-review-solution-box" style="display:none; background:#0a0e16; border-left:3px solid var(--accent-cyan); border-radius:6px; padding:12px; margin-top:14px; font-size:13px; line-height:1.6;"></div>
       </div>
 
@@ -827,7 +824,7 @@
     </div>
 
 
-    <!-- ==================== 2B. FULL-SCREEN LIVING COMPENDIUM & TREE STUDIO ==================== -->
+    <!-- ==================== 2B. FULL-SCREEN LIVING COMPENDIUM STUDIO ==================== -->
     <div id="compendium-fullscreen-view">
       <div class="arena-header">
         <div style="display:flex; align-items:center; gap:8px;">
@@ -1963,7 +1960,7 @@
         if (!str) return "";
         let out = String(str);
 
-        // Callout Admonition Blocks
+        // Callout Admonitions
         out = out.replace(/^>\s*\[!trap\]\s*(.*)$/gm, '<div class="callout-box trap"><b>⚠️ Trapping Point:</b> $1</div>');
         out = out.replace(/^>\s*\[!formula\]\s*(.*)$/gm, '<div class="callout-box formula"><b>⚡ Formula:</b> $1</div>');
         out = out.replace(/^>\s*\[!tip\]\s*(.*)$/gm, '<div class="callout-box"><b>💡 Tip:</b> $1</div>');
@@ -2033,7 +2030,7 @@
           const req = indexedDB.open(DB_NAME, DB_VERSION);
 
           req.onblocked = () => {
-            console.warn("Database upgrade blocked. Closing stale connections...");
+            console.warn("Database upgrade blocked by another tab or stale handle. Forcing clean...");
           };
 
           req.onupgradeneeded = (e) => {
@@ -3506,491 +3503,13 @@ Direct CRUD manipulation of any internal IndexedDB store:
         startExamTimers();
       }
 
+/* ==================== END OF PART 2 ==================== */
+/* Part 3 will resume immediately below */
       /* -------------------------------------------------------------
-       * 5. FULL-SCREEN LIVING COMPENDIUM STUDIO & TREE MANAGEMENT
+       * 13. TWO-STAGE FORENSIC REVIEW ARENA CONTROLLERS
        * ------------------------------------------------------------- */
-      async function openCompendiumFullscreen() {
-        pushHistoryState("compendium-fullscreen-view");
-        document.getElementById("compendium-fullscreen-view").style.display = "flex";
-        await handleStudioSubjectChange("QA");
-      }
-
-      function exitCompendiumFullscreen() {
-        document.getElementById("compendium-fullscreen-view").style.display = "none";
-      }
-
-      async function handleStudioSubjectChange(sub) {
-        studioCurrentSubject = sub;
-        const chapSelect = document.getElementById("comp-studio-chapter-select");
-        chapSelect.innerHTML = "";
-
-        const allDossiers = await getAllRecords("store_concepts");
-        const canonChaps = TAXONOMY[sub] ? TAXONOMY[sub].chapters : [];
-        const existingChaps = [...new Set(allDossiers.filter(d => d.subject === sub).map(d => d.chapter))];
-        const combined = [...new Set([...canonChaps, ...existingChaps])];
-
-        combined.forEach(c => {
-          const opt = document.createElement("option");
-          opt.value = c;
-          opt.innerText = c;
-          chapSelect.appendChild(opt);
-        });
-
-        if (combined.length > 0) {
-          studioCurrentChapter = combined[0];
-          chapSelect.value = studioCurrentChapter;
-        }
-
-        await renderStudioChapterSheets();
-      }
-
-      async function handleStudioChapterChange(chap) {
-        studioCurrentChapter = chap;
-        await renderStudioChapterSheets();
-      }
-
-      async function renderStudioChapterSheets() {
-        const allDossiers = await getAllRecords("store_concepts");
-        studioChapterSheets = allDossiers.filter(d => d.subject === studioCurrentSubject && d.chapter === studioCurrentChapter);
-
-        const tabsBar = document.getElementById("comp-studio-sheet-tabs");
-        const canvas = document.getElementById("comp-studio-doc-canvas");
-        tabsBar.innerHTML = "";
-        canvas.innerHTML = "";
-
-        document.getElementById("comp-studio-title").innerText = `${studioCurrentSubject} Studio`;
-        document.getElementById("comp-studio-sub").innerText = `${studioCurrentChapter} (${studioChapterSheets.length} Sheets)`;
-
-        if (studioChapterSheets.length === 0) {
-          canvas.innerHTML = `
-            <div style="text-align:center; padding:60px 14px; color:var(--text-muted);">
-              <h3 style="font-size:16px; color:#fff; margin-bottom:8px;">No Living Sheets Logged Under ${studioCurrentChapter}</h3>
-              <p style="font-size:12px; margin-bottom:16px;">Create your first document cheat sheet or theorem dossier in this chapter.</p>
-              <button class="btn" onclick="CGL_OS.openConceptEditorModal(true)">+ Add Topic Sheet</button>
-            </div>
-          `;
-          return;
-        }
-
-        studioChapterSheets.forEach((sheet, idx) => {
-          const btn = document.createElement("button");
-          btn.className = "anchor-pill" + (idx === studioActiveSheetIndex ? " active" : "");
-          btn.innerText = `Sheet ${idx + 1}: ${sheet.title}`;
-          btn.addEventListener("click", () => selectStudioSheet(idx));
-          tabsBar.appendChild(btn);
-        });
-
-        if (studioActiveSheetIndex >= studioChapterSheets.length) studioActiveSheetIndex = 0;
-        const currentSheet = studioChapterSheets[studioActiveSheetIndex];
-
-        let imgHtml = "";
-        if (currentSheet.imageUrl && currentSheet.imageUrl.trim().length > 0) {
-          imgHtml = `<div style="text-align:center; margin:16px 0;"><img src="${currentSheet.imageUrl}" style="max-height:260px; max-width:100%; border-radius:10px; border:1px solid var(--border-color);"></div>`;
-        }
-
-        canvas.innerHTML = `
-          <div class="document-page-canvas">
-            <div class="document-meta-header">
-              <div>
-                <span class="badge" style="background:#1f6feb;">${currentSheet.chapter}</span>
-                <span style="font-size:11px; color:var(--text-muted); margin-left:8px;">Sheet ${studioActiveSheetIndex + 1} of ${studioChapterSheets.length}</span>
-              </div>
-              <div style="display:flex; gap:6px;">
-                <button class="btn btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.editSpecificTopicDossier('${currentSheet.id}')">✎ Edit Sheet</button>
-                <button class="btn btn-danger" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.deleteCurrentStudioSheet('${currentSheet.id}')">🗑 Delete</button>
-              </div>
-            </div>
-
-            <h1 style="font-size:22px; font-weight:800; color:#fff; margin-bottom:4px;">${currentSheet.title}</h1>
-            ${currentSheet.subtitle ? `<div style="font-size:13px; color:var(--accent-cyan); font-family:var(--font-mono); margin-bottom:14px;">${currentSheet.subtitle}</div>` : ''}
-
-            ${imgHtml}
-
-            <div style="font-size:14px; line-height:1.75; margin-top:10px;">${formatRichText(currentSheet.content)}</div>
-
-            <div style="margin-top:24px; border-top:1px solid var(--border-color); padding-top:14px;">
-              <label style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Personal Solving Scratchpad</label>
-              <textarea id="studio-sheet-scratchpad" class="form-control" style="height:70px; margin-top:6px;" placeholder="Personal annotations, shortcuts..." oninput="CGL_OS.autoSaveStudioScratchpad('${currentSheet.id}', this.value)"></textarea>
-            </div>
-
-            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:12px; margin-top:18px;">
-              <button class="btn btn-secondary" onclick="CGL_OS.navStudioSheet(-1)">◄ Previous Sheet</button>
-              <span style="font-size:11px; color:var(--text-muted);">Swipe left/right to browse sheets</span>
-              <button class="btn btn-secondary" onclick="CGL_OS.navStudioSheet(1)">Next Sheet ►</button>
-            </div>
-          </div>
-        `;
-
-        loadStudioScratchpad(currentSheet.id);
-      }
-
-      function selectStudioSheet(idx) {
-        studioActiveSheetIndex = idx;
-        renderStudioChapterSheets();
-      }
-
-      function navStudioSheet(step) {
-        if (studioChapterSheets.length === 0) return;
-        studioActiveSheetIndex += step;
-        if (studioActiveSheetIndex < 0) studioActiveSheetIndex = studioChapterSheets.length - 1;
-        if (studioActiveSheetIndex >= studioChapterSheets.length) studioActiveSheetIndex = 0;
-        renderStudioChapterSheets();
-      }
-
-      async function autoSaveStudioScratchpad(sheetId, val) {
-        await putRecord("store_notes", { id: `scratch_${sheetId}`, content: val, timestamp: Date.now() });
-      }
-
-      async function loadStudioScratchpad(sheetId) {
-        const note = await getRecord("store_notes", `scratch_${sheetId}`);
-        const el = document.getElementById("studio-sheet-scratchpad");
-        if (el) el.value = note ? note.content : "";
-      }
-
-      async function deleteCurrentStudioSheet(id) {
-        if (confirm("Permanently delete this topic sheet?")) {
-          await deleteRecordFromStore("store_concepts", id);
-          studioActiveSheetIndex = 0;
-          await renderStudioChapterSheets();
-        }
-      }
-
-      async function openRenameChapterPrompt() {
-        const oldName = studioCurrentChapter;
-        const newName = prompt(`Rename Chapter "${oldName}" to:`, oldName);
-        if (!newName || !newName.trim() || newName.trim().toUpperCase() === oldName) return;
-        const formatted = newName.trim().toUpperCase().replace(/\s+/g, '_');
-
-        // Update in TAXONOMY
-        if (TAXONOMY[studioCurrentSubject]) {
-          const idx = TAXONOMY[studioCurrentSubject].chapters.indexOf(oldName);
-          if (idx !== -1) {
-            TAXONOMY[studioCurrentSubject].chapters[idx] = formatted;
-            await putRecord("store_config", { key: "system_taxonomy", value: TAXONOMY });
-          }
-        }
-
-        // Update in all dossiers belonging to this chapter
-        const dossiers = await getAllRecords("store_concepts");
-        for (const d of dossiers) {
-          if (d.subject === studioCurrentSubject && d.chapter === oldName) {
-            d.chapter = formatted;
-            await putRecord("store_concepts", d);
-          }
-        }
-
-        // Update in questions
-        const questions = await getAllRecords("store_questions");
-        for (const q of questions) {
-          if (q.subject === studioCurrentSubject && q.chapter === oldName) {
-            q.chapter = formatted;
-            await putRecord("store_questions", q);
-          }
-        }
-
-        studioCurrentChapter = formatted;
-        alert(`Chapter renamed to "${formatted}".`);
-        await handleStudioSubjectChange(studioCurrentSubject);
-      }
-
-      async function openCreateNewChapterPrompt() {
-        const newName = prompt(`Create New Chapter under ${studioCurrentSubject} (e.g. ${studioCurrentSubject}_COORDINATE):`);
-        if (!newName || !newName.trim()) return;
-        const formatted = newName.trim().toUpperCase().replace(/\s+/g, '_');
-
-        if (!TAXONOMY[studioCurrentSubject]) TAXONOMY[studioCurrentSubject] = { name: studioCurrentSubject, weight: 25, chapters: [] };
-        if (!TAXONOMY[studioCurrentSubject].chapters.includes(formatted)) {
-          TAXONOMY[studioCurrentSubject].chapters.push(formatted);
-          await putRecord("store_config", { key: "system_taxonomy", value: TAXONOMY });
-        }
-
-        studioCurrentChapter = formatted;
-        await handleStudioSubjectChange(studioCurrentSubject);
-        document.getElementById("comp-studio-chapter-select").value = formatted;
-        await renderStudioChapterSheets();
-      }
-
-      function toggleCompendiumOmniSearch(open) {
-        const modal = document.getElementById("modal-compendium-omni-search");
-        if (open) {
-          document.getElementById("comp-omni-search-input").value = "";
-          document.getElementById("comp-omni-search-results").innerHTML = "<p style='font-size:12px; color:var(--text-muted); text-align:center;'>Type keywords to search across formulas, rules, and theorems...</p>";
-          pushHistoryState("modal-compendium-omni-search");
-          modal.classList.add("active");
-          document.getElementById("comp-omni-search-input").focus();
-        } else {
-          modal.classList.remove("active");
-        }
-      }
-
-      async function executeOmniSearch(query) {
-        const q = query.trim().toLowerCase();
-        const resultsBox = document.getElementById("comp-omni-search-results");
-
-        if (!q) {
-          resultsBox.innerHTML = "<p style='font-size:12px; color:var(--text-muted); text-align:center;'>Type keywords to search...</p>";
-          return;
-        }
-
-        const dossiers = await getAllRecords("store_concepts");
-        const matched = dossiers.filter(d => 
-          (d.title && d.title.toLowerCase().includes(q)) ||
-          (d.subtitle && d.subtitle.toLowerCase().includes(q)) ||
-          (d.chapter && d.chapter.toLowerCase().includes(q)) ||
-          (d.content && d.content.toLowerCase().includes(q))
-        );
-
-        if (matched.length === 0) {
-          resultsBox.innerHTML = `<p style='font-size:12px; color:var(--text-muted); text-align:center; padding:16px;'>No matching dossiers found for "${query}".</p>`;
-          return;
-        }
-
-        resultsBox.innerHTML = "";
-        matched.forEach(item => {
-          const div = document.createElement("div");
-          div.className = "card";
-          div.style.padding = "10px";
-          div.style.marginBottom = "8px";
-          div.style.cursor = "pointer";
-          div.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div>
-                <span class="badge" style="background:#1f6feb; font-size:10px;">${item.subject} • ${item.chapter}</span>
-                <b style="font-size:14px; color:#fff; display:block; margin-top:4px;">${item.title}</b>
-                ${item.subtitle ? `<div style="font-size:11px; color:var(--text-muted);">${item.subtitle}</div>` : ''}
-              </div>
-              <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;">Open Sheet ➔</button>
-            </div>
-          `;
-          div.addEventListener("click", async () => {
-            toggleCompendiumOmniSearch(false);
-            studioCurrentSubject = item.subject;
-            studioCurrentChapter = item.chapter;
-            document.getElementById("comp-studio-subject-select").value = item.subject;
-            await handleStudioSubjectChange(item.subject);
-            document.getElementById("comp-studio-chapter-select").value = item.chapter;
-            await renderStudioChapterSheets();
-
-            const targetIdx = studioChapterSheets.findIndex(s => s.id === item.id);
-            if (targetIdx !== -1) selectStudioSheet(targetIdx);
-          });
-          resultsBox.appendChild(div);
-        });
-      }
-
-      function openConceptEditorModal(isNew = true) {
-        currentConceptImageBase64 = "";
-        document.getElementById("concept-editor-title").innerText = isNew ? "Add Topic Dossier" : "Edit Topic Dossier";
-
-        if (isNew || studioChapterSheets.length === 0) {
-          document.getElementById("concept-edit-id").value = "top_" + Date.now();
-          document.getElementById("concept-edit-subject").value = studioCurrentSubject || "QA";
-          document.getElementById("concept-edit-chapter").value = studioCurrentChapter || "QA_GEOMETRY";
-          document.getElementById("concept-edit-title").value = "";
-          document.getElementById("concept-edit-sub").value = "";
-          document.getElementById("concept-edit-body").value = "";
-          document.getElementById("concept-edit-img-url").value = "";
-          document.getElementById("concept-edit-img-file").value = "";
-        } else {
-          const curr = studioChapterSheets[studioActiveSheetIndex];
-          document.getElementById("concept-edit-id").value = curr.id;
-          document.getElementById("concept-edit-subject").value = curr.subject;
-          document.getElementById("concept-edit-chapter").value = curr.chapter;
-          document.getElementById("concept-edit-title").value = curr.title;
-          document.getElementById("concept-edit-sub").value = curr.subtitle || "";
-          document.getElementById("concept-edit-body").value = curr.content;
-          document.getElementById("concept-edit-img-url").value = curr.imageUrl || "";
-          document.getElementById("concept-edit-img-file").value = "";
-        }
-
-        pushHistoryState("modal-concept-editor");
-        document.getElementById("modal-concept-editor").classList.add("active");
-      }
-
-      async function editSpecificTopicDossier(id) {
-        const item = await getRecord("store_concepts", id);
-        if (!item) return;
-
-        currentConceptImageBase64 = "";
-        document.getElementById("concept-editor-title").innerText = "Edit Topic Dossier";
-        document.getElementById("concept-edit-id").value = item.id;
-        document.getElementById("concept-edit-subject").value = item.subject;
-        document.getElementById("concept-edit-chapter").value = item.chapter;
-        document.getElementById("concept-edit-title").value = item.title;
-        document.getElementById("concept-edit-sub").value = item.subtitle || "";
-        document.getElementById("concept-edit-body").value = item.content;
-        document.getElementById("concept-edit-img-url").value = item.imageUrl || "";
-        document.getElementById("concept-edit-img-file").value = "";
-
-        pushHistoryState("modal-concept-editor");
-        document.getElementById("modal-concept-editor").classList.add("active");
-      }
-
-      async function handleConceptImageUpload(input) {
-        if (input.files && input.files[0]) {
-          currentConceptImageBase64 = await compressImageFile(input.files[0]);
-        }
-      }
-
-      async function saveConceptCard() {
-        const id = document.getElementById("concept-edit-id").value;
-        const subject = document.getElementById("concept-edit-subject").value;
-        const chapter = document.getElementById("concept-edit-chapter").value.trim().toUpperCase();
-        const title = document.getElementById("concept-edit-title").value.trim();
-        const subtitle = document.getElementById("concept-edit-sub").value.trim();
-        const content = document.getElementById("concept-edit-body").value.trim();
-        const urlInput = document.getElementById("concept-edit-img-url").value.trim();
-
-        if (!title || !content || !chapter) {
-          alert("Chapter, Topic Title, and Content are required.");
-          return;
-        }
-
-        const obj = {
-          id: id,
-          subject: subject,
-          chapter: chapter,
-          title: title,
-          subtitle: subtitle,
-          content: content,
-          imageUrl: currentConceptImageBase64 || urlInput,
-          timestamp: Date.now()
-        };
-
-        await putRecord("store_concepts", obj);
-        document.getElementById("modal-concept-editor").classList.remove("active");
-        studioCurrentSubject = subject;
-        studioCurrentChapter = chapter;
-        document.getElementById("comp-studio-subject-select").value = subject;
-        await handleStudioSubjectChange(subject);
-        document.getElementById("comp-studio-chapter-select").value = chapter;
-        await renderStudioChapterSheets();
-      }
-
-      function insertDossierSnippet(type) {
-        const textarea = document.getElementById("concept-edit-body");
-        let snippet = "";
-        if (type === "FORMULA") snippet = "\n> [!formula] Key Identity\n> $$a^2 + b^2 = c^2$$\n";
-        if (type === "TRAP") snippet = "\n> [!trap] Common TCS Trap\n> Verify whether radius or diameter is specified.\n";
-        if (type === "TABLE") snippet = "\n| Condition | Method | Shortcut |\n| :--- | :--- | :--- |\n| Case 1 | Direct Tangent | $2\\sqrt{r_1 r_2}$ |\n";
-        textarea.value += snippet;
-        textarea.focus();
-      }
-
-      /* -------------------------------------------------------------
-       * 7. TWO-STAGE FORENSIC COCKPIT & FULL-SCREEN REVIEW ARENA
-       * ------------------------------------------------------------- */
-      async function openMockReview(attemptOrId) {
-        let att = typeof attemptOrId === "string" 
-          ? (await getAllRecords("store_attempts")).find(a => a.sessionId === attemptOrId)
-          : attemptOrId;
-
-        if (!att) return;
-        activeReviewAttempt = att;
-
-        document.getElementById("review-modal-title").innerText = att.title || "Mock Forensic Cockpit";
-        document.getElementById("review-modal-date").innerText = new Date(att.timestamp || Date.now()).toLocaleString();
-        document.getElementById("rev-score").innerText = (att.finalScore || 0).toFixed(2);
-
-        const totalAtt = (att.correctCount || 0) + (att.incorrectCount || 0);
-        document.getElementById("rev-acc").innerText = totalAtt > 0 ? `${Math.round((att.correctCount / totalAtt) * 100)}%` : "0%";
-        document.getElementById("rev-cor").innerText = att.correctCount || 0;
-        document.getElementById("rev-inc").innerText = att.incorrectCount || 0;
-
-        document.getElementById("btn-review-reattempt").onclick = () => reattemptMock(att.sessionId);
-        document.getElementById("btn-review-save-fixed").onclick = () => openSaveBlueprintModal("FIXED_PAPER", att.sessionId);
-        document.getElementById("btn-cockpit-enter-arena").onclick = () => enterReviewArena();
-
-        // Stage 1 Cockpit Data Analytics Calculation
-        let totalSpentSec = 0;
-        if (att.userResponses && typeof att.userResponses === "object") {
-          Object.values(att.userResponses).forEach(r => totalSpentSec += (r ? (r.timeSpentSec || 0) : 0));
-        }
-
-        const totalAllocatedSec = (att.sections && att.sections.length > 0)
-          ? att.sections.reduce((acc, s) => acc + (s.durationSec || 900), 0)
-          : 3600;
-
-        document.getElementById("cockpit-time-allocated").innerText = `${Math.floor(totalAllocatedSec / 60)}m 00s`;
-        document.getElementById("cockpit-time-spent").innerText = `${Math.floor(totalSpentSec / 60)}m ${totalSpentSec % 60}s`;
-        document.getElementById("cockpit-avg-velocity").innerText = totalAtt > 0 ? `${Math.round(totalSpentSec / totalAtt)}s / Q` : "--";
-        document.getElementById("cockpit-penalty-drag").innerText = `-${(att.penaltyDrag || 0).toFixed(2)} pts`;
-
-        // Sectional Efficiency Comparison Grid
-        const secList = document.getElementById("cockpit-sectional-comparison-list");
-        secList.innerHTML = "";
-        const secStats = {};
-
-        if (att.questions && Array.isArray(att.questions) && att.userResponses) {
-          att.questions.forEach(q => {
-            const sub = q.subject || "GEN";
-            if (!secStats[sub]) secStats[sub] = { cor: 0, inc: 0, unans: 0, score: 0, time: 0 };
-            const resp = att.userResponses[q.id];
-            if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
-              secStats[sub].time += (resp.timeSpentSec || 0);
-              if (resp.selectedOption === q.correctIndex) {
-                secStats[sub].cor++;
-                secStats[sub].score += 2.0;
-              } else {
-                secStats[sub].inc++;
-                secStats[sub].score -= 0.5;
-              }
-            } else {
-              secStats[sub].unans++;
-            }
-          });
-        }
-
-        Object.keys(secStats).forEach(sKey => {
-          const st = secStats[sKey];
-          const totalQ = st.cor + st.inc + st.unans;
-          const acc = (st.cor + st.inc) > 0 ? Math.round((st.cor / (st.cor + st.inc)) * 100) : 0;
-          const row = document.createElement("div");
-          row.style.display = "flex";
-          row.style.justifyContent = "space-between";
-          row.style.padding = "6px 0";
-          row.style.borderBottom = "1px solid var(--border-color)";
-          row.style.fontSize = "12px";
-          row.innerHTML = `
-            <span><b>${sKey}:</b> ${st.score.toFixed(1)} pts (${acc}% acc)</span>
-            <span style="color:var(--text-muted);">${st.cor} Cor / ${st.inc} Inc • ${Math.round(st.time / (totalQ || 1))}s/Q</span>
-          `;
-          secList.appendChild(row);
-        });
-
-        // Mistake Distribution Tags
-        const tagsBox = document.getElementById("cockpit-mistake-tags-list");
-        tagsBox.innerHTML = "";
-        const vaultRecords = await getAllRecords("store_vault");
-        const tagCounts = {};
-
-        if (att.questions && Array.isArray(att.questions)) {
-          att.questions.forEach(q => {
-            const v = vaultRecords.find(item => item.questionId === q.id);
-            const tag = v ? v.errorTag : "UNCLASSIFIED";
-            if (tag !== "UNCLASSIFIED") {
-              tagCounts[tag] = (tagCounts[tag] || 0) + 1;
-            }
-          });
-        }
-
-        if (Object.keys(tagCounts).length === 0) {
-          tagsBox.innerHTML = `<span style="font-size:11px; color:var(--text-muted);">No tagged errors. Open Review Arena to tag calculation or reading traps.</span>`;
-        } else {
-          Object.keys(tagCounts).forEach(tg => {
-            const pill = document.createElement("span");
-            pill.className = "badge";
-            pill.style.background = "#da3633";
-            pill.innerText = `${tg.replace(/_/g, ' ')}: ${tagCounts[tg]}`;
-            tagsBox.appendChild(pill);
-          });
-        }
-
-        pushHistoryState("modal-mock-review");
-        document.getElementById("modal-mock-review").classList.add("active");
-      }
-
-      function enterReviewArena() {
+      async function enterReviewArena() {
+        if (!activeReviewAttempt) return;
         document.getElementById("modal-mock-review").classList.remove("active");
 
         const sections = activeReviewAttempt.sections && activeReviewAttempt.sections.length > 0
@@ -4031,666 +3550,12 @@ Direct CRUD manipulation of any internal IndexedDB store:
       function exitReviewArena() {
         document.getElementById("exam-arena").style.display = "none";
         activeExam = null;
-        openMockReview(activeReviewAttempt);
+        if (activeReviewAttempt) openMockReview(activeReviewAttempt);
       }
 
       /* -------------------------------------------------------------
-       * 7B. SUBJECT DIAGNOSTIC MODAL SHEET
+       * 14. EXPORT & BOOT RETURN OBJECT
        * ------------------------------------------------------------- */
-      async function openSubjectDiagnostic(subKey) {
-        const sub = TAXONOMY[subKey];
-        if (!sub) return;
-
-        document.getElementById("diag-subject-title").innerText = `${subKey} Diagnostic`;
-        document.getElementById("diag-subject-name").innerText = sub.name;
-
-        const attempts = await getAllRecords("store_attempts");
-        const completed = attempts.filter(a => a.completed && !a.isVaultSprint);
-        const allQuestions = await getAllRecords("store_questions");
-
-        let subAtt = 0, subCor = 0;
-        completed.forEach(c => {
-          if (c.questions && Array.isArray(c.questions)) {
-            c.questions.forEach(q => {
-              if (q.subject === subKey) {
-                const resp = c.userResponses && c.userResponses[q.id] ? c.userResponses[q.id] : null;
-                if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
-                  subAtt++;
-                  if (resp.selectedOption === q.correctIndex) subCor++;
-                }
-              }
-            });
-          }
-        });
-
-        const acc = subAtt > 0 ? Math.round((subCor / subAtt) * 100) : 0;
-        document.getElementById("diag-subject-acc").innerText = `${acc}% (${subAtt} Solved)`;
-
-        const list = document.getElementById("diag-chapter-breakdown-list");
-        list.innerHTML = "";
-
-        sub.chapters.forEach(chap => {
-          let chapAtt = 0, chapCor = 0;
-          completed.forEach(c => {
-            if (c.questions && Array.isArray(c.questions)) {
-              c.questions.forEach(q => {
-                if (q.chapter === chap) {
-                  const resp = c.userResponses && c.userResponses[q.id] ? c.userResponses[q.id] : null;
-                  if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
-                    chapAtt++;
-                    if (resp.selectedOption === q.correctIndex) chapCor++;
-                  }
-                }
-              });
-            }
-          });
-
-          const cAcc = chapAtt > 0 ? Math.round((chapCor / chapAtt) * 100) : 0;
-          const totalInBank = allQuestions.filter(q => q.chapter === chap).length;
-
-          const row = document.createElement("div");
-          row.style.padding = "8px 0";
-          row.style.borderBottom = "1px solid var(--border-color)";
-          row.innerHTML = `
-            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:2px;">
-              <span style="font-family:var(--font-mono); font-weight:700;">${chap}</span>
-              <span style="color:${cAcc >= 80 ? 'var(--status-green)' : (cAcc >= 60 ? 'var(--status-amber)' : 'var(--text-muted)')}; font-weight:700;">
-                ${chapAtt > 0 ? `${cAcc}% (${chapAtt} attempted)` : '0%'}
-              </span>
-            </div>
-            <div class="battery-bar-container" style="height:6px;">
-              <div class="battery-bar-fill" style="width:${cAcc}%; background:${cAcc >= 80 ? 'var(--status-green)' : (cAcc >= 60 ? 'var(--status-amber)' : 'var(--accent-blue)')};"></div>
-            </div>
-            <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Bank coverage: ${totalInBank} Qs</div>
-          `;
-          list.appendChild(row);
-        });
-
-        document.getElementById("btn-diag-launch-blitz").onclick = () => {
-          document.getElementById("modal-subject-diagnostic").classList.remove("active");
-          launchSubjectBlitz(subKey);
-        };
-
-        pushHistoryState("modal-subject-diagnostic");
-        document.getElementById("modal-subject-diagnostic").classList.add("active");
-      }
-
-      async function launchSubjectBlitz(subKey) {
-        const allQuestions = await getAllRecords("store_questions");
-        const pool = allQuestions.filter(q => q.subject === subKey);
-
-        if (pool.length === 0) {
-          alert(`No questions in bank for ${subKey}.`);
-          return;
-        }
-
-        const blitzQuestions = pool.slice(0, 10);
-        compileAndLaunchArena(`${TAXONOMY[subKey].name} 10-Q Blitz`, blitzQuestions, 8);
-      }
-
-      /* -------------------------------------------------------------
-       * 8. HARDENED COMMAND BUS & AI DISPATCHER
-       * ------------------------------------------------------------- */
-      async function executeConsoleCommand() {
-        const raw = document.getElementById("console-payload").value.trim();
-        let cmd;
-        try {
-          cmd = JSON.parse(raw);
-        } catch (err) {
-          alert("Invalid JSON Syntax: " + err.message);
-          return;
-        }
-
-        try {
-          const database = await getDB();
-          if (!database) throw new Error("IndexedDB instance unavailable.");
-
-          if (cmd.action === "INGEST_AND_LAUNCH_MOCK") {
-            const questions = (cmd.payload.questions || []).map(sanitizeQuestion);
-            if (questions.length === 0) {
-              alert("No questions found in payload to launch mock.");
-              return;
-            }
-
-            const tx = database.transaction(["store_questions"], "readwrite");
-            const st = tx.objectStore("store_questions");
-            questions.forEach(q => st.put(q));
-            await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
-
-            compileAndLaunchArena(
-              cmd.payload.title || "AI Custom Practice Mock",
-              questions,
-              cmd.payload.durationMin || 15
-            );
-
-          } else if (cmd.action === "AI_PRESCRIBE_REMEDY") {
-            const qIds = cmd.payload.questionIds || [];
-            const newQuestions = (cmd.payload.newQuestions || []).map(sanitizeQuestion);
-
-            if (newQuestions.length > 0) {
-              const tx = database.transaction(["store_questions"], "readwrite");
-              const st = tx.objectStore("store_questions");
-              newQuestions.forEach(q => st.put(q));
-              await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
-            }
-
-            const allQs = await getAllRecords("store_questions");
-            let remedialPool = allQs.filter(q => qIds.includes(q.id));
-            if (newQuestions.length > 0) {
-              remedialPool = [...remedialPool, ...newQuestions];
-            }
-
-            if (remedialPool.length === 0) {
-              alert("Could not compile remedy pool. No matching questions found in bank.");
-              return;
-            }
-
-            compileAndLaunchArena(
-              cmd.payload.title || "AI Prescribed Remedial Blitz",
-              remedialPool,
-              cmd.payload.durationMin || 10
-            );
-
-          } else if (cmd.action === "BATCH_INGEST_QUESTIONS") {
-            const list = (cmd.payload.questions || []).map(sanitizeQuestion);
-            const tx = database.transaction(["store_questions"], "readwrite");
-            const st = tx.objectStore("store_questions");
-            list.forEach(q => st.put(q));
-            await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
-            alert(`Ingested ${list.length} questions successfully into bank.`);
-
-          } else if (cmd.action === "BATCH_INGEST_COMPENDIUM") {
-            const dossiers = (cmd.payload.dossiers || []).map(sanitizeDossier);
-            const tx = database.transaction(["store_concepts"], "readwrite");
-            const st = tx.objectStore("store_concepts");
-            dossiers.forEach(d => st.put(d));
-            await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
-            alert(`Ingested ${dossiers.length} topic dossiers successfully.`);
-
-          } else if (cmd.action === "SAVE_MOCK_PRESET") {
-            const preset = sanitizeSavedMock(cmd.payload, Date.now());
-            await putRecord("store_saved_mocks", preset);
-            alert(`Saved mock setup: "${preset.title}".`);
-            await renderDashboardBlueprints();
-
-          } else if (cmd.action === "MODIFY_TAXONOMY") {
-            const op = cmd.payload.operation;
-            if (op === "ADD_CHAPTER") {
-              const sub = cmd.payload.subject;
-              const chap = cmd.payload.chapter.trim().toUpperCase();
-              if (TAXONOMY[sub] && !TAXONOMY[sub].chapters.includes(chap)) {
-                TAXONOMY[sub].chapters.push(chap);
-                await putRecord("store_config", { key: "system_taxonomy", value: TAXONOMY });
-                alert(`Added chapter "${chap}" to ${sub}.`);
-              }
-            } else if (op === "RENAME_CHAPTER") {
-              const sub = cmd.payload.subject;
-              const oldCh = cmd.payload.oldChapter;
-              const newCh = cmd.payload.newChapter.trim().toUpperCase();
-              if (TAXONOMY[sub]) {
-                const idx = TAXONOMY[sub].chapters.indexOf(oldCh);
-                if (idx !== -1) {
-                  TAXONOMY[sub].chapters[idx] = newCh;
-                  await putRecord("store_config", { key: "system_taxonomy", value: TAXONOMY });
-                  alert(`Renamed chapter "${oldCh}" to "${newCh}".`);
-                }
-              }
-            } else if (op === "ADD_SUBJECT") {
-              const subKey = cmd.payload.subjectKey.trim().toUpperCase();
-              TAXONOMY[subKey] = {
-                name: cmd.payload.name || subKey,
-                weight: cmd.payload.weight || 25,
-                chapters: cmd.payload.chapters || []
-              };
-              await putRecord("store_config", { key: "system_taxonomy", value: TAXONOMY });
-              alert(`Added new subject: ${subKey}.`);
-            }
-            await renderDashboard();
-
-          } else if (cmd.action === "RAW_DB_OPERATION") {
-            const stName = cmd.payload.store;
-            const op = cmd.payload.operation;
-            if (op === "PUT") {
-              await putRecord(stName, cmd.payload.record);
-              alert(`Updated record in ${stName}.`);
-            } else if (op === "DELETE") {
-              await deleteRecordFromStore(stName, cmd.payload.key);
-              alert(`Deleted record ${cmd.payload.key} from ${stName}.`);
-            } else if (op === "CLEAR") {
-              await clearStore(stName);
-              alert(`Cleared store ${stName}.`);
-            }
-
-          } else if (cmd.action === "HOTPATCH_CONFIG") {
-            await putRecord("store_config", { key: cmd.target, value: cmd.payload });
-            alert(`Patched config: ${cmd.target}`);
-
-          } else {
-            alert("Unknown Command Action: " + (cmd.action || "undefined"));
-          }
-
-          refreshDbInspector();
-          renderDashboard();
-        } catch(err) {
-          alert("Command Execution Error: " + err.message);
-        }
-      }
-
-      async function compileAndLaunchArena(title, questionsPool, durationMin) {
-        clearInterval(examTimerInterval);
-        clearInterval(questionTimerInterval);
-
-        activeExam = {
-          sessionId: "ai_mock_" + Date.now(),
-          timestamp: Date.now(),
-          title: title,
-          mockType: "CUSTOM",
-          isVaultSprint: false,
-          isReviewMode: false,
-          isSectionLocked: false,
-          sections: [{
-            id: "SEC_AI",
-            name: "AI Test Session",
-            durationSec: durationMin * 60,
-            questions: questionsPool,
-            locked: false
-          }],
-          activeSectionIndex: 0,
-          currentQuestionIndex: 0,
-          questions: questionsPool.map((q, idx) => ({ 
-            ...q, 
-            sectionIndex: 0, 
-            sectionName: "AI Test Session", 
-            localNumber: idx + 1, 
-            globalNumber: idx + 1 
-          })),
-          sectionRemainingSec: durationMin * 60,
-          currentQTimeSpentSec: 0,
-          userResponses: {},
-          isPaused: false
-        };
-
-        activeExam.questions.forEach(q => {
-          activeExam.userResponses[q.id] = {
-            selectedOption: null,
-            initialOption: null,
-            status: "unanswered",
-            switches: 0,
-            decisionTrail: [],
-            timeSpentSec: 0,
-            struck: []
-          };
-        });
-
-        await putRecord("store_active_session", { id: "current_session", session: activeExam });
-        hideMiniPlayer();
-
-        pushHistoryState("exam-arena");
-        document.getElementById("exam-arena").style.display = "flex";
-        renderActiveExamQuestion();
-        startExamTimers();
-      }
-
-      function loadSamplePayload(type) {
-        if (type === "REMEDY") {
-          const sample = {
-            action: "AI_PRESCRIBE_REMEDY",
-            payload: {
-              title: "Geometry & Time-Work Remedial Blitz",
-              durationMin: 10,
-              questionIds: ["q_cgl_qa_geom_011", "q_cgl_qa_tw_010", "q_qa_geom_002"],
-              newQuestions: []
-            }
-          };
-          document.getElementById("console-payload").value = JSON.stringify(sample, null, 2);
-        }
-      }
-
-      async function refreshDbInspector() {
-        const storeName = document.getElementById("db-store-select").value;
-        const records = await getAllRecords(storeName);
-        const list = document.getElementById("db-inspector-list");
-        list.innerHTML = "";
-
-        records.forEach(rec => {
-          const key = rec.id || rec.sessionId || rec.questionId || rec.key;
-          const row = document.createElement("div");
-          row.style.display = "flex";
-          row.style.justifyContent = "space-between";
-          row.style.padding = "6px 0";
-          row.style.borderBottom = "1px solid var(--border-color)";
-          row.innerHTML = `
-            <span style="font-family:var(--font-mono);">${key}</span>
-            <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.editDbRecordModal('${storeName}', '${key}')">Inspect</button>
-          `;
-          list.appendChild(row);
-        });
-      }
-
-      async function editDbRecordModal(sName, key) {
-        const rec = await getRecord(sName, key);
-        if (sName === "store_questions") {
-          openEditQuestionModal(rec);
-        } else if (sName === "store_concepts") {
-          editSpecificTopicDossier(key);
-        } else {
-          alert(`Record Details (${key}):\n` + JSON.stringify(rec, null, 2));
-        }
-      }
-
-      async function wipeTestAttempts() {
-        if (confirm("Permanently clear standard mock test history?")) {
-          await clearStore("store_attempts");
-          alert("Standard test history cleared.");
-          renderDashboard();
-          refreshDbInspector();
-        }
-      }
-
-      async function wipeErrorVault() {
-        if (confirm("Permanently clear active Error Vault traps?")) {
-          await clearStore("store_vault");
-          alert("Error Vault cleared.");
-          renderVault();
-          refreshDbInspector();
-        }
-      }
-
-      async function factoryResetAll() {
-        if (confirm("WARNING: Complete factory reset will wipe all data and re-seed defaults!")) {
-          const storeKeys = [
-            "store_questions", "store_attempts", "store_vault", 
-            "store_vault_sprints", "store_concepts", "store_notes", 
-            "store_saved_mocks", "store_active_session", "store_config"
-          ];
-          for (const sName of storeKeys) {
-            await clearStore(sName);
-          }
-          await seedData();
-          alert("Factory reset complete.");
-          renderDashboard();
-          refreshDbInspector();
-        }
-      }
-
-      /* -------------------------------------------------------------
-       * 9. UNIVERSAL TOUCH GESTURES (GLOBAL VIEWPORT ROUTER)
-       * ------------------------------------------------------------- */
-      function initGestureControllers() {
-        const attachSwipeHandler = (elementId, onLeftSwipe, onRightSwipe) => {
-          const el = document.getElementById(elementId);
-          if (!el) return;
-          let startX = 0, startY = 0;
-
-          el.addEventListener("touchstart", (e) => {
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
-          }, { passive: true });
-
-          el.addEventListener("touchend", (e) => {
-            const deltaX = e.changedTouches[0].clientX - startX;
-            const deltaY = e.changedTouches[0].clientY - startY;
-
-            if (Math.abs(deltaX) > 60 && Math.abs(deltaY) < 35) {
-              if (navigator.vibrate) navigator.vibrate(15);
-              if (deltaX < 0) onLeftSwipe();
-              else onRightSwipe();
-            }
-          }, { passive: true });
-        };
-
-        // Exam Arena Swipes
-        attachSwipeHandler("arena-body", () => document.getElementById("btn-q-save-next").click(), () => document.getElementById("btn-q-prev").click());
-
-        // Dojo Arena Swipes
-        attachSwipeHandler("dojo-arena-body", () => navDojoArena(1), () => navDojoArena(-1));
-
-        // Full-Screen Compendium Sheet Swipes
-        attachSwipeHandler("comp-studio-body", () => navStudioSheet(1), () => navStudioSheet(-1));
-
-        // Global Viewport Gesture Router: Dashboard <-> Dojo <-> Console <-> Vault
-        const viewportRoot = document.getElementById("app-viewport-root");
-        let rootStartX = 0, rootStartY = 0;
-        const tabSequence = ["tab-dashboard", "tab-dojo", "tab-console", "tab-vault"];
-
-        viewportRoot.addEventListener("touchstart", (e) => {
-          rootStartX = e.touches[0].clientX;
-          rootStartY = e.touches[0].clientY;
-        }, { passive: true });
-
-        viewportRoot.addEventListener("touchend", (e) => {
-          const arenaView = document.getElementById("exam-arena");
-          const dojoView = document.getElementById("dojo-arena-view");
-          const compView = document.getElementById("compendium-fullscreen-view");
-          const openModals = document.querySelectorAll(".modal-overlay.active");
-          if (arenaView.style.display === "flex" || dojoView.style.display === "flex" || compView.style.display === "flex" || openModals.length > 0) {
-            return;
-          }
-
-          const target = e.target;
-          if (target.closest("textarea") || target.closest(".sticky-anchor-bar") || target.closest(".palette-scroll-body") || target.closest("#dash-blueprints-pills")) {
-            return;
-          }
-
-          const deltaX = e.changedTouches[0].clientX - rootStartX;
-          const deltaY = e.changedTouches[0].clientY - rootStartY;
-
-          if (Math.abs(deltaX) > 70 && Math.abs(deltaY) < 35) {
-            const activeTabEl = document.querySelector(".view-container.active");
-            if (!activeTabEl) return;
-            const currentIdx = tabSequence.indexOf(activeTabEl.id);
-            if (currentIdx === -1) return;
-
-            if (deltaX < 0 && currentIdx < tabSequence.length - 1) {
-              switchTab(tabSequence[currentIdx + 1], document.getElementById(`nav-btn-${tabSequence[currentIdx + 1]}`));
-            } else if (deltaX > 0 && currentIdx > 0) {
-              switchTab(tabSequence[currentIdx - 1], document.getElementById(`nav-btn-${tabSequence[currentIdx - 1]}`));
-            }
-          }
-        }, { passive: true });
-
-        // Hardware Gesture Shield
-        window.addEventListener("popstate", () => {
-          const openModals = document.querySelectorAll(".modal-overlay.active");
-          if (openModals.length > 0) {
-            openModals.forEach(m => m.classList.remove("active"));
-            return;
-          }
-
-          const arenaView = document.getElementById("exam-arena");
-          if (arenaView.style.display === "flex") {
-            if (activeExam && activeExam.isReviewMode) {
-              exitReviewArena();
-            } else {
-              document.getElementById("btn-arena-pause").click();
-            }
-            return;
-          }
-
-          const dojoView = document.getElementById("dojo-arena-view");
-          if (dojoView.style.display === "flex") {
-            exitDojoArena();
-            return;
-          }
-
-          const compView = document.getElementById("compendium-fullscreen-view");
-          if (compView.style.display === "flex") {
-            exitCompendiumFullscreen();
-          }
-        });
-      }
-
-      function pushHistoryState(name) {
-        history.pushState({ panel: name }, "");
-      }
-
-      /* -------------------------------------------------------------
-       * 10. SELECTIVE PRINT ENGINE
-       * ------------------------------------------------------------- */
-      async function openPrintConfigModal() {
-        await updatePrintChapters();
-        await populatePrintMockDropdown();
-        pushHistoryState("modal-print-config");
-        document.getElementById("modal-print-config").classList.add("active");
-      }
-
-      async function populatePrintMockDropdown() {
-        const attempts = await getAllRecords("store_attempts");
-        const select = document.getElementById("print-mock-select");
-        select.innerHTML = "";
-        attempts.forEach(a => {
-          const opt = document.createElement("option");
-          opt.value = a.sessionId;
-          opt.innerText = `${a.title} (${new Date(a.timestamp).toLocaleDateString()})`;
-          select.appendChild(opt);
-        });
-      }
-
-      function handlePrintTypeChange(type) {
-        const isQ = type === "QUESTIONS" || type === "COMPENDIUM";
-        const isMock = type === "PAST_MOCK";
-        document.getElementById("print-sub-wrap").style.display = isQ ? "block" : "none";
-        document.getElementById("print-chap-wrap").style.display = isQ ? "block" : "none";
-        document.getElementById("print-mock-select-wrap").style.display = isMock ? "block" : "none";
-      }
-
-      async function updatePrintChapters() {
-        const sub = document.getElementById("print-subject").value;
-        const chapSelect = document.getElementById("print-chapter");
-        chapSelect.innerHTML = `<option value="ALL">All Chapters</option>`;
-
-        const allQs = await getAllRecords("store_questions");
-        const chaps = [...new Set(allQs.filter(q => sub === "ALL" || q.subject === sub).map(q => q.chapter))];
-
-        chaps.forEach(c => {
-          const opt = document.createElement("option");
-          opt.value = c;
-          opt.innerText = c;
-          chapSelect.appendChild(opt);
-        });
-      }
-
-      async function generateAndPrintSheet() {
-        document.getElementById("modal-print-config").classList.remove("active");
-        const pType = document.getElementById("print-type").value;
-        const sub = document.getElementById("print-subject").value;
-        const chap = document.getElementById("print-chapter").value;
-        const incAns = document.getElementById("print-include-ans").value === "YES";
-
-        const root = document.getElementById("print-sheet-root");
-        root.innerHTML = "";
-
-        if (pType === "QUESTIONS") {
-          const allQs = await getAllRecords("store_questions");
-          let pool = sub === "ALL" ? allQs : allQs.filter(q => q.subject === sub);
-          if (chap !== "ALL") pool = pool.filter(q => q.chapter === chap);
-
-          root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Practice Spool (${sub} - ${chap})</h2>`;
-          pool.forEach((q, idx) => {
-            const item = document.createElement("div");
-            item.className = "print-question";
-            let img = q.imageUrl ? `<br><img src="${q.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
-            item.innerHTML = `
-              <strong>Q${idx + 1}.</strong> ${formatRichText(q.questionText)}${img}<br>
-              ${q.options.map((opt, i) => `(${i + 1})${formatRichText(opt)} &nbsp;`).join(' ')}
-              ${incAns ? `<div style="font-size:10px; margin-top:4px;"><b>Answer:</b> Option ${q.correctIndex + 1} \vert{} <i>${q.explanation || ''}</i></div>` : ''}
-            `;
-            root.appendChild(item);
-          });
-        } else if (pType === "PAST_MOCK") {
-          const mockId = document.getElementById("print-mock-select").value;
-          const attempts = await getAllRecords("store_attempts");
-          const targetMock = attempts.find(a => a.sessionId === mockId);
-          if (!targetMock) return;
-
-          root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">${targetMock.title} - Score: ${targetMock.finalScore.toFixed(2)} (${new Date(targetMock.timestamp).toLocaleDateString()})</h2>`;
-          targetMock.questions.forEach((q, idx) => {
-            const resp = targetMock.userResponses && targetMock.userResponses[q.id] ? targetMock.userResponses[q.id] : {};
-            const item = document.createElement("div");
-            item.className = "print-question";
-            let img = q.imageUrl ? `<br><img src="${q.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
-            item.innerHTML = `
-              <strong>Q${idx + 1}.</strong> ${formatRichText(q.questionText)}${img}<br>
-              ${q.options.map((opt, i) => `(${i + 1})${formatRichText(opt)} &nbsp;`).join(' ')}
-              ${incAns ? `<div style="font-size:10px; margin-top:4px;"><b>Selected:</b> Option ${resp.selectedOption !== null && resp.selectedOption !== undefined ? resp.selectedOption + 1 : 'None'} | <b>Correct:</b> Option ${q.correctIndex + 1} \vert{} <i>${q.explanation || ''}</i></div>` : ''}
-            `;
-            root.appendChild(item);
-          });
-        } else if (pType === "COMPENDIUM") {
-          const dossiers = await getAllRecords("store_concepts");
-          let pool = sub === "ALL" ? dossiers : dossiers.filter(d => d.subject === sub);
-          if (chap !== "ALL") pool = pool.filter(d => d.chapter === chap);
-
-          root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Knowledge Compendium (${sub} - ${chap})</h2>`;
-          pool.forEach((t, idx) => {
-            const item = document.createElement("div");
-            item.className = "print-question";
-            let img = t.imageUrl ? `<br><img src="${t.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
-            item.innerHTML = `
-              <strong>${idx + 1}. ${t.title} [${t.chapter}]</strong> ${t.subtitle ? `<i>(${t.subtitle})</i>` : ''}<br>
-              ${formatRichText(t.content)}${img}
-            `;
-            root.appendChild(item);
-          });
-        } else if (pType === "VAULT") {
-          const vault = await getAllRecords("store_vault");
-          const allQs = await getAllRecords("store_questions");
-          root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Error Vault Revision Sheet</h2>`;
-          vault.forEach((v, idx) => {
-            const q = allQs.find(item => item.id === v.questionId);
-            if (!q) return;
-            const item = document.createElement("div");
-            item.className = "print-question";
-            let img = q.imageUrl ? `<br><img src="${q.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
-            item.innerHTML = `
-              <strong>Q${idx + 1}. [Box ${v.leitnerBox || 1} - ${v.errorTag}]</strong> ${formatRichText(q.questionText)}${img}<br>
-              ${q.options.map((opt, i) => `(${i + 1})${formatRichText(opt)} &nbsp;`).join(' ')}
-              <div style="font-size:10px; margin-top:4px;"><b>Correct: Option ${q.correctIndex + 1}</b> | ${q.explanation || ''}</div>
-            `;
-            root.appendChild(item);
-          });
-        }
-
-        window.print();
-      }
-
-      /* -------------------------------------------------------------
-       * 11. NAVIGATION, TAB SWITCHING & SYSTEM BOOT
-       * ------------------------------------------------------------- */
-      function switchTab(tId, btn) {
-        document.querySelectorAll(".view-container").forEach(el => el.classList.remove("active"));
-        document.querySelectorAll(".nav-btn").forEach(el => el.classList.remove("active"));
-
-        const targetEl = document.getElementById(tId);
-        if (targetEl) targetEl.classList.add("active");
-
-        const targetNavBtn = btn || document.getElementById(`nav-btn-${tId}`);
-        if (targetNavBtn) targetNavBtn.classList.add("active");
-
-        if (tId === "tab-dashboard") renderDashboard();
-        if (tId === "tab-dojo") updateDojoChapters();
-        if (tId === "tab-console") refreshDbInspector();
-        if (tId === "tab-vault") renderVault();
-      }
-
-      window.addEventListener("DOMContentLoaded", async () => {
-        const shield = document.getElementById("pause-shield");
-        shield.style.setProperty("display", "none", "important");
-
-        await getDB();
-        await renderDashboard();
-        await updateDojoChapters();
-        await renderVault();
-        initGestureControllers();
-
-        const savedSessionRec = await getRecord("store_active_session", "current_session");
-        if (savedSessionRec && savedSessionRec.session && !savedSessionRec.session.completed) {
-          activeExam = savedSessionRec.session;
-          activeExam.isPaused = true;
-          updateMiniPlayerDock();
-        }
-      });
-
       return {
         switchTab,
         openCustomMockModal,
