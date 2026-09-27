@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#0a0d12">
+  <meta name="theme-color" content="#07090e">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>SSC CGL Intelligence OS</title>
@@ -13,22 +13,24 @@
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 
   <style>
-    /* === ZONE 1: DESIGN SYSTEM & CSS TOKENS === */
+    /* === ZONE 1: LINEAR PRO-DARK DESIGN SYSTEM === */
     :root {
-      --bg-dark: #0a0d12;
-      --bg-card: #131720;
-      --bg-elevated: #1c2230;
-      --border-color: #273042;
+      --bg-dark: #07090e;
+      --bg-card: #0e121a;
+      --bg-elevated: #151a24;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(56, 189, 248, 0.4);
       --accent-blue: #388bfd;
       --accent-blue-hover: #1f6feb;
       --accent-cyan: #38bdf8;
       --status-green: #238636;
+      --status-green-border: #2ea043;
       --status-red: #da3633;
       --status-amber: #d29922;
-      --status-purple: #a371f7;
+      --status-purple: #8957e5;
       --text-main: #f0f6fc;
-      --text-muted: #8b949e;
-      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --text-muted: #7d8590;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
       --bottom-nav-height: 64px;
     }
 
@@ -40,6 +42,7 @@
       min-height: 100vh;
       overflow-x: hidden;
       user-select: none;
+      letter-spacing: -0.01em;
     }
 
     .view-container {
@@ -53,7 +56,7 @@
     .badge {
       font-size: 11px;
       padding: 3px 8px;
-      border-radius: 4px;
+      border-radius: 6px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -92,31 +95,34 @@
       justify-content: center;
       gap: 8px;
       cursor: pointer;
+      transition: all 0.15s ease;
     }
-    .btn:active { transform: scale(0.98); }
+    .btn:active { transform: scale(0.97); }
     .btn-secondary {
       background: var(--bg-elevated);
       color: var(--text-main);
       border: 1px solid var(--border-color);
     }
     .btn-danger { background: var(--status-red); }
+    .btn-amber { background: var(--status-amber); color: #000; font-weight: 700; }
 
     /* DASHBOARD HERO HEADER & SURFACE HIT-BOX */
     .hero-banner {
-      background: linear-gradient(135deg, #161e2e 0%, #0d121c 100%);
-      border: 1px solid #388bfd;
+      background: linear-gradient(135deg, #131926 0%, #090c12 100%);
+      border: 1px solid rgba(56, 139, 253, 0.35);
       border-radius: 14px;
       padding: 18px;
       margin-bottom: 14px;
       position: relative;
       overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     }
     .hero-banner::after {
       content: "";
       position: absolute;
       top: -30px; right: -30px;
       width: 140px; height: 140px;
-      background: radial-gradient(circle, rgba(56, 189, 248, 0.25) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.22) 0%, transparent 70%);
       border-radius: 50%;
       pointer-events: none !important;
       z-index: 0;
@@ -134,8 +140,8 @@
       position: fixed;
       bottom: 0; left: 0; right: 0;
       height: var(--bottom-nav-height);
-      background: rgba(10, 13, 18, 0.96);
-      backdrop-filter: blur(12px);
+      background: rgba(7, 9, 14, 0.94);
+      backdrop-filter: blur(14px);
       border-top: 1px solid var(--border-color);
       display: flex;
       justify-content: space-around;
@@ -167,21 +173,21 @@
       bottom: calc(var(--bottom-nav-height) + 8px);
       left: 12px; right: 12px;
       height: 56px;
-      background: rgba(19, 23, 32, 0.96);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--accent-blue);
+      background: rgba(14, 18, 26, 0.92);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(56, 139, 253, 0.5);
       border-radius: 12px;
       z-index: 950;
       align-items: center;
       justify-content: space-between;
       padding: 0 14px;
-      box-shadow: 0 6px 24px rgba(56, 139, 253, 0.35);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
     }
     .mini-player-pulse {
       width: 10px; height: 10px;
       border-radius: 50%;
       background: var(--status-amber);
-      box-shadow: 0 0 8px var(--status-amber);
+      box-shadow: 0 0 10px var(--status-amber);
       flex-shrink: 0;
       animation: pulse 1.5s infinite;
     }
@@ -191,8 +197,8 @@
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(6px);
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(8px);
       z-index: 3500;
       align-items: center;
       justify-content: center;
@@ -227,6 +233,7 @@
       color: var(--text-main);
       font-size: 14px;
     }
+    .form-control:focus { outline: none; border-color: var(--border-focus); }
 
     /* FULL-SCREEN SIMULATOR ARENAS */
     #exam-arena, #dojo-arena-view {
@@ -238,7 +245,7 @@
       flex-direction: column;
     }
     .arena-header {
-      background: #131720;
+      background: #0d1118;
       border-bottom: 1px solid var(--border-color);
       padding: 10px 14px;
       display: flex;
@@ -270,7 +277,7 @@
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
     .sectional-banner {
-      background: #171d29;
+      background: #111622;
       border-bottom: 1px solid var(--border-color);
       padding: 8px 14px;
       display: flex;
@@ -283,6 +290,7 @@
       overflow-y: auto;
       padding: 16px 14px 100px 14px;
       touch-action: pan-y;
+      transition: transform 0.15s ease-out;
     }
     .question-header {
       display: flex;
@@ -338,6 +346,7 @@
       align-items: center;
       gap: 12px;
       cursor: pointer;
+      transition: all 0.15s ease;
     }
     .opt-card.selected {
       border-color: var(--accent-blue);
@@ -349,7 +358,7 @@
       border-style: dashed;
     }
     .opt-card.correct-peek {
-      border-color: var(--status-green) !important;
+      border-color: var(--status-green-border) !important;
       background: rgba(35, 134, 54, 0.22) !important;
     }
     .opt-card.wrong-peek {
@@ -361,7 +370,7 @@
       position: fixed;
       bottom: 0; left: 0; right: 0;
       height: 64px;
-      background: #131720;
+      background: #0d1118;
       border-top: 1px solid var(--border-color);
       display: flex;
       align-items: center;
@@ -376,10 +385,10 @@
       top: 0; right: -100%; bottom: 0;
       width: 85%;
       max-width: 360px;
-      background: #131720;
+      background: #0e121a;
       border-left: 1px solid var(--border-color);
       z-index: 2500;
-      transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       flex-direction: column;
     }
@@ -388,7 +397,7 @@
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.75);
+      background: rgba(0,0,0,0.78);
       z-index: 2400;
     }
     .drawer-overlay.active { display: block; }
@@ -408,7 +417,7 @@
     }
     .palette-cell {
       height: 40px;
-      border-radius: 6px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -421,8 +430,9 @@
       transition: all 0.15s ease;
     }
     .palette-cell.unanswered { background: var(--bg-elevated); color: var(--text-muted); border-color: var(--border-color); }
-    .palette-cell.answered { background: var(--status-green); color: #fff; }
+    .palette-cell.answered { background: var(--status-green); color: #fff; border-color: var(--status-green-border); }
     .palette-cell.marked { background: var(--status-purple); color: #fff; border-radius: 8px; border: 2px solid #d2a8ff; }
+    .palette-cell.locked-cell { background: #1a1e28; color: #484f58; cursor: not-allowed; border-color: rgba(255,255,255,0.03); }
     .palette-cell.current { border-color: #ffffff; box-shadow: 0 0 10px rgba(255,255,255,0.8); }
 
     .chapter-section-header {
@@ -438,8 +448,8 @@
 
     /* INTERACTIVE FORENSIC TILES IN REVIEW */
     .forensic-tile {
-      background: #1a1523;
-      border: 1px solid #3d2d52;
+      background: #151422;
+      border: 1px solid #36294a;
       padding: 8px;
       border-radius: 8px;
       cursor: pointer;
@@ -447,7 +457,7 @@
     }
     .forensic-tile:hover {
       border-color: var(--accent-cyan);
-      background: #231b30;
+      background: #1e1930;
     }
 
     /* HARDENED PAUSE OVERLAY SHIELD */
@@ -457,7 +467,7 @@
       inset: 0 !important;
       width: 100vw !important;
       height: 100vh !important;
-      background: rgba(10, 13, 18, 0.98) !important;
+      background: rgba(7, 9, 14, 0.98) !important;
       z-index: 9999 !important;
       flex-direction: column !important;
       align-items: center !important;
@@ -491,42 +501,65 @@
       text-align: center;
     }
 
-    /* KNOWLEDGE HUB PILL TABS */
-    .hub-nav-bar {
+    /* COMPENDIUM MASTER & POPOUT STYLES */
+    .compendium-topic-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+      transition: border-color 0.2s;
+    }
+    .compendium-topic-card:hover { border-color: rgba(56, 189, 248, 0.3); }
+
+    .sticky-anchor-bar {
+      position: sticky;
+      top: 0;
+      background: rgba(14, 18, 26, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 10;
+      padding: 8px 0;
+      margin-bottom: 12px;
       display: flex;
       gap: 6px;
       overflow-x: auto;
-      margin-bottom: 12px;
       border-bottom: 1px solid var(--border-color);
-      padding-bottom: 8px;
     }
-    .hub-tab-btn {
+    .anchor-pill {
       background: var(--bg-elevated);
       color: var(--text-muted);
       border: 1px solid var(--border-color);
       border-radius: 20px;
-      padding: 6px 12px;
+      padding: 4px 10px;
       font-size: 11px;
       font-weight: 700;
       white-space: nowrap;
       cursor: pointer;
+      text-decoration: none;
     }
-    .hub-tab-btn.active {
+    .anchor-pill:hover, .anchor-pill.active {
       background: var(--accent-blue);
       color: #fff;
       border-color: var(--accent-blue);
     }
 
-    /* CONCEPT CANVAS 1-CARD FOCUS VIEW */
-    .concept-canvas-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 14px;
-      padding: 18px;
-      min-height: 380px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+    /* Admonition / Callout Styles */
+    .callout-box {
+      border-left: 3px solid var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.08);
+      border-radius: 4px 8px 8px 4px;
+      padding: 10px 12px;
+      margin: 10px 0;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .callout-box.trap {
+      border-left-color: var(--status-red);
+      background: rgba(218, 54, 51, 0.08);
+    }
+    .callout-box.formula {
+      border-left-color: var(--status-purple);
+      background: rgba(137, 87, 229, 0.08);
     }
 
     /* PRINT SPOOLER STYLES */
@@ -563,13 +596,20 @@
   <!-- ==================== 1. TIMED EXAM ARENA ==================== -->
   <div id="exam-arena">
     <div class="arena-header">
-      <button class="hud-icon-btn" id="btn-arena-pause" title="Pause / Minimize">
-        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-      </button>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button class="hud-icon-btn" id="btn-arena-pause" title="Pause / Minimize">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </button>
+        <button class="btn btn-amber" id="btn-arena-early-lock" style="padding:4px 10px; font-size:11px; display:none;" onclick="CGL_OS.requestEndSectionEarly()">
+          🔒 Lock Section Early
+        </button>
+      </div>
+
       <div style="text-align:center;">
         <div id="hud-countdown" class="hud-timer">15:00</div>
         <div style="font-size:10px; color:var(--text-muted);" id="hud-test-title">SSC CGL Mock</div>
       </div>
+
       <button class="hud-icon-btn" id="btn-toggle-exam-palette" title="Open Question Palette">
         <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
       </button>
@@ -614,9 +654,11 @@
       <h3 style="font-size:14px; font-weight:700;">Question Palette</h3>
       <span class="badge" style="background:#1f6feb;" id="exam-drawer-sec-badge">PART - A</span>
     </div>
-    <!-- Section Switching Tabs for Free-Switching Mode -->
-    <div id="exam-palette-section-tabs" style="display:none; overflow-x:auto; padding:8px 12px; background:#0d1117; border-bottom:1px solid var(--border-color); gap:6px;"></div>
-    <div style="padding:10px 14px; background:#0d1117; font-size:12px; display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color);">
+    
+    <!-- Section Switching Tabs (Free mode) or Section Lock status (Auto-lock mode) -->
+    <div id="exam-palette-section-tabs" style="display:flex; overflow-x:auto; padding:8px 12px; background:#07090e; border-bottom:1px solid var(--border-color); gap:6px;"></div>
+
+    <div style="padding:10px 14px; background:#07090e; font-size:12px; display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color);">
       <span>🟢 Ans: <b id="exam-count-ans">0</b></span>
       <span>🟣 Marked: <b id="exam-count-marked">0</b></span>
       <span>⚪ Unans: <b id="exam-count-unans">0</b></span>
@@ -624,8 +666,25 @@
     <div class="palette-scroll-body">
       <div class="palette-grid" id="exam-palette-grid"></div>
     </div>
-    <div style="padding:14px; border-top:1px solid var(--border-color);">
-      <button class="btn btn-danger" style="width:100%; font-size:14px; padding:12px;" id="btn-submit-exam">Submit Test</button>
+    <div style="padding:14px; border-top:1px solid var(--border-color); display:flex; flex-direction:column; gap:8px;">
+      <button class="btn btn-amber" id="btn-drawer-early-lock" style="width:100%; font-size:13px; padding:10px; display:none;" onclick="CGL_OS.requestEndSectionEarly()">
+        🔒 Lock & Advance Current Section
+      </button>
+      <button class="btn btn-danger" style="width:100%; font-size:14px; padding:12px;" id="btn-submit-exam">Submit Full Test</button>
+    </div>
+  </div>
+
+  <!-- SECTION LOCK CONFIRMATION MODAL -->
+  <div class="modal-overlay" id="modal-section-lock-confirm">
+    <div class="modal-window" style="max-width:400px; text-align:center;">
+      <h3 style="font-size:18px; font-weight:800; color:var(--status-amber); margin-bottom:8px;">Lock Section Early?</h3>
+      <p style="font-size:13px; color:var(--text-muted); line-height:1.5; margin-bottom:14px;" id="lock-confirm-msg">
+        You have time remaining in this section. Once submitted, this section will be permanently locked and cannot be revisited.
+      </p>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <button class="btn btn-secondary" onclick="document.getElementById('modal-section-lock-confirm').classList.remove('active')">Cancel</button>
+        <button class="btn btn-amber" onclick="CGL_OS.confirmEndSectionEarly()">Lock & Proceed</button>
+      </div>
     </div>
   </div>
 
@@ -648,12 +707,12 @@
     <div class="sectional-banner">
       <div style="display:flex; gap:6px; align-items:center;">
         <span class="badge" style="background:#238636;" id="dojo-arena-chap-badge">QA_PERCENTAGE</span>
-        <span class="badge" style="background:#1c2230; color:#38bdf8;" id="dojo-arena-method-badge">General</span>
+        <span class="badge" style="background:#151a24; color:#38bdf8;" id="dojo-arena-method-badge">General</span>
       </div>
       <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openEditCurrentDojoQuestion()">Edit Question</button>
     </div>
 
-    <div id="dojo-theory-banner" style="display:none; background:#161f30; padding:10px 14px; border-bottom:1px solid var(--border-color); font-size:12px; line-height:1.5;"></div>
+    <div id="dojo-theory-banner" style="display:none; background:#111622; padding:10px 14px; border-bottom:1px solid var(--border-color); font-size:12px; line-height:1.5;"></div>
 
     <div class="arena-body" id="dojo-arena-body">
       <div class="question-header">
@@ -671,7 +730,7 @@
         Reveal Method & Solution
       </button>
 
-      <div id="dojo-arena-method-box" style="display:none; margin-top:12px; padding:12px; background:#1c2433; border-left:3px solid var(--accent-blue); border-radius:4px; font-size:13px; line-height:1.6;"></div>
+      <div id="dojo-arena-method-box" style="display:none; margin-top:12px; padding:12px; background:#151a24; border-left:3px solid var(--accent-blue); border-radius:4px; font-size:13px; line-height:1.6;"></div>
 
       <div class="form-group" style="margin-top:14px;">
         <label>Personal Solving Cue / Annotation (Auto-Saves to Device)</label>
@@ -686,7 +745,7 @@
     </div>
   </div>
 
-  <!-- DOJO PALETTE DRAWER (CHAPTER SEGMENTED & PRE-SORTED) -->
+  <!-- DOJO PALETTE DRAWER -->
   <div class="drawer-overlay" id="dojo-drawer-overlay" onclick="CGL_OS.toggleDojoPalette(false)"></div>
   <div class="palette-drawer-ui" id="dojo-palette-drawer">
     <div style="padding:14px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
@@ -699,7 +758,6 @@
 
   <!-- ==================== 3. TAB 1: DASHBOARD ==================== -->
   <div id="tab-dashboard" class="view-container active">
-    <!-- Hero Banner with Surface Hit-Box Protection -->
     <div class="hero-banner">
       <div class="hero-content">
         <div>
@@ -758,24 +816,24 @@
   </div>
 
 
-  <!-- ==================== 4. TAB 2: DOJO & KNOWLEDGE HUB ==================== -->
+  <!-- ==================== 4. TAB 2: DOJO & KNOWLEDGE COMPENDIUM ==================== -->
   <div id="tab-dojo" class="view-container">
-    <div class="card" style="background:linear-gradient(135deg, #162438, #0d121c); border-color:#238636;">
+    <div class="card" style="background:linear-gradient(135deg, #131b29, #090c12); border-color:#238636;">
       <h2 style="font-size:18px; font-weight:800;">Question Dojo & Practice Hub</h2>
       <p style="font-size:12px; color:var(--text-muted); margin-top:2px;">
         Untimed active recall, question editing, and targeted method drilling.
       </p>
     </div>
 
-    <!-- Concept Knowledge Hub Button Card -->
+    <!-- Knowledge Compendium Button Card -->
     <div class="card" style="border-color:#38bdf8;">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <b style="font-size:14px; color:#38bdf8;">Concept & Knowledge Hub</b>
-          <p style="font-size:11px; color:var(--text-muted);">Swipeable 1-card focus canvas, custom taxonomy, formulas, vocab & scratchpad.</p>
+          <b style="font-size:14px; color:#38bdf8;">Knowledge & Topic Compendium</b>
+          <p style="font-size:11px; color:var(--text-muted);">Master scrollable chapter compendiums, theorem dossiers & pop-out topic sheets.</p>
         </div>
-        <button class="btn" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openConceptHubModal()">
-          Open Hub
+        <button class="btn" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openKnowledgeCompendiumModal()">
+          Open Compendium
         </button>
       </div>
     </div>
@@ -814,13 +872,13 @@
   <!-- ==================== 5. TAB 3: COMMAND TERMINAL ==================== -->
   <div id="tab-console" class="view-container">
     <div class="card">
-      <div class="card-title">JSON Command Bus</div>
-      <textarea class="form-control" id="console-payload" style="height:140px; font-family:var(--font-mono); font-size:12px; color:#38bdf8;" placeholder='Paste command payload here...'></textarea>
+      <div class="card-title">JSON Command Bus & AI Dispatch</div>
+      <textarea class="form-control" id="console-payload" style="height:140px; font-family:var(--font-mono); font-size:12px; color:#38bdf8;" placeholder='Paste AI payload here (e.g. AI_PRESCRIBE_REMEDY, BATCH_INGEST)...'></textarea>
       <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
         <button class="btn" onclick="CGL_OS.executeConsoleCommand()">Execute Command</button>
         <button class="btn btn-secondary" onclick="document.getElementById('console-payload').value=''">Clear Console</button>
-        <button class="btn btn-secondary" onclick="CGL_OS.loadSamplePayload('INGEST')">Sample Ingest</button>
-        <button class="btn btn-secondary" onclick="CGL_OS.openMasterLedgerExportModal()">Export Master Bank (Gem Ledger)</button>
+        <button class="btn btn-secondary" onclick="CGL_OS.loadSamplePayload('REMEDY')">Sample AI Remedy</button>
+        <button class="btn btn-secondary" onclick="CGL_OS.openMasterLedgerExportModal()">Export Bank for Gem</button>
       </div>
     </div>
 
@@ -833,8 +891,6 @@
           <option value="store_vault">store_vault</option>
           <option value="store_vault_sprints">store_vault_sprints</option>
           <option value="store_concepts">store_concepts</option>
-          <option value="store_formulas">store_formulas</option>
-          <option value="store_vocab">store_vocab</option>
           <option value="store_notes">store_notes</option>
           <option value="store_active_session">store_active_session</option>
           <option value="store_config">store_config</option>
@@ -866,7 +922,7 @@
       </div>
       
       <!-- Leitner System Explainer -->
-      <div style="background:#1c1315; border:1px solid #4a1d20; border-radius:8px; padding:10px; font-size:11px; line-height:1.5; margin-bottom:12px; color:#fca5a5;">
+      <div style="background:#161012; border:1px solid #4a1d20; border-radius:8px; padding:10px; font-size:11px; line-height:1.5; margin-bottom:12px; color:#fca5a5;">
         <b>How the Leitner Vault Works:</b><br>
         • Questions log here only when answered incorrectly during full mocks.<br>
         • <b>Box 1:</b> Daily review queue.<br>
@@ -893,10 +949,10 @@
     </div>
 
     <div class="card">
-      <div class="card-title">Physical Extraction & Backups</div>
+      <div class="card-title">Universal Plain Text & Markdown Exports</div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
         <button class="btn btn-secondary" style="font-size:12px;" onclick="CGL_OS.exportFullBackup()">Export DB (.json)</button>
-        <button class="btn btn-secondary" style="font-size:12px;" onclick="CGL_OS.exportObsidianMarkdown()">Export Vault (.md)</button>
+        <button class="btn btn-secondary" style="font-size:12px;" onclick="CGL_OS.exportCleanMarkdownVault()">Export Vault (.md)</button>
       </div>
       <button class="btn btn-secondary" style="width:100%; font-size:12px;" onclick="CGL_OS.openPrintConfigModal()">
         Configure & Spool Native Print Sheet (A4 PDF)
@@ -963,7 +1019,6 @@
         <button class="btn btn-secondary" style="font-size:11px; padding:6px 10px;" onclick="CGL_OS.filterReviewQuestions('UNANSWERED')">Unattempted</button>
       </div>
 
-      <!-- Question Review Container -->
       <div id="review-questions-list"></div>
     </div>
   </div>
@@ -980,7 +1035,7 @@
       <div class="form-group">
         <label>Select Export Format</label>
         <select id="ai-export-mode" class="form-control" onchange="CGL_OS.updateAiExportPreview()">
-          <option value="LEAN_GEM">1. Lean Telemetry Pack (IDs, Options, Dwell, Mistakes for Gem)</option>
+          <option value="LEAN_GEM">1. Lean Telemetry Pack (IDs, Dwell, Switches & Mistakes for Custom Gem)</option>
           <option value="DEEP_AUDIT">2. Autonomous Deep Audit (Full Text, Decision Trails, Explanations)</option>
           <option value="LONGITUDINAL">3. Longitudinal Audit (Rolling Accuracy, Nc Index, Vault Inventory)</option>
         </select>
@@ -1007,7 +1062,7 @@
       </div>
 
       <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px;">
-        Generate static knowledge files formatted specifically for a custom Gemini Gem knowledge base.
+        Generate static knowledge files formatted specifically for your custom Gemini Gem knowledge base.
       </p>
 
       <div class="form-group">
@@ -1081,67 +1136,72 @@
   </div>
 
 
-  <!-- ==================== 11. CONCEPT & KNOWLEDGE HUB (1-CARD FOCUS CANVAS) ==================== -->
-  <div class="modal-overlay" id="modal-concept-hub">
-    <div class="modal-window" style="max-width:720px; max-height:92vh;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
-        <h3 style="font-size:16px; font-weight:800; color:#38bdf8;">Knowledge & Concept Hub</h3>
+  <!-- ==================== 11. HYBRID KNOWLEDGE COMPENDIUM (MASTER & POPOUT) ==================== -->
+  <div class="modal-overlay" id="modal-knowledge-compendium">
+    <div class="modal-window" style="max-width:850px; max-height:94vh;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+        <div>
+          <h3 style="font-size:16px; font-weight:800; color:#38bdf8;">Knowledge & Topic Compendium</h3>
+          <span style="font-size:11px; color:var(--text-muted);">Master scrollable chapter view with pop-out topic sheets</span>
+        </div>
         <div style="display:flex; gap:6px;">
-          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.toggleConceptDrawer(true)">Navigator</button>
-          <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-concept-hub').classList.remove('active')">✕</button>
+          <button class="btn" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openConceptEditorModal(true)">+ Add Topic</button>
+          <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-knowledge-compendium').classList.remove('active')">✕</button>
         </div>
       </div>
 
-      <div class="hub-nav-bar" id="concept-category-tabs">
-        <!-- Rendered dynamically: MATH, VOCAB, REAS, NOTES + Custom Categories -->
+      <!-- Subject & Chapter Selector Bar -->
+      <div style="display:grid; grid-template-columns: 120px 1fr; gap:8px; margin-bottom:10px;">
+        <select id="comp-subject-select" class="form-control" onchange="CGL_OS.handleCompendiumSubjectChange(this.value)">
+          <option value="QA">QA</option>
+          <option value="REAS">REAS</option>
+          <option value="ENG">ENG</option>
+          <option value="GA">GA</option>
+        </select>
+        <select id="comp-chapter-select" class="form-control" onchange="CGL_OS.renderMasterCompendiumView()"></select>
       </div>
 
-      <!-- Card Focused Canvas Area -->
-      <div id="concept-focus-container">
-        <div class="concept-canvas-card" id="concept-canvas-card">
-          <div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <span class="badge" style="background:#1f6feb;" id="canvas-card-category">CATEGORY</span>
-              <span style="font-size:11px; color:var(--text-muted);" id="canvas-card-counter">1 of 1</span>
-            </div>
-            <h2 style="font-size:18px; font-weight:800; color:#fff;" id="canvas-card-title">Concept Title</h2>
-            <div style="font-size:12px; color:#a371f7; font-family:var(--font-mono); margin:4px 0 10px 0;" id="canvas-card-sub">Subtopic / Root</div>
-            <div class="q-image-container" id="canvas-card-image" style="display:none; margin:10px 0;"></div>
-            <div style="font-size:13px; line-height:1.6; color:var(--text-main); margin-top:8px;" id="canvas-card-body">Content goes here...</div>
-          </div>
+      <!-- Sticky Anchor Bar for in-chapter jump -->
+      <div class="sticky-anchor-bar" id="comp-anchor-bar"></div>
 
-          <div style="margin-top:16px; border-top:1px solid var(--border-color); padding-top:12px; display:flex; justify-content:space-between; align-items:center;">
-            <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="CGL_OS.navConceptCard(-1)">◄ Prev</button>
-            <div style="display:flex; gap:6px;">
-              <button class="btn btn-secondary" style="padding:6px 10px; font-size:11px;" onclick="CGL_OS.openConceptEditorModal(false)">Edit</button>
-              <button class="btn btn-secondary" style="padding:6px 10px; font-size:11px; color:var(--status-red);" onclick="CGL_OS.deleteCurrentConceptCard()">Delete</button>
-            </div>
-            <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="CGL_OS.navConceptCard(1)">Next ►</button>
-          </div>
-        </div>
-
-        <div style="display:flex; justify-content:space-between; margin-top:10px;">
-          <button class="btn" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openConceptEditorModal(true)">+ Add New Concept Card</button>
-          <button class="btn btn-secondary" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openCreateCategoryPrompt()">+ New Category</button>
-        </div>
-      </div>
-
-      <!-- Freeform Markdown Scratchpad Sub-View -->
-      <div id="concept-scratchpad-view" style="display:none;">
-        <p style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">Autosaves locally to device storage.</p>
-        <textarea id="hub-freeform-notes" class="form-control" style="height:340px; font-family:var(--font-mono); font-size:12px;" placeholder="# Rapid Revision Scratchpad..." oninput="CGL_OS.autoSaveFreeformNotes(this.value)"></textarea>
-      </div>
+      <!-- Master Continuous Scrollable Chapter Compendium -->
+      <div id="comp-scroll-canvas" style="min-height:300px;"></div>
     </div>
   </div>
 
-  <!-- SLIDE-OUT CONCEPT NAVIGATOR DRAWER -->
-  <div class="drawer-overlay" id="concept-drawer-overlay" onclick="CGL_OS.toggleConceptDrawer(false)"></div>
-  <div class="palette-drawer-ui" id="concept-navigator-drawer">
-    <div style="padding:14px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
-      <h3 style="font-size:14px; font-weight:700;">Concept Navigator</h3>
-      <span class="badge" style="background:#1f6feb;" id="concept-nav-count-badge">0 Items</span>
+  <!-- POP-OUT DEDICATED TOPIC SHEET MODAL (WITH HORIZONTAL SWIPE) -->
+  <div class="modal-overlay" id="modal-popout-sheet">
+    <div class="modal-window" style="max-width:760px; max-height:94vh; display:flex; flex-direction:column;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+        <div>
+          <span class="badge" style="background:#1f6feb;" id="popout-topic-badge">QA_GEOMETRY</span>
+          <span style="font-size:11px; color:var(--text-muted); margin-left:6px;" id="popout-topic-counter">Topic 1 of 4</span>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.openConceptEditorModal(false)">Edit</button>
+          <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-popout-sheet').classList.remove('active')">✕</button>
+        </div>
+      </div>
+
+      <div class="arena-body" id="popout-sheet-body" style="padding:10px 4px; flex:1;">
+        <h2 style="font-size:20px; font-weight:800; color:#fff;" id="popout-sheet-title">Topic Title</h2>
+        <div style="font-size:12px; color:#a371f7; font-family:var(--font-mono); margin:4px 0 12px 0;" id="popout-sheet-sub">Subtopic</div>
+        
+        <div class="q-image-container" id="popout-sheet-image" style="display:none;"></div>
+        <div style="font-size:14px; line-height:1.65; color:var(--text-main);" id="popout-sheet-content"></div>
+
+        <div style="margin-top:20px; border-top:1px solid var(--border-color); padding-top:12px;">
+          <label style="font-size:11px; font-weight:700; color:var(--text-muted);">Topic Revision Cue / Scratchpad</label>
+          <textarea id="popout-sheet-scratchpad" class="form-control" style="height:70px; margin-top:4px;" placeholder="Personal formula reminder, trap notes..." oninput="CGL_OS.autoSaveTopicScratchpad(this.value)"></textarea>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:10px; margin-top:8px;">
+        <button class="btn btn-secondary" onclick="CGL_OS.navPopoutTopic(-1)">◄ Previous Topic</button>
+        <span style="font-size:11px; color:var(--text-muted);">Swipe left / right to navigate</span>
+        <button class="btn btn-secondary" onclick="CGL_OS.navPopoutTopic(1)">Next Topic ►</button>
+      </div>
     </div>
-    <div class="palette-scroll-body" id="concept-nav-scroll-body"></div>
   </div>
 
 
@@ -1158,8 +1218,7 @@
         <select id="print-type" class="form-control" onchange="CGL_OS.handlePrintTypeChange(this.value)">
           <option value="QUESTIONS">Question Bank Practice Paper</option>
           <option value="PAST_MOCK">Past Mock Paper (from Exam History)</option>
-          <option value="VOCAB_LIST">Visual English Vocabulary Compendium</option>
-          <option value="FORMULAS">Formulas & Theorems Reference Sheet</option>
+          <option value="COMPENDIUM">Chapter Knowledge Compendium & Formulas</option>
           <option value="VAULT">Active Error Vault Revision Sheet</option>
         </select>
       </div>
@@ -1218,7 +1277,6 @@
         </select>
       </div>
 
-      <!-- Multi-Section Stack Sequencer -->
       <div id="custom-sequence-stack-wrap">
         <div class="card-title">
           <span>Configured Section Queue</span>
@@ -1230,7 +1288,7 @@
       <div class="form-group" style="margin-top:10px;">
         <label>Sectional Clock Auto-Lock</label>
         <select id="builder-sectional-lock" class="form-control">
-          <option value="YES">Yes (Lock & Auto-Switch on Expiry)</option>
+          <option value="YES">Yes (Lock & Advance on Expiry / Early Seal)</option>
           <option value="NO">No (Free Section Switching)</option>
         </select>
       </div>
@@ -1242,44 +1300,54 @@
   </div>
 
 
-  <!-- ==================== 14. CONCEPT CARD EDITOR (DUAL IMAGE ENGINE) ==================== -->
+  <!-- ==================== 14. TOPIC DOSSIER EDITOR (WITH DUAL IMAGE) ==================== -->
   <div class="modal-overlay" id="modal-concept-editor">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-        <h3 style="font-size:16px; font-weight:800;" id="concept-editor-title">Add Concept Card</h3>
+        <h3 style="font-size:16px; font-weight:800;" id="concept-editor-title">Add / Edit Topic Dossier</h3>
         <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-concept-editor').classList.remove('active')">✕</button>
       </div>
 
       <input type="hidden" id="concept-edit-id">
 
-      <div class="form-group">
-        <label>Category</label>
-        <select id="concept-edit-category" class="form-control"></select>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <div class="form-group">
+          <label>Subject</label>
+          <select id="concept-edit-subject" class="form-control">
+            <option value="QA">QA</option>
+            <option value="REAS">REAS</option>
+            <option value="ENG">ENG</option>
+            <option value="GA">GA</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Chapter Tag</label>
+          <input type="text" id="concept-edit-chapter" class="form-control" placeholder="e.g. QA_GEOMETRY">
+        </div>
       </div>
 
       <div class="form-group">
-        <label>Concept Title / Word / Theorem Name</label>
-        <input type="text" id="concept-edit-title" class="form-control" placeholder="e.g. Angle Bisector Theorem or Insolvent">
+        <label>Topic / Concept Title</label>
+        <input type="text" id="concept-edit-title" class="form-control" placeholder="e.g. Tangent Theorems & Direct Tangent">
       </div>
 
       <div class="form-group">
-        <label>Subtopic / Root / Mnemonic Cue</label>
-        <input type="text" id="concept-edit-sub" class="form-control" placeholder="e.g. Triangles or in- (not) + solvere (loosen)">
+        <label>Subtopic / Cue</label>
+        <input type="text" id="concept-edit-sub" class="form-control" placeholder="e.g. Circles & Tangent Lengths">
       </div>
 
       <div class="form-group">
-        <label>Content / Meaning / Formula (KaTeX in $...$ or $$...$$)</label>
-        <textarea id="concept-edit-body" class="form-control" style="height:100px;" placeholder="Detailed notes, formula expressions, synonyms..."></textarea>
+        <label>Topic Dossier Body (Markdown, KaTeX in $...$ or $$...$$, callout blocks)</label>
+        <textarea id="concept-edit-body" class="form-control" style="height:120px;" placeholder="Full theorem notes, shortcuts, rules..."></textarea>
       </div>
 
-      <!-- Dual Image Input for Concepts -->
       <div class="form-group">
-        <label>Diagram / Visual Mnemonic Image (Optional)</label>
+        <label>Diagram Image (Optional)</label>
         <input type="text" id="concept-edit-img-url" class="form-control" placeholder="Paste image URL..." style="margin-bottom:6px;">
         <input type="file" id="concept-edit-img-file" class="form-control" accept="image/*" onchange="CGL_OS.handleConceptImageUpload(this)">
       </div>
 
-      <button class="btn" style="width:100%; padding:12px;" onclick="CGL_OS.saveConceptCard()">Save Concept Card</button>
+      <button class="btn" style="width:100%; padding:12px;" onclick="CGL_OS.saveConceptCard()">Save Topic Dossier</button>
     </div>
   </div>
 
@@ -1326,29 +1394,16 @@
         <textarea id="edit-q-text" class="form-control" style="height:80px;"></textarea>
       </div>
 
-      <!-- Dual Image Support for Geometry & Diagrams -->
       <div class="form-group">
         <label>Question Diagram / Image (Optional)</label>
         <input type="text" id="edit-q-img-url" class="form-control" placeholder="Paste image URL..." style="margin-bottom:6px;">
         <input type="file" id="edit-q-img-file" class="form-control" accept="image/*" onchange="CGL_OS.handleQuestionImageUpload(this)">
       </div>
 
-      <div class="form-group">
-        <label>Option 1</label>
-        <input type="text" id="edit-opt-0" class="form-control">
-      </div>
-      <div class="form-group">
-        <label>Option 2</label>
-        <input type="text" id="edit-opt-1" class="form-control">
-      </div>
-      <div class="form-group">
-        <label>Option 3</label>
-        <input type="text" id="edit-opt-2" class="form-control">
-      </div>
-      <div class="form-group">
-        <label>Option 4</label>
-        <input type="text" id="edit-opt-3" class="form-control">
-      </div>
+      <div class="form-group"><label>Option 1</label><input type="text" id="edit-opt-0" class="form-control"></div>
+      <div class="form-group"><label>Option 2</label><input type="text" id="edit-opt-1" class="form-control"></div>
+      <div class="form-group"><label>Option 3</label><input type="text" id="edit-opt-2" class="form-control"></div>
+      <div class="form-group"><label>Option 4</label><input type="text" id="edit-opt-3" class="form-control"></div>
 
       <div class="form-group">
         <label>Correct Option</label>
@@ -1374,7 +1429,7 @@
 
 
   <!-- ==================== 16. HARDENED PAUSE OVERLAY SHIELD ==================== -->
-  <div id="pause-shield" style="display:none !important; position:fixed !important; inset:0 !important; width:100vw !important; height:100vh !important; background:rgba(10, 13, 18, 0.98) !important; z-index:9999 !important; flex-direction:column !important; align-items:center !important; justify-content:center !important; padding:24px !important; text-align:center !important;">
+  <div id="pause-shield" style="display:none !important; position:fixed !important; inset:0 !important; width:100vw !important; height:100vh !important; background:rgba(7, 9, 14, 0.98) !important; z-index:9999 !important; flex-direction:column !important; align-items:center !important; justify-content:center !important; padding:24px !important; text-align:center !important;">
     <h2 style="font-size:22px; font-weight:800; margin-bottom:8px; color:#fff;">TEST PAUSED</h2>
     <p style="font-size:13px; color:var(--text-muted); max-width:280px; margin-bottom:20px;">
       Timer halted. Telemetry & session state frozen safely in IndexedDB.
@@ -1414,7 +1469,7 @@
   <script>
     const CGL_OS = (() => {
       const DB_NAME = "cgl_os_db";
-      const DB_VERSION = 8;
+      const DB_VERSION = 9;
       let db = null;
       let dbInitPromise = null;
 
@@ -1424,18 +1479,16 @@
       let dojoExam = null;
       let activeReviewAttempt = null;
 
-      // Concept Dojo State
-      let conceptCardsList = [];
-      let currentConceptCategory = "MATH";
-      let currentConceptIndex = 0;
+      // Knowledge Compendium & Pop-out State
+      let compendiumTopics = [];
+      let currentPopoutTopicIndex = 0;
       let currentConceptImageBase64 = "";
 
       // Custom Mistake Tags State
-      let customMistakeTags = ["CALCULATION_SLIP", "READING_TRAP", "FORMULA_AMNESIA", "CONCEPT_VOID"];
+      let customMistakeTags = ["CALCULATION_SLIP", "READING_TRAP", "FORMULA_AMNESIA", "CONCEPT_VOID", "RUSHED_PANIC"];
 
-      // Seed Questions with your 8 restored historical vault questions included out of the box
+      // 8 Restored Vault Questions from user markdown export
       const SEED_QUESTIONS = [
-        // --- 8 RESTORED VAULT QUESTIONS FROM MARKDOWN ARCHIVE ---
         {
           id: "q_cgl_ga_polity_014",
           subject: "GA",
@@ -1540,20 +1593,6 @@
           explanation: "Logic: $n \\times 5 + 2 = 6 \\times 5 + 2 = 32$; $2 \\times 5 + 2 = 12$; $9 \\times 5 + 2 = 47$.",
           tags: ["Reasoning", "Analogy", "RestoredVault"]
         },
-        // --- BASELINE FOUNDATION QUESTIONS ---
-        {
-          id: "q_qa_geo_001",
-          subject: "QA",
-          chapter: "QA_GEOMETRY",
-          subtopic: "Triangles",
-          method: "Angle Bisector Theorem",
-          questionText: "In a $\\triangle ABC$, the bisector of $\\angle A$ intersects $BC$ at $D$. If $AB = 12\\text{ cm}$, $AC = 15\\text{ cm}$, and $BC = 18\\text{ cm}$, find the length of $BD$.",
-          imageUrl: "",
-          options: ["$6\\text{ cm}$", "$8\\text{ cm}$", "$10\\text{ cm}$", "$7.5\\text{ cm}$"],
-          correctIndex: 1,
-          explanation: "By Angle Bisector Theorem: $\\frac{BD}{DC} = \\frac{AB}{AC} = \\frac{12}{15} = \\frac{4}{5}$. Since $BC = 18\\text{ cm}$, $BD = \\frac{4}{9} \\times 18 = 8\\text{ cm}$.",
-          tags: ["AngleBisector", "Geometry"]
-        },
         {
           id: "q_qa_alg_002",
           subject: "QA",
@@ -1568,32 +1607,6 @@
           tags: ["Algebra", "Identities"]
         },
         {
-          id: "q_qa_perc_001",
-          subject: "QA",
-          chapter: "QA_PERCENTAGE",
-          subtopic: "Successive Changes",
-          method: "Formula vs Ratio Approach",
-          questionText: "The length of a rectangle is increased by $20\\%$ and its breadth is decreased by $10\\%$. Find the net percentage change in its area.",
-          imageUrl: "",
-          options: ["$8\\%\\text{ increase}$", "$10\\%\\text{ increase}$", "$8\\%\\text{ decrease}$", "$12\\%\\text{ increase}$"],
-          correctIndex: 0,
-          explanation: "Net change $= a + b + \\frac{ab}{100} = 20 - 10 - \\frac{200}{100} = +8\\%$.",
-          tags: ["Percentage", "Successive"]
-        },
-        {
-          id: "q_reas_cod_001",
-          subject: "REAS",
-          chapter: "REAS_CODING",
-          subtopic: "Letter to Number",
-          method: "Forward Alphabet Rank",
-          questionText: "In a certain code language, **\"STRIKE\"** is coded as **\"19-20-18-9-11-5\"**. How will **\"CHAMP\"** be coded?",
-          imageUrl: "",
-          options: ["3-8-1-13-16", "3-8-2-14-16", "3-9-1-13-15", "4-8-1-12-16"],
-          correctIndex: 0,
-          explanation: "Each letter is represented directly by its forward alphabet rank ($C=3, H=8, A=1, M=13, P=16$).",
-          tags: ["CodingDecoding", "Alphabet"]
-        },
-        {
           id: "q_eng_ows_001",
           subject: "ENG",
           chapter: "ENG_OWS",
@@ -1605,63 +1618,50 @@
           correctIndex: 0,
           explanation: "**Insolvent** means unable to pay one's debts. Mercenary is someone working merely for money.",
           tags: ["OWS", "Vocabulary"]
-        },
-        {
-          id: "q_ga_pol_001",
-          subject: "GA",
-          chapter: "GA_POLITY",
-          subtopic: "Judiciary",
-          method: "Constitutional Articles",
-          questionText: "Which Article of the Constitution of India empowers High Courts to issue writs for the enforcement of Fundamental Rights?",
-          imageUrl: "",
-          options: ["Article 32", "Article 131", "Article 226", "Article 143"],
-          correctIndex: 2,
-          explanation: "Article 226 empowers High Courts to issue writs. Article 32 gives writ powers strictly to the Supreme Court.",
-          tags: ["Polity", "Writs"]
         }
       ];
 
-      // Initial Unified Concept Seeds
-      const SEED_CONCEPTS = [
+      // Initial Unified Compendium Topic Seeds
+      const SEED_TOPIC_DOSSIERS = [
         {
-          id: "c_math_01",
-          category: "MATH",
-          title: "Successive Percentage Shift",
-          subtitle: "QA_PERCENTAGE",
-          content: "Net percentage shift for two successive changes $a\\%$ and $b\\%$:<br>$$\\text{Net } \\% = a + b + \\frac{ab}{100}$$",
-          imageUrl: ""
+          id: "top_qa_geo_triangles",
+          subject: "QA",
+          chapter: "QA_GEOMETRY",
+          title: "Triangles & Special Centers",
+          subtitle: "Incenters, Circumcenters & Angle Bisectors",
+          content: "### Internal Angle Bisector Theorem\nIf $AD$ bisects $\\angle A$ and meets $BC$ at $D$, then:\n$$\\frac{BD}{DC} = \\frac{AB}{AC}$$\n\n> [!formula] Incenter Angle Rule\n> The angle formed at the incenter $I$ is always obtuse:\n> $$\\angle BIC = 90^\\circ + \\frac{\\angle A}{2}$$\n\n### Right-Angled Triangle Inradius\nFor legs $P, B$ and hypotenuse $H$:\n$$r = \\frac{P + B - H}{2}$$\n\n> [!trap] Common TCS Trap\n> Always verify whether the question asks for the inradius $r$ or circumradius $R = \\frac{H}{2}$.",
+          imageUrl: "",
+          timestamp: Date.now()
         },
         {
-          id: "c_math_02",
-          category: "MATH",
-          title: "Symmetric Inverse Power Identity",
-          subtitle: "QA_ALGEBRA",
-          content: "If $x + \\frac{1}{x} = k$, then:<br>• $x^2 + \\frac{1}{x^2} = k^2 - 2$<br>• $x^3 + \\frac{1}{x^3} = k^3 - 3k$<br>• $x^4 + \\frac{1}{x^4} = (k^2 - 2)^2 - 2$",
-          imageUrl: ""
+          id: "top_qa_geo_circles",
+          subject: "QA",
+          chapter: "QA_GEOMETRY",
+          title: "Circles & Tangents Compendium",
+          subtitle: "Secants, Power of Point & Tangent Lengths",
+          content: "### Tangent-Secant Theorem (Power of a Point)\nFrom an external point $P$, if $PT$ is tangent and $PAB$ is secant:\n$$PT^2 = PA \\cdot PB$$\n\n### Direct & Transverse Common Tangents\nFor two circles of radii $r_1, r_2$ with distance between centers $d$:\n• **Direct Common Tangent (DCT):**\n$$DCT = \\sqrt{d^2 - (r_1 - r_2)^2}$$\n• **Transverse Common Tangent (TCT):**\n$$TCT = \\sqrt{d^2 - (r_1 + r_2)^2}$$\n\n> [!tip] Quick Observation\n> $DCT$ is always strictly longer than $TCT$ because $(r_1 - r_2)^2 < (r_1 + r_2)^2$.",
+          imageUrl: "",
+          timestamp: Date.now()
         },
         {
-          id: "c_vocab_01",
-          category: "VOCAB",
-          title: "Insolvent",
-          subtitle: "Root: in- (not) + solvere (to loosen/pay)",
-          content: "<strong>Meaning:</strong> Unable to pay one's debts; legally bankrupt.<br><strong>Synonyms:</strong> Bankrupt, Indigent | <strong>Antonyms:</strong> Solvent, Affluent",
-          imageUrl: ""
+          id: "top_qa_alg_identities",
+          subject: "QA",
+          chapter: "QA_ALGEBRA",
+          title: "Symmetric Inverse Power Identities",
+          subtitle: "Doubling, Cubing & Conditional Nullity",
+          content: "### The $x + 1/x = k$ Reduction Ladder\n• $x^2 + \\frac{1}{x^2} = k^2 - 2$\n• $x^3 + \\frac{1}{x^3} = k^3 - 3k$\n• $x^4 + \\frac{1}{x^4} = (k^2 - 2)^2 - 2$\n• $x^5 + \\frac{1}{x^5} = \\left(x^2 + \\frac{1}{x^2}\\right)\\left(x^3 + \\frac{1}{x^3}\\right) - \\left(x + \\frac{1}{x}\\right)$\n\n> [!formula] Conditional Nullity\n> If $a + b + c = 0$, then:\n> $$a^3 + b^3 + c^3 = 3abc$$",
+          imageUrl: "",
+          timestamp: Date.now()
         },
         {
-          id: "c_vocab_02",
-          category: "VOCAB",
-          title: "Altruistic",
-          subtitle: "Root: alter (other)",
-          content: "<strong>Meaning:</strong> Showing a selfless concern for the well-being of others.<br><strong>Synonyms:</strong> Philanthropic, Benevolent | <strong>Antonyms:</strong> Selfish, Egoistic",
-          imageUrl: ""
-        },
-        {
-          id: "c_reas_01",
-          category: "REAS",
-          title: "Alphabet Opposite Pairs",
-          subtitle: "Coding & Decoding (Sum = 27)",
-          content: "Opposite letter pairings whose forward & backward ranks sum to 27:<br><code>A-Z, B-Y, C-X, D-W, E-V, F-U, G-T, H-S, I-R, J-Q, K-P, L-O, M-N</code>",
-          imageUrl: ""
+          id: "top_ga_polity_judiciary",
+          subject: "GA",
+          chapter: "GA_POLITY",
+          title: "The Supreme Court & Writ Jurisdiction",
+          subtitle: "Articles 32, 124, 131, 226",
+          content: "### Constitutional Architecture\n• **Article 124:** Establishment and constitution of the Supreme Court of India.\n• **Article 131:** Original jurisdiction of the Supreme Court (federal disputes).\n• **Article 143:** Advisory jurisdiction of the President.\n\n### The High Court Writ Powers\n• **Article 226:** Empowers High Courts to issue writs not only for Fundamental Rights, but also for 'any other purpose' (making HC writ jurisdiction broader in scope than SC under Article 32).",
+          imageUrl: "",
+          timestamp: Date.now()
         }
       ];
 
@@ -1689,13 +1689,24 @@
       };
 
       /* -------------------------------------------------------------
-       * 1. KATEX & MARKDOWN FORMATTER
+       * 1. KATEX & MARKDOWN FORMATTER (WITH CALLOUT BLOCKS)
        * ------------------------------------------------------------- */
       function formatRichText(str) {
         if (!str) return "";
         let out = String(str);
+
+        // Callout Admonition blocks: > [!trap] or > [!formula] or > [!tip]
+        out = out.replace(/^>\s*\[!trap\]\s*(.*)$/gm, '<div class="callout-box trap"><b>⚠️ Trapping Point:</b> $1</div>');
+        out = out.replace(/^>\s*\[!formula\]\s*(.*)$/gm, '<div class="callout-box formula"><b>⚡ Formula:</b> $1</div>');
+        out = out.replace(/^>\s*\[!tip\]\s*(.*)$/gm, '<div class="callout-box"><b>💡 Tip:</b> $1</div>');
+
+        // Standard Markdown headers & bold
+        out = out.replace(/^### (.*$)/gim, '<h3 style="font-size:15px; font-weight:700; color:var(--accent-cyan); margin:10px 0 4px 0;">$1</h3>');
+        out = out.replace(/^## (.*$)/gim, '<h2 style="font-size:17px; font-weight:800; color:#fff; margin:12px 0 6px 0;">$1</h2>');
+        out = out.replace(/^# (.*$)/gim, '<h1 style="font-size:19px; font-weight:800; color:#fff; margin:14px 0 8px 0;">$1</h1>');
         out = out.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 
+        // KaTeX Math Rendering
         if (window.katex) {
           out = out.replace(/\$\$([\s\S]*?)\$\$/g, (m, f) => {
             try { return katex.renderToString(f, { displayMode: true, throwOnError: false }); } catch(e) { return m; }
@@ -1707,7 +1718,6 @@
         return out.replace(/\n/g, "<br>");
       }
 
-      /* Image Auto-Compressor to Canvas Base64 (Max 800px width, 75% quality JPEG) */
       function compressImageFile(file) {
         return new Promise((resolve) => {
           const reader = new FileReader();
@@ -1735,7 +1745,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 2. DEFENSIVE STORAGE ENGINE (SELF-HEALING ASYNC GETDB)
+       * 2. SELF-HEALING ASYNC STORAGE ENGINE (GETDB)
        * ------------------------------------------------------------- */
       function getDB() {
         if (db) return Promise.resolve(db);
@@ -1745,7 +1755,7 @@
           const req = indexedDB.open(DB_NAME, DB_VERSION);
 
           req.onblocked = () => {
-            console.warn("Database upgrade blocked by another tab or old handle. Forcing clean...");
+            console.warn("Database upgrade blocked. Closing stale handles...");
           };
 
           req.onupgradeneeded = (e) => {
@@ -1756,8 +1766,6 @@
               { name: "store_vault", key: "questionId" },
               { name: "store_vault_sprints", key: "sessionId" },
               { name: "store_concepts", key: "id" },
-              { name: "store_formulas", key: "id" },
-              { name: "store_vocab", key: "id" },
               { name: "store_notes", key: "id" },
               { name: "store_active_session", key: "id" },
               { name: "store_config", key: "key" }
@@ -1778,9 +1786,9 @@
             resolve(db);
           };
 
-          req.onerror = (e) => {
+          req.onerror = () => {
             dbInitPromise = null;
-            reject(req.error || e);
+            reject(req.error);
           };
         });
 
@@ -1791,13 +1799,12 @@
         const d = database || await getDB();
 
         // 1. Seed Questions
-        const qCount = await getStoreCount("store_questions");
         const txQ = d.transaction(["store_questions"], "readwrite");
         const stQ = txQ.objectStore("store_questions");
         SEED_QUESTIONS.forEach(q => stQ.put(q));
         await new Promise(r => txQ.oncomplete = r);
 
-        // 2. Seed Historical Error Vault Items directly into store_vault
+        // 2. Seed 8 Vault Items[span_1](start_span)[span_1](end_span)
         const historicalVaultKeys = [
           { questionId: "q_cgl_ga_polity_014", chapter: "GA_POLITY", subject: "GA", errorTag: "CONCEPT_VOID" },
           { questionId: "q_cgl_qa_geom_011", chapter: "QA_GEOMETRY", subject: "QA", errorTag: "CALCULATION_SLIP" },
@@ -1811,7 +1818,7 @@
 
         const txV = d.transaction(["store_vault"], "readwrite");
         const stV = txV.objectStore("store_vault");
-        for (const item of historicalVaultKeys) {
+        historicalVaultKeys.forEach(item => {
           stV.put({
             questionId: item.questionId,
             chapter: item.chapter,
@@ -1820,44 +1827,20 @@
             leitnerBox: 1,
             lastAttempted: 1790430483803
           });
-        }
+        });
         await new Promise(r => txV.oncomplete = r);
 
-        // 3. Seed Concepts
-        const cCount = await getStoreCount("store_concepts");
-        if (cCount === 0) {
-          const txC = d.transaction(["store_concepts"], "readwrite");
-          const stC = txC.objectStore("store_concepts");
-          SEED_CONCEPTS.forEach(c => stC.put(c));
-          await new Promise(r => txC.oncomplete = r);
-        }
+        // 3. Seed Topic Dossiers
+        const txC = d.transaction(["store_concepts"], "readwrite");
+        const stC = txC.objectStore("store_concepts");
+        SEED_TOPIC_DOSSIERS.forEach(t => stC.put(t));
+        await new Promise(r => txC.oncomplete = r);
 
-        // 4. Load Custom Mistake Tags from Config
+        // 4. Custom Mistake Tags config
         const savedMistakeConfig = await getRecord("store_config", "custom_mistake_tags");
         if (savedMistakeConfig && Array.isArray(savedMistakeConfig.value)) {
           customMistakeTags = [...new Set([...customMistakeTags, ...savedMistakeConfig.value])];
         }
-
-        // 5. Sanitize store_attempts: purge any legacy vault sprints that were mislogged
-        const attempts = await getAllRecords("store_attempts");
-        for (const a of attempts) {
-          if (a.isVaultSprint || (a.title && a.title.includes("Trap-Breaker Sprint"))) {
-            await deleteRecordFromStore("store_attempts", a.sessionId);
-          }
-        }
-      }
-
-      async function getStoreCount(sName) {
-        try {
-          const d = await getDB();
-          if (!d.objectStoreNames.contains(sName)) return 0;
-          return new Promise(res => {
-            const tx = d.transaction([sName], "readonly");
-            const req = tx.objectStore(sName).count();
-            req.onsuccess = () => res(req.result || 0);
-            req.onerror = () => res(0);
-          });
-        } catch(e) { return 0; }
       }
 
       async function getAllRecords(sName) {
@@ -1913,7 +1896,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 3. MULTI-SUBJECT CUSTOM MOCK BUILDER & SEQUENCE STACK
+       * 3. MULTI-SUBJECT CUSTOM MOCK BUILDER
        * ------------------------------------------------------------- */
       let customSequenceRows = [];
 
@@ -2034,7 +2017,8 @@
             subject: row.subject,
             name: `${TAXONOMY[row.subject] ? TAXONOMY[row.subject].name : row.subject} (Sec ${sIdx + 1})`,
             durationSec: row.durationMin * 60,
-            questionCount: sectionQuestions.length
+            questionCount: sectionQuestions.length,
+            locked: false
           };
           sections.push(secObj);
 
@@ -2097,7 +2081,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 4. TIMED EXAM ARENA CONTROLLER & MINI-PLAYER INTEGRATION
+       * 4. TIMED EXAM ARENA WITH SECTIONAL LOCK & ADVANCE
        * ------------------------------------------------------------- */
       function startExamTimers() {
         clearInterval(examTimerInterval);
@@ -2116,20 +2100,9 @@
           else if (activeExam.sectionRemainingSec < 300) clockEl.className = "hud-timer amber";
           else clockEl.className = "hud-timer";
 
-          // Sectional Auto-Lock Engine
+          // Automatic Expiry Lock
           if (activeExam.sectionRemainingSec <= 0) {
-            if (activeExam.isSectionLocked && activeExam.activeSectionIndex < activeExam.sections.length - 1) {
-              activeExam.activeSectionIndex++;
-              const nextSec = activeExam.sections[activeExam.activeSectionIndex];
-              activeExam.sectionRemainingSec = nextSec.durationSec;
-              const nextIdx = activeExam.questions.findIndex(q => q.sectionIndex === activeExam.activeSectionIndex);
-              if (nextIdx !== -1) activeExam.currentQuestionIndex = nextIdx;
-
-              showSectionToast(`Section locked! Switched to: ${nextSec.name}`);
-              renderActiveExamQuestion();
-            } else {
-              submitExamSession();
-            }
+            handleSectionLockTransition(true);
           }
         }, 1000);
 
@@ -2148,6 +2121,45 @@
         }, 1000);
       }
 
+      function requestEndSectionEarly() {
+        if (!activeExam) return;
+        const curSec = activeExam.sections[activeExam.activeSectionIndex];
+        const m = Math.floor(activeExam.sectionRemainingSec / 60);
+        const s = activeExam.sectionRemainingSec % 60;
+
+        document.getElementById("lock-confirm-msg").innerHTML = `
+          You have <b>${m}m ${s}s</b> remaining in <b>${curSec.name}</b>.<br><br>
+          Locking early will permanently seal this section. You cannot return to it.
+        `;
+        document.getElementById("modal-section-lock-confirm").classList.add("active");
+      }
+
+      function confirmEndSectionEarly() {
+        document.getElementById("modal-section-lock-confirm").classList.remove("active");
+        handleSectionLockTransition(false);
+      }
+
+      function handleSectionLockTransition(isAutoExpired) {
+        if (!activeExam) return;
+        activeExam.sections[activeExam.activeSectionIndex].locked = true;
+
+        if (activeExam.activeSectionIndex < activeExam.sections.length - 1) {
+          activeExam.activeSectionIndex++;
+          const nextSec = activeExam.sections[activeExam.activeSectionIndex];
+          activeExam.sectionRemainingSec = nextSec.durationSec;
+          const nextIdx = activeExam.questions.findIndex(q => q.sectionIndex === activeExam.activeSectionIndex);
+          if (nextIdx !== -1) activeExam.currentQuestionIndex = nextIdx;
+
+          showSectionToast(isAutoExpired 
+            ? `Section time expired! Locked and transitioned to: ${nextSec.name}` 
+            : `Section locked early! Transitioned to: ${nextSec.name}`);
+
+          renderActiveExamQuestion();
+        } else {
+          submitExamSession();
+        }
+      }
+
       function showSectionToast(msg) {
         const toast = document.getElementById("arena-lock-toast");
         toast.innerText = msg;
@@ -2160,12 +2172,25 @@
         const resp = activeExam.userResponses[q.id];
         const secQs = activeExam.questions.filter(item => item.sectionIndex === q.sectionIndex);
 
+        // Control Visibility of Early Lock Button
+        const lockBtn = document.getElementById("btn-arena-early-lock");
+        const drawerLockBtn = document.getElementById("btn-drawer-early-lock");
+        if (activeExam.isSectionLocked) {
+          lockBtn.style.display = "inline-flex";
+          drawerLockBtn.style.display = "block";
+          const isLast = activeExam.activeSectionIndex === activeExam.sections.length - 1;
+          lockBtn.innerText = isLast ? "🔒 Submit Final Section" : "🔒 End Section Early";
+          drawerLockBtn.innerText = isLast ? "🔒 Lock & Submit Final Section" : "🔒 End & Advance Section Early";
+        } else {
+          lockBtn.style.display = "none";
+          drawerLockBtn.style.display = "none";
+        }
+
         document.getElementById("hud-section-badge").innerText = `${q.sectionName.toUpperCase()}`;
         document.getElementById("hud-section-qinfo").innerText = `Sec Q${q.localNumber} of ${secQs.length} (Global Q${q.globalNumber})`;
         document.getElementById("arena-q-num").innerText = `Q${q.globalNumber}`;
         document.getElementById("arena-q-text").innerHTML = formatRichText(q.questionText);
 
-        // Update Mark Review button toggle state
         const revBtn = document.getElementById("btn-q-review");
         if (resp.status === "marked") {
           revBtn.style.color = "#fff";
@@ -2177,7 +2202,6 @@
           revBtn.innerText = "Mark Review";
         }
 
-        // Render Question Diagram Image if Available
         const imgBox = document.getElementById("arena-image-container");
         if (q.imageUrl && q.imageUrl.trim().length > 0) {
           imgBox.style.display = "block";
@@ -2266,7 +2290,6 @@
         }
       });
 
-      // Active Mark for Review Toggle
       document.getElementById("btn-q-review").addEventListener("click", () => {
         const q = activeExam.questions[activeExam.currentQuestionIndex];
         const resp = activeExam.userResponses[q.id];
@@ -2301,22 +2324,31 @@
         grid.innerHTML = "";
 
         const tabsWrap = document.getElementById("exam-palette-section-tabs");
-        if (!activeExam.isSectionLocked && activeExam.sections.length > 1) {
-          tabsWrap.style.display = "flex";
-          tabsWrap.innerHTML = "";
-          activeExam.sections.forEach((sec, sIdx) => {
-            const btn = document.createElement("button");
-            btn.className = "hub-tab-btn" + ((filterSectionIndex === sIdx || (filterSectionIndex === null && sIdx === activeExam.activeSectionIndex)) ? " active" : "");
-            btn.innerText = sec.name.split(" ")[0];
-            btn.addEventListener("click", () => {
+        tabsWrap.innerHTML = "";
+
+        activeExam.sections.forEach((sec, sIdx) => {
+          const tabBtn = document.createElement("button");
+          tabBtn.className = "anchor-pill" + (sIdx === activeExam.activeSectionIndex ? " active" : "");
+          
+          if (activeExam.isSectionLocked && sec.locked) {
+            tabBtn.innerText = `🔒 ${sec.name.split(" ")[0]}`;
+            tabBtn.style.opacity = "0.5";
+            tabBtn.style.cursor = "not-allowed";
+          } else {
+            tabBtn.innerText = sec.name.split(" ")[0];
+            tabBtn.addEventListener("click", () => {
+              if (activeExam.isSectionLocked) {
+                if (sIdx !== activeExam.activeSectionIndex) {
+                  alert("Sectional lock is active! Sections must be completed sequentially.");
+                }
+                return;
+              }
               activeExam.activeSectionIndex = sIdx;
               renderExamPaletteGrid(sIdx);
             });
-            tabsWrap.appendChild(btn);
-          });
-        } else {
-          tabsWrap.style.display = "none";
-        }
+          }
+          tabsWrap.appendChild(tabBtn);
+        });
 
         let ans = 0, marked = 0, unans = 0;
         const targetSec = filterSectionIndex !== null ? filterSectionIndex : (activeExam.isSectionLocked ? activeExam.activeSectionIndex : null);
@@ -2331,14 +2363,20 @@
 
         displayedQs.forEach(q => {
           const resp = activeExam.userResponses[q.id];
+          const isSecLocked = activeExam.sections[q.sectionIndex] && activeExam.sections[q.sectionIndex].locked;
+
           const cell = document.createElement("div");
           cell.className = "palette-cell" +
-            (resp.status === "answered" ? " answered" : (resp.status === "marked" ? " marked" : " unanswered")) +
+            (isSecLocked ? " locked-cell" : (resp.status === "answered" ? " answered" : (resp.status === "marked" ? " marked" : " unanswered"))) +
             (activeExam.questions[activeExam.currentQuestionIndex].id === q.id ? " current" : "");
 
           cell.innerText = q.globalNumber;
 
           cell.addEventListener("click", () => {
+            if (isSecLocked) {
+              alert("This section is sealed and locked!");
+              return;
+            }
             activeExam.currentQuestionIndex = activeExam.questions.findIndex(item => item.id === q.id);
             toggleExamPalette(false);
             renderActiveExamQuestion();
@@ -2352,7 +2390,6 @@
         document.getElementById("exam-count-unans").innerText = unans;
       }
 
-      // Hardened Pause Shield Overlay Handlers
       document.getElementById("btn-arena-pause").addEventListener("click", async () => {
         if (!activeExam) return;
         activeExam.isPaused = true;
@@ -2434,7 +2471,7 @@
       }
 
       document.getElementById("btn-submit-exam").addEventListener("click", () => {
-        if (confirm("Confirm submission of current mock test?")) {
+        if (confirm("Confirm final submission of full mock test?")) {
           toggleExamPalette(false);
           submitExamSession();
         }
@@ -2445,8 +2482,7 @@
         clearInterval(questionTimerInterval);
 
         let correct = 0, incorrect = 0, traps = 0, totalMarks = 0;
-        let penaltyDrag = 0;
-        let switchDelta = 0;
+        let penaltyDrag = 0, switchDelta = 0;
 
         for (const q of activeExam.questions) {
           const resp = activeExam.userResponses[q.id];
@@ -2500,7 +2536,6 @@
         hideMiniPlayer();
 
         if (activeExam.isVaultSprint) {
-          // Log strictly to dedicated Vault Sprint store - isolated from dashboard KPIs
           await putRecord("store_vault_sprints", {
             sessionId: activeExam.sessionId,
             timestamp: activeExam.timestamp,
@@ -2519,31 +2554,41 @@
         openMockReview(activeExam);
       }
 
-      /* In-Arena Swiping Physics with Strict Axis Filtering */
+      /* Unified Gesture Interceptor across Arena, Dojo, and Topic Sheet */
       function initGestureControllers() {
-        const arenaBody = document.getElementById("arena-body");
-        let startX = 0, startY = 0;
+        const attachSwipeHandler = (elementId, onLeftSwipe, onRightSwipe) => {
+          const el = document.getElementById(elementId);
+          if (!el) return;
+          let startX = 0, startY = 0;
 
-        arenaBody.addEventListener("touchstart", (e) => {
-          startX = e.touches[0].clientX;
-          startY = e.touches[0].clientY;
-        }, { passive: true });
+          el.addEventListener("touchstart", (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+          }, { passive: true });
 
-        arenaBody.addEventListener("touchend", (e) => {
-          const deltaX = e.changedTouches[0].clientX - startX;
-          const deltaY = e.changedTouches[0].clientY - startY;
+          el.addEventListener("touchend", (e) => {
+            const deltaX = e.changedTouches[0].clientX - startX;
+            const deltaY = e.changedTouches[0].clientY - startY;
 
-          // Strict delta filtering: deltaX > 60px, abs(deltaY) < 35px
-          if (Math.abs(deltaX) > 60 && Math.abs(deltaY) < 35) {
-            if (deltaX < 0) {
-              document.getElementById("btn-q-save-next").click(); // Left swipe -> Save & Next
-            } else {
-              document.getElementById("btn-q-prev").click(); // Right swipe -> Previous
+            // Strict delta filtering: deltaX > 60px, abs(deltaY) < 35px
+            if (Math.abs(deltaX) > 60 && Math.abs(deltaY) < 35) {
+              if (navigator.vibrate) navigator.vibrate(15);
+              if (deltaX < 0) onLeftSwipe();
+              else onRightSwipe();
             }
-          }
-        }, { passive: true });
+          }, { passive: true });
+        };
 
-        // Hardware Gesture / Back Button Shield
+        // Exam Arena Swipes
+        attachSwipeHandler("arena-body", () => document.getElementById("btn-q-save-next").click(), () => document.getElementById("btn-q-prev").click());
+
+        // Dojo Arena Swipes
+        attachSwipeHandler("dojo-arena-body", () => navDojoArena(1), () => navDojoArena(-1));
+
+        // Pop-out Topic Sheet Swipes
+        attachSwipeHandler("popout-sheet-body", () => navPopoutTopic(1), () => navPopoutTopic(-1));
+
+        // Hardware Gesture Shield
         window.addEventListener("popstate", () => {
           const openModals = document.querySelectorAll(".modal-overlay.active");
           if (openModals.length > 0) {
@@ -2636,15 +2681,15 @@
           return methA.localeCompare(methB);
         });
 
-        const allConcepts = await getAllRecords("store_concepts");
-        const matchedConcept = allConcepts.find(c => c.subtitle === chap || (method !== "ALL" && c.title === method));
+        const allDossiers = await getAllRecords("store_concepts");
+        const matchedDossier = allDossiers.find(c => c.chapter === chap || (method !== "ALL" && c.title === method));
 
         dojoExam = {
           subject: sub,
           chapter: chap,
           method: method,
           title: chap === "ALL" ? `${sub} • Entire Subject Dojo` : (method !== "ALL" ? `${chap} • ${method}` : `${chap} Dojo`),
-          formulaBrief: matchedConcept ? matchedConcept.content : null,
+          formulaBrief: matchedDossier ? matchedDossier.content : null,
           questions: pool,
           currentIndex: 0,
           userResponses: {}
@@ -2826,7 +2871,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 6. TESTBOOK FORENSICS, DYNAMIC MISTAKE TAGS & AI EXPORTS
+       * 6. TESTBOOK FORENSICS & DYNAMIC MISTAKE TAGS
        * ------------------------------------------------------------- */
       async function openMockReview(attemptOrId) {
         let att = typeof attemptOrId === "string" 
@@ -2884,13 +2929,12 @@
 
           let statusBadge = isCor ? `<span class="badge" style="background:#238636;">Correct (+2)</span>`
             : (isAtt ? `<span class="badge" style="background:#da3633;">Incorrect (-0.5)</span>`
-            : `<span class="badge" style="background:#21262d;">Unattempted (0)</span>`);
+            : `<span class="badge" style="background:#151a24;">Unattempted (0)</span>`);
 
-          // Decision Trail Visualization
           let decisionTrailHtml = "";
           if (resp.decisionTrail && resp.decisionTrail.length > 0) {
             decisionTrailHtml = `
-              <div style="background:#171b26; border:1px solid #38bdf8; border-radius:6px; padding:6px 10px; margin:6px 0; font-size:11px; color:#38bdf8;">
+              <div style="background:#090d16; border:1px solid #38bdf8; border-radius:6px; padding:6px 10px; margin:6px 0; font-size:11px; color:#38bdf8;">
                 <b>Decision Trail:</b> ${resp.decisionTrail.map(t => `Opt ${t.opt} (${t.atSec}s)`).join(' ➔ ')}
               </div>
             `;
@@ -2901,7 +2945,6 @@
             imgHtml = `<div style="text-align:center; margin:8px 0;"><img src="${q.imageUrl}" style="max-height:180px; max-width:100%; border-radius:6px; border:1px solid var(--border-color);"></div>`;
           }
 
-          // Build Mistake Tag Dropdown Options
           let optionsHtml = `<option value="UNCLASSIFIED" ${currentTag==='UNCLASSIFIED'?'selected':''}>Tag Mistake...</option>`;
           customMistakeTags.forEach(t => {
             optionsHtml += `<option value="${t}" ${currentTag===t?'selected':''}>${t.replace(/_/g, ' ')}</option>`;
@@ -2914,7 +2957,7 @@
               <div style="display:flex; gap:6px; align-items:center;">
                 ${statusBadge}
                 ${!isCor && isAtt ? `
-                  <select onchange="CGL_OS.handleMistakeTagSelect('${q.id}', this.value)" style="background:#21262d; color:#fff; border:1px solid #da3633; font-size:11px; padding:2px 4px; border-radius:4px;">
+                  <select onchange="CGL_OS.handleMistakeTagSelect('${q.id}', this.value)" style="background:#151a24; color:#fff; border:1px solid #da3633; font-size:11px; padding:2px 4px; border-radius:4px;">
                     ${optionsHtml}
                   </select>
                 ` : ''}
@@ -2934,7 +2977,7 @@
                 </div>
               `).join('')}
             </div>
-            <div style="font-size:12px; color:var(--text-muted); background:#0d1117; padding:8px; border-radius:6px; margin-top:8px;">
+            <div style="font-size:12px; color:var(--text-muted); background:#07090e; padding:8px; border-radius:6px; margin-top:8px;">
               <b>Method & Explanation:</b><br>${formatRichText(q.explanation || 'No explanation recorded.')}
             </div>
           `;
@@ -2989,7 +3032,8 @@
 
         if (mode === "LEAN_GEM") {
           payload = JSON.stringify({
-            session: att.title,
+            action: "FEEDBACK_AUDIT",
+            mockTitle: att.title,
             score: att.finalScore,
             penalty: att.penaltyDrag,
             traps: att.q4Traps,
@@ -3035,7 +3079,7 @@
       function copyAiExportToClipboard() {
         const text = document.getElementById("ai-export-preview").value;
         navigator.clipboard.writeText(text);
-        alert("Payload copied! Paste directly into chat with Gemini for forensic evaluation.");
+        alert("Payload copied! Paste into chat with Gemini to diagnose vulnerabilities and generate remedies.");
         document.getElementById("modal-ai-export").classList.remove("active");
       }
 
@@ -3252,7 +3296,7 @@
                 <div style="font-size:11px; color:var(--text-muted);">${sub.chapters.length} Standard Chapters</div>
               </div>
               <div style="text-align:right;">
-                <span class="badge" style="background:#21262d; color:#38bdf8;">
+                <span class="badge" style="background:#151a24; color:#38bdf8;">
                   ${subAtt > 0 ? `Acc: ${Math.round((subCor / subAtt) * 100)}%` : "Unattempted"}
                 </span>
               </div>
@@ -3308,7 +3352,7 @@
                 </div>
               </div>
               <div style="text-align:right;">
-                <span class="badge" style="background:${chapAtt > 0 ? '#1b4d2e' : '#21262d'}; color:${chapAtt > 0 ? '#4ade80' : '#8b949e'};">
+                <span class="badge" style="background:${chapAtt > 0 ? '#1b4d2e' : '#151a24'}; color:${chapAtt > 0 ? '#4ade80' : '#8b949e'};">
                   ${chapAtt > 0 ? `Acc: ${Math.round((chapCor / chapAtt) * 100)}%` : "Unattempted"}
                 </span>
               </div>
@@ -3380,7 +3424,8 @@
             id: "SEC_" + chap,
             name: chap,
             durationSec: durMin * 60,
-            questions: pool.slice(0, count)
+            questions: pool.slice(0, count),
+            locked: false
           }],
           activeSectionIndex: 0,
           currentQuestionIndex: 0,
@@ -3413,188 +3458,149 @@
       }
 
       /* -------------------------------------------------------------
-       * 8. CONCEPT & KNOWLEDGE HUB OVERHAUL (1-CARD FOCUS CANVAS)
+       * 8. KNOWLEDGE COMPENDIUM & POPOUT TOPIC SHEETS
        * ------------------------------------------------------------- */
-      async function openConceptHubModal() {
-        pushHistoryState("modal-concept-hub");
-        document.getElementById("modal-concept-hub").classList.add("active");
-        await loadConceptCategories();
-        await renderActiveConceptCanvas();
+      async function openKnowledgeCompendiumModal() {
+        pushHistoryState("modal-knowledge-compendium");
+        document.getElementById("modal-knowledge-compendium").classList.add("active");
+        handleCompendiumSubjectChange("QA");
       }
 
-      async function loadConceptCategories() {
-        const allConcepts = await getAllRecords("store_concepts");
-        const customCatRec = await getRecord("store_config", "custom_concept_categories");
-        const extraCats = (customCatRec && Array.isArray(customCatRec.value)) ? customCatRec.value : [];
-        const foundCats = [...new Set(allConcepts.map(c => c.category))];
+      async function handleCompendiumSubjectChange(sub) {
+        const chapSelect = document.getElementById("comp-chapter-select");
+        chapSelect.innerHTML = "";
 
-        const defaultCats = ["MATH", "VOCAB", "REAS"];
-        const combinedCats = [...new Set([...defaultCats, ...foundCats, ...extraCats])];
+        const allDossiers = await getAllRecords("store_concepts");
+        const canonChaps = TAXONOMY[sub] ? TAXONOMY[sub].chapters : [];
+        const existingChaps = [...new Set(allDossiers.filter(d => d.subject === sub).map(d => d.chapter))];
+        const combined = [...new Set([...canonChaps, ...existingChaps])];
 
-        const bar = document.getElementById("concept-category-tabs");
-        bar.innerHTML = "";
-
-        combinedCats.forEach(cat => {
-          const btn = document.createElement("button");
-          btn.className = "hub-tab-btn" + (currentConceptCategory === cat ? " active" : "");
-          btn.innerText = cat;
-          btn.addEventListener("click", () => switchConceptCategory(cat));
-          bar.appendChild(btn);
+        combined.forEach(c => {
+          const opt = document.createElement("option");
+          opt.value = c;
+          opt.innerText = c;
+          chapSelect.appendChild(opt);
         });
 
-        // Add Notes Scratchpad Tab
-        const notesBtn = document.createElement("button");
-        notesBtn.className = "hub-tab-btn" + (currentConceptCategory === "NOTES" ? " active" : "");
-        notesBtn.innerText = "Scratchpad";
-        notesBtn.addEventListener("click", () => switchConceptCategory("NOTES"));
-        bar.appendChild(notesBtn);
+        renderMasterCompendiumView();
       }
 
-      async function switchConceptCategory(cat) {
-        currentConceptCategory = cat;
-        currentConceptIndex = 0;
-        await loadConceptCategories();
+      async function renderMasterCompendiumView() {
+        const sub = document.getElementById("comp-subject-select").value;
+        const chap = document.getElementById("comp-chapter-select").value;
+        const allDossiers = await getAllRecords("store_concepts");
+        compendiumTopics = allDossiers.filter(d => d.subject === sub && d.chapter === chap);
 
-        if (cat === "NOTES") {
-          document.getElementById("concept-focus-container").style.display = "none";
-          document.getElementById("concept-scratchpad-view").style.display = "block";
-          loadFreeformNotes();
-        } else {
-          document.getElementById("concept-scratchpad-view").style.display = "none";
-          document.getElementById("concept-focus-container").style.display = "block";
-          await renderActiveConceptCanvas();
-        }
-      }
+        const anchorBar = document.getElementById("comp-anchor-bar");
+        const canvas = document.getElementById("comp-scroll-canvas");
+        anchorBar.innerHTML = "";
+        canvas.innerHTML = "";
 
-      async function renderActiveConceptCanvas() {
-        const allConcepts = await getAllRecords("store_concepts");
-        conceptCardsList = allConcepts.filter(c => c.category === currentConceptCategory);
-
-        if (conceptCardsList.length === 0) {
-          document.getElementById("canvas-card-category").innerText = currentConceptCategory;
-          document.getElementById("canvas-card-counter").innerText = "0 of 0";
-          document.getElementById("canvas-card-title").innerText = "No Cards in this Category";
-          document.getElementById("canvas-card-sub").innerText = "";
-          document.getElementById("canvas-card-body").innerHTML = "Tap '+ Add New Concept Card' below to create the first card in this module.";
-          document.getElementById("canvas-card-image").style.display = "none";
+        if (compendiumTopics.length === 0) {
+          canvas.innerHTML = `
+            <div style="text-align:center; padding:40px 14px; color:var(--text-muted);">
+              <p style="font-size:14px; margin-bottom:10px;">No topics or cheat-sheets logged under <b>${chap}</b>.</p>
+              <button class="btn" style="font-size:12px;" onclick="CGL_OS.openConceptEditorModal(true)">+ Create First Topic Dossier</button>
+            </div>
+          `;
           return;
         }
 
-        if (currentConceptIndex >= conceptCardsList.length) currentConceptIndex = 0;
-        if (currentConceptIndex < 0) currentConceptIndex = conceptCardsList.length - 1;
+        compendiumTopics.forEach((t, idx) => {
+          const a = document.createElement("a");
+          a.className = "anchor-pill";
+          a.innerText = t.title;
+          a.href = `#topic_sec_${idx}`;
+          anchorBar.appendChild(a);
 
-        const current = conceptCardsList[currentConceptIndex];
-        document.getElementById("canvas-card-category").innerText = current.category;
-        document.getElementById("canvas-card-counter").innerText = `${currentConceptIndex + 1} of ${conceptCardsList.length}`;
-        document.getElementById("canvas-card-title").innerText = current.title;
-        document.getElementById("canvas-card-sub").innerText = current.subtitle || "";
-        document.getElementById("canvas-card-body").innerHTML = formatRichText(current.content);
+          const card = document.createElement("div");
+          card.className = "compendium-topic-card";
+          card.id = `topic_sec_${idx}`;
 
-        const imgBox = document.getElementById("canvas-card-image");
-        if (current.imageUrl && current.imageUrl.trim().length > 0) {
+          let imgHtml = "";
+          if (t.imageUrl && t.imageUrl.trim().length > 0) {
+            imgHtml = `<div style="text-align:center; margin:10px 0;"><img src="${t.imageUrl}" style="max-height:220px; max-width:100%; border-radius:8px; border:1px solid var(--border-color);"></div>`;
+          }
+
+          card.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; border-bottom:1px solid var(--border-color); padding-bottom:6px;">
+              <div>
+                <b style="font-size:16px; color:#fff;">${t.title}</b>
+                ${t.subtitle ? `<div style="font-size:11px; color:var(--accent-cyan); font-family:var(--font-mono);">${t.subtitle}</div>` : ''}
+              </div>
+              <button class="btn btn-secondary" style="padding:4px 10px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.openPopoutTopicSheet(${idx})">
+                ⤢ Pop Out Sheet
+              </button>
+            </div>
+            ${imgHtml}
+            <div style="font-size:13px; line-height:1.6; margin-top:8px;">${formatRichText(t.content)}</div>
+          `;
+          canvas.appendChild(card);
+        });
+      }
+
+      function openPopoutTopicSheet(idx) {
+        if (!compendiumTopics || compendiumTopics.length === 0) return;
+        currentPopoutTopicIndex = idx;
+        renderPopoutTopicSheet();
+        pushHistoryState("modal-popout-sheet");
+        document.getElementById("modal-popout-sheet").classList.add("active");
+      }
+
+      async function renderPopoutTopicSheet() {
+        if (currentPopoutTopicIndex < 0) currentPopoutTopicIndex = compendiumTopics.length - 1;
+        if (currentPopoutTopicIndex >= compendiumTopics.length) currentPopoutTopicIndex = 0;
+
+        const t = compendiumTopics[currentPopoutTopicIndex];
+        document.getElementById("popout-topic-badge").innerText = t.chapter;
+        document.getElementById("popout-topic-counter").innerText = `Topic ${currentPopoutTopicIndex + 1} of ${compendiumTopics.length}`;
+        document.getElementById("popout-sheet-title").innerText = t.title;
+        document.getElementById("popout-sheet-sub").innerText = t.subtitle || "";
+        document.getElementById("popout-sheet-content").innerHTML = formatRichText(t.content);
+
+        const imgBox = document.getElementById("popout-sheet-image");
+        if (t.imageUrl && t.imageUrl.trim().length > 0) {
           imgBox.style.display = "block";
-          imgBox.innerHTML = `<img src="${current.imageUrl}" style="max-height:180px; max-width:100%; border-radius:8px; border:1px solid var(--border-color);">`;
+          imgBox.innerHTML = `<img src="${t.imageUrl}" style="max-height:220px; max-width:100%; border-radius:8px; border:1px solid var(--border-color);">`;
         } else {
           imgBox.style.display = "none";
           imgBox.innerHTML = "";
         }
+
+        const noteKey = `scratch_${t.id}`;
+        const savedNote = await getRecord("store_notes", noteKey);
+        document.getElementById("popout-sheet-scratchpad").value = savedNote ? savedNote.content : "";
       }
 
-      function navConceptCard(step) {
-        if (conceptCardsList.length === 0) return;
-        currentConceptIndex += step;
-        if (currentConceptIndex < 0) currentConceptIndex = conceptCardsList.length - 1;
-        if (currentConceptIndex >= conceptCardsList.length) currentConceptIndex = 0;
-        renderActiveConceptCanvas();
+      function navPopoutTopic(step) {
+        currentPopoutTopicIndex += step;
+        renderPopoutTopicSheet();
       }
 
-      function toggleConceptDrawer(open) {
-        const drawer = document.getElementById("concept-navigator-drawer");
-        const overlay = document.getElementById("concept-drawer-overlay");
-
-        if (open) {
-          renderConceptNavigatorList();
-          drawer.classList.add("open");
-          overlay.classList.add("active");
-        } else {
-          drawer.classList.remove("open");
-          overlay.classList.remove("active");
-        }
-      }
-
-      function renderConceptNavigatorList() {
-        const scrollBody = document.getElementById("concept-nav-scroll-body");
-        scrollBody.innerHTML = "";
-        document.getElementById("concept-nav-count-badge").innerText = `${conceptCardsList.length} Cards`;
-
-        conceptCardsList.forEach((c, idx) => {
-          const div = document.createElement("div");
-          div.className = "card";
-          div.style.padding = "10px";
-          div.style.marginBottom = "6px";
-          div.style.cursor = "pointer";
-          div.style.borderColor = idx === currentConceptIndex ? "var(--accent-cyan)" : "var(--border-color)";
-
-          div.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div>
-                <b style="font-size:13px; color:#fff;">${idx + 1}. ${c.title}</b>
-                ${c.subtitle ? `<div style="font-size:10px; color:var(--text-muted);">${c.subtitle}</div>` : ''}
-              </div>
-            </div>
-          `;
-          div.addEventListener("click", () => {
-            currentConceptIndex = idx;
-            toggleConceptDrawer(false);
-            renderActiveConceptCanvas();
-          });
-          scrollBody.appendChild(div);
-        });
-      }
-
-      async function openCreateCategoryPrompt() {
-        const raw = prompt("Enter new category name (e.g., POLITY_ARTICLES, HISTORY_TIMELINES):");
-        if (!raw || !raw.trim()) return;
-        const cat = raw.trim().toUpperCase().replace(/\s+/g, '_');
-
-        const customCatRec = await getRecord("store_config", "custom_concept_categories");
-        const currentList = (customCatRec && Array.isArray(customCatRec.value)) ? customCatRec.value : [];
-        if (!currentList.includes(cat)) {
-          currentList.push(cat);
-          await putRecord("store_config", { key: "custom_concept_categories", value: currentList });
-        }
-        await switchConceptCategory(cat);
+      async function autoSaveTopicScratchpad(val) {
+        const t = compendiumTopics[currentPopoutTopicIndex];
+        if (!t) return;
+        await putRecord("store_notes", { id: `scratch_${t.id}`, content: val, timestamp: Date.now() });
       }
 
       function openConceptEditorModal(isNew = true) {
         currentConceptImageBase64 = "";
-        document.getElementById("concept-editor-title").innerText = isNew ? "Add Concept Card" : "Edit Concept Card";
-        const catSelect = document.getElementById("concept-edit-category");
-        catSelect.innerHTML = "";
+        document.getElementById("concept-editor-title").innerText = isNew ? "Add Topic Dossier" : "Edit Topic Dossier";
 
-        const allCats = ["MATH", "VOCAB", "REAS"];
-        if (!allCats.includes(currentConceptCategory) && currentConceptCategory !== "NOTES") {
-          allCats.push(currentConceptCategory);
-        }
-        allCats.forEach(c => {
-          const opt = document.createElement("option");
-          opt.value = c;
-          opt.innerText = c;
-          if (c === currentConceptCategory) opt.selected = true;
-          catSelect.appendChild(opt);
-        });
-
-        if (isNew || conceptCardsList.length === 0) {
-          document.getElementById("concept-edit-id").value = "c_" + Date.now();
+        if (isNew || compendiumTopics.length === 0) {
+          document.getElementById("concept-edit-id").value = "top_" + Date.now();
+          document.getElementById("concept-edit-subject").value = document.getElementById("comp-subject-select").value || "QA";
+          document.getElementById("concept-edit-chapter").value = document.getElementById("comp-chapter-select").value || "QA_GEOMETRY";
           document.getElementById("concept-edit-title").value = "";
           document.getElementById("concept-edit-sub").value = "";
           document.getElementById("concept-edit-body").value = "";
           document.getElementById("concept-edit-img-url").value = "";
           document.getElementById("concept-edit-img-file").value = "";
         } else {
-          const curr = conceptCardsList[currentConceptIndex];
+          const curr = compendiumTopics[currentPopoutTopicIndex];
           document.getElementById("concept-edit-id").value = curr.id;
-          document.getElementById("concept-edit-category").value = curr.category;
+          document.getElementById("concept-edit-subject").value = curr.subject;
+          document.getElementById("concept-edit-chapter").value = curr.chapter;
           document.getElementById("concept-edit-title").value = curr.title;
           document.getElementById("concept-edit-sub").value = curr.subtitle || "";
           document.getElementById("concept-edit-body").value = curr.content;
@@ -3614,20 +3620,22 @@
 
       async function saveConceptCard() {
         const id = document.getElementById("concept-edit-id").value;
-        const category = document.getElementById("concept-edit-category").value;
+        const subject = document.getElementById("concept-edit-subject").value;
+        const chapter = document.getElementById("concept-edit-chapter").value.trim().toUpperCase();
         const title = document.getElementById("concept-edit-title").value.trim();
         const subtitle = document.getElementById("concept-edit-sub").value.trim();
         const content = document.getElementById("concept-edit-body").value.trim();
         const urlInput = document.getElementById("concept-edit-img-url").value.trim();
 
-        if (!title || !content) {
-          alert("Title and Content are required.");
+        if (!title || !content || !chapter) {
+          alert("Chapter, Topic Title, and Content are required.");
           return;
         }
 
         const obj = {
           id: id,
-          category: category,
+          subject: subject,
+          chapter: chapter,
           title: title,
           subtitle: subtitle,
           content: content,
@@ -3637,28 +3645,10 @@
 
         await putRecord("store_concepts", obj);
         document.getElementById("modal-concept-editor").classList.remove("active");
-        currentConceptCategory = category;
-        await loadConceptCategories();
-        await renderActiveConceptCanvas();
-      }
-
-      async function deleteCurrentConceptCard() {
-        if (conceptCardsList.length === 0) return;
-        const curr = conceptCardsList[currentConceptIndex];
-        if (confirm(`Delete concept card '${curr.title}'?`)) {
-          await deleteRecordFromStore("store_concepts", curr.id);
-          currentConceptIndex = 0;
-          await renderActiveConceptCanvas();
-        }
-      }
-
-      async function autoSaveFreeformNotes(val) {
-        await putRecord("store_notes", { id: "master_scratchpad", content: val, timestamp: Date.now() });
-      }
-
-      async function loadFreeformNotes() {
-        const pad = await getRecord("store_notes", "master_scratchpad");
-        document.getElementById("hub-freeform-notes").value = pad ? pad.content : "";
+        document.getElementById("comp-subject-select").value = subject;
+        await handleCompendiumSubjectChange(subject);
+        document.getElementById("comp-chapter-select").value = chapter;
+        await renderMasterCompendiumView();
       }
 
       /* -------------------------------------------------------------
@@ -3684,7 +3674,7 @@
       }
 
       function handlePrintTypeChange(type) {
-        const isQ = type === "QUESTIONS";
+        const isQ = type === "QUESTIONS" || type === "COMPENDIUM";
         const isMock = type === "PAST_MOCK";
         document.getElementById("print-sub-wrap").style.display = isQ ? "block" : "none";
         document.getElementById("print-chap-wrap").style.display = isQ ? "block" : "none";
@@ -3753,32 +3743,19 @@
             `;
             root.appendChild(item);
           });
-        } else if (pType === "VOCAB_LIST") {
-          const concepts = await getAllRecords("store_concepts");
-          const vocab = concepts.filter(c => c.category === "VOCAB");
-          root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Visual English Vocabulary Compendium</h2>`;
-          vocab.forEach(v => {
-            const item = document.createElement("div");
-            item.className = "print-vocab-item";
-            let img = v.imageUrl ? `<img src="${v.imageUrl}">` : '';
-            item.innerHTML = `
-              ${img}
-              <b style="font-size:13px;">${v.title}</b> ${v.subtitle ? `<span style="font-size:10px; color:#555;">[${v.subtitle}]</span>` : ''}<br>
-              <div style="font-size:11px; margin-top:2px;">${formatRichText(v.content)}</div>
-              <div style="clear:both;"></div>
-            `;
-            root.appendChild(item);
-          });
-        } else if (pType === "FORMULAS") {
-          const concepts = await getAllRecords("store_concepts");
-          const formulas = concepts.filter(c => c.category === "MATH");
-          root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Formula & Identity Reference Sheet</h2>`;
-          formulas.forEach((f, idx) => {
+        } else if (pType === "COMPENDIUM") {
+          const dossiers = await getAllRecords("store_concepts");
+          let pool = sub === "ALL" ? dossiers : dossiers.filter(d => d.subject === sub);
+          if (chap !== "ALL") pool = pool.filter(d => d.chapter === chap);
+
+          root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Knowledge Compendium (${sub} - ${chap})</h2>`;
+          pool.forEach((t, idx) => {
             const item = document.createElement("div");
             item.className = "print-question";
+            let img = t.imageUrl ? `<br><img src="${t.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
             item.innerHTML = `
-              <strong>${idx + 1}. ${f.title}</strong> [${f.subtitle || ''}]<br>
-              ${formatRichText(f.content)}
+              <strong>${idx + 1}. ${t.title} [${t.chapter}]</strong> ${t.subtitle ? `<i>(${t.subtitle})</i>` : ''}<br>
+              ${formatRichText(t.content)}${img}
             `;
             root.appendChild(item);
           });
@@ -3838,7 +3815,7 @@
           div.innerHTML = `
             <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
               <span class="badge" style="background:#da3633;">${v.errorTag || 'UNCLASSIFIED'}</span>
-              <span class="badge" style="background:#21262d; color:#a371f7;">Leitner Box ${v.leitnerBox || 1} / 3</span>
+              <span class="badge" style="background:#151a24; color:#a371f7;">Leitner Box ${v.leitnerBox || 1} / 3</span>
             </div>
             <div style="font-size:13px; line-height:1.5;">${formatRichText(q.questionText)}</div>
             ${img}
@@ -3928,7 +3905,8 @@
             id: "SEC_VAULT",
             name: "Error Vault Traps",
             durationSec: failedQs.length * 60,
-            questions: failedQs
+            questions: failedQs,
+            locked: false
           }],
           activeSectionIndex: 0,
           currentQuestionIndex: 0,
@@ -3961,7 +3939,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 11. QUESTION GUI EDITOR (WITH DUAL IMAGE COMPRESSOR)
+       * 11. QUESTION GUI EDITOR
        * ------------------------------------------------------------- */
       let currentQuestionImageBase64 = "";
 
@@ -4009,7 +3987,7 @@
         const qObj = {
           id: id,
           subject: document.getElementById("edit-q-subject").value,
-          chapter: document.getElementById("edit-q-chapter").value.trim(),
+          chapter: document.getElementById("edit-q-chapter").value.trim().toUpperCase(),
           subtopic: document.getElementById("edit-q-subtopic").value.trim(),
           method: document.getElementById("edit-q-method").value.trim(),
           questionText: document.getElementById("edit-q-text").value.trim(),
@@ -4049,7 +4027,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 12. COMMAND BUS TERMINAL (DEFENSIVE WITH AWAIT GETDB)
+       * 12. COMMAND BUS TERMINAL (WITH AI REMEDY COMPILER)
        * ------------------------------------------------------------- */
       async function executeConsoleCommand() {
         const raw = document.getElementById("console-payload").value.trim();
@@ -4065,51 +4043,47 @@
           const database = await getDB();
           if (!database) throw new Error("IndexedDB instance unavailable.");
 
-          if (cmd.action === "BATCH_INGEST_QUESTIONS") {
-            const list = cmd.payload.questions || [];
-            const tx = database.transaction(["store_questions"], "readwrite");
-            const st = tx.objectStore("store_questions");
-            list.forEach(q => st.put(q));
-            await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
-            alert(`Ingested ${list.length} questions successfully.`);
-          } else if (cmd.action === "RESTORE_VAULT_BACKUP") {
-            const questions = cmd.payload.questions || [];
-            const vaultEntries = cmd.payload.vault || [];
+          if (cmd.action === "AI_PRESCRIBE_REMEDY") {
+            const qIds = cmd.payload.questionIds || [];
+            const newQuestions = cmd.payload.newQuestions || [];
 
-            const tx = database.transaction(["store_questions", "store_vault"], "readwrite");
-            const qStore = tx.objectStore("store_questions");
-            const vStore = tx.objectStore("store_vault");
+            // Ingest any brand new questions first
+            if (newQuestions.length > 0) {
+              const tx = database.transaction(["store_questions"], "readwrite");
+              const st = tx.objectStore("store_questions");
+              newQuestions.forEach(q => st.put(q));
+              await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
+            }
 
-            questions.forEach(q => qStore.put(q));
-            vaultEntries.forEach(v => vStore.put(v));
+            const allQs = await getAllRecords("store_questions");
+            let remedialPool = allQs.filter(q => qIds.includes(q.id));
+            if (newQuestions.length > 0) {
+              remedialPool = [...remedialPool, ...newQuestions];
+            }
 
-            await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
-            alert(`Restored ${questions.length} questions and ${vaultEntries.length} Error Vault entries.`);
-            renderVault();
-          } else if (cmd.action === "INGEST_AND_LAUNCH_MOCK") {
-            const questions = cmd.payload.questions || [];
-            const tx = database.transaction(["store_questions"], "readwrite");
-            const st = tx.objectStore("store_questions");
-            questions.forEach(q => st.put(q));
-            await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
+            if (remedialPool.length === 0) {
+              alert("Could not compile remedy pool. No matching questions found in bank.");
+              return;
+            }
 
             activeExam = {
-              sessionId: "ai_mock_" + Date.now(),
+              sessionId: "remedy_" + Date.now(),
               timestamp: Date.now(),
-              title: cmd.payload.title || "Targeted AI Practice Mock",
+              title: cmd.payload.title || "Targeted AI Remedial Blitz",
               mockType: "CUSTOM",
               isVaultSprint: false,
               isSectionLocked: false,
               sections: [{
-                id: "SEC_AI",
-                name: "AI Practice",
-                durationSec: (cmd.payload.durationMin || 15) * 60,
-                questions: questions
+                id: "SEC_REMEDY",
+                name: "AI Remedial Blitz",
+                durationSec: (cmd.payload.durationMin || 10) * 60,
+                questions: remedialPool,
+                locked: false
               }],
               activeSectionIndex: 0,
               currentQuestionIndex: 0,
-              questions: questions.map((q, idx) => ({ ...q, sectionIndex: 0, sectionName: "AI Practice", localNumber: idx + 1, globalNumber: idx + 1 })),
-              sectionRemainingSec: (cmd.payload.durationMin || 15) * 60,
+              questions: remedialPool.map((q, idx) => ({ ...q, sectionIndex: 0, sectionName: "AI Remedial Blitz", localNumber: idx + 1, globalNumber: idx + 1 })),
+              sectionRemainingSec: (cmd.payload.durationMin || 10) * 60,
               currentQTimeSpentSec: 0,
               userResponses: {},
               isPaused: false
@@ -4134,6 +4108,14 @@
             document.getElementById("exam-arena").style.display = "flex";
             renderActiveExamQuestion();
             startExamTimers();
+
+          } else if (cmd.action === "BATCH_INGEST_QUESTIONS") {
+            const list = cmd.payload.questions || [];
+            const tx = database.transaction(["store_questions"], "readwrite");
+            const st = tx.objectStore("store_questions");
+            list.forEach(q => st.put(q));
+            await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
+            alert(`Ingested ${list.length} questions successfully.`);
           } else if (cmd.action === "HOTPATCH_CONFIG") {
             await putRecord("store_config", { key: cmd.target, value: cmd.payload });
             alert(`Patched config: ${cmd.target}`);
@@ -4146,29 +4128,18 @@
       }
 
       function loadSamplePayload(type) {
-        const sample = {
-          action: "INGEST_AND_LAUNCH_MOCK",
-          payload: {
-            title: "Arithmetic Profit & Geometry Blitz",
-            durationMin: 12,
-            questions: [
-              {
-                id: "q_qa_pl_fast_01",
-                subject: "QA",
-                chapter: "QA_PROFIT_LOSS",
-                subtopic: "Successive Discounts",
-                method: "Multiplication Factor",
-                questionText: "Find the single discount equivalent to a discount series of $10\\%$, $20\\%$, and $25\\%$.",
-                imageUrl: "",
-                options: ["$46\\%$", "$45\\%$", "$55\\%$", "$54\\%$"],
-                correctIndex: 0,
-                explanation: "Net factor $= 0.9 \\times 0.8 \\times 0.75 = 0.54$. Equivalent discount $= 100 - 54 = 46\\%$.",
-                tags: ["ProfitLoss", "Discount"]
-              }
-            ]
-          }
-        };
-        document.getElementById("console-payload").value = JSON.stringify(sample, null, 2);
+        if (type === "REMEDY") {
+          const sample = {
+            action: "AI_PRESCRIBE_REMEDY",
+            payload: {
+              title: "Geometry & Time-Work Remedial Blitz",
+              durationMin: 10,
+              questionIds: ["q_cgl_qa_geom_011", "q_cgl_qa_tw_010", "q_qa_geom_002"],
+              newQuestions: []
+            }
+          };
+          document.getElementById("console-payload").value = JSON.stringify(sample, null, 2);
+        }
       }
 
       async function refreshDbInspector() {
@@ -4226,16 +4197,14 @@
       }
 
       async function factoryResetAll() {
-        if (confirm("WARNING: Complete factory reset will wipe all data!")) {
+        if (confirm("WARNING: Complete factory reset will wipe all data and re-seed defaults!")) {
           const d = await getDB();
-          const tx = d.transaction(["store_questions", "store_attempts", "store_vault", "store_vault_sprints", "store_concepts", "store_formulas", "store_vocab", "store_notes", "store_active_session", "store_config"], "readwrite");
+          const tx = d.transaction(["store_questions", "store_attempts", "store_vault", "store_vault_sprints", "store_concepts", "store_notes", "store_active_session", "store_config"], "readwrite");
           tx.objectStore("store_questions").clear();
           tx.objectStore("store_attempts").clear();
           tx.objectStore("store_vault").clear();
           tx.objectStore("store_vault_sprints").clear();
           tx.objectStore("store_concepts").clear();
-          tx.objectStore("store_formulas").clear();
-          tx.objectStore("store_vocab").clear();
           tx.objectStore("store_notes").clear();
           tx.objectStore("store_active_session").clear();
           tx.objectStore("store_config").clear();
@@ -4265,7 +4234,7 @@
         a.click();
       }
 
-      async function exportObsidianMarkdown() {
+      async function exportCleanMarkdownVault() {
         const vault = await getAllRecords("store_vault");
         const questions = await getAllRecords("store_questions");
         let md = `# SSC CGL Error Vault Export\n\n`;
@@ -4280,7 +4249,7 @@
           }
         });
 
-        const blob = new Blob([md], { type: "text/markdown" });
+        const blob = new Blob([md], { type: "text/plain;charset=utf-8" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
         a.download = `CGL_Vault_${Date.now()}.md`;
@@ -4304,7 +4273,6 @@
       }
 
       window.addEventListener("DOMContentLoaded", async () => {
-        // Defensive Pause-Shield Hardening
         const shield = document.getElementById("pause-shield");
         shield.style.setProperty("display", "none", "important");
 
@@ -4314,7 +4282,6 @@
         renderVault();
         initGestureControllers();
 
-        // Check if there was an active exam minimized before refresh
         const savedSessionRec = await getRecord("store_active_session", "current_session");
         if (savedSessionRec && savedSessionRec.session && !savedSessionRec.session.completed) {
           activeExam = savedSessionRec.session;
@@ -4333,6 +4300,8 @@
         updateCustomRowDuration,
         applyBlueprintPreset,
         launchConfiguredMock,
+        requestEndSectionEarly,
+        confirmEndSectionEarly,
         resumeFromMiniPlayer,
         updateDojoChapters,
         updateDojoMethods,
@@ -4342,15 +4311,15 @@
         toggleDojoMethod,
         autoSaveDojoAnnotation,
         toggleDojoPalette,
-        openConceptHubModal,
-        navConceptCard,
-        toggleConceptDrawer,
-        openCreateCategoryPrompt,
+        openKnowledgeCompendiumModal,
+        handleCompendiumSubjectChange,
+        renderMasterCompendiumView,
+        openPopoutTopicSheet,
+        navPopoutTopic,
+        autoSaveTopicScratchpad,
         openConceptEditorModal,
         handleConceptImageUpload,
         saveConceptCard,
-        deleteCurrentConceptCard,
-        autoSaveFreeformNotes,
         openPrintConfigModal,
         handlePrintTypeChange,
         updatePrintChapters,
@@ -4384,7 +4353,7 @@
         advanceVaultBox,
         launchVaultSprint,
         exportFullBackup,
-        exportObsidianMarkdown
+        exportCleanMarkdownVault
       };
     })();
   </script>
