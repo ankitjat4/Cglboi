@@ -110,7 +110,7 @@
       color: var(--text-main);
       border: 1px solid var(--border-color);
     }
-    .btn-danger { background: var(--status-red); }
+    .btn-danger { background: var(--status-red); color: white; }
     .btn-amber { background: var(--status-amber); color: #000; font-weight: 700; }
 
     /* DASHBOARD HERO HEADER */
@@ -243,7 +243,7 @@
     .form-control:focus { outline: none; border-color: var(--border-focus); }
 
     /* FULL-SCREEN SIMULATOR ARENAS */
-    #exam-arena, #dojo-arena-view {
+    #exam-arena, #dojo-arena-view, #compendium-fullscreen-view {
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -259,6 +259,7 @@
       align-items: center;
       justify-content: space-between;
       height: 56px;
+      flex-shrink: 0;
     }
     .hud-icon-btn {
       background: none;
@@ -291,6 +292,7 @@
       justify-content: space-between;
       align-items: center;
       font-size: 12px;
+      flex-shrink: 0;
     }
     .arena-body {
       flex: 1;
@@ -442,6 +444,11 @@
     .palette-cell.locked-cell { background: #151922; color: #484f58; cursor: not-allowed; border-color: rgba(255,255,255,0.03); }
     .palette-cell.current { border-color: #ffffff; box-shadow: 0 0 10px rgba(255,255,255,0.8); }
 
+    /* REVIEW ARENA PALETTE NODES */
+    .palette-cell.rev-correct { background: var(--status-green); color: #fff; border-color: var(--status-green-border); }
+    .palette-cell.rev-incorrect { background: var(--status-red); color: #fff; border-color: #f87171; }
+    .palette-cell.rev-unanswered { background: var(--bg-elevated); color: var(--text-muted); border-color: var(--border-color); }
+
     /* INTERACTIVE FORENSIC TILES IN REVIEW */
     .forensic-tile {
       background: #151422;
@@ -502,53 +509,53 @@
       border: 1px solid var(--border-color);
     }
 
-    /* LIVING DOCUMENT COMPENDIUM STYLES (A4 CANVAS RATIO) */
-    .document-page-canvas {
-      background: var(--bg-document);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 24px 20px;
-      margin-bottom: 20px;
-      line-height: 1.7;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
-    }
-    .document-meta-header {
+    /* FULL-SCREEN LIVING COMPENDIUM STUDIO */
+    .compendium-header {
+      background: #0d1118;
       border-bottom: 1px solid var(--border-color);
-      padding-bottom: 10px;
-      margin-bottom: 14px;
+      padding: 8px 14px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
+      height: 56px;
+      flex-shrink: 0;
     }
-    .sticky-anchor-bar {
-      position: sticky;
-      top: 0;
-      background: rgba(13, 17, 24, 0.96);
-      backdrop-filter: blur(12px);
-      z-index: 10;
-      padding: 8px 0;
-      margin-bottom: 14px;
+    .comp-tabs-bar {
       display: flex;
+      align-items: center;
       gap: 6px;
       overflow-x: auto;
+      background: #090d15;
+      padding: 8px 14px;
       border-bottom: 1px solid var(--border-color);
+      flex-shrink: 0;
     }
-    .anchor-pill {
+    .comp-sheet-tab {
       background: var(--bg-elevated);
       color: var(--text-muted);
       border: 1px solid var(--border-color);
-      border-radius: 20px;
-      padding: 4px 10px;
-      font-size: 11px;
+      border-radius: 6px;
+      padding: 5px 12px;
+      font-size: 12px;
       font-weight: 700;
       white-space: nowrap;
       cursor: pointer;
-      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
     }
-    .anchor-pill:hover, .anchor-pill.active {
-      background: var(--accent-blue);
-      color: #fff;
+    .comp-sheet-tab.active {
+      background: rgba(56, 139, 253, 0.2);
       border-color: var(--accent-blue);
+      color: #fff;
+    }
+    .comp-document-canvas {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 20px 80px 20px;
+      background: var(--bg-document);
+      line-height: 1.7;
     }
 
     /* Admonition / Callout Blocks */
@@ -624,10 +631,28 @@
       transition: width 0.4s ease;
     }
 
+    .anchor-pill {
+      background: var(--bg-elevated);
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .anchor-pill:hover, .anchor-pill.active {
+      background: var(--accent-blue);
+      color: #fff;
+      border-color: var(--accent-blue);
+    }
+
     /* PRINT SPOOLER */
     @media print {
       body { background: white !important; color: black !important; }
-      #bottom-nav, #exam-arena, #dojo-arena-view, .btn, .card, .modal-overlay, #pause-shield, #mini-player-dock { display: none !important; }
+      #bottom-nav, #exam-arena, #dojo-arena-view, #compendium-fullscreen-view, .btn, .card, .modal-overlay, #pause-shield, #mini-player-dock { display: none !important; }
       .print-page { display: block !important; column-count: 2; column-gap: 20px; font-size: 11px; padding: 20px; }
       .print-question { break-inside: avoid; margin-bottom: 14px; border-bottom: 1px solid #ccc; padding-bottom: 8px; }
       .print-vocab-item { break-inside: avoid; border: 1px solid #ddd; padding: 6px; margin-bottom: 8px; border-radius: 4px; }
@@ -657,7 +682,7 @@
   <!-- APPLICATION VIEWPORT ROOT (FOR GLOBAL GESTURE INTERCEPTOR) -->
   <div id="app-viewport-root">
 
-    <!-- ==================== 1. TIMED EXAM ARENA ==================== -->
+    <!-- ==================== 1. TIMED EXAM & REVIEW ARENA ==================== -->
     <div id="exam-arena">
       <div class="arena-header">
         <div style="display:flex; align-items:center; gap:8px;">
@@ -666,6 +691,9 @@
           </button>
           <button class="btn btn-amber" id="btn-arena-early-lock" style="padding:4px 10px; font-size:11px; display:none;" onclick="CGL_OS.requestEndSectionEarly()">
             🔒 Lock Section Early
+          </button>
+          <button class="btn btn-secondary" id="btn-arena-exit-review" style="padding:4px 10px; font-size:11px; display:none;" onclick="CGL_OS.exitReviewArena()">
+            ✕ Exit Review
           </button>
         </div>
 
@@ -698,9 +726,15 @@
           </div>
         </div>
 
+        <!-- Telemetry & Hesitation Info in Review Mode -->
+        <div id="arena-review-telemetry-banner" style="display:none; margin-bottom:12px;"></div>
+
         <div class="q-text-canvas" id="arena-q-text"></div>
         <div class="q-image-container" id="arena-image-container" style="display:none;"></div>
         <div id="arena-options-container"></div>
+
+        <!-- Solution & Mistake Tag Editor in Review Mode -->
+        <div id="arena-review-solution-block" style="display:none; margin-top:14px; background:#0d1118; border:1px solid var(--border-color); border-radius:10px; padding:14px;"></div>
       </div>
 
       <div class="arena-footer">
@@ -714,13 +748,13 @@
     <div class="drawer-overlay" id="exam-drawer-overlay"></div>
     <div class="palette-drawer-ui" id="exam-palette-drawer">
       <div style="padding:14px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
-        <h3 style="font-size:14px; font-weight:700;">Question Palette</h3>
+        <h3 style="font-size:14px; font-weight:700;" id="palette-drawer-title">Question Palette</h3>
         <span class="badge" style="background:#1f6feb;" id="exam-drawer-sec-badge">PART - A</span>
       </div>
       
       <div id="exam-palette-section-tabs" style="display:flex; overflow-x:auto; padding:8px 12px; background:#07090e; border-bottom:1px solid var(--border-color); gap:6px;"></div>
 
-      <div style="padding:10px 14px; background:#07090e; font-size:12px; display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color);">
+      <div id="palette-legend-bar" style="padding:10px 14px; background:#07090e; font-size:12px; display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color);">
         <span>🟢 Ans: <b id="exam-count-ans">0</b></span>
         <span>🟣 Marked: <b id="exam-count-marked">0</b></span>
         <span>⚪ Unans: <b id="exam-count-unans">0</b></span>
@@ -728,7 +762,7 @@
       <div class="palette-scroll-body">
         <div class="palette-grid" id="exam-palette-grid"></div>
       </div>
-      <div style="padding:14px; border-top:1px solid var(--border-color); display:flex; flex-direction:column; gap:8px;">
+      <div id="palette-footer-actions" style="padding:14px; border-top:1px solid var(--border-color); display:flex; flex-direction:column; gap:8px;">
         <button class="btn btn-amber" id="btn-drawer-early-lock" style="width:100%; font-size:13px; padding:10px; display:none;" onclick="CGL_OS.requestEndSectionEarly()">
           🔒 Lock & Advance Current Section
         </button>
@@ -818,7 +852,59 @@
     </div>
 
 
-    <!-- ==================== 3. TAB 1: DASHBOARD ==================== -->
+    <!-- ==================== 3. FULL-SCREEN LIVING COMPENDIUM STUDIO ==================== -->
+    <div id="compendium-fullscreen-view">
+      <div class="compendium-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button class="hud-icon-btn" onclick="CGL_OS.closeCompendiumStudio()" title="Close Compendium">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+          </button>
+          <div>
+            <div style="font-size:14px; font-weight:800; color:#38bdf8;" id="comp-studio-header-title">Living Knowledge Studio</div>
+            <div style="font-size:10px; color:var(--text-muted);" id="comp-studio-header-sub">Structured A4 Engineering Sheets</div>
+          </div>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.openOmniSearchModal()" title="Global Omni-Search">🔍 Search</button>
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.openConceptEditorModal(false)" title="Edit Current Sheet">✎ Edit</button>
+          <button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.deleteCurrentCompendiumSheet()" title="Delete Current Sheet">🗑</button>
+        </div>
+      </div>
+
+      <!-- Selector & Sheet Control Bar -->
+      <div style="display:grid; grid-template-columns: 85px 1fr auto; gap:6px; padding:8px 14px; background:#070a10; border-bottom:1px solid var(--border-color); align-items:center;">
+        <select id="comp-studio-subject-select" class="form-control" style="padding:6px; font-size:12px; font-weight:700;" onchange="CGL_OS.handleCompStudioSubjectChange(this.value)">
+          <option value="QA">QA</option>
+          <option value="REAS">REAS</option>
+          <option value="ENG">ENG</option>
+          <option value="GA">GA</option>
+        </select>
+        <div style="display:flex; gap:4px; align-items:center; overflow:hidden;">
+          <select id="comp-studio-chapter-select" class="form-control" style="padding:6px; font-size:12px;" onchange="CGL_OS.handleCompStudioChapterChange(this.value)"></select>
+          <button class="btn btn-secondary" style="padding:6px 8px; font-size:11px;" onclick="CGL_OS.promptCreateNewChapter()" title="Add New Chapter Tag">+</button>
+        </div>
+        <button class="btn" style="padding:6px 10px; font-size:11px; white-space:nowrap;" onclick="CGL_OS.openConceptEditorModal(true)">+ New Sheet</button>
+      </div>
+
+      <!-- Sticky Sheets Tab Bar -->
+      <div class="comp-tabs-bar" id="comp-studio-sheet-tabs"></div>
+
+      <!-- Living Document Canvas Body -->
+      <div class="comp-document-canvas" id="comp-studio-canvas">
+        <div id="comp-studio-doc-content"></div>
+
+        <div style="margin-top:28px; border-top:1px solid var(--border-color); padding-top:14px;">
+          <label style="font-size:11px; font-weight:700; color:var(--text-muted); display:flex; justify-content:space-between;">
+            <span>Sheet Revision Cue / Personal Scratchpad (Auto-Saves)</span>
+            <span id="comp-scratchpad-status" style="color:var(--status-green); font-size:10px; display:none;">Saved</span>
+          </label>
+          <textarea id="comp-studio-scratchpad" class="form-control" style="height:70px; margin-top:6px;" placeholder="Personal formula reminder, exam trap caveats..." oninput="CGL_OS.autoSaveCompScratchpad(this.value)"></textarea>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ==================== 4. TAB 1: DASHBOARD ==================== -->
     <div id="tab-dashboard" class="view-container active">
       <div class="hero-banner">
         <div class="hero-content">
@@ -868,8 +954,11 @@
           <div style="font-size:22px; font-weight:800;" id="kpi-total-mocks">0</div>
         </div>
 
-        <div class="card" style="margin-bottom:0; padding:12px;">
-          <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase;">Q-IV Traps Hit</div>
+        <div class="card" style="margin-bottom:0; padding:12px; cursor:pointer;" onclick="alert('Quadrant-IV Time Trap: Occurs when you spend >90 seconds on a question and still get it incorrect. Identifying Q-IV traps stops catastrophic mark bleed.')" title="Tap for info on Q-IV Traps">
+          <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; display:flex; justify-content:space-between;">
+            <span>Q-IV Traps Hit</span>
+            <span style="color:var(--accent-cyan); font-weight:bold;">ⓘ</span>
+          </div>
           <div style="font-size:22px; font-weight:800; color:var(--status-red);" id="kpi-traps-hit">0</div>
         </div>
       </div>
@@ -878,7 +967,7 @@
       <div class="card">
         <div class="card-title">
           <span>Subject Mastery Matrix</span>
-          <span style="font-size:10px; color:var(--accent-cyan);">Tap to Inspect</span>
+          <span style="font-size:10px; color:var(--accent-cyan);">Tap Subject to Drill</span>
         </div>
         <div id="dash-subject-batteries"></div>
       </div>
@@ -908,7 +997,7 @@
     </div>
 
 
-    <!-- ==================== 4. TAB 2: DOJO & KNOWLEDGE COMPENDIUM ==================== -->
+    <!-- ==================== 5. TAB 2: DOJO & KNOWLEDGE COMPENDIUM ==================== -->
     <div id="tab-dojo" class="view-container">
       <div class="card" style="background:linear-gradient(135deg, #131b29, #090c12); border-color:#238636;">
         <h2 style="font-size:18px; font-weight:800;">Question Dojo & Practice Hub</h2>
@@ -921,11 +1010,11 @@
       <div class="card" style="border-color:#38bdf8;">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <div>
-            <b style="font-size:14px; color:#38bdf8;">Knowledge & Topic Compendium</b>
-            <p style="font-size:11px; color:var(--text-muted);">Living document cheat sheets, theorem dossiers & pop-out topic sheets.</p>
+            <b style="font-size:14px; color:#38bdf8;">Living Knowledge Studio</b>
+            <p style="font-size:11px; color:var(--text-muted);">A4 living document dossiers, formula callouts, tables & omni-search.</p>
           </div>
-          <button class="btn" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openKnowledgeCompendiumModal()">
-            Open Compendium
+          <button class="btn" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openCompendiumStudio()">
+            Open Studio
           </button>
         </div>
       </div>
@@ -959,17 +1048,19 @@
         </button>
       </div>
     </div>
-
-
-    <!-- ==================== 5. TAB 3: COMMAND TERMINAL ==================== -->
+    <!-- ==================== 6. TAB 3: COMMAND TERMINAL ==================== -->
     <div id="tab-console" class="view-container">
       <div class="card">
-        <div class="card-title">JSON Command Bus & AI Dispatch</div>
-        <textarea class="form-control" id="console-payload" style="height:140px; font-family:var(--font-mono); font-size:12px; color:#38bdf8;" placeholder='Paste AI command payload here (e.g. AI_PRESCRIBE_REMEDY, INGEST_AND_LAUNCH_MOCK, BATCH_INGEST)...'></textarea>
+        <div class="card-title">
+          <span>JSON Command Bus & AI Dispatch</span>
+          <span class="badge" style="background:#1f6feb;">Live Telemetry</span>
+        </div>
+        <textarea class="form-control" id="console-payload" style="height:140px; font-family:var(--font-mono); font-size:12px; color:#38bdf8;" placeholder='Paste AI command payload here (e.g. AI_PRESCRIBE_REMEDY, INGEST_AND_LAUNCH_MOCK, BATCH_INGEST_COMPENDIUM, SAVE_MOCK_PRESET)...'></textarea>
         <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
           <button class="btn" onclick="CGL_OS.executeConsoleCommand()">Execute Command</button>
-          <button class="btn btn-secondary" onclick="document.getElementById('console-payload').value=''">Clear Console</button>
-          <button class="btn btn-secondary" onclick="CGL_OS.loadSamplePayload('REMEDY')">Sample AI Remedy</button>
+          <button class="btn btn-secondary" onclick="document.getElementById('console-payload').value=''">Clear</button>
+          <button class="btn btn-secondary" onclick="CGL_OS.loadSamplePayload('REMEDY')">Sample Remedy</button>
+          <button class="btn btn-secondary" style="border-color:var(--accent-cyan); color:var(--accent-cyan);" onclick="CGL_OS.copyLiveSystemManifestToClipboard()">📋 Copy Live AI Manifest</button>
           <button class="btn btn-secondary" onclick="CGL_OS.openMasterLedgerExportModal()">Export Bank for Gem</button>
         </div>
       </div>
@@ -1003,7 +1094,7 @@
     </div>
 
 
-    <!-- ==================== 6. TAB 4: ERROR VAULT & EXTRACTIONS ==================== -->
+    <!-- ==================== 7. TAB 4: ERROR VAULT & EXTRACTIONS ==================== -->
     <div id="tab-vault" class="view-container">
       <div class="card" style="border-color:#5a1e1e;">
         <div class="card-title" style="color:#f87171;">
@@ -1015,12 +1106,12 @@
         </div>
         
         <div style="background:#161012; border:1px solid #4a1d20; border-radius:8px; padding:10px; font-size:11px; line-height:1.5; margin-bottom:12px; color:#fca5a5;">
-          <b>How the Leitner Vault Works:</b><br>
-          • Questions log here only when answered incorrectly during full mocks.<br>
-          • <b>Box 1:</b> Daily review queue.<br>
-          • <b>Box 2:</b> Review interval: 4 days.<br>
-          • <b>Box 3:</b> Final mastery interval: 14 days.<br>
-          • Solving a Box 3 question graduates and clears it permanently from the vault.
+          <b>Leitner Spaced-Repetition Mechanics:</b><br>
+          • Questions log here automatically when answered incorrectly during full mocks.<br>
+          • <b>Box 1:</b> Daily Review Queue (Immediate intervention).<br>
+          • <b>Box 2:</b> 4-Day Interval (Reinforced comprehension).<br>
+          • <b>Box 3:</b> 14-Day Interval (Final mastery test).<br>
+          • Correct answers promote questions; a correct answer in Box 3 graduates and removes it permanently.
         </div>
 
         <button class="btn btn-danger" style="width:100%; margin-bottom:12px;" onclick="CGL_OS.launchVaultSprint()">
@@ -1056,22 +1147,23 @@
   </div> <!-- /#app-viewport-root -->
 
 
-  <!-- ==================== 7. TESTBOOK MOCK SOLUTION ANALYZER ==================== -->
+  <!-- ==================== 8. STAGE 1: ANALYTICAL COCKPIT MODAL ==================== -->
   <div class="modal-overlay" id="modal-mock-review">
     <div class="modal-window" style="max-width:700px; max-height:92vh;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
         <div>
-          <h3 style="font-size:16px; font-weight:800;" id="review-modal-title">Mock Forensic Review</h3>
+          <h3 style="font-size:16px; font-weight:800;" id="review-modal-title">Mock Analytical Cockpit</h3>
           <span style="font-size:11px; color:var(--text-muted);" id="review-modal-date">Submitted on Date</span>
         </div>
         <div style="display:flex; gap:6px;">
           <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--accent-cyan);" id="btn-review-save-fixed">📌 Freeze Paper</button>
           <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--status-green);" id="btn-review-reattempt">🔁 Re-attempt</button>
           <button class="btn" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openAiExportModal()">Export for AI</button>
-          <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-mock-review').classList.remove('active')">✕ Close</button>
+          <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-mock-review').classList.remove('active')">✕</button>
         </div>
       </div>
 
+      <!-- High-Level Metric Tiles -->
       <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:10px; text-align:center;">
         <div style="background:var(--bg-elevated); padding:8px; border-radius:6px;">
           <div style="font-size:10px; color:var(--text-muted);">SCORE</div>
@@ -1091,34 +1183,95 @@
         </div>
       </div>
 
-      <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:14px; text-align:center;">
-        <div class="forensic-tile" onclick="CGL_OS.filterReviewQuestions('PENALTY')">
-          <div style="font-size:9px; color:var(--status-purple);">PENALTY DRAG (TAP)</div>
+      <!-- Time & Pacing Audit -->
+      <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:12px; text-align:center;">
+        <div class="forensic-tile">
+          <div style="font-size:9px; color:var(--status-purple);">PENALTY DRAG</div>
           <div style="font-size:14px; font-weight:800; color:#f87171;" id="rev-penalty">-0.00</div>
         </div>
-        <div class="forensic-tile" onclick="CGL_OS.filterReviewQuestions('SWITCH')">
-          <div style="font-size:9px; color:var(--status-purple);">2ND GUESS (TAP)</div>
+        <div class="forensic-tile">
+          <div style="font-size:9px; color:var(--status-purple);">2ND GUESS NET</div>
           <div style="font-size:14px; font-weight:800; color:#38bdf8;" id="rev-switch-delta">0 Net</div>
         </div>
-        <div class="forensic-tile" onclick="CGL_OS.filterReviewQuestions('TRAPS')">
-          <div style="font-size:9px; color:var(--status-purple);">Q-IV TRAPS (TAP)</div>
+        <div class="forensic-tile">
+          <div style="font-size:9px; color:var(--status-purple);">Q-IV TIME TRAPS (>90s)</div>
           <div style="font-size:14px; font-weight:800; color:var(--status-red);" id="rev-traps">0</div>
         </div>
       </div>
 
-      <div style="display:flex; gap:6px; margin-bottom:12px; overflow-x:auto;">
-        <button class="btn btn-secondary" style="font-size:11px; padding:6px 10px;" onclick="CGL_OS.filterReviewQuestions('ALL')">All Qs</button>
-        <button class="btn btn-danger" style="font-size:11px; padding:6px 10px;" onclick="CGL_OS.filterReviewQuestions('INCORRECT')">Incorrect Only</button>
-        <button class="btn btn-secondary" style="font-size:11px; padding:6px 10px; color:var(--status-green);" onclick="CGL_OS.filterReviewQuestions('CORRECT')">Correct</button>
-        <button class="btn btn-secondary" style="font-size:11px; padding:6px 10px;" onclick="CGL_OS.filterReviewQuestions('UNANSWERED')">Unattempted</button>
+      <!-- Sectional Efficiency Grid -->
+      <div class="card" style="padding:10px; margin-bottom:12px;">
+        <div class="card-title" style="margin-bottom:8px;">Sectional Performance Breakdown</div>
+        <div id="rev-sectional-breakdown-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:6px;"></div>
       </div>
 
-      <div id="review-questions-list"></div>
+      <!-- Mistake Tag Distribution Badges -->
+      <div class="card" style="padding:10px; margin-bottom:14px;">
+        <div class="card-title" style="margin-bottom:6px;">Cognitive Trap Distribution</div>
+        <div id="rev-mistake-tags-pills" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+      </div>
+
+      <!-- Primary Action: Boot Stage 2 Full-Screen Arena -->
+      <button class="btn" style="width:100%; padding:14px; font-size:15px; font-weight:800; box-shadow:0 0 16px rgba(56, 139, 253, 0.4);" onclick="CGL_OS.enterFullScreenReviewArena()">
+        📖 Enter Full-Screen Review Arena
+      </button>
     </div>
   </div>
 
 
-  <!-- ==================== 8. MULTI-TIER AI EXPORT COCKPIT ==================== -->
+  <!-- ==================== 9. INTERACTIVE SUBJECT DIAGNOSTIC MODAL ==================== -->
+  <div class="modal-overlay" id="modal-subject-diagnostic">
+    <div class="modal-window" style="max-width:560px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+        <div>
+          <h3 style="font-size:16px; font-weight:800; color:var(--accent-cyan);" id="diag-subject-name">Subject Diagnostic</h3>
+          <span style="font-size:11px; color:var(--text-muted);" id="diag-subject-sub">Live Syllabus Audit</span>
+        </div>
+        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-subject-diagnostic').classList.remove('active')">✕</button>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:16px; margin-bottom:14px; background:var(--bg-elevated); padding:12px; border-radius:10px;">
+        <div class="gauge-wrapper">
+          <svg class="gauge-svg" viewBox="0 0 36 36">
+            <path class="gauge-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <path class="gauge-fill" id="diag-acc-gauge" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          </svg>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:11px; color:var(--text-muted);">OVERALL SUBJECT ACCURACY</div>
+          <div style="font-size:24px; font-weight:800;" id="diag-subject-acc">0%</div>
+          <div style="font-size:11px; color:var(--text-muted);" id="diag-subject-counts">0 Solved • 0 Correct</div>
+        </div>
+      </div>
+
+      <button class="btn" id="btn-launch-subject-blitz" style="width:100%; margin-bottom:14px; font-size:13px; font-weight:700;">
+        ⚡ Launch 10-Q Subject Blitz
+      </button>
+
+      <div class="card-title">Chapter Coverage & Vulnerabilities</div>
+      <div id="diag-chapter-coverage-list" style="max-height:260px; overflow-y:auto;"></div>
+    </div>
+  </div>
+
+
+  <!-- ==================== 10. COMPENDIUM OMNI-SEARCH MODAL ==================== -->
+  <div class="modal-overlay" id="modal-comp-omni-search">
+    <div class="modal-window" style="max-width:640px; max-height:85vh; display:flex; flex-direction:column;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+        <h3 style="font-size:16px; font-weight:800; color:var(--accent-cyan);">Omni-Search Compendium</h3>
+        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-comp-omni-search').classList.remove('active')">✕</button>
+      </div>
+
+      <input type="text" id="comp-omni-search-input" class="form-control" placeholder="Search formulas, theorems, topics, traps (e.g. Incenter, Tangent, Article 124)..." oninput="CGL_OS.executeOmniSearch(this.value)" style="margin-bottom:12px;">
+
+      <div id="comp-omni-results-list" style="flex:1; overflow-y:auto; font-size:13px;">
+        <p style="color:var(--text-muted); text-align:center; padding:20px;">Type keywords above to query across all living sheets.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ==================== 11. MULTI-TIER AI EXPORT COCKPIT ==================== -->
   <div class="modal-overlay" id="modal-ai-export">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1147,7 +1300,7 @@
   </div>
 
 
-  <!-- ==================== 8B. MASTER LEDGER EXPORT MODAL ==================== -->
+  <!-- ==================== 12. MASTER LEDGER EXPORT MODAL ==================== -->
   <div class="modal-overlay" id="modal-ledger-export">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1156,7 +1309,7 @@
       </div>
 
       <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px;">
-        Generate static knowledge files formatted specifically for your custom Gemini Gem knowledge base.
+        Generate static reference files formatted specifically for your Gemini Gem knowledge base.
       </p>
 
       <div class="form-group">
@@ -1174,7 +1327,7 @@
   </div>
 
 
-  <!-- ==================== 9. MOCK HISTORY ARCHIVE MODAL ==================== -->
+  <!-- ==================== 13. MOCK HISTORY ARCHIVE MODAL ==================== -->
   <div class="modal-overlay" id="modal-history-archive">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1194,7 +1347,7 @@
   </div>
 
 
-  <!-- ==================== 10. CHAPTER DEEP DIVE INSPECTOR ==================== -->
+  <!-- ==================== 14. CHAPTER DEEP DIVE INSPECTOR ==================== -->
   <div class="modal-overlay" id="modal-chapter-inspector">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1230,73 +1383,7 @@
   </div>
 
 
-  <!-- ==================== 11. HYBRID LIVING DOCUMENT COMPENDIUM ==================== -->
-  <div class="modal-overlay" id="modal-knowledge-compendium">
-    <div class="modal-window" style="max-width:850px; max-height:94vh;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
-        <div>
-          <h3 style="font-size:16px; font-weight:800; color:#38bdf8;">Knowledge & Topic Compendium</h3>
-          <span style="font-size:11px; color:var(--text-muted);">Living document master view with pop-out topic sheets</span>
-        </div>
-        <div style="display:flex; gap:6px;">
-          <button class="btn" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openConceptEditorModal(true)">+ Add Topic Dossier</button>
-          <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-knowledge-compendium').classList.remove('active')">✕</button>
-        </div>
-      </div>
-
-      <div style="display:grid; grid-template-columns: 120px 1fr; gap:8px; margin-bottom:10px;">
-        <select id="comp-subject-select" class="form-control" onchange="CGL_OS.handleCompendiumSubjectChange(this.value)">
-          <option value="QA">QA</option>
-          <option value="REAS">REAS</option>
-          <option value="ENG">ENG</option>
-          <option value="GA">GA</option>
-        </select>
-        <select id="comp-chapter-select" class="form-control" onchange="CGL_OS.renderMasterCompendiumView()"></select>
-      </div>
-
-      <div class="sticky-anchor-bar" id="comp-anchor-bar"></div>
-      <div id="comp-scroll-canvas" style="min-height:300px;"></div>
-    </div>
-  </div>
-
-  <!-- POP-OUT DEDICATED TOPIC SHEET MODAL (WITH HORIZONTAL SWIPE) -->
-  <div class="modal-overlay" id="modal-popout-sheet">
-    <div class="modal-window" style="max-width:760px; max-height:94vh; display:flex; flex-direction:column;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
-        <div>
-          <span class="badge" style="background:#1f6feb;" id="popout-topic-badge">QA_GEOMETRY</span>
-          <span style="font-size:11px; color:var(--text-muted); margin-left:6px;" id="popout-topic-counter">Topic 1 of 4</span>
-        </div>
-        <div style="display:flex; gap:6px;">
-          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.openConceptEditorModal(false)">Edit</button>
-          <button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.deleteCurrentTopicDossier()">🗑 Delete</button>
-          <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-popout-sheet').classList.remove('active')">✕</button>
-        </div>
-      </div>
-
-      <div class="arena-body" id="popout-sheet-body" style="padding:10px 4px; flex:1;">
-        <h2 style="font-size:20px; font-weight:800; color:#fff;" id="popout-sheet-title">Topic Title</h2>
-        <div style="font-size:12px; color:#a371f7; font-family:var(--font-mono); margin:4px 0 12px 0;" id="popout-sheet-sub">Subtopic</div>
-        
-        <div class="q-image-container" id="popout-sheet-image" style="display:none;"></div>
-        <div style="font-size:14px; line-height:1.65; color:var(--text-main);" id="popout-sheet-content"></div>
-
-        <div style="margin-top:20px; border-top:1px solid var(--border-color); padding-top:12px;">
-          <label style="font-size:11px; font-weight:700; color:var(--text-muted);">Topic Revision Cue / Scratchpad</label>
-          <textarea id="popout-sheet-scratchpad" class="form-control" style="height:70px; margin-top:4px;" placeholder="Personal formula reminder, trap notes..." oninput="CGL_OS.autoSaveTopicScratchpad(this.value)"></textarea>
-        </div>
-      </div>
-
-      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:10px; margin-top:8px;">
-        <button class="btn btn-secondary" onclick="CGL_OS.navPopoutTopic(-1)">◄ Previous Topic</button>
-        <span style="font-size:11px; color:var(--text-muted);">Swipe left / right to navigate</span>
-        <button class="btn btn-secondary" onclick="CGL_OS.navPopoutTopic(1)">Next Topic ►</button>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- ==================== 12. SELECTIVE PRINT SPOOLER CONFIG ==================== -->
+  <!-- ==================== 15. SELECTIVE PRINT SPOOLER CONFIG ==================== -->
   <div class="modal-overlay" id="modal-print-config">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1350,7 +1437,7 @@
   </div>
 
 
-  <!-- ==================== 13. MULTI-SUBJECT CUSTOM MOCK BUILDER ==================== -->
+  <!-- ==================== 16. MULTI-SUBJECT CUSTOM MOCK BUILDER ==================== -->
   <div class="modal-overlay" id="modal-mock-builder">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1385,14 +1472,14 @@
       </div>
 
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px;">
-        <button class="btn btn-secondary" onclick="CGL_OS.openSaveBlueprintModal()">Save as Dynamic Blueprint</button>
+        <button class="btn btn-secondary" onclick="CGL_OS.openSaveBlueprintModal('DYNAMIC_BLUEPRINT')">Save Blueprint</button>
         <button class="btn" onclick="CGL_OS.launchConfiguredMock()">Launch Arena</button>
       </div>
     </div>
   </div>
 
 
-  <!-- ==================== 13B. SAVE BLUEPRINT / FIXED PAPER MODAL ==================== -->
+  <!-- ==================== 17. SAVE BLUEPRINT / FIXED PAPER MODAL ==================== -->
   <div class="modal-overlay" id="modal-save-blueprint">
     <div class="modal-window" style="max-width:440px;">
       <h3 style="font-size:16px; font-weight:800; margin-bottom:10px;" id="save-preset-modal-title">Save Mock Blueprint</h3>
@@ -1400,7 +1487,7 @@
       <input type="hidden" id="save-preset-target-id" value="">
       
       <div class="form-group">
-        <label>Blueprint / Fixed Paper Title</label>
+        <label>Title</label>
         <input type="text" id="blueprint-title-input" class="form-control" placeholder="e.g. Speed Blitz Alpha (QA + REAS)">
       </div>
       <button class="btn" style="width:100%; margin-top:8px;" onclick="CGL_OS.saveCurrentPresetAction()">Save to Dashboard</button>
@@ -1408,11 +1495,11 @@
   </div>
 
 
-  <!-- ==================== 14. TOPIC DOSSIER EDITOR ==================== -->
+  <!-- ==================== 18. TOPIC DOSSIER EDITOR ==================== -->
   <div class="modal-overlay" id="modal-concept-editor">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-        <h3 style="font-size:16px; font-weight:800;" id="concept-editor-title">Add / Edit Topic Dossier</h3>
+        <h3 style="font-size:16px; font-weight:800;" id="concept-editor-title">Add / Edit Topic Sheet</h3>
         <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-concept-editor').classList.remove('active')">✕</button>
       </div>
 
@@ -1435,25 +1522,25 @@
       </div>
 
       <div class="form-group">
-        <label>Topic / Concept Title</label>
-        <input type="text" id="concept-edit-title" class="form-control" placeholder="e.g. Tangent Theorems & Common Tangents">
+        <label>Sheet Title</label>
+        <input type="text" id="concept-edit-title" class="form-control" placeholder="e.g. Triangles & Incenters">
       </div>
 
       <div class="form-group">
-        <label>Subtopic / Cue</label>
-        <input type="text" id="concept-edit-sub" class="form-control" placeholder="e.g. Circles & Tangent Lengths">
+        <label>Subtopic / Focus Cue</label>
+        <input type="text" id="concept-edit-sub" class="form-control" placeholder="e.g. Angle Bisectors & Radii Formulas">
       </div>
 
       <div class="form-group">
         <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-          <label>Topic Dossier Body (Markdown, KaTeX, Callouts, Tables)</label>
+          <label>Sheet Content (Markdown, KaTeX, Callouts, Tables)</label>
           <div style="display:flex; gap:4px;">
             <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px;" onclick="CGL_OS.insertDossierSnippet('FORMULA')">+ Formula</button>
             <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px;" onclick="CGL_OS.insertDossierSnippet('TRAP')">+ Trap</button>
             <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px;" onclick="CGL_OS.insertDossierSnippet('TABLE')">+ Table</button>
           </div>
         </div>
-        <textarea id="concept-edit-body" class="form-control" style="height:150px; font-family:var(--font-mono); font-size:12px;" placeholder="Full theorem notes, shortcuts, rules..."></textarea>
+        <textarea id="concept-edit-body" class="form-control" style="height:150px; font-family:var(--font-mono); font-size:12px;" placeholder="Full theorems, derivations, shortcuts, Markdown tables..."></textarea>
       </div>
 
       <div class="form-group">
@@ -1462,12 +1549,12 @@
         <input type="file" id="concept-edit-img-file" class="form-control" accept="image/*" onchange="CGL_OS.handleConceptImageUpload(this)">
       </div>
 
-      <button class="btn" style="width:100%; padding:12px;" onclick="CGL_OS.saveConceptCard()">Save Topic Dossier</button>
+      <button class="btn" style="width:100%; padding:12px;" onclick="CGL_OS.saveConceptCard()">Save Living Sheet</button>
     </div>
   </div>
 
 
-  <!-- ==================== 15. GUI QUESTION EDITOR ==================== -->
+  <!-- ==================== 19. GUI QUESTION EDITOR ==================== -->
   <div class="modal-overlay" id="modal-question-editor">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1543,7 +1630,7 @@
   </div>
 
 
-  <!-- ==================== 15B. DISASTER RECOVERY RESTORE MODAL ==================== -->
+  <!-- ==================== 20. DISASTER RECOVERY RESTORE MODAL ==================== -->
   <div class="modal-overlay" id="modal-backup-restore">
     <div class="modal-window" style="max-width:480px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1552,7 +1639,7 @@
       </div>
 
       <p style="font-size:12px; color:var(--text-muted); line-height:1.5; margin-bottom:14px;">
-        Select an exported JSON backup file. The self-healing hydration engine will adapt to any schema differences and restore your data safely.
+        Select an exported JSON backup file. The defensive hydration engine adapts to older structures and restores your database safely.
       </p>
 
       <div class="form-group">
@@ -1577,7 +1664,7 @@
   </div>
 
 
-  <!-- ==================== 16. HARDENED PAUSE OVERLAY SHIELD ==================== -->
+  <!-- ==================== 21. HARDENED PAUSE OVERLAY SHIELD ==================== -->
   <div id="pause-shield" style="display:none !important; position:fixed !important; inset:0 !important; width:100vw !important; height:100vh !important; background:rgba(6, 8, 13, 0.98) !important; z-index:9999 !important; flex-direction:column !important; align-items:center !important; justify-content:center !important; padding:24px !important; text-align:center !important;">
     <h2 style="font-size:22px; font-weight:800; margin-bottom:8px; color:#fff;">TEST PAUSED</h2>
     <p style="font-size:13px; color:var(--text-muted); max-width:280px; margin-bottom:20px;">
@@ -1591,7 +1678,7 @@
   </div>
 
 
-  <!-- ==================== 17. BOTTOM NAVIGATION ==================== -->
+  <!-- ==================== 22. BOTTOM NAVIGATION ==================== -->
   <nav id="bottom-nav">
     <button class="nav-btn active" id="nav-btn-tab-dashboard" onclick="CGL_OS.switchTab('tab-dashboard', this)">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
@@ -1614,11 +1701,11 @@
   <div id="print-sheet-root" style="display:none;" class="print-page"></div>
 
 
-  <!-- ==================== 18. MASTER JAVASCRIPT RUNTIME (CORE STORES & ENVELOPE) ==================== -->
+  <!-- ==================== 23. MASTER JAVASCRIPT RUNTIME ==================== -->
   <script>
     const CGL_OS = (() => {
       const DB_NAME = "cgl_os_db";
-      const DB_VERSION = 11;
+      const DB_VERSION = 12;
       let db = null;
       let dbInitPromise = null;
 
@@ -1628,9 +1715,11 @@
       let dojoExam = null;
       let activeReviewAttempt = null;
 
-      // Knowledge Compendium & Pop-out State
-      let compendiumTopics = [];
-      let currentPopoutTopicIndex = 0;
+      // Full-Screen Living Compendium Studio State
+      let activeCompSubject = "QA";
+      let activeCompChapter = "QA_GEOMETRY";
+      let activeCompSheetIndex = 0;
+      let currentCompSheets = [];
       let currentConceptImageBase64 = "";
 
       // Disaster Recovery Hydration State
@@ -1831,9 +1920,9 @@
           id: "top_qa_geo_triangles",
           subject: "QA",
           chapter: "QA_GEOMETRY",
-          title: "Triangles & Special Centers",
+          title: "Triangles & Incenters",
           subtitle: "Incenters, Circumcenters & Angle Bisectors",
-          content: "### Internal Angle Bisector Theorem\nIf $AD$ bisects $\\angle A$ and meets $BC$ at $D$, then:\n$$\\frac{BD}{DC} = \\frac{AB}{AC}$$\n\n> [!formula] Incenter Angle Rule\n> The angle formed at the incenter $I$ is always obtuse:\n> $$\\angle BIC = 90^\\circ + \\frac{\\angle A}{2}$$\n\n### Right-Angled Triangle Inradius\nFor legs $P, B$ and hypotenuse $H$:\n$$r = \\frac{P + B - H}{2}$$\n\n> [!trap] Common TCS Trap\n> Always verify whether the question asks for the inradius $r$ or circumradius $R = \\frac{H}{2}$.",
+          content: "### Internal Angle Bisector Theorem\nIf $AD$ bisects $\\angle A$ and meets $BC$ at $D$, then:\n$$\\frac{BD}{DC} = \\frac{AB}{AC}$$\n\n> [!formula] Incenter Angle Rule\n> The angle formed at the incenter $I$ is always obtuse:\n> $$\\angle BIC = 90^\\circ + \\frac{\\angle A}{2}$$\n\n### Right-Angled Triangle Inradius\nFor legs $P, B$ and hypotenuse $H$:\n$$r = \\frac{P + B - H}{2}$$\n\n> [!trap] Critical TCS Deduction\n> Always verify whether the question asks for the inradius $r$ or circumradius $R = \\frac{H}{2}$.",
           imageUrl: "",
           timestamp: Date.now()
         },
@@ -1841,9 +1930,19 @@
           id: "top_qa_geo_circles",
           subject: "QA",
           chapter: "QA_GEOMETRY",
-          title: "Circles & Tangents Compendium",
+          title: "Circles & Tangents",
           subtitle: "Secants, Power of Point & Tangent Lengths",
-          content: "### Tangent-Secant Theorem (Power of a Point)\nFrom an external point $P$, if $PT$ is tangent and $PAB$ is secant:\n$$PT^2 = PA \\cdot PB$$\n\n### Direct & Transverse Common Tangents\nFor two circles of radii $r_1, r_2$ with distance between centers $d$:\n• **Direct Common Tangent (DCT):**\n$$DCT = \\sqrt{d^2 - (r_1 - r_2)^2}$$\n• **Transverse Common Tangent (TCT):**\n$$TCT = \\sqrt{d^2 - (r_1 + r_2)^2}$$\n\n### Common Tangents Inventory\n| Circle Position | Distance $d$ | No. of Common Tangents |\n| :--- | :--- | :--- |\n| Completely Separate | $d > r_1 + r_2$ | 4 (2 Direct, 2 Transverse) |\n| Touching Externally | $d = r_1 + r_2$ | 3 (2 Direct, 1 Common) |\n| Intersecting at 2 pts | $|r_1-r_2| < d < r_1+r_2$ | 2 (Direct Only) |\n| Touching Internally | $d = |r_1 - r_2|$ | 1 |\n| One inside other | $d < |r_1 - r_2|$ | 0 |",
+          content: "### Tangent-Secant Theorem (Power of a Point)\nFrom an external point $P$, if $PT$ is tangent and $PAB$ is secant:\n$$PT^2 = PA \\cdot PB$$\n\n### Direct & Transverse Common Tangents\nFor two circles of radii $r_1, r_2$ with distance between centers $d$:\n• **Direct Common Tangent (DCT):**\n$$DCT = \\sqrt{d^2 - (r_1 - r_2)^2}$$\n• **Transverse Common Tangent (TCT):**\n$$TCT = \\sqrt{d^2 - (r_1 + r_2)^2}$$\n\n> [!trap] External Touching Circles\n> If circles touch externally ($d = r_1 + r_2$), then $DCT = 2\\sqrt{r_1 r_2}$.\n\n### Common Tangents Inventory\n| Circle Position | Distance $d$ | No. of Common Tangents |\n| :--- | :--- | :--- |\n| Completely Separate | $d > r_1 + r_2$ | 4 (2 Direct, 2 Transverse) |\n| Touching Externally | $d = r_1 + r_2$ | 3 (2 Direct, 1 Common) |\n| Intersecting at 2 pts | $|r_1-r_2| < d < r_1+r_2$ | 2 (Direct Only) |\n| Touching Internally | $d = |r_1 - r_2|$ | 1 |\n| One inside other | $d < |r_1 - r_2|$ | 0 |",
+          imageUrl: "",
+          timestamp: Date.now()
+        },
+        {
+          id: "top_qa_geo_polygons",
+          subject: "QA",
+          chapter: "QA_GEOMETRY",
+          title: "Polygons & Diagonals",
+          subtitle: "Interior Angles, Exterior Angles & Combinatorics",
+          content: "### Core Regular Polygon Equations\n• Sum of interior angles: $S = (n - 2) \\times 180^\\circ$\n• Each interior angle: $\\theta_i = \\frac{(n - 2) \\times 180^\\circ}{n}$\n• Sum of exterior angles: Always $360^\\circ$\n• Total diagonals: $D = \\frac{n(n - 3)}{2}$\n\n> [!tip] Quick Diagonal Shortcut\n> If a polygon has 54 diagonals: $\\frac{n(n - 3)}{2} = 54 \\implies n(n - 3) = 108 = 12 \\times 9 \\implies n = 12$.",
           imageUrl: "",
           timestamp: Date.now()
         },
@@ -1895,7 +1994,7 @@
         }
       ];
 
-      const TAXONOMY = {
+      let TAXONOMY = {
         QA: {
           name: "Quantitative Aptitude",
           weight: 25,
@@ -1985,7 +2084,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 2. SELF-HEALING ASYNC STORAGE ENGINE (VERSION 11)
+       * 2. SELF-HEALING ASYNC STORAGE ENGINE (SCHEMA VERSION 12)
        * ------------------------------------------------------------- */
       function getDB() {
         if (db) return Promise.resolve(db);
@@ -1995,7 +2094,7 @@
           const req = indexedDB.open(DB_NAME, DB_VERSION);
 
           req.onblocked = () => {
-            console.warn("Database upgrade blocked by another tab or stale handle. Forcing clean...");
+            console.warn("Database upgrade blocked by open connection. Please close other tabs.");
           };
 
           req.onupgradeneeded = (e) => {
@@ -2013,7 +2112,7 @@
             ];
             stores.forEach(s => {
               if (!d.objectStoreNames.contains(s.name)) {
-                d.createObjectStore(s.name, { keyPath: s.key });
+                d.createStore = d.createObjectStore(s.name, { keyPath: s.key });
               }
             });
           };
@@ -2045,7 +2144,7 @@
         SEED_QUESTIONS.forEach(q => stQ.put(q));
         await new Promise(r => txQ.oncomplete = r);
 
-        // 2. Seed 8 Vault Items[span_1](start_span)[span_1](end_span)
+        // 2. Seed 8 Vault Items
         const historicalVaultKeys = [
           { questionId: "q_cgl_ga_polity_014", chapter: "GA_POLITY", subject: "GA", errorTag: "CONCEPT_VOID" },
           { questionId: "q_cgl_qa_geom_011", chapter: "QA_GEOMETRY", subject: "QA", errorTag: "CALCULATION_SLIP" },
@@ -2083,10 +2182,15 @@
         SEED_SAVED_MOCKS.forEach(b => stB.put(b));
         await new Promise(r => txB.oncomplete = r);
 
-        // 5. Custom Mistake Tags config
+        // 5. Custom Mistake Tags config & Taxonomy
         const savedMistakeConfig = await getRecord("store_config", "custom_mistake_tags");
         if (savedMistakeConfig && Array.isArray(savedMistakeConfig.value)) {
           customMistakeTags = [...new Set([...customMistakeTags, ...savedMistakeConfig.value])];
+        }
+
+        const savedTaxonomyConfig = await getRecord("store_config", "system_taxonomy");
+        if (savedTaxonomyConfig && savedTaxonomyConfig.value) {
+          TAXONOMY = savedTaxonomyConfig.value;
         }
       }
 
@@ -2156,7 +2260,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 2B. SELF-HEALING DISASTER RECOVERY & HYDRATION ENGINE
+       * 2B. DEFENSIVE DISASTER RECOVERY & HYDRATION ENGINE
        * ------------------------------------------------------------- */
       async function exportFullBackup() {
         const envelope = {
@@ -2211,7 +2315,7 @@
               • Questions: ${pendingHydrationData.store_questions.length}<br>
               • Attempts & Scores: ${pendingHydrationData.store_attempts.length}<br>
               • Active Error Vault Traps: ${pendingHydrationData.store_vault.length}<br>
-              • Knowledge Dossiers: ${pendingHydrationData.store_concepts.length}<br>
+              • Living Document Sheets: ${pendingHydrationData.store_concepts.length}<br>
               • Saved Blueprints & Papers: ${pendingHydrationData.store_saved_mocks.length}
             `;
             document.getElementById("btn-execute-restore").disabled = false;
@@ -2239,7 +2343,7 @@
           stores.store_config = raw.config || raw.store_config || [];
         }
 
-        // Defensive Schema Sanitizers (Guarantees no undefined crashes on dashboard renders)
+        // Defensive Schema Sanitizers (Guarantees zero undefined property crashes on dashboard renders)
         stores.store_questions = (stores.store_questions || []).map(sanitizeQuestion);
         stores.store_concepts = (stores.store_concepts || []).map(sanitizeDossier);
         stores.store_vault = (stores.store_vault || []).map(sanitizeVaultEntry);
@@ -2319,7 +2423,7 @@
         return {
           id: b.id || `preset_${Date.now()}_${idx}`,
           type: b.type || (b.questions ? "FIXED_PAPER" : "DYNAMIC_BLUEPRINT"),
-          title: b.title || `Saved Item ${idx + 1}`,
+          title: b.title || `Saved Setup ${idx + 1}`,
           isSectionLocked: b.isSectionLocked !== undefined ? b.isSectionLocked : true,
           sections: Array.isArray(b.sections) ? b.sections : [{ id: 1, subject: "QA", count: 25, durationMin: 15 }],
           questions: Array.isArray(b.questions) ? b.questions.map(sanitizeQuestion) : null
@@ -2355,7 +2459,7 @@
             }
           }
 
-          alert("Disaster Recovery Complete! All database tables and mock histories restored successfully.");
+          alert("Disaster Recovery Complete! All database stores and mock records restored.");
           document.getElementById("modal-backup-restore").classList.remove("active");
           await renderDashboard();
           await updateDojoChapters();
@@ -2365,8 +2469,142 @@
         }
       }
 
-/* ==================== END OF PART 1 ==================== */
-/* Part 2 will resume immediately below */
+      /* -------------------------------------------------------------
+       * 2C. LIVE RUNTIME INTROSPECTION MANIFEST GENERATOR
+       * ------------------------------------------------------------- */
+      async function copyLiveSystemManifestToClipboard() {
+        const questions = await getAllRecords("store_questions");
+        const attempts = await getAllRecords("store_attempts");
+        const vault = await getAllRecords("store_vault");
+        const concepts = await getAllRecords("store_concepts");
+        const savedMocks = await getAllRecords("store_saved_mocks");
+
+        const qSubjectCounts = { QA: 0, REAS: 0, ENG: 0, GA: 0 };
+        questions.forEach(q => {
+          if (qSubjectCounts[q.subject] !== undefined) qSubjectCounts[q.subject]++;
+        });
+
+        const manifest = `# SSC CGL Intelligence OS - Live Runtime Introspection Manifest
+Generated at: ${new Date().toISOString()}
+Target Candidate: Ankit (SSC CGL 2026 Tier 1 & Tier 2)
+
+## 1. Live Database Telemetry Metrics
+- Total Master Questions: ${questions.length} (QA: ${qSubjectCounts.QA}, REAS: ${qSubjectCounts.REAS}, ENG: ${qSubjectCounts.ENG}, GA: ${qSubjectCounts.GA})
+- Standard Mocks Completed: ${attempts.filter(a => a.completed && !a.isVaultSprint).length}
+- Active Leitner Vault Traps: ${vault.length}
+- Living Document Topic Sheets: ${concepts.length}
+- Saved Blueprints & Fixed Papers: ${savedMocks.length}
+
+## 2. Active System Taxonomy & Chapters
+${JSON.stringify(TAXONOMY, null, 2)}
+
+## 3. Supported JSON Action Contracts
+Your responses must be formulated strictly as executable JSON payloads conforming to one of the following schemas:
+
+### A. INGEST_AND_LAUNCH_MOCK
+\`\`\`json
+{
+  "action": "INGEST_AND_LAUNCH_MOCK",
+  "payload": {
+    "title": "Full-Spectrum Tier 1 Benchmark Mock",
+    "durationMin": 15,
+    "questions": [
+      {
+        "id": "q_cgl_sample_01",
+        "subject": "QA",
+        "chapter": "QA_GEOMETRY",
+        "subtopic": "Circles",
+        "method": "Common Tangents",
+        "questionText": "Question text in Markdown with KaTeX $...$",
+        "imageUrl": "",
+        "options": ["Opt 1", "Opt 2", "Opt 3", "Opt 4"],
+        "correctIndex": 0,
+        "explanation": "Detailed explanation with KaTeX...",
+        "tags": ["Geometry"]
+      }
+    ]
+  }
+}
+\`\`\`
+
+### B. AI_PRESCRIBE_REMEDY
+\`\`\`json
+{
+  "action": "AI_PRESCRIBE_REMEDY",
+  "payload": {
+    "title": "Targeted Remedial Weakness Blitz",
+    "durationMin": 10,
+    "questionIds": ["q_cgl_qa_geom_011", "q_cgl_qa_tw_010"],
+    "newQuestions": []
+  }
+}
+\`\`\`
+
+### C. BATCH_INGEST_COMPENDIUM
+\`\`\`json
+{
+  "action": "BATCH_INGEST_COMPENDIUM",
+  "payload": {
+    "dossiers": [
+      {
+        "id": "top_geo_tangents_01",
+        "subject": "QA",
+        "chapter": "QA_GEOMETRY",
+        "title": "Circles & Tangents",
+        "subtitle": "Direct & Transverse Tangent Equations",
+        "content": "### Direct Common Tangent\\n$$DCT = \\\\sqrt{d^2 - (r_1 - r_2)^2}$$\\n\\n> [!trap] Critical TCS Deduction\\n> If circles touch externally, $DCT = 2\\\\sqrt{r_1 r_2}$.",
+        "imageUrl": ""
+      }
+    ]
+  }
+}
+\`\`\`
+
+### D. SAVE_MOCK_PRESET
+\`\`\`json
+{
+  "action": "SAVE_MOCK_PRESET",
+  "payload": {
+    "id": "preset_speed_blitz",
+    "type": "DYNAMIC_BLUEPRINT",
+    "title": "Speed Blitz (QA + REAS)",
+    "isSectionLocked": true,
+    "sections": [
+      { "id": 1, "subject": "QA", "count": 25, "durationMin": 15 },
+      { "id": 2, "subject": "REAS", "count": 25, "durationMin": 15 }
+    ]
+  }
+}
+\`\`\`
+
+### E. MODIFY_TAXONOMY
+\`\`\`json
+{
+  "action": "MODIFY_TAXONOMY",
+  "payload": {
+    "operation": "ADD_CHAPTER",
+    "subject": "QA",
+    "chapter": "QA_COORDINATE_GEOM"
+  }
+}
+\`\`\`
+
+### F. RAW_DB_OPERATION
+\`\`\`json
+{
+  "action": "RAW_DB_OPERATION",
+  "payload": {
+    "store": "store_questions",
+    "operation": "PUT",
+    "key": "q_custom_001",
+    "record": {}
+  }
+}
+\`\`\`
+`;
+        navigator.clipboard.writeText(manifest);
+        alert("Live AI Introspection Manifest copied to clipboard! Paste it into a new AI session.");
+      }
       /* -------------------------------------------------------------
        * 3. MULTI-SUBJECT CUSTOM MOCK BUILDER & SAVED PRESETS
        * ------------------------------------------------------------- */
@@ -2561,6 +2799,10 @@
         if (!preset) return;
 
         if (preset.type === "FIXED_PAPER" && preset.questions && preset.questions.length > 0) {
+          const parsedSections = preset.sections && preset.sections.length > 0 
+            ? JSON.parse(JSON.stringify(preset.sections)).map(s => ({ ...s, locked: false }))
+            : [{ id: "SEC_1", name: "Paper Arena", durationSec: 900, locked: false }];
+
           activeExam = {
             sessionId: "fixed_mock_" + Date.now(),
             timestamp: Date.now(),
@@ -2569,16 +2811,20 @@
             signatureTag: "FIXED_PAPER",
             isVaultSprint: false,
             isSectionLocked: !!preset.isSectionLocked,
-            sections: preset.sections && preset.sections.length > 0 
-              ? JSON.parse(JSON.stringify(preset.sections)).map(s => ({ ...s, locked: false }))
-              : [{ id: "SEC_1", name: "Paper Arena", durationSec: 900, locked: false }],
+            sections: parsedSections,
             activeSectionIndex: 0,
             currentQuestionIndex: 0,
-            questions: preset.questions.map((q, idx) => ({ ...q, globalNumber: idx + 1 })),
-            sectionRemainingSec: preset.sections && preset.sections[0] ? preset.sections[0].durationSec : 900,
+            // STRICT NORMALIZATION: Bounded sectionIndex
+            questions: preset.questions.map((q, idx) => ({ 
+              ...q, 
+              sectionIndex: (typeof q.sectionIndex === "number" && q.sectionIndex >= 0 && q.sectionIndex < parsedSections.length) ? q.sectionIndex : 0,
+              globalNumber: idx + 1 
+            })),
+            sectionRemainingSec: parsedSections[0].durationSec || 900,
             currentQTimeSpentSec: 0,
             userResponses: {},
-            isPaused: false
+            isPaused: false,
+            isReviewMode: false
           };
 
           activeExam.questions.forEach(q => {
@@ -2677,7 +2923,8 @@
           sectionRemainingSec: sections[0].durationSec,
           currentQTimeSpentSec: 0,
           userResponses: {},
-          isPaused: false
+          isPaused: false,
+          isReviewMode: false
         };
 
         activeExam.questions.forEach(q => {
@@ -2702,14 +2949,20 @@
       }
 
       /* -------------------------------------------------------------
-       * 4. TIMED EXAM ARENA WITH SECTIONAL LOCK & ADVANCE
+       * 4. TIMED EXAM ARENA & STAGE 2 FULL-SCREEN REVIEW ARENA
        * ------------------------------------------------------------- */
       function startExamTimers() {
         clearInterval(examTimerInterval);
         clearInterval(questionTimerInterval);
 
+        if (activeExam && activeExam.isReviewMode) {
+          document.getElementById("hud-countdown").innerText = "REVIEW";
+          document.getElementById("hud-countdown").className = "hud-timer";
+          return;
+        }
+
         examTimerInterval = setInterval(() => {
-          if (!activeExam || activeExam.isPaused) return;
+          if (!activeExam || activeExam.isPaused || activeExam.isReviewMode) return;
 
           activeExam.sectionRemainingSec--;
           const m = Math.floor(activeExam.sectionRemainingSec / 60);
@@ -2727,7 +2980,7 @@
         }, 1000);
 
         questionTimerInterval = setInterval(() => {
-          if (!activeExam || activeExam.isPaused) return;
+          if (!activeExam || activeExam.isPaused || activeExam.isReviewMode) return;
           activeExam.currentQTimeSpentSec++;
           const m = Math.floor(activeExam.currentQTimeSpentSec / 60);
           const s = activeExam.currentQTimeSpentSec % 60;
@@ -2742,7 +2995,7 @@
       }
 
       function requestEndSectionEarly() {
-        if (!activeExam) return;
+        if (!activeExam || activeExam.isReviewMode) return;
         const curSec = activeExam.sections[activeExam.activeSectionIndex];
         const m = Math.floor(activeExam.sectionRemainingSec / 60);
         const s = activeExam.sectionRemainingSec % 60;
@@ -2789,36 +3042,68 @@
 
       function renderActiveExamQuestion() {
         const q = activeExam.questions[activeExam.currentQuestionIndex];
-        const resp = activeExam.userResponses[q.id];
-        const secQs = activeExam.questions.filter(item => item.sectionIndex === q.sectionIndex);
+        const resp = activeExam.userResponses[q.id] || {};
+        const isRev = !!activeExam.isReviewMode;
 
+        const pauseBtn = document.getElementById("btn-arena-pause");
+        const exitRevBtn = document.getElementById("btn-arena-exit-review");
         const lockBtn = document.getElementById("btn-arena-early-lock");
         const drawerLockBtn = document.getElementById("btn-drawer-early-lock");
-        if (activeExam.isSectionLocked) {
-          lockBtn.style.display = "inline-flex";
-          drawerLockBtn.style.display = "block";
-          const isLast = activeExam.activeSectionIndex === activeExam.sections.length - 1;
-          lockBtn.innerText = isLast ? "🔒 Submit Final Section" : "🔒 End Section Early";
-          drawerLockBtn.innerText = isLast ? "🔒 Lock & Submit Final Section" : "🔒 End & Advance Section Early";
-        } else {
+        const revBtn = document.getElementById("btn-q-review");
+        const saveNextBtn = document.getElementById("btn-q-save-next");
+        const telemBanner = document.getElementById("arena-review-telemetry-banner");
+        const solutionBlock = document.getElementById("arena-review-solution-block");
+
+        if (isRev) {
+          pauseBtn.style.display = "none";
+          exitRevBtn.style.display = "inline-flex";
           lockBtn.style.display = "none";
           drawerLockBtn.style.display = "none";
+          revBtn.style.display = "none";
+          saveNextBtn.innerText = "Next Question ►";
+          document.getElementById("btn-submit-exam").style.display = "none";
+          document.getElementById("palette-drawer-title").innerText = "Review Palette";
+          document.getElementById("palette-legend-bar").innerHTML = `
+            <span>🟢 Correct</span>
+            <span>🔴 Incorrect</span>
+            <span>⚪ Unattempted</span>
+          `;
+        } else {
+          pauseBtn.style.display = "inline-flex";
+          exitRevBtn.style.display = "none";
+          revBtn.style.display = "inline-flex";
+          saveNextBtn.innerText = "Save & Next";
+          document.getElementById("btn-submit-exam").style.display = "block";
+          document.getElementById("palette-drawer-title").innerText = "Question Palette";
+
+          if (activeExam.isSectionLocked) {
+            lockBtn.style.display = "inline-flex";
+            drawerLockBtn.style.display = "block";
+            const isLast = activeExam.activeSectionIndex === activeExam.sections.length - 1;
+            lockBtn.innerText = isLast ? "🔒 Submit Final Section" : "🔒 End Section Early";
+            drawerLockBtn.innerText = isLast ? "🔒 Lock & Submit Final Section" : "🔒 End & Advance Section Early";
+          } else {
+            lockBtn.style.display = "none";
+            drawerLockBtn.style.display = "none";
+          }
         }
 
-        document.getElementById("hud-section-badge").innerText = `${q.sectionName.toUpperCase()}`;
-        document.getElementById("hud-section-qinfo").innerText = `Sec Q${q.localNumber} of ${secQs.length} (Global Q${q.globalNumber})`;
-        document.getElementById("arena-q-num").innerText = `Q${q.globalNumber}`;
+        const secQs = activeExam.questions.filter(item => item.sectionIndex === q.sectionIndex);
+        document.getElementById("hud-section-badge").innerText = `${q.sectionName ? q.sectionName.toUpperCase() : 'EXAM'}`;
+        document.getElementById("hud-section-qinfo").innerText = `Sec Q${q.localNumber || (activeExam.currentQuestionIndex + 1)} of ${secQs.length} (Global Q${q.globalNumber || (activeExam.currentQuestionIndex + 1)})`;
+        document.getElementById("arena-q-num").innerText = `Q${q.globalNumber || (activeExam.currentQuestionIndex + 1)}`;
         document.getElementById("arena-q-text").innerHTML = formatRichText(q.questionText);
 
-        const revBtn = document.getElementById("btn-q-review");
-        if (resp.status === "marked") {
-          revBtn.style.color = "#fff";
-          revBtn.style.background = "var(--status-purple)";
-          revBtn.innerText = "Unmark Review";
-        } else {
-          revBtn.style.color = "var(--status-purple)";
-          revBtn.style.background = "var(--bg-elevated)";
-          revBtn.innerText = "Mark Review";
+        if (!isRev) {
+          if (resp.status === "marked") {
+            revBtn.style.color = "#fff";
+            revBtn.style.background = "var(--status-purple)";
+            revBtn.innerText = "Unmark Review";
+          } else {
+            revBtn.style.color = "var(--status-purple)";
+            revBtn.style.background = "var(--bg-elevated)";
+            revBtn.innerText = "Mark Review";
+          }
         }
 
         const imgBox = document.getElementById("arena-image-container");
@@ -2830,67 +3115,128 @@
           imgBox.innerHTML = "";
         }
 
+        // Review Mode Telemetry
+        if (isRev) {
+          const isAtt = resp.selectedOption !== null && resp.selectedOption !== undefined;
+          const isCor = isAtt && resp.selectedOption === q.correctIndex;
+          telemBanner.style.display = "block";
+          telemBanner.innerHTML = `
+            <div style="background:var(--bg-elevated); border:1px solid ${isCor ? 'var(--status-green)' : (isAtt ? 'var(--status-red)' : 'var(--border-color)')}; border-radius:8px; padding:10px; font-size:12px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-weight:800; color:${isCor ? 'var(--status-green)' : (isAtt ? 'var(--status-red)' : 'var(--text-muted)')};">
+                  ${isCor ? '✓ CORRECT (+2.0)' : (isAtt ? '✗ INCORRECT (-0.5)' : '⚪ UNATTEMPTED (0.0)')}
+                </span>
+                <span style="font-family:var(--font-mono); color:var(--text-muted);">${resp.timeSpentSec || 0}s spent</span>
+              </div>
+              ${resp.decisionTrail && resp.decisionTrail.length > 0 ? `
+                <div style="margin-top:6px; color:var(--accent-cyan); font-size:11px;">
+                  <b>Hesitation Trail:</b> ${resp.decisionTrail.map(d => `Opt ${d.opt} (${d.atSec}s)`).join(' ➔ ')}
+                </div>
+              ` : ''}
+            </div>
+          `;
+
+          // Solution & Tag Selector
+          solutionBlock.style.display = "block";
+          getAllRecords("store_vault").then(vaultRecords => {
+            const existingVault = vaultRecords.find(v => v.questionId === q.id);
+            const currentTag = existingVault ? existingVault.errorTag : "UNCLASSIFIED";
+
+            let optionsHtml = `<option value="UNCLASSIFIED" ${currentTag==='UNCLASSIFIED'?'selected':''}>Tag Mistake Type...</option>`;
+            customMistakeTags.forEach(t => {
+              optionsHtml += `<option value="${t}" ${currentTag===t?'selected':''}>${t.replace(/_/g, ' ')}</option>`;
+            });
+            optionsHtml += `<option value="__NEW_TAG__">+ Create New Tag...</option>`;
+
+            solutionBlock.innerHTML = `
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <span style="font-weight:700; color:var(--accent-cyan); font-size:13px;">Method & Detailed Solution</span>
+                ${!isCor && isAtt ? `
+                  <select onchange="CGL_OS.handleMistakeTagSelect('${q.id}', this.value)" style="background:#151a24; color:#fff; border:1px solid #da3633; font-size:11px; padding:3px 6px; border-radius:4px;">
+                    ${optionsHtml}
+                  </select>
+                ` : ''}
+              </div>
+              <div style="font-size:13.5px; line-height:1.6;">${formatRichText(q.explanation || 'No method registered.')}</div>
+            `;
+          });
+
+        } else {
+          telemBanner.style.display = "none";
+          solutionBlock.style.display = "none";
+        }
+
         const container = document.getElementById("arena-options-container");
         container.innerHTML = "";
 
         q.options.forEach((optText, idx) => {
           const card = document.createElement("div");
-          card.className = "opt-card" +
-            (resp.selectedOption === idx ? " selected" : "") +
-            (resp.struck.includes(idx) ? " struck-through" : "");
+          card.className = "opt-card";
+
+          if (isRev) {
+            if (idx === q.correctIndex) card.classList.add("correct-peek");
+            else if (idx === resp.selectedOption) card.classList.add("wrong-peek");
+          } else {
+            if (resp.selectedOption === idx) card.classList.add("selected");
+            if (resp.struck && resp.struck.includes(idx)) card.classList.add("struck-through");
+
+            card.addEventListener("click", () => {
+              if (resp.struck && resp.struck.includes(idx)) return;
+              if (navigator.vibrate) navigator.vibrate(15);
+
+              if (resp.initialOption === null) resp.initialOption = idx;
+              if (resp.selectedOption !== null && resp.selectedOption !== idx) resp.switches++;
+
+              resp.selectedOption = idx;
+              resp.decisionTrail.push({ opt: idx + 1, atSec: activeExam.currentQTimeSpentSec });
+              if (resp.status !== "marked") resp.status = "answered";
+              renderActiveExamQuestion();
+            });
+
+            let timer;
+            card.addEventListener("touchstart", () => {
+              timer = setTimeout(() => {
+                if (navigator.vibrate) navigator.vibrate([25, 40]);
+                if (!resp.struck) resp.struck = [];
+                if (resp.struck.includes(idx)) {
+                  resp.struck = resp.struck.filter(i => i !== idx);
+                } else {
+                  resp.struck.push(idx);
+                  if (resp.selectedOption === idx) {
+                    resp.selectedOption = null;
+                    if (resp.status === "answered") resp.status = "unanswered";
+                  }
+                }
+                renderActiveExamQuestion();
+              }, 550);
+            });
+            card.addEventListener("touchend", () => clearTimeout(timer));
+          }
 
           card.innerHTML = `
             <span style="font-weight:700; color:var(--text-muted); font-size:13px;">${idx + 1}.</span>
             <div style="flex:1;">${formatRichText(optText)}</div>
+            ${isRev && idx === q.correctIndex ? '<span style="font-size:11px; font-weight:800; color:var(--status-green);">✓ Correct</span>' : ''}
+            ${isRev && idx === resp.selectedOption && idx !== q.correctIndex ? '<span style="font-size:11px; font-weight:800; color:var(--status-red);">✗ Your Pick</span>' : ''}
           `;
-
-          card.addEventListener("click", () => {
-            if (resp.struck.includes(idx)) return;
-            if (navigator.vibrate) navigator.vibrate(15);
-
-            if (resp.initialOption === null) resp.initialOption = idx;
-            if (resp.selectedOption !== null && resp.selectedOption !== idx) resp.switches++;
-
-            resp.selectedOption = idx;
-            resp.decisionTrail.push({ opt: idx + 1, atSec: activeExam.currentQTimeSpentSec });
-            if (resp.status !== "marked") resp.status = "answered";
-            renderActiveExamQuestion();
-          });
-
-          let timer;
-          card.addEventListener("touchstart", () => {
-            timer = setTimeout(() => {
-              if (navigator.vibrate) navigator.vibrate([25, 40]);
-              if (resp.struck.includes(idx)) {
-                resp.struck = resp.struck.filter(i => i !== idx);
-              } else {
-                resp.struck.push(idx);
-                if (resp.selectedOption === idx) {
-                  resp.selectedOption = null;
-                  if (resp.status === "answered") resp.status = "unanswered";
-                }
-              }
-              renderActiveExamQuestion();
-            }, 550);
-          });
-          card.addEventListener("touchend", () => clearTimeout(timer));
 
           container.appendChild(card);
         });
 
-        activeExam.currentQTimeSpentSec = 0;
+        if (!isRev) activeExam.currentQTimeSpentSec = 0;
       }
 
       document.getElementById("btn-q-save-next").addEventListener("click", () => {
         const q = activeExam.questions[activeExam.currentQuestionIndex];
         const resp = activeExam.userResponses[q.id];
-        if (resp.selectedOption !== null && resp.status !== "marked") {
+
+        if (!activeExam.isReviewMode && resp.selectedOption !== null && resp.status !== "marked") {
           resp.status = "answered";
         }
 
         const nextIdx = activeExam.currentQuestionIndex + 1;
         if (nextIdx < activeExam.questions.length) {
-          if (!activeExam.isSectionLocked || activeExam.questions[nextIdx].sectionIndex === activeExam.activeSectionIndex) {
+          if (activeExam.isReviewMode || !activeExam.isSectionLocked || activeExam.questions[nextIdx].sectionIndex === activeExam.activeSectionIndex) {
             activeExam.currentQuestionIndex = nextIdx;
             renderActiveExamQuestion();
             return;
@@ -2902,7 +3248,7 @@
       document.getElementById("btn-q-prev").addEventListener("click", () => {
         const prevIdx = activeExam.currentQuestionIndex - 1;
         if (prevIdx >= 0) {
-          if (!activeExam.isSectionLocked || activeExam.questions[prevIdx].sectionIndex === activeExam.activeSectionIndex) {
+          if (activeExam.isReviewMode || !activeExam.isSectionLocked || activeExam.questions[prevIdx].sectionIndex === activeExam.activeSectionIndex) {
             activeExam.currentQuestionIndex = prevIdx;
             renderActiveExamQuestion();
           }
@@ -2910,6 +3256,7 @@
       });
 
       document.getElementById("btn-q-review").addEventListener("click", () => {
+        if (activeExam.isReviewMode) return;
         const q = activeExam.questions[activeExam.currentQuestionIndex];
         const resp = activeExam.userResponses[q.id];
         if (resp.status === "marked") {
@@ -2945,18 +3292,20 @@
         const tabsWrap = document.getElementById("exam-palette-section-tabs");
         tabsWrap.innerHTML = "";
 
+        const isRev = !!activeExam.isReviewMode;
+
         activeExam.sections.forEach((sec, sIdx) => {
           const tabBtn = document.createElement("button");
           tabBtn.className = "anchor-pill" + (sIdx === activeExam.activeSectionIndex ? " active" : "");
           
-          if (activeExam.isSectionLocked && sec.locked) {
+          if (!isRev && activeExam.isSectionLocked && sec.locked) {
             tabBtn.innerText = `🔒 ${sec.name.split(" ")[0]}`;
             tabBtn.style.opacity = "0.5";
             tabBtn.style.cursor = "not-allowed";
           } else {
             tabBtn.innerText = sec.name.split(" ")[0];
             tabBtn.addEventListener("click", () => {
-              if (activeExam.isSectionLocked) {
+              if (!isRev && activeExam.isSectionLocked) {
                 if (sIdx !== activeExam.activeSectionIndex) {
                   alert("Sectional lock is active! Sections must be completed sequentially.");
                 }
@@ -2969,27 +3318,47 @@
           tabsWrap.appendChild(tabBtn);
         });
 
-        let ans = 0, marked = 0, unans = 0;
-        const targetSec = filterSectionIndex !== null ? filterSectionIndex : (activeExam.isSectionLocked ? activeExam.activeSectionIndex : null);
+        const targetSec = filterSectionIndex !== null ? filterSectionIndex : (!isRev && activeExam.isSectionLocked ? activeExam.activeSectionIndex : null);
         const displayedQs = targetSec !== null ? activeExam.questions.filter(q => q.sectionIndex === targetSec) : activeExam.questions;
 
-        activeExam.questions.forEach(q => {
-          const resp = activeExam.userResponses[q.id];
-          if (resp.status === "answered") ans++;
-          else if (resp.status === "marked") marked++;
-          else unans++;
-        });
+        if (!isRev) {
+          let ans = 0, marked = 0, unans = 0;
+          activeExam.questions.forEach(q => {
+            const resp = activeExam.userResponses[q.id];
+            if (resp.status === "answered") ans++;
+            else if (resp.status === "marked") marked++;
+            else unans++;
+          });
+          document.getElementById("exam-count-ans").innerText = ans;
+          document.getElementById("exam-count-marked").innerText = marked;
+          document.getElementById("exam-count-unans").innerText = unans;
+        }
 
         displayedQs.forEach(q => {
-          const resp = activeExam.userResponses[q.id];
-          const isSecLocked = activeExam.sections[q.sectionIndex] && activeExam.sections[q.sectionIndex].locked;
+          const resp = activeExam.userResponses[q.id] || {};
+          const isSecLocked = !isRev && activeExam.sections[q.sectionIndex] && activeExam.sections[q.sectionIndex].locked;
 
           const cell = document.createElement("div");
-          cell.className = "palette-cell" +
-            (isSecLocked ? " locked-cell" : (resp.status === "answered" ? " answered" : (resp.status === "marked" ? " marked" : " unanswered"))) +
-            (activeExam.questions[activeExam.currentQuestionIndex].id === q.id ? " current" : "");
+          cell.className = "palette-cell";
 
-          cell.innerText = q.globalNumber;
+          if (isRev) {
+            const isAtt = resp.selectedOption !== null && resp.selectedOption !== undefined;
+            const isCor = isAtt && resp.selectedOption === q.correctIndex;
+            if (isCor) cell.classList.add("rev-correct");
+            else if (isAtt) cell.classList.add("rev-incorrect");
+            else cell.classList.add("rev-unanswered");
+          } else {
+            if (isSecLocked) cell.classList.add("locked-cell");
+            else if (resp.status === "answered") cell.classList.add("answered");
+            else if (resp.status === "marked") cell.classList.add("marked");
+            else cell.classList.add("unanswered");
+          }
+
+          if (activeExam.questions[activeExam.currentQuestionIndex].id === q.id) {
+            cell.classList.add("current");
+          }
+
+          cell.innerText = q.globalNumber || (activeExam.questions.findIndex(item => item.id === q.id) + 1);
 
           cell.addEventListener("click", () => {
             if (isSecLocked) {
@@ -3003,14 +3372,10 @@
 
           grid.appendChild(cell);
         });
-
-        document.getElementById("exam-count-ans").innerText = ans;
-        document.getElementById("exam-count-marked").innerText = marked;
-        document.getElementById("exam-count-unans").innerText = unans;
       }
 
       document.getElementById("btn-arena-pause").addEventListener("click", async () => {
-        if (!activeExam) return;
+        if (!activeExam || activeExam.isReviewMode) return;
         activeExam.isPaused = true;
         clearInterval(examTimerInterval);
         clearInterval(questionTimerInterval);
@@ -3051,7 +3416,7 @@
       });
 
       function updateMiniPlayerDock() {
-        if (!activeExam) {
+        if (!activeExam || activeExam.isReviewMode) {
           hideMiniPlayer();
           return;
         }
@@ -3063,7 +3428,7 @@
         Object.values(activeExam.userResponses).forEach(r => { if (r.status === "answered") ansCount++; });
 
         document.getElementById("mini-player-title").innerText = activeExam.title;
-        document.getElementById("mini-player-sub").innerText = `${q ? q.sectionName.split(' ')[0] : 'Exam'} • Q${q ? q.globalNumber : 1}`;
+        document.getElementById("mini-player-sub").innerText = `${q && q.sectionName ? q.sectionName.split(' ')[0] : 'Exam'} • Q${q ? (q.globalNumber || 1) : 1}`;
         document.getElementById("mini-player-time").innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
         document.getElementById("mini-player-ans").innerText = `${ansCount}/${activeExam.questions.length} Ans`;
 
@@ -3183,6 +3548,11 @@
         const modalArchive = document.getElementById("modal-history-archive");
         if (modalArchive) modalArchive.classList.remove("active");
 
+        const parsedSections = target.sections && target.sections.length > 0 
+          ? JSON.parse(JSON.stringify(target.sections)).map(s => ({ ...s, locked: false })) 
+          : [{ id: "SEC_1", name: "Section 1", durationSec: 900, locked: false }];
+
+        // STRICT FIX: Bounded sectionIndex assignment prevents single-question freeze
         activeExam = {
           sessionId: "mock_re_" + Date.now(),
           timestamp: Date.now(),
@@ -3190,15 +3560,20 @@
           mockType: target.mockType || "CUSTOM",
           signatureTag: target.signatureTag || "",
           isVaultSprint: false,
-          isSectionLocked: target.isSectionLocked || false,
-          sections: target.sections ? JSON.parse(JSON.stringify(target.sections)).map(s => ({ ...s, locked: false })) : [{ id: "SEC_1", name: "Section 1", durationSec: 900, locked: false }],
+          isSectionLocked: !!target.isSectionLocked,
+          sections: parsedSections,
           activeSectionIndex: 0,
           currentQuestionIndex: 0,
-          questions: target.questions.map((q, idx) => ({ ...q, globalNumber: idx + 1 })),
-          sectionRemainingSec: target.sections && target.sections[0] ? target.sections[0].durationSec : 900,
+          questions: target.questions.map((q, idx) => ({ 
+            ...q, 
+            sectionIndex: (typeof q.sectionIndex === "number" && q.sectionIndex >= 0 && q.sectionIndex < parsedSections.length) ? q.sectionIndex : 0,
+            globalNumber: idx + 1 
+          })),
+          sectionRemainingSec: parsedSections[0].durationSec || 900,
           currentQTimeSpentSec: 0,
           userResponses: {},
-          isPaused: false
+          isPaused: false,
+          isReviewMode: false
         };
 
         activeExam.questions.forEach(q => {
@@ -3222,17 +3597,49 @@
         startExamTimers();
       }
 
-      /* -------------------------------------------------------------
-       * 5. LIVING DOCUMENT COMPENDIUM & POPOUT TOPIC SHEETS
-       * ------------------------------------------------------------- */
-      async function openKnowledgeCompendiumModal() {
-        pushHistoryState("modal-knowledge-compendium");
-        document.getElementById("modal-knowledge-compendium").classList.add("active");
-        await handleCompendiumSubjectChange("QA");
+      function enterFullScreenReviewArena() {
+        if (!activeReviewAttempt) return;
+        document.getElementById("modal-mock-review").classList.remove("active");
+
+        activeExam = {
+          ...JSON.parse(JSON.stringify(activeReviewAttempt)),
+          isReviewMode: true,
+          activeSectionIndex: 0,
+          currentQuestionIndex: 0,
+          currentQTimeSpentSec: 0,
+          isPaused: false
+        };
+
+        pushHistoryState("exam-arena");
+        document.getElementById("exam-arena").style.display = "flex";
+        renderActiveExamQuestion();
+        startExamTimers();
       }
 
-      async function handleCompendiumSubjectChange(sub) {
-        const chapSelect = document.getElementById("comp-chapter-select");
+      function exitReviewArena() {
+        document.getElementById("exam-arena").style.display = "none";
+        activeExam = null;
+        if (activeReviewAttempt) {
+          openMockReview(activeReviewAttempt);
+        }
+      }
+
+      /* -------------------------------------------------------------
+       * 5. FULL-SCREEN LIVING COMPENDIUM & KNOWLEDGE STUDIO
+       * ------------------------------------------------------------- */
+      async function openCompendiumStudio() {
+        pushHistoryState("compendium-fullscreen-view");
+        document.getElementById("compendium-fullscreen-view").style.display = "flex";
+        await handleCompStudioSubjectChange("QA");
+      }
+
+      function closeCompendiumStudio() {
+        document.getElementById("compendium-fullscreen-view").style.display = "none";
+      }
+
+      async function handleCompStudioSubjectChange(sub) {
+        activeCompSubject = sub;
+        const chapSelect = document.getElementById("comp-studio-chapter-select");
         chapSelect.innerHTML = "";
 
         const allDossiers = await getAllRecords("store_concepts");
@@ -3247,125 +3654,199 @@
           chapSelect.appendChild(opt);
         });
 
-        renderMasterCompendiumView();
+        if (combined.length > 0) {
+          activeCompChapter = combined[0];
+          chapSelect.value = activeCompChapter;
+        }
+
+        await renderCompStudioSheets();
       }
 
-      async function renderMasterCompendiumView() {
-        const sub = document.getElementById("comp-subject-select").value;
-        const chap = document.getElementById("comp-chapter-select").value;
+      async function handleCompStudioChapterChange(chap) {
+        activeCompChapter = chap;
+        activeCompSheetIndex = 0;
+        await renderCompStudioSheets();
+      }
+
+      async function renderCompStudioSheets() {
         const allDossiers = await getAllRecords("store_concepts");
-        compendiumTopics = allDossiers.filter(d => d.subject === sub && d.chapter === chap);
+        currentCompSheets = allDossiers.filter(d => d.subject === activeCompSubject && d.chapter === activeCompChapter);
 
-        const anchorBar = document.getElementById("comp-anchor-bar");
-        const canvas = document.getElementById("comp-scroll-canvas");
-        anchorBar.innerHTML = "";
-        canvas.innerHTML = "";
+        const tabsBar = document.getElementById("comp-studio-sheet-tabs");
+        const docContent = document.getElementById("comp-studio-doc-content");
+        tabsBar.innerHTML = "";
+        docContent.innerHTML = "";
 
-        if (compendiumTopics.length === 0) {
-          canvas.innerHTML = `
-            <div style="text-align:center; padding:40px 14px; color:var(--text-muted);">
-              <p style="font-size:14px; margin-bottom:10px;">No living documents or dossiers logged under <b>${chap}</b>.</p>
-              <button class="btn" style="font-size:12px;" onclick="CGL_OS.openConceptEditorModal(true)">+ Create First Topic Dossier</button>
+        if (currentCompSheets.length === 0) {
+          docContent.innerHTML = `
+            <div style="text-align:center; padding:50px 14px; color:var(--text-muted);">
+              <h3 style="font-size:16px; margin-bottom:8px; color:#fff;">No Topic Sheets in ${activeCompChapter}</h3>
+              <p style="font-size:12px; margin-bottom:14px;">This chapter is currently empty. Create your first scrollable sheet.</p>
+              <button class="btn" onclick="CGL_OS.openConceptEditorModal(true)">+ Create First Sheet</button>
             </div>
           `;
+          document.getElementById("comp-studio-scratchpad").value = "";
           return;
         }
 
-        compendiumTopics.forEach((t, idx) => {
-          const a = document.createElement("a");
-          a.className = "anchor-pill";
-          a.innerText = t.title;
-          a.href = `#doc_page_${idx}`;
-          anchorBar.appendChild(a);
+        if (activeCompSheetIndex >= currentCompSheets.length) activeCompSheetIndex = 0;
 
-          const page = document.createElement("div");
-          page.className = "document-page-canvas";
-          page.id = `doc_page_${idx}`;
-
-          let imgHtml = "";
-          if (t.imageUrl && t.imageUrl.trim().length > 0) {
-            imgHtml = `<div style="text-align:center; margin:14px 0;"><img src="${t.imageUrl}" style="max-height:240px; max-width:100%; border-radius:8px; border:1px solid var(--border-color);"></div>`;
-          }
-
-          page.innerHTML = `
-            <div class="document-meta-header">
-              <div>
-                <span class="badge" style="background:#1f6feb;">${t.chapter}</span>
-                <span style="font-size:11px; color:var(--text-muted); margin-left:6px;">Topic #${idx + 1}</span>
-              </div>
-              <div style="display:flex; gap:6px;">
-                <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.editSpecificTopicDossier('${t.id}')">Edit</button>
-                <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.openPopoutTopicSheet(${idx})">⤢ Pop Out Sheet</button>
-              </div>
-            </div>
-            <h2 style="font-size:18px; font-weight:800; color:#fff; margin-bottom:2px;">${t.title}</h2>
-            ${t.subtitle ? `<div style="font-size:12px; color:var(--accent-cyan); font-family:var(--font-mono); margin-bottom:12px;">${t.subtitle}</div>` : ''}
-            ${imgHtml}
-            <div style="font-size:13.5px; line-height:1.65; margin-top:8px;">${formatRichText(t.content)}</div>
-          `;
-          canvas.appendChild(page);
+        currentCompSheets.forEach((sheet, idx) => {
+          const tab = document.createElement("button");
+          tab.className = "comp-sheet-tab" + (idx === activeCompSheetIndex ? " active" : "");
+          tab.innerText = sheet.title || `Sheet ${idx + 1}`;
+          tab.addEventListener("click", () => {
+            activeCompSheetIndex = idx;
+            renderActiveCompSheet();
+          });
+          tabsBar.appendChild(tab);
         });
+
+        await renderActiveCompSheet();
       }
 
-      function openPopoutTopicSheet(idx) {
-        if (!compendiumTopics || compendiumTopics.length === 0) return;
-        currentPopoutTopicIndex = idx;
-        renderPopoutTopicSheet();
-        pushHistoryState("modal-popout-sheet");
-        document.getElementById("modal-popout-sheet").classList.add("active");
-      }
+      async function renderActiveCompSheet() {
+        const sheet = currentCompSheets[activeCompSheetIndex];
+        if (!sheet) return;
 
-      async function renderPopoutTopicSheet() {
-        if (currentPopoutTopicIndex < 0) currentPopoutTopicIndex = compendiumTopics.length - 1;
-        if (currentPopoutTopicIndex >= compendiumTopics.length) currentPopoutTopicIndex = 0;
+        // Sync tab highlights
+        document.querySelectorAll(".comp-sheet-tab").forEach((t, i) => {
+          t.classList.toggle("active", i === activeCompSheetIndex);
+        });
 
-        const t = compendiumTopics[currentPopoutTopicIndex];
-        document.getElementById("popout-topic-badge").innerText = t.chapter;
-        document.getElementById("popout-topic-counter").innerText = `Topic ${currentPopoutTopicIndex + 1} of ${compendiumTopics.length}`;
-        document.getElementById("popout-sheet-title").innerText = t.title;
-        document.getElementById("popout-sheet-sub").innerText = t.subtitle || "";
-        document.getElementById("popout-sheet-content").innerHTML = formatRichText(t.content);
+        document.getElementById("comp-studio-header-title").innerText = sheet.title;
+        document.getElementById("comp-studio-header-sub").innerText = `${sheet.chapter} • Sheet ${activeCompSheetIndex + 1} of ${currentCompSheets.length}`;
 
-        const imgBox = document.getElementById("popout-sheet-image");
-        if (t.imageUrl && t.imageUrl.trim().length > 0) {
-          imgBox.style.display = "block";
-          imgBox.innerHTML = `<img src="${t.imageUrl}" style="max-height:240px; max-width:100%; border-radius:8px; border:1px solid var(--border-color);">`;
-        } else {
-          imgBox.style.display = "none";
-          imgBox.innerHTML = "";
+        let imgHtml = "";
+        if (sheet.imageUrl && sheet.imageUrl.trim().length > 0) {
+          imgHtml = `<div style="text-align:center; margin:16px 0;"><img src="${sheet.imageUrl}" style="max-height:280px; max-width:100%; border-radius:8px; border:1px solid var(--border-color);"></div>`;
         }
 
-        const noteKey = `scratch_${t.id}`;
+        const docContent = document.getElementById("comp-studio-doc-content");
+        docContent.innerHTML = `
+          <div style="border-bottom:1px solid var(--border-color); padding-bottom:10px; margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="badge" style="background:#1f6feb;">${sheet.chapter}</span>
+              <span style="font-size:11px; color:var(--text-muted);">${new Date(sheet.timestamp || Date.now()).toLocaleDateString()}</span>
+            </div>
+            <h1 style="font-size:22px; font-weight:800; color:#fff; margin-top:8px;">${sheet.title}</h1>
+            ${sheet.subtitle ? `<div style="font-size:13px; color:var(--accent-cyan); font-family:var(--font-mono); margin-top:2px;">${sheet.subtitle}</div>` : ''}
+          </div>
+          ${imgHtml}
+          <div style="font-size:14.5px; line-height:1.75; color:var(--text-main);">${formatRichText(sheet.content)}</div>
+        `;
+
+        const noteKey = `scratch_${sheet.id}`;
         const savedNote = await getRecord("store_notes", noteKey);
-        document.getElementById("popout-sheet-scratchpad").value = savedNote ? savedNote.content : "";
+        document.getElementById("comp-studio-scratchpad").value = savedNote ? savedNote.content : "";
       }
 
-      function navPopoutTopic(step) {
-        currentPopoutTopicIndex += step;
-        renderPopoutTopicSheet();
+      function navCompStudioSheet(step) {
+        if (currentCompSheets.length === 0) return;
+        activeCompSheetIndex += step;
+        if (activeCompSheetIndex < 0) activeCompSheetIndex = currentCompSheets.length - 1;
+        if (activeCompSheetIndex >= currentCompSheets.length) activeCompSheetIndex = 0;
+        renderActiveCompSheet();
       }
 
-      async function autoSaveTopicScratchpad(val) {
-        const t = compendiumTopics[currentPopoutTopicIndex];
-        if (!t) return;
-        await putRecord("store_notes", { id: `scratch_${t.id}`, content: val, timestamp: Date.now() });
+      async function autoSaveCompScratchpad(val) {
+        const sheet = currentCompSheets[activeCompSheetIndex];
+        if (!sheet) return;
+        await putRecord("store_notes", { id: `scratch_${sheet.id}`, content: val, timestamp: Date.now() });
+        const st = document.getElementById("comp-scratchpad-status");
+        st.style.display = "inline";
+        setTimeout(() => { st.style.display = "none"; }, 1500);
       }
 
-      async function deleteCurrentTopicDossier() {
-        if (!compendiumTopics || compendiumTopics.length === 0) return;
-        const curr = compendiumTopics[currentPopoutTopicIndex];
-        if (confirm(`Permanently delete dossier: "${curr.title}"?`)) {
+      async function deleteCurrentCompendiumSheet() {
+        if (!currentCompSheets || currentCompSheets.length === 0) return;
+        const curr = currentCompSheets[activeCompSheetIndex];
+        if (confirm(`Permanently delete living sheet: "${curr.title}"?`)) {
           await deleteRecordFromStore("store_concepts", curr.id);
-          document.getElementById("modal-popout-sheet").classList.remove("active");
-          await renderMasterCompendiumView();
+          await renderCompStudioSheets();
         }
+      }
+
+      async function promptCreateNewChapter() {
+        const chapName = prompt(`Enter new chapter tag for ${activeCompSubject} (e.g. ${activeCompSubject}_NEW_TOPIC):`);
+        if (!chapName || !chapName.trim()) return;
+        const formatted = chapName.trim().toUpperCase().replace(/\s+/g, '_');
+
+        if (!TAXONOMY[activeCompSubject].chapters.includes(formatted)) {
+          TAXONOMY[activeCompSubject].chapters.push(formatted);
+          await putRecord("store_config", { key: "system_taxonomy", value: TAXONOMY });
+        }
+
+        await handleCompStudioSubjectChange(activeCompSubject);
+        document.getElementById("comp-studio-chapter-select").value = formatted;
+        await handleCompStudioChapterChange(formatted);
+      }
+
+      function openOmniSearchModal() {
+        pushHistoryState("modal-comp-omni-search");
+        document.getElementById("modal-comp-omni-search").classList.add("active");
+        document.getElementById("comp-omni-search-input").value = "";
+        document.getElementById("comp-omni-results-list").innerHTML = `<p style="color:var(--text-muted); text-align:center; padding:20px;">Type keywords above to query across all living sheets.</p>`;
+        setTimeout(() => document.getElementById("comp-omni-search-input").focus(), 150);
+      }
+
+      async function executeOmniSearch(keyword) {
+        const list = document.getElementById("comp-omni-results-list");
+        const term = keyword.trim().toLowerCase();
+        if (!term) {
+          list.innerHTML = `<p style="color:var(--text-muted); text-align:center; padding:20px;">Type keywords above to query across all living sheets.</p>`;
+          return;
+        }
+
+        const allDossiers = await getAllRecords("store_concepts");
+        const results = allDossiers.filter(d => 
+          (d.title && d.title.toLowerCase().includes(term)) ||
+          (d.subtitle && d.subtitle.toLowerCase().includes(term)) ||
+          (d.chapter && d.chapter.toLowerCase().includes(term)) ||
+          (d.content && d.content.toLowerCase().includes(term))
+        );
+
+        list.innerHTML = "";
+        if (results.length === 0) {
+          list.innerHTML = `<p style="color:var(--text-muted); text-align:center; padding:20px;">No matching formulas, traps, or sheets found.</p>`;
+          return;
+        }
+
+        results.forEach(res => {
+          const div = document.createElement("div");
+          div.className = "card";
+          div.style.padding = "10px";
+          div.style.marginBottom = "8px";
+          div.style.cursor = "pointer";
+          div.innerHTML = `
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <span class="badge" style="background:#1f6feb;">${res.subject} • ${res.chapter}</span>
+            </div>
+            <b style="font-size:14px; color:#fff;">${res.title}</b>
+            <div style="font-size:11px; color:var(--accent-cyan); font-family:var(--font-mono); margin-bottom:4px;">${res.subtitle || ''}</div>
+            <div style="font-size:12px; color:var(--text-muted); max-height:40px; overflow:hidden; text-overflow:ellipsis;">${res.content.slice(0, 100)}...</div>
+          `;
+          div.addEventListener("click", async () => {
+            document.getElementById("modal-comp-omni-search").classList.remove("active");
+            document.getElementById("comp-studio-subject-select").value = res.subject;
+            await handleCompStudioSubjectChange(res.subject);
+            document.getElementById("comp-studio-chapter-select").value = res.chapter;
+            await handleCompStudioChapterChange(res.chapter);
+            const sheetIdx = currentCompSheets.findIndex(s => s.id === res.id);
+            if (sheetIdx !== -1) {
+              activeCompSheetIndex = sheetIdx;
+              renderActiveCompSheet();
+            }
+          });
+          list.appendChild(div);
+        });
       }
 
       function insertDossierSnippet(type) {
         const textarea = document.getElementById("concept-edit-body");
         let snippet = "";
         if (type === "FORMULA") snippet = "\n> [!formula] Key Identity\n> $$a^2 + b^2 = c^2$$\n";
-        if (type === "TRAP") snippet = "\n> [!trap] Common TCS Trap\n> Verify whether radius or diameter is specified.\n";
+        if (type === "TRAP") snippet = "\n> [!trap] Critical TCS Deduction\n> Verify whether radius or diameter is specified.\n";
         if (type === "TABLE") snippet = "\n| Condition | Method | Shortcut |\n| :--- | :--- | :--- |\n| Case 1 | Direct Tangent | $2\\sqrt{r_1 r_2}$ |\n";
         textarea.value += snippet;
         textarea.focus();
@@ -3373,19 +3854,19 @@
 
       function openConceptEditorModal(isNew = true) {
         currentConceptImageBase64 = "";
-        document.getElementById("concept-editor-title").innerText = isNew ? "Add Topic Dossier" : "Edit Topic Dossier";
+        document.getElementById("concept-editor-title").innerText = isNew ? "Add Topic Sheet" : "Edit Topic Sheet";
 
-        if (isNew || compendiumTopics.length === 0) {
+        if (isNew || currentCompSheets.length === 0) {
           document.getElementById("concept-edit-id").value = "top_" + Date.now();
-          document.getElementById("concept-edit-subject").value = document.getElementById("comp-subject-select").value || "QA";
-          document.getElementById("concept-edit-chapter").value = document.getElementById("comp-chapter-select").value || "QA_GEOMETRY";
+          document.getElementById("concept-edit-subject").value = activeCompSubject || "QA";
+          document.getElementById("concept-edit-chapter").value = activeCompChapter || "QA_GEOMETRY";
           document.getElementById("concept-edit-title").value = "";
           document.getElementById("concept-edit-sub").value = "";
           document.getElementById("concept-edit-body").value = "";
           document.getElementById("concept-edit-img-url").value = "";
           document.getElementById("concept-edit-img-file").value = "";
         } else {
-          const curr = compendiumTopics[currentPopoutTopicIndex];
+          const curr = currentCompSheets[activeCompSheetIndex];
           document.getElementById("concept-edit-id").value = curr.id;
           document.getElementById("concept-edit-subject").value = curr.subject;
           document.getElementById("concept-edit-chapter").value = curr.chapter;
@@ -3395,25 +3876,6 @@
           document.getElementById("concept-edit-img-url").value = curr.imageUrl || "";
           document.getElementById("concept-edit-img-file").value = "";
         }
-
-        pushHistoryState("modal-concept-editor");
-        document.getElementById("modal-concept-editor").classList.add("active");
-      }
-
-      async function editSpecificTopicDossier(id) {
-        const item = await getRecord("store_concepts", id);
-        if (!item) return;
-
-        currentConceptImageBase64 = "";
-        document.getElementById("concept-editor-title").innerText = "Edit Topic Dossier";
-        document.getElementById("concept-edit-id").value = item.id;
-        document.getElementById("concept-edit-subject").value = item.subject;
-        document.getElementById("concept-edit-chapter").value = item.chapter;
-        document.getElementById("concept-edit-title").value = item.title;
-        document.getElementById("concept-edit-sub").value = item.subtitle || "";
-        document.getElementById("concept-edit-body").value = item.content;
-        document.getElementById("concept-edit-img-url").value = item.imageUrl || "";
-        document.getElementById("concept-edit-img-file").value = "";
 
         pushHistoryState("modal-concept-editor");
         document.getElementById("modal-concept-editor").classList.add("active");
@@ -3452,10 +3914,13 @@
 
         await putRecord("store_concepts", obj);
         document.getElementById("modal-concept-editor").classList.remove("active");
-        document.getElementById("comp-subject-select").value = subject;
-        await handleCompendiumSubjectChange(subject);
-        document.getElementById("comp-chapter-select").value = chapter;
-        await renderMasterCompendiumView();
+
+        activeCompSubject = subject;
+        activeCompChapter = chapter;
+        document.getElementById("comp-studio-subject-select").value = subject;
+        await handleCompStudioSubjectChange(subject);
+        document.getElementById("comp-studio-chapter-select").value = chapter;
+        await handleCompStudioChapterChange(chapter);
       }
 
       /* -------------------------------------------------------------
@@ -3517,12 +3982,7 @@
         pool.sort((a, b) => {
           if (a.subject !== b.subject) return a.subject.localeCompare(b.subject);
           if (a.chapter !== b.chapter) return a.chapter.localeCompare(b.chapter);
-          const subA = a.subtopic || "";
-          const subB = b.subtopic || "";
-          if (subA !== subB) return subA.localeCompare(subB);
-          const methA = a.method || "";
-          const methB = b.method || "";
-          return methA.localeCompare(methB);
+          return (a.subtopic || "").localeCompare(b.subtopic || "");
         });
 
         const allDossiers = await getAllRecords("store_concepts");
@@ -3686,8 +4146,11 @@
           const items = grouped[chapterKey];
 
           const header = document.createElement("div");
-          header.className = "chapter-section-header";
-          header.innerHTML = `<span>${chapterKey}</span><span>${items.length} Qs</span>`;
+          header.style.padding = "6px 0";
+          header.style.fontSize = "11px";
+          header.style.fontWeight = "700";
+          header.style.color = "var(--accent-cyan)";
+          header.innerHTML = `<span>${chapterKey} (${items.length} Qs)</span>`;
           scrollBody.appendChild(header);
 
           const grid = document.createElement("div");
@@ -3715,7 +4178,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 7. TESTBOOK FORENSICS, DECISION TRAILS & MISTAKE TAGGING
+       * 7. STAGE 1: ANALYTICAL COCKPIT & MISTAKE TAGGING
        * ------------------------------------------------------------- */
       async function openMockReview(attemptOrId) {
         let att = typeof attemptOrId === "string" 
@@ -3741,95 +4204,70 @@
         document.getElementById("btn-review-reattempt").onclick = () => reattemptMock(att.sessionId);
         document.getElementById("btn-review-save-fixed").onclick = () => openSaveBlueprintModal("FIXED_PAPER", att.sessionId);
 
-        filterReviewQuestions("ALL");
+        // Render Sectional Grid
+        const secGrid = document.getElementById("rev-sectional-breakdown-grid");
+        secGrid.innerHTML = "";
+        const secScores = {};
+        if (att.questions && Array.isArray(att.questions) && att.userResponses) {
+          att.questions.forEach(q => {
+            const secName = q.subject || "GEN";
+            if (!secScores[secName]) secScores[secName] = { score: 0, cor: 0, inc: 0, att: 0 };
+            const resp = att.userResponses[q.id];
+            if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
+              secScores[secName].att++;
+              if (resp.selectedOption === q.correctIndex) {
+                secScores[secName].score += 2.0;
+                secScores[secName].cor++;
+              } else {
+                secScores[secName].score -= 0.5;
+                secScores[secName].inc++;
+              }
+            }
+          });
+        }
+
+        Object.keys(secScores).forEach(sKey => {
+          const s = secScores[sKey];
+          const div = document.createElement("div");
+          div.style.background = "var(--bg-elevated)";
+          div.style.padding = "6px 8px";
+          div.style.borderRadius = "6px";
+          div.style.border = "1px solid var(--border-color)";
+          div.innerHTML = `
+            <div style="font-weight:700; font-size:11px; color:var(--accent-cyan);">${sKey}</div>
+            <div style="font-size:13px; font-weight:800;">${s.score.toFixed(1)} pts</div>
+            <div style="font-size:10px; color:var(--text-muted);">${s.att > 0 ? Math.round((s.cor / s.att) * 100) : 0}% Acc</div>
+          `;
+          secGrid.appendChild(div);
+        });
+
+        // Render Mistake Badges
+        const tagPills = document.getElementById("rev-mistake-tags-pills");
+        tagPills.innerHTML = "";
+        const vaultRecords = await getAllRecords("store_vault");
+        const tagCounts = {};
+        att.questions.forEach(q => {
+          const v = vaultRecords.find(item => item.questionId === q.id);
+          if (v && v.errorTag) {
+            tagCounts[v.errorTag] = (tagCounts[v.errorTag] || 0) + 1;
+          }
+        });
+
+        if (Object.keys(tagCounts).length === 0) {
+          tagPills.innerHTML = `<span style="font-size:11px; color:var(--text-muted);">No tagged errors registered for this attempt.</span>`;
+        } else {
+          Object.keys(tagCounts).forEach(tag => {
+            const span = document.createElement("span");
+            span.className = "badge";
+            span.style.background = "#5a1e1e";
+            span.style.color = "#f87171";
+            span.innerText = `${tag.replace(/_/g, ' ')}: ${tagCounts[tag]}`;
+            tagPills.appendChild(span);
+          });
+        }
+
         pushHistoryState("modal-mock-review");
         document.getElementById("modal-mock-review").classList.add("active");
-      }
-
-      async function filterReviewQuestions(filter) {
-        const list = document.getElementById("review-questions-list");
-        list.innerHTML = "";
-
-        const vaultRecords = await getAllRecords("store_vault");
-
-        activeReviewAttempt.questions.forEach((q, idx) => {
-          const resp = activeReviewAttempt.userResponses && activeReviewAttempt.userResponses[q.id] ? activeReviewAttempt.userResponses[q.id] : {};
-          const isAtt = resp.selectedOption !== null && resp.selectedOption !== undefined;
-          const isCor = resp.selectedOption === q.correctIndex;
-          const isTrap = isAtt && !isCor && (resp.timeSpentSec > 90);
-          const isSwitch = resp.switches > 0;
-
-          if (filter === "INCORRECT" && (!isAtt || isCor)) return;
-          if (filter === "CORRECT" && !isCor) return;
-          if (filter === "UNANSWERED" && isAtt) return;
-          if (filter === "PENALTY" && (!isAtt || isCor)) return;
-          if (filter === "SWITCH" && !isSwitch) return;
-          if (filter === "TRAPS" && !isTrap) return;
-
-          const existingVault = vaultRecords.find(v => v.questionId === q.id);
-          const currentTag = existingVault ? existingVault.errorTag : "UNCLASSIFIED";
-
-          const card = document.createElement("div");
-          card.className = "card";
-          card.style.marginBottom = "10px";
-          card.style.borderColor = isCor ? "var(--status-green)" : (isAtt ? "var(--status-red)" : "var(--border-color)");
-
-          let statusBadge = isCor ? `<span class="badge" style="background:#238636;">Correct (+2)</span>`
-            : (isAtt ? `<span class="badge" style="background:#da3633;">Incorrect (-0.5)</span>`
-            : `<span class="badge" style="background:#151a24;">Unattempted (0)</span>`);
-
-          let decisionTrailHtml = "";
-          if (resp.decisionTrail && resp.decisionTrail.length > 0) {
-            decisionTrailHtml = `
-              <div style="background:#090d16; border:1px solid #38bdf8; border-radius:6px; padding:6px 10px; margin:6px 0; font-size:11px; color:#38bdf8;">
-                <b>Decision Trail:</b> ${resp.decisionTrail.map(t => `Opt ${t.opt} (${t.atSec}s)`).join(' ➔ ')}
-              </div>
-            `;
-          }
-
-          let imgHtml = "";
-          if (q.imageUrl && q.imageUrl.trim().length > 0) {
-            imgHtml = `<div style="text-align:center; margin:8px 0;"><img src="${q.imageUrl}" style="max-height:180px; max-width:100%; border-radius:6px; border:1px solid var(--border-color);"></div>`;
-          }
-
-          let optionsHtml = `<option value="UNCLASSIFIED" ${currentTag==='UNCLASSIFIED'?'selected':''}>Tag Mistake...</option>`;
-          customMistakeTags.forEach(t => {
-            optionsHtml += `<option value="${t}" ${currentTag===t?'selected':''}>${t.replace(/_/g, ' ')}</option>`;
-          });
-          optionsHtml += `<option value="__NEW_TAG__">+ Create New Tag...</option>`;
-
-          card.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <div><b>Q${q.globalNumber || (idx + 1)}.</b> <span class="badge" style="background:#1f6feb;">${q.chapter}</span></div>
-              <div style="display:flex; gap:6px; align-items:center;">
-                ${statusBadge}
-                ${!isCor && isAtt ? `
-                  <select onchange="CGL_OS.handleMistakeTagSelect('${q.id}', this.value)" style="background:#151a24; color:#fff; border:1px solid #da3633; font-size:11px; padding:2px 4px; border-radius:4px;">
-                    ${optionsHtml}
-                  </select>
-                ` : ''}
-              </div>
-            </div>
-            ${decisionTrailHtml}
-            <div style="font-size:14px; line-height:1.5; margin-bottom:10px;">${formatRichText(q.questionText)}</div>
-            ${imgHtml}
-            <div style="font-size:13px; margin-bottom:8px;">
-              ${q.options.map((opt, oIdx) => `
-                <div style="padding:6px 10px; border-radius:6px; margin:4px 0; font-size:13px;
-                  background:${oIdx === q.correctIndex ? 'rgba(35, 134, 54, 0.25)' : (oIdx === resp.selectedOption ? 'rgba(218, 54, 51, 0.25)' : 'var(--bg-elevated)')};
-                  border:1px solid ${oIdx === q.correctIndex ? 'var(--status-green)' : (oIdx === resp.selectedOption ? 'var(--status-red)' : 'transparent')};">
-                  <b>${oIdx + 1}.</b> ${formatRichText(opt)}
-                  ${oIdx === q.correctIndex ? ' (Correct Answer)' : ''}
-                  ${oIdx === resp.selectedOption && !isCor ? ' (Your Choice)' : ''}
-                </div>
-              `).join('')}
-            </div>
-            <div style="font-size:12px; color:var(--text-muted); background:#07090e; padding:8px; border-radius:6px; margin-top:8px;">
-              <b>Method & Explanation:</b><br>${formatRichText(q.explanation || 'No explanation recorded.')}
-            </div>
-          `;
-          list.appendChild(card);
-        });
       }
 
       async function handleMistakeTagSelect(qId, val) {
@@ -3842,7 +4280,6 @@
             await putRecord("store_config", { key: "custom_mistake_tags", value: customMistakeTags });
           }
           await setMistakeTag(qId, formatted);
-          filterReviewQuestions("ALL");
         } else {
           await setMistakeTag(qId, val);
         }
@@ -3866,7 +4303,95 @@
       }
 
       /* -------------------------------------------------------------
-       * 8. MULTI-TIER AI EXPORTS & GEM LEDGER
+       * 8. INTERACTIVE SUBJECT DIAGNOSTIC MODAL
+       * ------------------------------------------------------------- */
+      async function openSubjectDiagnosticModal(subKey) {
+        const sub = TAXONOMY[subKey];
+        if (!sub) return;
+
+        document.getElementById("diag-subject-name").innerText = `${sub.name} (${subKey})`;
+        document.getElementById("diag-subject-sub").innerText = `Complete Syllabus & Chapter Analysis`;
+
+        const attempts = await getAllRecords("store_attempts");
+        const completed = attempts.filter(a => a.completed && !a.isVaultSprint);
+        const allQuestions = await getAllRecords("store_questions");
+
+        let subAtt = 0, subCor = 0;
+        completed.forEach(c => {
+          if (c.questions && Array.isArray(c.questions)) {
+            c.questions.forEach(q => {
+              if (q.subject === subKey) {
+                const resp = c.userResponses && c.userResponses[q.id] ? c.userResponses[q.id] : null;
+                if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
+                  subAtt++;
+                  if (resp.selectedOption === q.correctIndex) subCor++;
+                }
+              }
+            });
+          }
+        });
+
+        const acc = subAtt > 0 ? Math.round((subCor / subAtt) * 100) : 0;
+        document.getElementById("diag-subject-acc").innerText = subAtt > 0 ? `${acc}%` : "--";
+        document.getElementById("diag-subject-counts").innerText = `${subAtt} Solved • ${subCor} Correct`;
+
+        const gauge = document.getElementById("diag-acc-gauge");
+        gauge.setAttribute("stroke-dasharray", `${acc}, 100`);
+        if (acc >= 80) gauge.style.stroke = "var(--status-green-border)";
+        else if (acc >= 65) gauge.style.stroke = "var(--status-amber)";
+        else gauge.style.stroke = "var(--status-red)";
+
+        const chapList = document.getElementById("diag-chapter-coverage-list");
+        chapList.innerHTML = "";
+
+        sub.chapters.forEach(chap => {
+          let cAtt = 0, cCor = 0;
+          completed.forEach(c => {
+            if (c.questions && Array.isArray(c.questions)) {
+              c.questions.forEach(q => {
+                if (q.chapter === chap) {
+                  const resp = c.userResponses && c.userResponses[q.id] ? c.userResponses[q.id] : null;
+                  if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
+                    cAtt++;
+                    if (resp.selectedOption === q.correctIndex) cCor++;
+                  }
+                }
+              });
+            }
+          });
+
+          const cAcc = cAtt > 0 ? Math.round((cCor / cAtt) * 100) : 0;
+          const totalInBank = allQuestions.filter(q => q.chapter === chap).length;
+
+          const div = document.createElement("div");
+          div.className = "card";
+          div.style.padding = "8px 10px";
+          div.style.marginBottom = "6px";
+          div.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <span style="font-weight:700; font-family:var(--font-mono); font-size:12px;">${chap}</span>
+              <span class="badge" style="background:${cAtt > 0 ? '#1b4d2e' : '#151a24'}; color:${cAtt > 0 ? '#4ade80' : '#8b949e'};">
+                ${cAtt > 0 ? `${cAcc}% (${cAtt} Qs)` : '0 Qs'}
+              </span>
+            </div>
+            <div class="battery-bar-container" style="height:6px;">
+              <div class="battery-bar-fill" style="width:${cAcc}%; background:${cAcc >= 80 ? 'var(--status-green)' : (cAcc >= 60 ? 'var(--status-amber)' : 'var(--accent-blue)')};"></div>
+            </div>
+          `;
+          chapList.appendChild(div);
+        });
+
+        document.getElementById("btn-launch-subject-blitz").onclick = () => {
+          document.getElementById("modal-subject-diagnostic").classList.remove("active");
+          launchConfiguredMockDirect(subKey, "ALL", 10, 8);
+        };
+
+        pushHistoryState("modal-subject-diagnostic");
+        document.getElementById("modal-subject-diagnostic").classList.add("active");
+      }
+
+      /* -------------------------------------------------------------
+       * 9. MULTI-TIER AI EXPORTS & GEM LEDGER
        * ------------------------------------------------------------- */
       function openAiExportModal() {
         if (!activeReviewAttempt) return;
@@ -4012,7 +4537,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 9. DASHBOARD RENDER ENGINE (RADIAL SVG GAUGES & TICKETS)
+       * 10. DASHBOARD RENDER ENGINE (RADIAL SVG GAUGES & TICKETS)
        * ------------------------------------------------------------- */
       async function renderDashboard() {
         const attempts = await getAllRecords("store_attempts");
@@ -4061,6 +4586,7 @@
           else speedEl.innerHTML = `<span style="color:var(--status-red);">⚠️ Drag Alert (>60s / Q)</span>`;
         }
 
+        // DEFENSIVE RENDERING: Try/catch blocks guarantee DOM never breaks from single undefined errors
         try { renderDashboardSubjectBatteries(completed); } catch(e) { console.error("Batteries error:", e); }
         try { renderRecentHistory(completed); } catch(e) { console.error("Recent history error:", e); }
         try { await renderDashboardBlueprints(); } catch(e) { console.error("Blueprints error:", e); }
@@ -4077,7 +4603,7 @@
             if (c.questions && Array.isArray(c.questions)) {
               c.questions.forEach(q => {
                 if (q.subject === subKey) {
-                  const resp = c.userResponses && c.userResponses[q.id] ? c.userResponses[q.id] : null;
+                  const resp = (c.userResponses && typeof c.userResponses === "object") ? c.userResponses[q.id] : null;
                   if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
                     subAtt++;
                     if (resp.selectedOption === q.correctIndex) subCor++;
@@ -4100,7 +4626,7 @@
               <div class="battery-bar-fill" style="width:${acc}%; background:${acc >= 80 ? 'var(--status-green)' : (acc >= 60 ? 'var(--status-amber)' : 'var(--accent-blue)')};"></div>
             </div>
           `;
-          div.addEventListener("click", () => renderDrilldownChapterLevel(subKey));
+          div.addEventListener("click", () => openSubjectDiagnosticModal(subKey));
           container.appendChild(div);
         });
       }
@@ -4222,7 +4748,7 @@
             if (c.questions && Array.isArray(c.questions)) {
               c.questions.forEach(q => {
                 if (q.subject === subKey) {
-                  const resp = c.userResponses && c.userResponses[q.id] ? c.userResponses[q.id] : null;
+                  const resp = (c.userResponses && typeof c.userResponses === "object") ? c.userResponses[q.id] : null;
                   if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
                     subAtt++;
                     if (resp.selectedOption === q.correctIndex) subCor++;
@@ -4273,7 +4799,7 @@
             if (c.questions && Array.isArray(c.questions)) {
               c.questions.forEach(q => {
                 if (q.chapter === chap) {
-                  const resp = c.userResponses && c.userResponses[q.id] ? c.userResponses[q.id] : null;
+                  const resp = (c.userResponses && typeof c.userResponses === "object") ? c.userResponses[q.id] : null;
                   if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
                     chapAtt++;
                     chapSec += (resp.timeSpentSec || 0);
@@ -4355,33 +4881,39 @@
 
       async function launchConfiguredMockDirect(sub, chap, count, durMin) {
         const allQuestions = await getAllRecords("store_questions");
-        const pool = allQuestions.filter(q => q.chapter === chap);
+        let pool = chap === "ALL" 
+          ? allQuestions.filter(q => q.subject === sub) 
+          : allQuestions.filter(q => q.chapter === chap);
+
         if (pool.length === 0) {
-          alert("No questions in bank for this chapter.");
+          alert("No questions found in bank for this selection.");
           return;
         }
+
+        const selectedQs = pool.slice(0, count);
 
         activeExam = {
           sessionId: "blitz_" + Date.now(),
           timestamp: Date.now(),
-          title: `${chap} Blitz Drill`,
+          title: `${chap === 'ALL' ? sub : chap} Blitz Drill`,
           mockType: "CUSTOM",
           isVaultSprint: false,
           isSectionLocked: false,
           sections: [{
-            id: "SEC_" + chap,
-            name: chap,
+            id: "SEC_" + (chap === 'ALL' ? sub : chap),
+            name: (chap === 'ALL' ? sub : chap),
             durationSec: durMin * 60,
-            questions: pool.slice(0, count),
+            questions: selectedQs,
             locked: false
           }],
           activeSectionIndex: 0,
           currentQuestionIndex: 0,
-          questions: pool.slice(0, count).map((q, idx) => ({ ...q, sectionIndex: 0, sectionName: chap, localNumber: idx + 1, globalNumber: idx + 1 })),
+          questions: selectedQs.map((q, idx) => ({ ...q, sectionIndex: 0, sectionName: chap, localNumber: idx + 1, globalNumber: idx + 1 })),
           sectionRemainingSec: durMin * 60,
           currentQTimeSpentSec: 0,
           userResponses: {},
-          isPaused: false
+          isPaused: false,
+          isReviewMode: false
         };
 
         activeExam.questions.forEach(q => {
@@ -4406,7 +4938,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 10. LEITNER VAULT SPRINT ENGINE & ISOLATED HISTORY
+       * 11. LEITNER VAULT SPRINT ENGINE & ISOLATED HISTORY
        * ------------------------------------------------------------- */
       async function renderVault() {
         const vault = await getAllRecords("store_vault");
@@ -4538,7 +5070,8 @@
           sectionRemainingSec: failedQs.length * 60,
           currentQTimeSpentSec: 0,
           userResponses: {},
-          isPaused: false
+          isPaused: false,
+          isReviewMode: false
         };
 
         activeExam.questions.forEach(q => {
@@ -4563,7 +5096,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 11. QUESTION GUI EDITOR
+       * 12. QUESTION GUI EDITOR
        * ------------------------------------------------------------- */
       let currentQuestionImageBase64 = "";
 
@@ -4651,7 +5184,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 12. HARDENED COMMAND BUS & AI DISPATCHER
+       * 13. HARDENED COMMAND BUS & AI DISPATCHER
        * ------------------------------------------------------------- */
       async function executeConsoleCommand() {
         const raw = document.getElementById("console-payload").value.trim();
@@ -4735,9 +5268,24 @@
             alert(`Saved mock setup: "${preset.title}".`);
             await renderDashboardBlueprints();
 
-          } else if (cmd.action === "HOTPATCH_CONFIG") {
-            await putRecord("store_config", { key: cmd.target, value: cmd.payload });
-            alert(`Patched config: ${cmd.target}`);
+          } else if (cmd.action === "MODIFY_TAXONOMY") {
+            const { operation, subject, chapter } = cmd.payload;
+            if (operation === "ADD_CHAPTER" && TAXONOMY[subject]) {
+              if (!TAXONOMY[subject].chapters.includes(chapter)) {
+                TAXONOMY[subject].chapters.push(chapter);
+              }
+            } else if (operation === "DELETE_CHAPTER" && TAXONOMY[subject]) {
+              TAXONOMY[subject].chapters = TAXONOMY[subject].chapters.filter(c => c !== chapter);
+            }
+            await putRecord("store_config", { key: "system_taxonomy", value: TAXONOMY });
+            alert(`Taxonomy updated: ${operation} on ${chapter}`);
+
+          } else if (cmd.action === "RAW_DB_OPERATION") {
+            const { store, operation, key, record } = cmd.payload;
+            if (operation === "PUT") await putRecord(store, record);
+            else if (operation === "DELETE") await deleteRecordFromStore(store, key);
+            else if (operation === "CLEAR") await clearStore(store);
+            alert(`Executed ${operation} on ${store}`);
 
           } else {
             alert("Unknown Command Action: " + (cmd.action || "undefined"));
@@ -4780,7 +5328,8 @@
           sectionRemainingSec: durationMin * 60,
           currentQTimeSpentSec: 0,
           userResponses: {},
-          isPaused: false
+          isPaused: false,
+          isReviewMode: false
         };
 
         activeExam.questions.forEach(q => {
@@ -4845,7 +5394,9 @@
         if (sName === "store_questions") {
           openEditQuestionModal(rec);
         } else if (sName === "store_concepts") {
-          editSpecificTopicDossier(key);
+          activeCompSubject = rec.subject;
+          activeCompChapter = rec.chapter;
+          openCompendiumStudio();
         } else {
           alert(`Record Details (${key}):\n` + JSON.stringify(rec, null, 2));
         }
@@ -4887,7 +5438,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 13. UNIVERSAL TOUCH GESTURES (GLOBAL VIEWPORT ROUTER)
+       * 14. UNIVERSAL TOUCH GESTURES (VIEWPORT & HARDWARE SHIELD)
        * ------------------------------------------------------------- */
       function initGestureControllers() {
         const attachSwipeHandler = (elementId, onLeftSwipe, onRightSwipe) => {
@@ -4918,8 +5469,8 @@
         // Dojo Arena Swipes
         attachSwipeHandler("dojo-arena-body", () => navDojoArena(1), () => navDojoArena(-1));
 
-        // Pop-out Topic Sheet Swipes
-        attachSwipeHandler("popout-sheet-body", () => navPopoutTopic(1), () => navPopoutTopic(-1));
+        // Compendium Studio Body Swipes (Sheet navigation)
+        attachSwipeHandler("comp-studio-canvas", () => navCompStudioSheet(1), () => navCompStudioSheet(-1));
 
         // Global Viewport Gesture Router: Dashboard <-> Dojo <-> Console <-> Vault
         const viewportRoot = document.getElementById("app-viewport-root");
@@ -4934,8 +5485,9 @@
         viewportRoot.addEventListener("touchend", (e) => {
           const arenaView = document.getElementById("exam-arena");
           const dojoView = document.getElementById("dojo-arena-view");
+          const compView = document.getElementById("compendium-fullscreen-view");
           const openModals = document.querySelectorAll(".modal-overlay.active");
-          if (arenaView.style.display === "flex" || dojoView.style.display === "flex" || openModals.length > 0) {
+          if (arenaView.style.display === "flex" || dojoView.style.display === "flex" || compView.style.display === "flex" || openModals.length > 0) {
             return;
           }
 
@@ -4961,7 +5513,7 @@
           }
         }, { passive: true });
 
-        // Hardware Gesture Shield
+        // Hardware Gesture Shield (Prevents WebAPK killing on back swipes)
         window.addEventListener("popstate", () => {
           const openModals = document.querySelectorAll(".modal-overlay.active");
           if (openModals.length > 0) {
@@ -4971,7 +5523,17 @@
 
           const arenaView = document.getElementById("exam-arena");
           if (arenaView.style.display === "flex") {
-            document.getElementById("btn-arena-pause").click();
+            if (activeExam && activeExam.isReviewMode) {
+              exitReviewArena();
+            } else {
+              document.getElementById("btn-arena-pause").click();
+            }
+            return;
+          }
+
+          const compView = document.getElementById("compendium-fullscreen-view");
+          if (compView.style.display === "flex") {
+            closeCompendiumStudio();
             return;
           }
 
@@ -4987,7 +5549,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 14. SELECTIVE PRINT ENGINE
+       * 15. SELECTIVE PRINT ENGINE
        * ------------------------------------------------------------- */
       async function openPrintConfigModal() {
         await updatePrintChapters();
@@ -5117,7 +5679,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 15. NAVIGATION, TAB SWITCHING & SYSTEM BOOT
+       * 16. NAVIGATION, TAB SWITCHING & SYSTEM BOOT
        * ------------------------------------------------------------- */
       function switchTab(tId, btn) {
         document.querySelectorAll(".view-container").forEach(el => el.classList.remove("active"));
@@ -5171,6 +5733,8 @@
         confirmEndSectionEarly,
         resumeFromMiniPlayer,
         reattemptMock,
+        enterFullScreenReviewArena,
+        exitReviewArena,
         updateDojoChapters,
         updateDojoMethods,
         launchFilteredDojo,
@@ -5179,16 +5743,19 @@
         toggleDojoMethod,
         autoSaveDojoAnnotation,
         toggleDojoPalette,
-        openKnowledgeCompendiumModal,
-        handleCompendiumSubjectChange,
-        renderMasterCompendiumView,
-        openPopoutTopicSheet,
-        navPopoutTopic,
-        autoSaveTopicScratchpad,
-        deleteCurrentTopicDossier,
+        openCompendiumStudio,
+        closeCompendiumStudio,
+        handleCompStudioSubjectChange,
+        handleCompStudioChapterChange,
+        navCompStudioSheet,
+        autoSaveCompScratchpad,
+        deleteCurrentCompendiumSheet,
+        promptCreateNewChapter,
+        openOmniSearchModal,
+        executeOmniSearch,
+        openSubjectDiagnosticModal,
         insertDossierSnippet,
         openConceptEditorModal,
-        editSpecificTopicDossier,
         handleConceptImageUpload,
         saveConceptCard,
         openPrintConfigModal,
@@ -5201,7 +5768,6 @@
         saveQuestionEditor,
         deleteCurrentEditingQuestion,
         openMockReview,
-        filterReviewQuestions,
         handleMistakeTagSelect,
         setMistakeTag,
         openAiExportModal,
@@ -5213,6 +5779,7 @@
         openBackupRestoreModal,
         handleBackupFileSelect,
         executeHydrationRestore,
+        copyLiveSystemManifestToClipboard,
         openHistoryArchiveModal,
         renderArchiveList,
         executeConsoleCommand,
