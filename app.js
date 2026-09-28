@@ -1,3 +1,11 @@
+/**
+ * SSC CGL Intelligence OS - Core Engine
+ * Master Application Controller (Part 1 of 2)
+ */
+
+// Global Reference Anchor
+window.CGL_OS = null;
+
 const CGL_OS = (() => {
   const DB_NAME = "cgl_os_db";
   const DB_VERSION = 12;
@@ -25,6 +33,46 @@ const CGL_OS = (() => {
 
   // Custom Mistake Tags State
   let customMistakeTags = ["CALCULATION_SLIP", "READING_TRAP", "FORMULA_AMNESIA", "CONCEPT_VOID", "RUSHED_PANIC"];
+
+  // Default Invariable Taxonomy Baseline
+  const DEFAULT_TAXONOMY = {
+    QA: {
+      name: "Quantitative Aptitude",
+      weight: 25,
+      chapters: [
+        "QA_NUM_SYS", "QA_PERCENTAGE", "QA_PROFIT_LOSS", "QA_SI_CI",
+        "QA_RATIO_PROP", "QA_TIME_WORK", "QA_SPEED_DIST", "QA_ALGEBRA",
+        "QA_GEOMETRY", "QA_MENSURATION", "QA_TRIGONOMETRY"
+      ]
+    },
+    REAS: {
+      name: "General Intelligence & Reasoning",
+      weight: 25,
+      chapters: [
+        "REAS_ANALOGY", "REAS_SERIES", "REAS_CODING", "REAS_BLOOD_REL",
+        "REAS_SYLLOGISM", "REAS_ORDER_RANK", "REAS_FIGURES", "REAS_DICE_CUBE"
+      ]
+    },
+    ENG: {
+      name: "English Comprehension",
+      weight: 25,
+      chapters: [
+        "ENG_SYN_ANT", "ENG_OWS", "ENG_IDIOMS", "ENG_SPOTTING",
+        "ENG_IMPROVE", "ENG_ACTIVE_PASS", "ENG_DIRECT_INDR", "ENG_CLOZE_TEST",
+        "ENG_READING_COMP"
+      ]
+    },
+    GA: {
+      name: "General Awareness",
+      weight: 25,
+      chapters: [
+        "GA_POLITY", "GA_HISTORY_MOD", "GA_HISTORY_ANC", "GA_GEOGRAPHY_IN",
+        "GA_ECONOMY", "GA_PHYSICS", "GA_CHEMISTRY", "GA_BIOLOGY", "GA_CA_ANNUAL"
+      ]
+    }
+  };
+
+  let TAXONOMY = JSON.parse(JSON.stringify(DEFAULT_TAXONOMY));
 
   // 8 Historical Vault Questions + Foundational Question Bank
   const SEED_QUESTIONS = [
@@ -347,29 +395,6 @@ const CGL_OS = (() => {
     }
   ];
 
-  let TAXONOMY = {
-    QA: {
-      name: "Quantitative Aptitude",
-      weight: 25,
-      chapters: ["QA_NUM_SYS", "QA_PERCENTAGE", "QA_PROFIT_LOSS", "QA_SI_CI", "QA_RATIO_PROP", "QA_TIME_WORK", "QA_SPEED_DIST", "QA_ALGEBRA", "QA_GEOMETRY", "QA_MENSURATION", "QA_TRIGONOMETRY"]
-    },
-    REAS: {
-      name: "General Intelligence & Reasoning",
-      weight: 25,
-      chapters: ["REAS_ANALOGY", "REAS_SERIES", "REAS_CODING", "REAS_BLOOD_REL", "REAS_SYLLOGISM", "REAS_ORDER_RANK", "REAS_FIGURES", "REAS_DICE_CUBE"]
-    },
-    ENG: {
-      name: "English Comprehension",
-      weight: 25,
-      chapters: ["ENG_SYN_ANT", "ENG_OWS", "ENG_IDIOMS", "ENG_SPOTTING", "ENG_IMPROVE", "ENG_ACTIVE_PASS", "ENG_DIRECT_INDR", "ENG_CLOZE_TEST", "ENG_READING_COMP"]
-    },
-    GA: {
-      name: "General Awareness",
-      weight: 25,
-      chapters: ["GA_POLITY", "GA_HISTORY_MOD", "GA_HISTORY_ANC", "GA_GEOGRAPHY_IN", "GA_ECONOMY", "GA_PHYSICS", "GA_CHEMISTRY", "GA_BIOLOGY", "GA_CA_ANNUAL"]
-    }
-  };
-
   /* -------------------------------------------------------------
    * 1. FORMATTING & COMPRESSION UTILITIES
    * ------------------------------------------------------------- */
@@ -502,7 +527,11 @@ const CGL_OS = (() => {
         db.onversionchange = () => {
           if (db) { db.close(); db = null; dbInitPromise = null; }
         };
-        await seedData(db);
+        try {
+          await seedData(db);
+        } catch (err) {
+          console.warn("Non-fatal seeding warning:", err);
+        }
         resolve(db);
       };
 
@@ -518,62 +547,80 @@ const CGL_OS = (() => {
   async function seedData(database) {
     const d = database || await getDB();
 
-    // 1. Seed Questions
-    const txQ = d.transaction(["store_questions"], "readwrite");
-    const stQ = txQ.objectStore("store_questions");
-    SEED_QUESTIONS.forEach(q => stQ.put(q));
-    await new Promise(r => txQ.oncomplete = r);
-
-    // 2. Seed 8 Vault Items
-    const historicalVaultKeys = [
-      { questionId: "q_cgl_ga_polity_014", chapter: "GA_POLITY", subject: "GA", errorTag: "CONCEPT_VOID" },
-      { questionId: "q_cgl_qa_geom_011", chapter: "QA_GEOMETRY", subject: "QA", errorTag: "CALCULATION_SLIP" },
-      { questionId: "q_cgl_qa_tw_010", chapter: "QA_TIME_WORK", subject: "QA", errorTag: "READING_TRAP" },
-      { questionId: "q_cgl_reas_analogy_012", chapter: "REAS_ANALOGY", subject: "REAS", errorTag: "FORMULA_AMNESIA" },
-      { questionId: "q_ga_polity_001", chapter: "GA_POLITY", subject: "GA", errorTag: "CONCEPT_VOID" },
-      { questionId: "q_qa_geom_002", chapter: "QA_GEOMETRY", subject: "QA", errorTag: "FORMULA_AMNESIA" },
-      { questionId: "q_qa_pl_001", chapter: "QA_PROFIT_LOSS", subject: "QA", errorTag: "CALCULATION_SLIP" },
-      { questionId: "q_reas_analogy_001", chapter: "REAS_ANALOGY", subject: "REAS", errorTag: "READING_TRAP" }
-    ];
-
-    const txV = d.transaction(["store_vault"], "readwrite");
-    const stV = txV.objectStore("store_vault");
-    historicalVaultKeys.forEach(item => {
-      stV.put({
-        questionId: item.questionId,
-        chapter: item.chapter,
-        subject: item.subject,
-        errorTag: item.errorTag,
-        interval: 1,
-        repetition: 0,
-        easeFactor: 2.5,
-        nextReviewDate: Date.now() - 1000,
-        lastAttempted: 1790430483803
-      });
+    // Verify if questions are already seeded to prevent redundant writes
+    const existingCount = await new Promise((res) => {
+      try {
+        const tx = d.transaction(["store_questions"], "readonly");
+        const countReq = tx.objectStore("store_questions").count();
+        countReq.onsuccess = () => res(countReq.result || 0);
+        countReq.onerror = () => res(0);
+      } catch (e) { res(0); }
     });
-    await new Promise(r => txV.oncomplete = r);
 
-    // 3. Seed Topic Dossiers
-    const txC = d.transaction(["store_concepts"], "readwrite");
-    const stC = txC.objectStore("store_concepts");
-    SEED_TOPIC_DOSSIERS.forEach(t => stC.put(t));
-    await new Promise(r => txC.oncomplete = r);
+    if (existingCount === 0) {
+      const txQ = d.transaction(["store_questions"], "readwrite");
+      const stQ = txQ.objectStore("store_questions");
+      SEED_QUESTIONS.forEach(q => stQ.put(q));
+      await new Promise(r => txQ.oncomplete = r);
 
-    // 4. Seed Saved Mock Blueprints & Fixed Papers
-    const txB = d.transaction(["store_saved_mocks"], "readwrite");
-    const stB = txB.objectStore("store_saved_mocks");
-    SEED_SAVED_MOCKS.forEach(b => stB.put(b));
-    await new Promise(r => txB.oncomplete = r);
+      const historicalVaultKeys = [
+        { questionId: "q_cgl_ga_polity_014", chapter: "GA_POLITY", subject: "GA", errorTag: "CONCEPT_VOID" },
+        { questionId: "q_cgl_qa_geom_011", chapter: "QA_GEOMETRY", subject: "QA", errorTag: "CALCULATION_SLIP" },
+        { questionId: "q_cgl_qa_tw_010", chapter: "QA_TIME_WORK", subject: "QA", errorTag: "READING_TRAP" },
+        { questionId: "q_cgl_reas_analogy_012", chapter: "REAS_ANALOGY", subject: "REAS", errorTag: "FORMULA_AMNESIA" },
+        { questionId: "q_ga_polity_001", chapter: "GA_POLITY", subject: "GA", errorTag: "CONCEPT_VOID" },
+        { questionId: "q_qa_geom_002", chapter: "QA_GEOMETRY", subject: "QA", errorTag: "FORMULA_AMNESIA" },
+        { questionId: "q_qa_pl_001", chapter: "QA_PROFIT_LOSS", subject: "QA", errorTag: "CALCULATION_SLIP" },
+        { questionId: "q_reas_analogy_001", chapter: "REAS_ANALOGY", subject: "REAS", errorTag: "READING_TRAP" }
+      ];
 
-    // 5. Custom Mistake Tags config & Taxonomy
+      const txV = d.transaction(["store_vault"], "readwrite");
+      const stV = txV.objectStore("store_vault");
+      historicalVaultKeys.forEach(item => {
+        stV.put({
+          questionId: item.questionId,
+          chapter: item.chapter,
+          subject: item.subject,
+          errorTag: item.errorTag,
+          interval: 1,
+          repetition: 0,
+          easeFactor: 2.5,
+          nextReviewDate: Date.now() - 1000,
+          lastAttempted: 1790430483803
+        });
+      });
+      await new Promise(r => txV.oncomplete = r);
+
+      const txC = d.transaction(["store_concepts"], "readwrite");
+      const stC = txC.objectStore("store_concepts");
+      SEED_TOPIC_DOSSIERS.forEach(t => stC.put(t));
+      await new Promise(r => txC.oncomplete = r);
+
+      const txB = d.transaction(["store_saved_mocks"], "readwrite");
+      const stB = txB.objectStore("store_saved_mocks");
+      SEED_SAVED_MOCKS.forEach(b => stB.put(b));
+      await new Promise(r => txB.oncomplete = r);
+    }
+
+    // Load Taxonomy & Custom Mistakes Safely
     const savedMistakeConfig = await getRecord("store_config", "custom_mistake_tags");
     if (savedMistakeConfig && Array.isArray(savedMistakeConfig.value)) {
       customMistakeTags = [...new Set([...customMistakeTags, ...savedMistakeConfig.value])];
     }
 
     const savedTaxonomyConfig = await getRecord("store_config", "system_taxonomy");
-    if (savedTaxonomyConfig && savedTaxonomyConfig.value) {
-      TAXONOMY = savedTaxonomyConfig.value;
+    if (savedTaxonomyConfig && savedTaxonomyConfig.value && typeof savedTaxonomyConfig.value === "object") {
+      // Non-destructive merge: Guarantee built-in default chapters are never lost
+      TAXONOMY = { ...DEFAULT_TAXONOMY, ...savedTaxonomyConfig.value };
+      Object.keys(DEFAULT_TAXONOMY).forEach(sub => {
+        if (TAXONOMY[sub] && Array.isArray(TAXONOMY[sub].chapters)) {
+          TAXONOMY[sub].chapters = [...new Set([...DEFAULT_TAXONOMY[sub].chapters, ...TAXONOMY[sub].chapters])];
+        } else {
+          TAXONOMY[sub] = JSON.parse(JSON.stringify(DEFAULT_TAXONOMY[sub]));
+        }
+      });
+    } else {
+      TAXONOMY = JSON.parse(JSON.stringify(DEFAULT_TAXONOMY));
     }
   }
 
@@ -859,8 +906,15 @@ const CGL_OS = (() => {
    * ------------------------------------------------------------- */
   async function syncAllTaxonomyDropdowns() {
     const saved = await getRecord("store_config", "system_taxonomy");
-    if (saved && saved.value) {
-      TAXONOMY = saved.value;
+    if (saved && saved.value && typeof saved.value === "object") {
+      TAXONOMY = { ...DEFAULT_TAXONOMY, ...saved.value };
+      Object.keys(DEFAULT_TAXONOMY).forEach(sub => {
+        if (TAXONOMY[sub] && Array.isArray(TAXONOMY[sub].chapters)) {
+          TAXONOMY[sub].chapters = [...new Set([...DEFAULT_TAXONOMY[sub].chapters, ...TAXONOMY[sub].chapters])];
+        } else {
+          TAXONOMY[sub] = JSON.parse(JSON.stringify(DEFAULT_TAXONOMY[sub]));
+        }
+      });
     }
 
     const subKeys = Object.keys(TAXONOMY);
@@ -1176,7 +1230,9 @@ const CGL_OS = (() => {
     chapSelect.innerHTML = "";
 
     const allDossiers = await getAllRecords("store_concepts");
-    const canonChaps = TAXONOMY[activeCompSubject] ? TAXONOMY[activeCompSubject].chapters : [];
+    const canonChaps = (TAXONOMY[activeCompSubject] && Array.isArray(TAXONOMY[activeCompSubject].chapters)) 
+      ? TAXONOMY[activeCompSubject].chapters 
+      : [];
     const existingChaps = [...new Set(allDossiers.filter(d => d.subject === activeCompSubject).map(d => d.chapter))];
     const combined = [...new Set([...canonChaps, ...existingChaps])];
 
@@ -1306,7 +1362,7 @@ const CGL_OS = (() => {
     chapSelect.innerHTML = "";
 
     const allDossiers = await getAllRecords("store_concepts");
-    const canonChaps = TAXONOMY[sub] ? TAXONOMY[sub].chapters : [];
+    const canonChaps = (TAXONOMY[sub] && Array.isArray(TAXONOMY[sub].chapters)) ? TAXONOMY[sub].chapters : [];
     const existingChaps = [...new Set(allDossiers.filter(d => d.subject === sub).map(d => d.chapter))];
     const combined = [...new Set([...canonChaps, ...existingChaps])];
 
@@ -2093,7 +2149,6 @@ const CGL_OS = (() => {
       imgBox.innerHTML = "";
     }
 
-    // Bi-Directional Concept Bridge Button in Review Mode
     if (isRev) {
       conceptBridgeBox.style.display = "block";
       const bridgeBtn = document.getElementById("btn-jump-to-concept");
@@ -2108,7 +2163,6 @@ const CGL_OS = (() => {
       conceptBridgeBox.style.display = "none";
     }
 
-    // Review Mode Telemetry Banner
     if (isRev) {
       const isAtt = resp.selectedOption !== null && resp.selectedOption !== undefined;
       const isCor = isAtt && resp.selectedOption === q.correctIndex;
@@ -2130,7 +2184,6 @@ const CGL_OS = (() => {
         </div>
       `;
 
-      // Solution & Mistake Tag Dropdown
       solutionBlock.style.display = "block";
       getAllRecords("store_vault").then(vaultRecords => {
         const existingVault = vaultRecords.find(v => v.questionId === q.id);
@@ -4725,24 +4778,34 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
     if (tId === "tab-vault") renderVault();
   }
 
-  window.addEventListener("DOMContentLoaded", async () => {
+  async function initializeApplication() {
     const shield = document.getElementById("pause-shield");
-    shield.style.setProperty("display", "none", "important");
+    if (shield) shield.style.setProperty("display", "none", "important");
 
-    await getDB();
-    await syncAllTaxonomyDropdowns();
-    await renderDashboard();
-    await updateDojoChapters();
-    await renderVault();
-    initGestureControllers();
+    try {
+      await getDB();
+      await syncAllTaxonomyDropdowns();
+      await renderDashboard();
+      await updateDojoChapters();
+      await renderVault();
+      initGestureControllers();
 
-    const savedSessionRec = await getRecord("store_active_session", "current_session");
-    if (savedSessionRec && savedSessionRec.session && !savedSessionRec.session.completed) {
-      activeExam = savedSessionRec.session;
-      activeExam.isPaused = true;
-      updateMiniPlayerDock();
+      const savedSessionRec = await getRecord("store_active_session", "current_session");
+      if (savedSessionRec && savedSessionRec.session && !savedSessionRec.session.completed) {
+        activeExam = savedSessionRec.session;
+        activeExam.isPaused = true;
+        updateMiniPlayerDock();
+      }
+    } catch (e) {
+      console.error("Bootstrapping execution notice:", e);
     }
-  });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeApplication);
+  } else {
+    initializeApplication();
+  }
 
   return {
     switchTab,
@@ -4847,3 +4910,6 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
     popNavLayer
   };
 })();
+
+// Re-bind to global scope explicitly
+window.CGL_OS = CGL_OS;
