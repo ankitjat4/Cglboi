@@ -1,0 +1,4686 @@
+const CGL_OS = (() => {
+  const DB_NAME = "cgl_os_db";
+  const DB_VERSION = 12;
+  let db = null;
+  let dbInitPromise = null;
+
+  let activeExam = null;
+  let examTimerInterval = null;
+  let questionTimerInterval = null;
+  let dojoExam = null;
+  let activeReviewAttempt = null;
+
+  // Full-Screen Living Compendium Studio State
+  let activeCompSubject = "QA";
+  let activeCompChapter = "QA_GEOMETRY";
+  let activeCompSheetIndex = 0;
+  let currentCompSheets = [];
+  let currentConceptImageBase64 = "";
+
+  // Synapse DOM Tree State
+  let synapseExpandedNodes = new Set(["root", "sub_QA", "sub_REAS", "sub_ENG", "sub_GA"]);
+
+  // Disaster Recovery Hydration State
+  let pendingHydrationData = null;
+
+  // Custom Mistake Tags State
+  let customMistakeTags = ["CALCULATION_SLIP", "READING_TRAP", "FORMULA_AMNESIA", "CONCEPT_VOID", "RUSHED_PANIC"];
+
+  // 8 Historical Vault Questions + Foundational Question Bank
+  const SEED_QUESTIONS = [
+    {
+      id: "q_cgl_ga_polity_014",
+      subject: "GA",
+      chapter: "GA_POLITY",
+      subtopic: "Judiciary",
+      method: "Constitutional Articles",
+      conceptId: "top_ga_polity_judiciary",
+      questionText: "Which Article of the Constitution of India provides for the establishment and constitution of the Supreme Court of India?",
+      imageUrl: "",
+      options: ["Article 124", "Article 131", "Article 214", "Article 143"],
+      correctIndex: 0,
+      explanation: "Article 124 of the Constitution establishes the Supreme Court of India and governs its composition and appointments.",
+      tags: ["Polity", "SupremeCourt", "RestoredVault"]
+    },
+    {
+      id: "q_cgl_qa_geom_011",
+      subject: "QA",
+      chapter: "QA_GEOMETRY",
+      subtopic: "Circles",
+      method: "Cyclic Quadrilateral Angles",
+      conceptId: "top_qa_geo_circles",
+      questionText: "In a cyclic quadrilateral $ABCD$, the opposite angles $\\angle A$ and $\\angle C$ satisfy $\\angle A = (2x + 10)^\\circ$ and $\\angle C = (3x + 20)^\\circ$. What is the measure of $\\angle A$?",
+      imageUrl: "",
+      options: ["$60^\\circ$", "$70^\\circ$", "$80^\\circ$", "$75^\\circ$"],
+      correctIndex: 1,
+      explanation: "Opposite angles of a cyclic quadrilateral sum to $180^\\circ$. $(2x + 10) + (3x + 20) = 180 \\implies 5x + 30 = 180 \\implies 5x = 150 \\implies x = 30^\\circ$. Therefore, $\\angle A = 2(30) + 10 = 70^\\circ$.",
+      tags: ["Geometry", "CyclicQuadrilateral", "RestoredVault"]
+    },
+    {
+      id: "q_cgl_qa_tw_010",
+      subject: "QA",
+      chapter: "QA_TIME_WORK",
+      subtopic: "Pipes & Cisterns",
+      method: "Combined Rate of Flow",
+      conceptId: "",
+      questionText: "Pipe $A$ can fill a tank in $12\\text{ hours}$ and Pipe $B$ can fill it in $18\\text{ hours}$. If both pipes are opened simultaneously, in how many hours will the tank be full?",
+      imageUrl: "",
+      options: ["$7.2\\text{ hours}$", "$7.5\\text{ hours}$", "$8.0\\text{ hours}$", "$6.8\\text{ hours}$"],
+      correctIndex: 0,
+      explanation: "Combined rate $= \\frac{1}{12} + \\frac{1}{18} = \\frac{3 + 2}{36} = \\frac{5}{36}\\text{ tank/hour}$. Total time $= \\frac{36}{5} = 7.2\\text{ hours}$.",
+      tags: ["TimeAndWork", "Pipes", "RestoredVault"]
+    },
+    {
+      id: "q_cgl_reas_analogy_012",
+      subject: "REAS",
+      chapter: "REAS_ANALOGY",
+      subtopic: "Number Analogy",
+      method: "n(n + 1) Product Form",
+      conceptId: "",
+      questionText: "Select the option that is related to the third number in the same way as the second number is related to the first number: **$14 : 210 :: 18 : \\underline{\\quad ? \\quad}$**",
+      imageUrl: "",
+      options: ["$324$", "$342$", "$360$", "$306$"],
+      correctIndex: 1,
+      explanation: "Pattern: $n : n(n + 1)$. Here, $14 \\times 15 = 210$. Similarly, $18 \\times 19 = 342$.",
+      tags: ["Reasoning", "Analogy", "RestoredVault"]
+    },
+    {
+      id: "q_ga_polity_001",
+      subject: "GA",
+      chapter: "GA_POLITY",
+      subtopic: "Constitutional Amendments",
+      method: "Electoral Reform Provisions",
+      conceptId: "top_ga_polity_judiciary",
+      questionText: "Which Constitutional Amendment Act reduced the voting age for elections to the Lok Sabha and State Legislative Assemblies from 21 to 18 years?",
+      imageUrl: "",
+      options: ["42nd Amendment Act", "44th Amendment Act", "61st Amendment Act", "73rd Amendment Act"],
+      correctIndex: 2,
+      explanation: "The 61st Constitutional Amendment Act, 1988 lowered the voting age from 21 to 18.",
+      tags: ["Polity", "Amendments", "RestoredVault"]
+    },
+    {
+      id: "q_qa_geom_002",
+      subject: "QA",
+      chapter: "QA_GEOMETRY",
+      subtopic: "Triangles & Incenters",
+      method: "Internal Angle Bisector Angle",
+      conceptId: "top_qa_geo_triangles",
+      questionText: "In $\\triangle ABC$, the bisectors of $\\angle B$ and $\\angle C$ intersect at point $I$ inside the triangle. If $\\angle BAC = 68^\\circ$, then find the measure of $\\angle BIC$.",
+      imageUrl: "",
+      options: ["$124^\\circ$", "$136^\\circ$", "$112^\\circ$", "$146^\\circ$"],
+      correctIndex: 0,
+      explanation: "Incenter formula: $\\angle BIC = 90^\\circ + \\frac{\\angle A}{2} = 90^\\circ + 34^\\circ = 124^\\circ$.",
+      tags: ["Geometry", "Incenter", "RestoredVault"]
+    },
+    {
+      id: "q_qa_pl_001",
+      subject: "QA",
+      chapter: "QA_PROFIT_LOSS",
+      subtopic: "Dishonest Dealer",
+      method: "Weight Discrepancy Gain",
+      conceptId: "",
+      questionText: "A dishonest dealer professes to sell his goods at cost price but uses a weight of $920\\text{ g}$ for a $1\\text{ kg}$ weight. What is his actual gain percentage?",
+      imageUrl: "",
+      options: ["$8.00\\%$", "$8.69\\%$", "$9.20\\%$", "$7.85\\%$"],
+      correctIndex: 1,
+      explanation: "Gain $\\% = \\frac{\\text{Error}}{\\text{True Value} - \\text{Error}} \\times 100 = \\frac{80}{920} \\times 100 = 8.69\\%$.",
+      tags: ["ProfitLoss", "DishonestDealer", "RestoredVault"]
+    },
+    {
+      id: "q_reas_analogy_001",
+      subject: "REAS",
+      chapter: "REAS_ANALOGY",
+      subtopic: "Number Operations",
+      method: "Linear Scaling 5n + 2",
+      conceptId: "",
+      questionText: "Select the pair that follows the identical numerical pattern: **$6 : 32 :: 2 : 12 :: 9 : \\underline{\\quad ? \\quad}$**",
+      imageUrl: "",
+      options: ["$45$", "$47$", "$49$", "$51$"],
+      correctIndex: 1,
+      explanation: "Logic: $n \\times 5 + 2 = 6 \\times 5 + 2 = 32$; $2 \\times 5 + 2 = 12$; $9 \\times 5 + 2 = 47$.",
+      tags: ["Reasoning", "Analogy", "RestoredVault"]
+    },
+    {
+      id: "q_qa_geo_001",
+      subject: "QA",
+      chapter: "QA_GEOMETRY",
+      subtopic: "Triangles",
+      method: "Angle Bisector Theorem",
+      conceptId: "top_qa_geo_triangles",
+      questionText: "In a $\\triangle ABC$, the bisector of $\\angle A$ intersects $BC$ at $D$. If $AB = 12\\text{ cm}$, $AC = 15\\text{ cm}$, and $BC = 18\\text{ cm}$, find the length of $BD$.",
+      imageUrl: "",
+      options: ["$6\\text{ cm}$", "$8\\text{ cm}$", "$10\\text{ cm}$", "$7.5\\text{ cm}$"],
+      correctIndex: 1,
+      explanation: "By Angle Bisector Theorem: $\\frac{BD}{DC} = \\frac{AB}{AC} = \\frac{12}{15} = \\frac{4}{5}$. Since $BC = 18\\text{ cm}$, $BD = \\frac{4}{9} \\times 18 = 8\\text{ cm}$.",
+      tags: ["AngleBisector", "Geometry"]
+    },
+    {
+      id: "q_qa_alg_002",
+      subject: "QA",
+      chapter: "QA_ALGEBRA",
+      subtopic: "Symmetric Expressions",
+      method: "k^3 - 3k Expansion",
+      conceptId: "top_qa_alg_identities",
+      questionText: "If $x + \\frac{1}{x} = 5$, find the numerical value of $x^3 + \\frac{1}{x^3}$.",
+      imageUrl: "",
+      options: ["$110$", "$125$", "$140$", "$115$"],
+      correctIndex: 0,
+      explanation: "$x^3 + \\frac{1}{x^3} = \\left(x + \\frac{1}{x}\\right)^3 - 3\\left(x + \\frac{1}{x}\\right) = 5^3 - 3(5) = 125 - 15 = 110$.",
+      tags: ["Algebra", "Identities"]
+    },
+    {
+      id: "q_qa_perc_001",
+      subject: "QA",
+      chapter: "QA_PERCENTAGE",
+      subtopic: "Successive Changes",
+      method: "Formula vs Ratio Approach",
+      conceptId: "",
+      questionText: "The length of a rectangle is increased by $20\\%$ and its breadth is decreased by $10\\%$. Find the net percentage change in its area.",
+      imageUrl: "",
+      options: ["$8\\%\\text{ increase}$", "$10\\%\\text{ increase}$", "$8\\%\\text{ decrease}$", "$12\\%\\text{ increase}$"],
+      correctIndex: 0,
+      explanation: "Net change $= a + b + \\frac{ab}{100} = 20 - 10 - \\frac{200}{100} = +8\\%$.",
+      tags: ["Percentage", "Successive"]
+    },
+    {
+      id: "q_reas_cod_001",
+      subject: "REAS",
+      chapter: "REAS_CODING",
+      subtopic: "Letter to Number",
+      method: "Forward Alphabet Rank",
+      conceptId: "",
+      questionText: "In a certain code language, **\"STRIKE\"** is coded as **\"19-20-18-9-11-5\"**. How will **\"CHAMP\"** be coded?",
+      imageUrl: "",
+      options: ["3-8-1-13-16", "3-8-2-14-16", "3-9-1-13-15", "4-8-1-12-16"],
+      correctIndex: 0,
+      explanation: "Each letter is represented directly by its forward alphabet rank ($C=3, H=8, A=1, M=13, P=16$).",
+      tags: ["CodingDecoding", "Alphabet"]
+    },
+    {
+      id: "q_eng_ows_001",
+      subject: "ENG",
+      chapter: "ENG_OWS",
+      subtopic: "Personal Traits",
+      method: "Financial Vocabulary",
+      conceptId: "",
+      questionText: "Select the option that can be used as a one-word substitute for: **\"A person who is unable to pay their debts.\"**",
+      imageUrl: "",
+      options: ["Insolvent", "Mercenary", "Stoic", "Ascetic"],
+      correctIndex: 0,
+      explanation: "**Insolvent** means unable to pay one's debts. Mercenary is someone working merely for money.",
+      tags: ["OWS", "Vocabulary"]
+    },
+    {
+      id: "q_ga_pol_001",
+      subject: "GA",
+      chapter: "GA_POLITY",
+      subtopic: "Judiciary",
+      method: "Constitutional Articles",
+      conceptId: "top_ga_polity_judiciary",
+      questionText: "Which Article of the Constitution of India empowers High Courts to issue writs for the enforcement of Fundamental Rights?",
+      imageUrl: "",
+      options: ["Article 32", "Article 131", "Article 226", "Article 143"],
+      correctIndex: 2,
+      explanation: "Article 226 empowers High Courts to issue writs. Article 32 gives writ powers strictly to the Supreme Court.",
+      tags: ["Polity", "Writs"]
+    },
+    {
+      id: "q_ga_ca_001",
+      subject: "GA",
+      chapter: "GA_CA_ANNUAL",
+      subtopic: "Summits & Treaties",
+      method: "International Conventions",
+      conceptId: "top_ga_ca_annual_sample",
+      questionText: "Which country hosted the official plenary session of the 2026 World Economic Forum Annual Meeting in Davos?",
+      imageUrl: "",
+      options: ["Switzerland", "Germany", "France", "Austria"],
+      correctIndex: 0,
+      explanation: "The World Economic Forum Annual Meeting is held annually in Davos-Klosters, Switzerland.",
+      tags: ["CurrentAffairs", "Summits"]
+    }
+  ];
+
+  // Pre-Seeded Living Document Topic Dossiers
+  const SEED_TOPIC_DOSSIERS = [
+    {
+      id: "top_qa_geo_triangles",
+      subject: "QA",
+      chapter: "QA_GEOMETRY",
+      title: "Triangles & Incenters",
+      subtitle: "Incenters, Circumcenters & Angle Bisectors",
+      content: "### Internal Angle Bisector Theorem\nIf $AD$ bisects $\\angle A$ and meets $BC$ at $D$, then:\n$$\\frac{BD}{DC} = \\frac{AB}{AC}$$\n\n> [!formula] Incenter Angle Rule\n> The angle formed at the incenter $I$ is always obtuse:\n> $$\\angle BIC = 90^\\circ + \\frac{\\angle A}{2}$$\n\n### Right-Angled Triangle Inradius\nFor legs $P, B$ and hypotenuse $H$:\n$$r = \\frac{P + B - H}{2}$$\n\n> [!trap] Critical TCS Deduction\n> Always verify whether the question asks for the inradius $r$ or circumradius $R = \\frac{H}{2}$.",
+      imageUrl: "",
+      timestamp: Date.now()
+    },
+    {
+      id: "top_qa_geo_circles",
+      subject: "QA",
+      chapter: "QA_GEOMETRY",
+      title: "Circles & Tangents",
+      subtitle: "Secants, Power of Point & Tangent Lengths",
+      content: "### Tangent-Secant Theorem (Power of a Point)\nFrom an external point $P$, if $PT$ is tangent and $PAB$ is secant:\n$$PT^2 = PA \\cdot PB$$\n\n### Direct & Transverse Common Tangents\nFor two circles of radii $r_1, r_2$ with distance between centers $d$:\n• **Direct Common Tangent (DCT):**\n$$DCT = \\sqrt{d^2 - (r_1 - r_2)^2}$$\n• **Transverse Common Tangent (TCT):**\n$$TCT = \\sqrt{d^2 - (r_1 + r_2)^2}$$\n\n> [!trap] External Touching Circles\n> If circles touch externally ($d = r_1 + r_2$), then $DCT = 2\\sqrt{r_1 r_2}$.\n\n### Common Tangents Inventory\n| Circle Position | Distance $d$ | No. of Common Tangents |\n| :--- | :--- | :--- |\n| Completely Separate | $d > r_1 + r_2$ | 4 (2 Direct, 2 Transverse) |\n| Touching Externally | $d = r_1 + r_2$ | 3 (2 Direct, 1 Common) |\n| Intersecting at 2 pts | $|r_1-r_2| < d < r_1+r_2$ | 2 (Direct Only) |\n| Touching Internally | $d = |r_1 - r_2|$ | 1 |\n| One inside other | $d < |r_1 - r_2|$ | 0 |",
+      imageUrl: "",
+      timestamp: Date.now()
+    },
+    {
+      id: "top_qa_geo_polygons",
+      subject: "QA",
+      chapter: "QA_GEOMETRY",
+      title: "Polygons & Diagonals",
+      subtitle: "Interior Angles, Exterior Angles & Combinatorics",
+      content: "### Core Regular Polygon Equations\n• Sum of interior angles: $S = (n - 2) \\times 180^\\circ$\n• Each interior angle: $\\theta_i = \\frac{(n - 2) \\times 180^\\circ}{n}$\n• Sum of exterior angles: Always $360^\\circ$\n• Total diagonals: $D = \\frac{n(n - 3)}{2}$\n\n> [!tip] Quick Diagonal Shortcut\n> If a polygon has 54 diagonals: $\\frac{n(n - 3)}{2} = 54 \\implies n(n - 3) = 108 = 12 \\times 9 \\implies n = 12$.",
+      imageUrl: "",
+      timestamp: Date.now()
+    },
+    {
+      id: "top_qa_alg_identities",
+      subject: "QA",
+      chapter: "QA_ALGEBRA",
+      title: "Symmetric Inverse Power Identities",
+      subtitle: "Doubling, Cubing & Conditional Nullity",
+      content: "### The $x + 1/x = k$ Reduction Ladder\n• $x^2 + \\frac{1}{x^2} = k^2 - 2$\n• $x^3 + \\frac{1}{x^3} = k^3 - 3k$\n• $x^4 + \\frac{1}{x^4} = (k^2 - 2)^2 - 2$\n• $x^5 + \\frac{1}{x^5} = \\left(x^2 + \\frac{1}{x^2}\\right)\\left(x^3 + \\frac{1}{x^3}\\right) - \\left(x + \\frac{1}{x}\\right)$\n\n> [!formula] Conditional Nullity Identity\n> If $a + b + c = 0$, then:\n> $$a^3 + b^3 + c^3 = 3abc$$",
+      imageUrl: "",
+      timestamp: Date.now()
+    },
+    {
+      id: "top_ga_polity_judiciary",
+      subject: "GA",
+      chapter: "GA_POLITY",
+      title: "Supreme Court & Writ Jurisdiction",
+      subtitle: "Articles 32, 124, 131, 226",
+      content: "### Constitutional Architecture\n• **Article 124:** Establishment and constitution of the Supreme Court of India.\n• **Article 131:** Original jurisdiction of the Supreme Court (Federal disputes between Union & States).\n• **Article 143:** Advisory jurisdiction of the Supreme Court on Presidential references.\n\n### The High Court Writ Advantage\n• **Article 32:** Supreme Court issues writs strictly for enforcement of Fundamental Rights.\n• **Article 226:** High Courts can issue writs for Fundamental Rights *and* for 'any other legal right'.",
+      imageUrl: "",
+      timestamp: Date.now()
+    },
+    {
+      id: "top_ga_ca_annual_sample",
+      subject: "GA",
+      chapter: "GA_CA_ANNUAL",
+      title: "Major Global Summits & Frameworks",
+      subtitle: "2026 Multilateral Engagements",
+      content: "### Multilateral Venues & Mandates\n• **World Economic Forum (WEF):** Annual meeting held in Davos-Klosters, Switzerland.\n• **G20 Troika Context:** Macroeconomic alignments, debt sustainability frameworks, and multilateral bank capital reforms.\n\n> [!tip] Annual CA Static Strategy\n> Memorize summit host countries, main adopted themes, and newly added member states.",
+      imageUrl: "",
+      timestamp: Date.now()
+    }
+  ];
+
+  // Pre-Seeded Blueprints
+  const SEED_SAVED_MOCKS = [
+    {
+      id: "bp_tier1_standard",
+      type: "DYNAMIC_BLUEPRINT",
+      title: "Tier 1 Standard Full Mock",
+      isSectionLocked: true,
+      sections: [
+        { id: 1, subject: "REAS", count: 25, durationMin: 15 },
+        { id: 2, subject: "GA", count: 25, durationMin: 15 },
+        { id: 3, subject: "QA", count: 25, durationMin: 15 },
+        { id: 4, subject: "ENG", count: 25, durationMin: 15 }
+      ]
+    },
+    {
+      id: "bp_qa_reas_speed_blitz",
+      type: "DYNAMIC_BLUEPRINT",
+      title: "Speed Blitz (QA + REAS)",
+      isSectionLocked: false,
+      sections: [
+        { id: 1, subject: "QA", count: 25, durationMin: 18 },
+        { id: 2, subject: "REAS", count: 25, durationMin: 12 }
+      ]
+    }
+  ];
+
+  let TAXONOMY = {
+    QA: {
+      name: "Quantitative Aptitude",
+      weight: 25,
+      chapters: ["QA_NUM_SYS", "QA_PERCENTAGE", "QA_PROFIT_LOSS", "QA_SI_CI", "QA_RATIO_PROP", "QA_TIME_WORK", "QA_SPEED_DIST", "QA_ALGEBRA", "QA_GEOMETRY", "QA_MENSURATION", "QA_TRIGONOMETRY"]
+    },
+    REAS: {
+      name: "General Intelligence & Reasoning",
+      weight: 25,
+      chapters: ["REAS_ANALOGY", "REAS_SERIES", "REAS_CODING", "REAS_BLOOD_REL", "REAS_SYLLOGISM", "REAS_ORDER_RANK", "REAS_FIGURES", "REAS_DICE_CUBE"]
+    },
+    ENG: {
+      name: "English Comprehension",
+      weight: 25,
+      chapters: ["ENG_SYN_ANT", "ENG_OWS", "ENG_IDIOMS", "ENG_SPOTTING", "ENG_IMPROVE", "ENG_ACTIVE_PASS", "ENG_DIRECT_INDR", "ENG_CLOZE_TEST", "ENG_READING_COMP"]
+    },
+    GA: {
+      name: "General Awareness",
+      weight: 25,
+      chapters: ["GA_POLITY", "GA_HISTORY_MOD", "GA_HISTORY_ANC", "GA_GEOGRAPHY_IN", "GA_ECONOMY", "GA_PHYSICS", "GA_CHEMISTRY", "GA_BIOLOGY", "GA_CA_ANNUAL"]
+    }
+  };
+
+  /* -------------------------------------------------------------
+   * 1. FORMATTING & COMPRESSION UTILITIES
+   * ------------------------------------------------------------- */
+  function formatRichText(str) {
+    if (!str) return "";
+    let out = String(str);
+
+    out = out.replace(/^>\s*\[!trap\]\s*(.*)$/gm, '<div class="callout-box trap"><b>⚠️ Trapping Point:</b> $1</div>');
+    out = out.replace(/^>\s*\[!formula\]\s*(.*)$/gm, '<div class="callout-box formula"><b>⚡ Formula:</b> $1</div>');
+    out = out.replace(/^>\s*\[!tip\]\s*(.*)$/gm, '<div class="callout-box"><b>💡 Tip:</b> $1</div>');
+
+    out = out.replace(/^### (.*$)/gim, '<h3 style="font-size:15px; font-weight:700; color:var(--accent-cyan); margin:10px 0 4px 0;">$1</h3>');
+    out = out.replace(/^## (.*$)/gim, '<h2 style="font-size:17px; font-weight:800; color:#fff; margin:12px 0 6px 0;">$1</h2>');
+    out = out.replace(/^# (.*$)/gim, '<h1 style="font-size:19px; font-weight:800; color:#fff; margin:14px 0 8px 0;">$1</h1>');
+    out = out.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+
+    out = out.replace(/(\|[^\n]+\|\r?\n)((?:\|:?[-]+:?)+\|)(\r?\n(?:\|[^\n]+\|\r?\n?)+)/g, (match, headerLine, alignLine, bodyLines) => {
+      const headers = headerLine.trim().split('|').filter(c => c.trim().length > 0).map(c => `<th>${c.trim()}</th>`).join('');
+      const rows = bodyLines.trim().split('\n').map(row => {
+        const cells = row.trim().split('|').filter(c => c.trim().length > 0).map(c => `<td>${c.trim()}</td>`).join('');
+        return `<tr>${cells}</tr>`;
+      }).join('');
+      return `<table class="document-table"><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table>`;
+    });
+
+    if (window.katex) {
+      out = out.replace(/\$\$([\s\S]*?)\$\$/g, (m, f) => {
+        try { return katex.renderToString(f, { displayMode: true, throwOnError: false }); } catch(e) { return m; }
+      });
+      out = out.replace(/\$([^\$\n]+?)\$/g, (m, f) => {
+        try { return katex.renderToString(f, { displayMode: false, throwOnError: false }); } catch(e) { return m; }
+      });
+    }
+    return out.replace(/\n/g, "<br>");
+  }
+
+  function compressImageFile(file) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          let width = img.width;
+          let height = img.height;
+          const maxW = 800;
+          if (width > maxW) {
+            height = Math.round((height * maxW) / width);
+            width = maxW;
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL("image/jpeg", 0.75));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  /* -------------------------------------------------------------
+   * 2. INDEXEDDB PERSISTENCE ENGINE (SCHEMA V12)
+   * ------------------------------------------------------------- */
+  function getDB() {
+    if (db) return Promise.resolve(db);
+    if (dbInitPromise) return dbInitPromise;
+
+    dbInitPromise = new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, DB_VERSION);
+
+      req.onblocked = () => {
+        console.warn("Database upgrade blocked by open connection.");
+      };
+
+      req.onupgradeneeded = (e) => {
+        const d = e.target.result;
+        const stores = [
+          { name: "store_questions", key: "id" },
+          { name: "store_attempts", key: "sessionId" },
+          { name: "store_vault", key: "questionId" },
+          { name: "store_vault_sprints", key: "sessionId" },
+          { name: "store_concepts", key: "id" },
+          { name: "store_notes", key: "id" },
+          { name: "store_saved_mocks", key: "id" },
+          { name: "store_active_session", key: "id" },
+          { name: "store_config", key: "key" }
+        ];
+        stores.forEach(s => {
+          if (!d.objectStoreNames.contains(s.name)) {
+            d.createObjectStore(s.name, { keyPath: s.key });
+          }
+        });
+      };
+
+      req.onsuccess = async (e) => {
+        db = e.target.result;
+        db.onversionchange = () => {
+          if (db) { db.close(); db = null; dbInitPromise = null; }
+        };
+        await seedData(db);
+        resolve(db);
+      };
+
+      req.onerror = () => {
+        dbInitPromise = null;
+        reject(req.error);
+      };
+    });
+
+    return dbInitPromise;
+  }
+
+  async function seedData(database) {
+    const d = database || await getDB();
+
+    // 1. Seed Questions
+    const txQ = d.transaction(["store_questions"], "readwrite");
+    const stQ = txQ.objectStore("store_questions");
+    SEED_QUESTIONS.forEach(q => stQ.put(q));
+    await new Promise(r => txQ.oncomplete = r);
+
+    // 2. Seed 8 Vault Items
+    const historicalVaultKeys = [
+      { questionId: "q_cgl_ga_polity_014", chapter: "GA_POLITY", subject: "GA", errorTag: "CONCEPT_VOID" },
+      { questionId: "q_cgl_qa_geom_011", chapter: "QA_GEOMETRY", subject: "QA", errorTag: "CALCULATION_SLIP" },
+      { questionId: "q_cgl_qa_tw_010", chapter: "QA_TIME_WORK", subject: "QA", errorTag: "READING_TRAP" },
+      { questionId: "q_cgl_reas_analogy_012", chapter: "REAS_ANALOGY", subject: "REAS", errorTag: "FORMULA_AMNESIA" },
+      { questionId: "q_ga_polity_001", chapter: "GA_POLITY", subject: "GA", errorTag: "CONCEPT_VOID" },
+      { questionId: "q_qa_geom_002", chapter: "QA_GEOMETRY", subject: "QA", errorTag: "FORMULA_AMNESIA" },
+      { questionId: "q_qa_pl_001", chapter: "QA_PROFIT_LOSS", subject: "QA", errorTag: "CALCULATION_SLIP" },
+      { questionId: "q_reas_analogy_001", chapter: "REAS_ANALOGY", subject: "REAS", errorTag: "READING_TRAP" }
+    ];
+
+    const txV = d.transaction(["store_vault"], "readwrite");
+    const stV = txV.objectStore("store_vault");
+    historicalVaultKeys.forEach(item => {
+      stV.put({
+        questionId: item.questionId,
+        chapter: item.chapter,
+        subject: item.subject,
+        errorTag: item.errorTag,
+        leitnerBox: 1,
+        lastAttempted: 1790430483803
+      });
+    });
+    await new Promise(r => txV.oncomplete = r);
+
+    // 3. Seed Topic Dossiers
+    const txC = d.transaction(["store_concepts"], "readwrite");
+    const stC = txC.objectStore("store_concepts");
+    SEED_TOPIC_DOSSIERS.forEach(t => stC.put(t));
+    await new Promise(r => txC.oncomplete = r);
+
+    // 4. Seed Saved Mock Blueprints & Fixed Papers
+    const txB = d.transaction(["store_saved_mocks"], "readwrite");
+    const stB = txB.objectStore("store_saved_mocks");
+    SEED_SAVED_MOCKS.forEach(b => stB.put(b));
+    await new Promise(r => txB.oncomplete = r);
+
+    // 5. Custom Mistake Tags config & Taxonomy
+    const savedMistakeConfig = await getRecord("store_config", "custom_mistake_tags");
+    if (savedMistakeConfig && Array.isArray(savedMistakeConfig.value)) {
+      customMistakeTags = [...new Set([...customMistakeTags, ...savedMistakeConfig.value])];
+    }
+
+    const savedTaxonomyConfig = await getRecord("store_config", "system_taxonomy");
+    if (savedTaxonomyConfig && savedTaxonomyConfig.value) {
+      TAXONOMY = savedTaxonomyConfig.value;
+    }
+  }
+
+  async function getAllRecords(sName) {
+    try {
+      const d = await getDB();
+      if (!d.objectStoreNames.contains(sName)) return [];
+      return new Promise(res => {
+        const tx = d.transaction([sName], "readonly");
+        const req = tx.objectStore(sName).getAll();
+        req.onsuccess = () => res(req.result || []);
+        req.onerror = () => res([]);
+      });
+    } catch(e) { return []; }
+  }
+
+  async function getRecord(sName, key) {
+    try {
+      const d = await getDB();
+      if (!d.objectStoreNames.contains(sName)) return null;
+      return new Promise(res => {
+        const tx = d.transaction([sName], "readonly");
+        const req = tx.objectStore(sName).get(key);
+        req.onsuccess = () => res(req.result || null);
+        req.onerror = () => res(null);
+      });
+    } catch(e) { return null; }
+  }
+
+  async function putRecord(sName, record) {
+    try {
+      const d = await getDB();
+      if (!d.objectStoreNames.contains(sName)) return false;
+      return new Promise(res => {
+        const tx = d.transaction([sName], "readwrite");
+        const req = tx.objectStore(sName).put(record);
+        req.onsuccess = () => res(true);
+        req.onerror = () => res(false);
+      });
+    } catch(e) { return false; }
+  }
+
+  async function deleteRecordFromStore(sName, key) {
+    try {
+      const d = await getDB();
+      if (!d.objectStoreNames.contains(sName)) return false;
+      return new Promise(res => {
+        const tx = d.transaction([sName], "readwrite");
+        const req = tx.objectStore(sName).delete(key);
+        req.onsuccess = () => res(true);
+        req.onerror = () => res(false);
+      });
+    } catch(e) { return false; }
+  }
+
+  async function clearStore(sName) {
+    try {
+      const d = await getDB();
+      if (!d.objectStoreNames.contains(sName)) return false;
+      return new Promise(res => {
+        const tx = d.transaction([sName], "readwrite");
+        const req = tx.objectStore(sName).clear();
+        req.onsuccess = () => res(true);
+        req.onerror = () => res(false);
+      });
+    } catch(e) { return false; }
+  }
+
+  /* -------------------------------------------------------------
+   * 3. BACKUP, DISASTER RECOVERY & SCHEMA SANITIZERS
+   * ------------------------------------------------------------- */
+  async function exportFullBackup() {
+    const envelope = {
+      cgl_os_envelope: {
+        magic_header: "CGL_INTELLIGENCE_OS_BACKUP",
+        engine_version: DB_VERSION,
+        exported_at: Date.now(),
+        exported_date: new Date().toISOString()
+      },
+      stores: {
+        store_questions: await getAllRecords("store_questions"),
+        store_attempts: await getAllRecords("store_attempts"),
+        store_vault: await getAllRecords("store_vault"),
+        store_vault_sprints: await getAllRecords("store_vault_sprints"),
+        store_concepts: await getAllRecords("store_concepts"),
+        store_notes: await getAllRecords("store_notes"),
+        store_saved_mocks: await getAllRecords("store_saved_mocks"),
+        store_config: await getAllRecords("store_config")
+      }
+    };
+
+    const blob = new Blob([JSON.stringify(envelope, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `cgl_os_backup_${Date.now()}.json`;
+    a.click();
+  }
+
+  function openBackupRestoreModal() {
+    pendingHydrationData = null;
+    document.getElementById("restore-backup-file-input").value = "";
+    document.getElementById("btn-execute-restore").disabled = true;
+    document.getElementById("restore-file-preview-stats").style.display = "none";
+    pushHistoryState("modal-backup-restore");
+    document.getElementById("modal-backup-restore").classList.add("active");
+  }
+
+  function handleBackupFileSelect(input) {
+    if (!input.files || !input.files[0]) return;
+    const file = input.files[0];
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      try {
+        const parsed = JSON.parse(e.target.result);
+        pendingHydrationData = normalizeBackupStructure(parsed);
+
+        const statsBox = document.getElementById("restore-file-preview-stats");
+        statsBox.style.display = "block";
+        statsBox.innerHTML = `
+          <b>Backup File Validated:</b><br>
+          • Questions: ${pendingHydrationData.store_questions.length}<br>
+          • Attempts & Scores: ${pendingHydrationData.store_attempts.length}<br>
+          • Active Error Vault Traps: ${pendingHydrationData.store_vault.length}<br>
+          • Living Document Sheets: ${pendingHydrationData.store_concepts.length}<br>
+          • Saved Blueprints & Papers: ${pendingHydrationData.store_saved_mocks.length}
+        `;
+        document.getElementById("btn-execute-restore").disabled = false;
+      } catch(err) {
+        alert("Corrupted Backup File: " + err.message);
+        document.getElementById("btn-execute-restore").disabled = true;
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function normalizeBackupStructure(raw) {
+    let stores = {};
+    if (raw.cgl_os_envelope && raw.stores) {
+      stores = raw.stores;
+    } else {
+      stores.store_questions = raw.questions || raw.store_questions || [];
+      stores.store_attempts = raw.attempts || raw.store_attempts || [];
+      stores.store_vault = raw.vault || raw.store_vault || [];
+      stores.store_vault_sprints = raw.sprints || raw.store_vault_sprints || [];
+      stores.store_concepts = raw.concepts || raw.formulas || raw.vocab || raw.store_concepts || [];
+      stores.store_notes = raw.notes || raw.store_notes || [];
+      stores.store_saved_mocks = raw.savedMocks || raw.store_saved_mocks || [];
+      stores.store_config = raw.config || raw.store_config || [];
+    }
+
+    stores.store_questions = (stores.store_questions || []).map(sanitizeQuestion);
+    stores.store_concepts = (stores.store_concepts || []).map(sanitizeDossier);
+    stores.store_vault = (stores.store_vault || []).map(sanitizeVaultEntry);
+    stores.store_attempts = (stores.store_attempts || []).map(sanitizeAttempt);
+    stores.store_saved_mocks = (stores.store_saved_mocks || []).map(sanitizeSavedMock);
+    stores.store_vault_sprints = stores.store_vault_sprints || [];
+    stores.store_notes = stores.store_notes || [];
+    stores.store_config = stores.store_config || [];
+
+    return stores;
+  }
+
+  function sanitizeQuestion(q, idx) {
+    return {
+      id: q.id || `q_restored_${Date.now()}_${idx}`,
+      subject: q.subject || "QA",
+      chapter: q.chapter || "QA_GENERAL",
+      subtopic: q.subtopic || "",
+      method: q.method || "",
+      conceptId: q.conceptId || "",
+      questionText: q.questionText || "",
+      imageUrl: q.imageUrl || "",
+      options: Array.isArray(q.options) && q.options.length === 4 ? q.options : ["Option 1", "Option 2", "Option 3", "Option 4"],
+      correctIndex: typeof q.correctIndex === "number" ? q.correctIndex : 0,
+      explanation: q.explanation || "",
+      tags: Array.isArray(q.tags) ? q.tags : ["Hydrated"],
+      annotation: q.annotation || ""
+    };
+  }
+
+  function sanitizeDossier(d, idx) {
+    return {
+      id: d.id || `top_restored_${Date.now()}_${idx}`,
+      subject: d.subject || "QA",
+      chapter: d.chapter || "QA_GENERAL",
+      title: d.title || d.word || "Untitled Topic",
+      subtitle: d.subtitle || d.root || "",
+      content: d.content || d.meaning || "",
+      imageUrl: d.imageUrl || "",
+      timestamp: d.timestamp || Date.now()
+    };
+  }
+
+  function sanitizeVaultEntry(v, idx) {
+    return {
+      questionId: v.questionId || `q_vault_err_${idx}`,
+      chapter: v.chapter || "QA_GENERAL",
+      subject: v.subject || "QA",
+      errorTag: v.errorTag || "UNCLASSIFIED",
+      leitnerBox: typeof v.leitnerBox === "number" ? v.leitnerBox : 1,
+      lastAttempted: v.lastAttempted || Date.now()
+    };
+  }
+
+  function sanitizeAttempt(a, idx) {
+    return {
+      sessionId: a.sessionId || `mock_${Date.now()}_${idx}`,
+      title: a.title || "SSC CGL Practice Mock",
+      timestamp: a.timestamp || Date.now(),
+      mockType: a.mockType || "CUSTOM",
+      signatureTag: a.signatureTag || "",
+      finalScore: typeof a.finalScore === "number" ? a.finalScore : 0,
+      correctCount: typeof a.correctCount === "number" ? a.correctCount : 0,
+      incorrectCount: typeof a.incorrectCount === "number" ? a.incorrectCount : 0,
+      q4Traps: typeof a.q4Traps === "number" ? a.q4Traps : 0,
+      penaltyDrag: typeof a.penaltyDrag === "number" ? a.penaltyDrag : 0,
+      switchDelta: typeof a.switchDelta === "number" ? a.switchDelta : 0,
+      completed: a.completed !== undefined ? a.completed : true,
+      isVaultSprint: !!a.isVaultSprint,
+      isSectionLocked: !!a.isSectionLocked,
+      questions: Array.isArray(a.questions) ? a.questions.map(sanitizeQuestion) : [],
+      userResponses: (a.userResponses && typeof a.userResponses === "object") ? a.userResponses : {},
+      sections: Array.isArray(a.sections) ? a.sections : []
+    };
+  }
+
+  function sanitizeSavedMock(b, idx) {
+    return {
+      id: b.id || `preset_${Date.now()}_${idx}`,
+      type: b.type || (b.questions ? "FIXED_PAPER" : "DYNAMIC_BLUEPRINT"),
+      title: b.title || `Saved Setup ${idx + 1}`,
+      isSectionLocked: b.isSectionLocked !== undefined ? b.isSectionLocked : true,
+      sections: Array.isArray(b.sections) ? b.sections : [{ id: 1, subject: "QA", count: 25, durationMin: 15 }],
+      questions: Array.isArray(b.questions) ? b.questions.map(sanitizeQuestion) : null
+    };
+  }
+
+  async function executeHydrationRestore() {
+    if (!pendingHydrationData) return;
+    const mode = document.getElementById("restore-hydration-mode").value;
+    const d = await getDB();
+
+    try {
+      const storeKeys = [
+        "store_questions", "store_attempts", "store_vault", 
+        "store_vault_sprints", "store_concepts", "store_notes", 
+        "store_saved_mocks", "store_config"
+      ];
+
+      if (mode === "WIPE_REPLACE") {
+        for (const sName of storeKeys) {
+          await clearStore(sName);
+        }
+      }
+
+      for (const sName of storeKeys) {
+        const items = pendingHydrationData[sName] || [];
+        if (items.length > 0 && d.objectStoreNames.contains(sName)) {
+          const tx = d.transaction([sName], "readwrite");
+          const st = tx.objectStore(sName);
+          items.forEach(item => st.put(item));
+          await new Promise(r => tx.oncomplete = r);
+        }
+      }
+
+      alert("Disaster Recovery Complete! All database tables and mock records restored.");
+      document.getElementById("modal-backup-restore").classList.remove("active");
+      await syncAllTaxonomyDropdowns();
+      await renderDashboard();
+      await updateDojoChapters();
+      await renderVault();
+    } catch(err) {
+      alert("Hydration Error: " + err.message);
+    }
+  }
+
+  /* -------------------------------------------------------------
+   * 4. DYNAMIC TAXONOMY & SUBJECT MODULE ENGINE
+   * ------------------------------------------------------------- */
+  async function syncAllTaxonomyDropdowns() {
+    const saved = await getRecord("store_config", "system_taxonomy");
+    if (saved && saved.value) {
+      TAXONOMY = saved.value;
+    }
+
+    const subKeys = Object.keys(TAXONOMY);
+
+    const populateSelect = (elementId, includeAll = false) => {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      const currentVal = el.value;
+      el.innerHTML = "";
+
+      if (includeAll) {
+        const optAll = document.createElement("option");
+        optAll.value = "ALL";
+        optAll.innerText = "All Subjects";
+        el.appendChild(optAll);
+      }
+
+      subKeys.forEach(k => {
+        const opt = document.createElement("option");
+        opt.value = k;
+        opt.innerText = `${TAXONOMY[k].name} (${k})`;
+        el.appendChild(opt);
+      });
+
+      if (subKeys.includes(currentVal) || (includeAll && currentVal === "ALL")) {
+        el.value = currentVal;
+      } else if (subKeys.length > 0) {
+        el.value = subKeys[0];
+      }
+    };
+
+    populateSelect("dojo-nav-subject", false);
+    populateSelect("comp-studio-subject-select", false);
+    populateSelect("print-subject", true);
+    populateSelect("concept-edit-subject", false);
+    populateSelect("edit-q-subject", false);
+  }
+
+  function openTaxonomyManagerModal() {
+    renderTaxonomyManagerList();
+    pushHistoryState("modal-taxonomy-manager");
+    document.getElementById("modal-taxonomy-manager").classList.add("active");
+  }
+
+  function renderTaxonomyManagerList() {
+    const container = document.getElementById("taxonomy-manager-list");
+    if (!container) return;
+    container.innerHTML = "";
+
+    Object.keys(TAXONOMY).forEach(subKey => {
+      const sub = TAXONOMY[subKey];
+      const div = document.createElement("div");
+      div.className = "card";
+      div.style.padding = "10px";
+      div.style.marginBottom = "8px";
+      div.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <div>
+            <b style="color:#fff; font-size:13px;">${sub.name}</b>
+            <span class="badge" style="background:#1f6feb; margin-left:6px;">${subKey}</span>
+          </div>
+          <div style="display:flex; gap:4px;">
+            <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px; color:var(--accent-cyan);" onclick="CGL_OS.promptAddChapterToSubject('${subKey}')">+ Chapter</button>
+            <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px; color:var(--status-red);" onclick="CGL_OS.deleteSubjectAction('${subKey}')">Delete</button>
+          </div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:4px;">
+          ${sub.chapters.map(c => `
+            <span style="font-size:10px; font-family:var(--font-mono); background:var(--bg-elevated); border:1px solid var(--border-color); padding:2px 6px; border-radius:4px; display:inline-flex; align-items:center; gap:4px;">
+              ${c}
+              <span style="cursor:pointer; color:var(--status-red); opacity:0.7;" onclick="CGL_OS.deleteChapterFromSubject('${subKey}', '${c}')">✕</span>
+            </span>
+          `).join('')}
+        </div>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  async function addNewSubjectAction() {
+    const keyInput = document.getElementById("new-sub-key");
+    const nameInput = document.getElementById("new-sub-name");
+    const key = keyInput.value.trim().toUpperCase().replace(/\s+/g, '_');
+    const name = nameInput.value.trim();
+
+    if (!key || !name) {
+      alert("Both Key and Full Name are required.");
+      return;
+    }
+
+    if (TAXONOMY[key]) {
+      alert(`Subject ${key} already exists.`);
+      return;
+    }
+
+    TAXONOMY[key] = {
+      name: name,
+      weight: 25,
+      chapters: [`${key}_GENERAL`]
+    };
+
+    await putRecord("store_config", { key: "system_taxonomy", value: TAXONOMY });
+    keyInput.value = "";
+    nameInput.value = "";
+    renderTaxonomyManagerList();
+    await syncAllTaxonomyDropdowns();
+    await renderDashboard();
+    await updateDojoChapters();
+  }
+
+  async function promptAddChapterToSubject(subKey) {
+    const chap = prompt(`Enter chapter tag for ${subKey} (e.g. ${subKey}_TOPIC):`);
+    if (!chap || !chap.trim()) return;
+    const formatted = chap.trim().toUpperCase().replace(/\s+/g, '_');
+
+    if (!TAXONOMY[subKey].chapters.includes(formatted)) {
+      TAXONOMY[subKey].chapters.push(formatted);
+      await putRecord("store_config", { key: "system_taxonomy", value: TAXONOMY });
+      renderTaxonomyManagerList();
+      await syncAllTaxonomyDropdowns();
+      await renderDashboard();
+      await updateDojoChapters();
+    }
+  }
+
+  async function deleteChapterFromSubject(subKey, chap) {
+    if (confirm(`Remove chapter ${chap} from ${subKey}?`)) {
+      TAXONOMY[subKey].chapters = TAXONOMY[subKey].chapters.filter(c => c !== chap);
+      await putRecord("store_config", { key: "system_taxonomy", value: TAXONOMY });
+      renderTaxonomyManagerList();
+      await syncAllTaxonomyDropdowns();
+      await renderDashboard();
+      await updateDojoChapters();
+    }
+  }
+
+  async function deleteSubjectAction(subKey) {
+    if (confirm(`Permanently remove subject ${subKey} and all its taxonomy mappings?`)) {
+      delete TAXONOMY[subKey];
+      await putRecord("store_config", { key: "system_taxonomy", value: TAXONOMY });
+      renderTaxonomyManagerList();
+      await syncAllTaxonomyDropdowns();
+      await renderDashboard();
+      await updateDojoChapters();
+    }
+  }
+
+  function syncEditorChapterDropdown(subKey) {
+    const chapInput = document.getElementById("concept-edit-chapter");
+    if (chapInput && TAXONOMY[subKey] && TAXONOMY[subKey].chapters.length > 0) {
+      chapInput.value = TAXONOMY[subKey].chapters[0];
+    }
+  }
+
+  /* -------------------------------------------------------------
+   * 5. RESPONSIVE SYNAPSE TREE ENGINE (DOM-BASED HIERARCHY)
+   * ------------------------------------------------------------- */
+  async function openSynapseGraphModal() {
+    pushHistoryState("modal-synapse-tree");
+    document.getElementById("modal-synapse-tree").classList.add("active");
+    await renderSynapseDomTree();
+  }
+
+  async function renderSynapseDomTree() {
+    const rootContainer = document.getElementById("synapse-dom-tree-root");
+    if (!rootContainer) return;
+    rootContainer.innerHTML = "";
+
+    const allQuestions = await getAllRecords("store_questions");
+    const allConcepts = await getAllRecords("store_concepts");
+    const allVault = await getAllRecords("store_vault");
+
+    Object.keys(TAXONOMY).forEach(subKey => {
+      const sub = TAXONOMY[subKey];
+      const subNodeId = `sub_${subKey}`;
+      const isSubExpanded = synapseExpandedNodes.has(subNodeId);
+
+      const subNodeWrap = document.createElement("div");
+      subNodeWrap.className = "tree-node-item";
+
+      const subRow = document.createElement("div");
+      subRow.className = "tree-node-row subject-row";
+      subRow.innerHTML = `
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-family:var(--font-mono); color:var(--accent-cyan); font-weight:800;">${isSubExpanded ? "▼" : "▶"}</span>
+          <b style="color:#fff; font-size:13px;">${sub.name} (${subKey})</b>
+        </div>
+        <span class="badge" style="background:#1f6feb;">${sub.chapters.length} Chapters</span>
+      `;
+      subRow.onclick = () => toggleSynapseNode(subNodeId);
+      subNodeWrap.appendChild(subRow);
+
+      if (isSubExpanded) {
+        sub.chapters.forEach(chap => {
+          const chapNodeId = `chap_${chap}`;
+          const isChapExpanded = synapseExpandedNodes.has(chapNodeId);
+          const chapVaultCount = allVault.filter(v => v.chapter === chap).length;
+          const chapQs = allQuestions.filter(q => q.chapter === chap);
+          const chapSheets = allConcepts.filter(c => c.subject === subKey && c.chapter === chap);
+
+          const chapNodeWrap = document.createElement("div");
+          chapNodeWrap.className = "tree-node-item";
+
+          const chapRow = document.createElement("div");
+          chapRow.className = "tree-node-row chapter-row";
+          chapRow.innerHTML = `
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-family:var(--font-mono); color:var(--text-muted); font-size:11px;">${isChapExpanded ? "▼" : "▶"}</span>
+              <span style="font-family:var(--font-mono); font-weight:700; color:#fff; font-size:12px;">${chap}</span>
+              ${chapVaultCount > 0 ? `<span class="badge" style="background:#da3633;">${chapVaultCount} Traps</span>` : ''}
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button class="btn btn-secondary" style="padding:2px 8px; font-size:10px; color:var(--accent-cyan);" onclick="event.stopPropagation(); CGL_OS.launchSynapseChapterBlitz('${subKey}', '${chap}')">⚡ 5-Q Blitz</button>
+            </div>
+          `;
+          chapRow.onclick = () => toggleSynapseNode(chapNodeId);
+          chapNodeWrap.appendChild(chapRow);
+
+          if (isChapExpanded) {
+            if (chapSheets.length === 0 && chapQs.length === 0) {
+              const emptyRow = document.createElement("div");
+              emptyRow.style.fontSize = "11px";
+              emptyRow.style.color = "var(--text-muted)";
+              emptyRow.style.padding = "6px 12px";
+              emptyRow.innerText = "No sheets or tagged questions yet.";
+              chapNodeWrap.appendChild(emptyRow);
+            }
+
+            chapSheets.forEach(sheet => {
+              const sheetRow = document.createElement("div");
+              sheetRow.className = "tree-node-row sheet-row";
+              sheetRow.style.marginTop = "4px";
+              sheetRow.innerHTML = `
+                <div style="display:flex; align-items:center; gap:6px; overflow:hidden;">
+                  <span style="font-size:13px;">📖</span>
+                  <span style="color:#fff; font-size:12px; font-weight:600; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">${sheet.title}</span>
+                </div>
+                <div style="display:flex; gap:4px; flex-shrink:0;">
+                  <button class="btn btn-secondary" style="padding:2px 8px; font-size:10px;" onclick="CGL_OS.openCompendiumToSheet('${sheet.id}', '${subKey}', '${chap}')">Read</button>
+                  <button class="btn btn-cyan" style="padding:2px 8px; font-size:10px;" onclick="CGL_OS.launchDirectSheetDrill('${sheet.id}', '${subKey}', '${chap}')">Drill</button>
+                </div>
+              `;
+              chapNodeWrap.appendChild(sheetRow);
+            });
+          }
+          subNodeWrap.appendChild(chapNodeWrap);
+        });
+      }
+      rootContainer.appendChild(subNodeWrap);
+    });
+  }
+
+  function toggleSynapseNode(nodeId) {
+    if (synapseExpandedNodes.has(nodeId)) {
+      synapseExpandedNodes.delete(nodeId);
+    } else {
+      synapseExpandedNodes.add(nodeId);
+    }
+    renderSynapseDomTree();
+  }
+
+  function expandAllSynapseNodes() {
+    Object.keys(TAXONOMY).forEach(subKey => {
+      synapseExpandedNodes.add(`sub_${subKey}`);
+      TAXONOMY[subKey].chapters.forEach(c => synapseExpandedNodes.add(`chap_${c}`));
+    });
+    renderSynapseDomTree();
+  }
+
+  function collapseAllSynapseNodes() {
+    synapseExpandedNodes.clear();
+    renderSynapseDomTree();
+  }
+
+  function launchSynapseChapterBlitz(subKey, chap) {
+    document.getElementById("modal-synapse-tree").classList.remove("active");
+    launchConfiguredMockDirect(subKey, chap, 5, 5);
+  }
+
+  /* -------------------------------------------------------------
+   * 6. BI-DIRECTIONAL CONCEPT ROUTER & LIVING STUDIO
+   * ------------------------------------------------------------- */
+  async function openCompendiumToSheet(conceptId, targetSub, targetChap) {
+    // 1. Close open modals to avoid z-index interception
+    const openModals = document.querySelectorAll(".modal-overlay.active");
+    openModals.forEach(m => m.classList.remove("active"));
+
+    let item = null;
+    if (conceptId) {
+      item = await getRecord("store_concepts", conceptId);
+    }
+
+    if (!item && targetChap) {
+      const allConcepts = await getAllRecords("store_concepts");
+      item = allConcepts.find(c => c.chapter === targetChap);
+    }
+
+    activeCompSubject = item ? item.subject : (targetSub || "QA");
+    activeCompChapter = item ? item.chapter : (targetChap || "QA_GEOMETRY");
+
+    // 2. Open Studio View
+    pushHistoryState("compendium-fullscreen-view");
+    document.getElementById("compendium-fullscreen-view").style.display = "flex";
+
+    // 3. Set Subject & Chapter explicitly without falling back
+    const subSelect = document.getElementById("comp-studio-subject-select");
+    if (subSelect) subSelect.value = activeCompSubject;
+
+    const chapSelect = document.getElementById("comp-studio-chapter-select");
+    chapSelect.innerHTML = "";
+
+    const allDossiers = await getAllRecords("store_concepts");
+    const canonChaps = TAXONOMY[activeCompSubject] ? TAXONOMY[activeCompSubject].chapters : [];
+    const existingChaps = [...new Set(allDossiers.filter(d => d.subject === activeCompSubject).map(d => d.chapter))];
+    const combined = [...new Set([...canonChaps, ...existingChaps])];
+
+    combined.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c;
+      opt.innerText = c;
+      chapSelect.appendChild(opt);
+    });
+
+    if (combined.includes(activeCompChapter)) {
+      chapSelect.value = activeCompChapter;
+    } else if (combined.length > 0) {
+      activeCompChapter = combined[0];
+      chapSelect.value = activeCompChapter;
+    }
+
+    await renderCompStudioSheets();
+
+    // 4. Activate matching sheet tab
+    if (item) {
+      const sheetIdx = currentCompSheets.findIndex(s => s.id === item.id);
+      if (sheetIdx !== -1) {
+        activeCompSheetIndex = sheetIdx;
+        renderActiveCompSheet();
+      }
+    }
+  }
+
+  function jumpToConceptFromReview(conceptId) {
+    const q = activeExam.questions[activeExam.currentQuestionIndex];
+    openCompendiumToSheet(conceptId, q.subject, q.chapter);
+  }
+
+  function jumpToConceptFromDojo() {
+    if (!dojoExam) return;
+    const q = dojoExam.questions[dojoExam.currentIndex];
+    openCompendiumToSheet(q.conceptId, q.subject, q.chapter);
+  }
+
+  function openOmniResearchForCurrentQuestion() {
+    if (!activeExam) return;
+    const q = activeExam.questions[activeExam.currentQuestionIndex];
+    triggerOmniResearchDrawer(q);
+  }
+
+  function openOmniResearchForDojoQuestion() {
+    if (!dojoExam) return;
+    const q = dojoExam.questions[dojoExam.currentIndex];
+    triggerOmniResearchDrawer(q);
+  }
+
+  function triggerOmniResearchDrawer(q) {
+    if (!q) return;
+    const queryText = (q.subtopic || q.method || q.chapter).replace(/_/g, " ");
+    document.getElementById("omni-research-query-sub").innerText = `${q.subject} • ${q.chapter}`;
+    document.getElementById("omni-research-prompt-preview").innerText = q.questionText.slice(0, 160) + "...";
+
+    const wikiUrl = `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(queryText + " SSC CGL")}`;
+    const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(q.questionText.slice(0, 100) + " " + queryText)}`;
+
+    let wolframQuery = queryText;
+    const mathMatch = q.questionText.match(/\$([^\$]+)\$/);
+    if (mathMatch && mathMatch[1]) {
+      wolframQuery = mathMatch[1].replace(/\\text\{.*?\}/g, "").replace(/\\/g, "");
+    }
+    const wolframUrl = `https://www.wolframalpha.com/input?i=${encodeURIComponent(wolframQuery)}`;
+
+    document.getElementById("omni-link-wiki").href = wikiUrl;
+    document.getElementById("omni-link-google").href = googleUrl;
+    document.getElementById("omni-link-wolfram").href = wolframUrl;
+
+    pushHistoryState("modal-omni-research");
+    document.getElementById("modal-omni-research").classList.add("active");
+  }
+
+  async function launchDirectSheetDrill(conceptId, subject, chapter) {
+    document.getElementById("modal-synapse-tree").classList.remove("active");
+    const allQs = await getAllRecords("store_questions");
+    let linked = allQs.filter(q => q.conceptId === conceptId);
+
+    if (linked.length === 0) {
+      linked = allQs.filter(q => q.chapter === chapter);
+    }
+
+    if (linked.length > 0) {
+      compileAndLaunchArena(`Drill: ${chapter}`, linked.slice(0, 10), 10);
+    } else {
+      alert(`No questions found in bank for ${chapter}.`);
+    }
+  }
+
+  async function launchCurrentSheetQuestionsDrill() {
+    const sheet = currentCompSheets[activeCompSheetIndex];
+    if (!sheet) return;
+
+    closeCompendiumStudio();
+    const allQs = await getAllRecords("store_questions");
+    let linked = allQs.filter(q => q.conceptId === sheet.id || (q.chapter === sheet.chapter && q.subtopic === sheet.title));
+
+    if (linked.length === 0) {
+      linked = allQs.filter(q => q.chapter === sheet.chapter);
+    }
+
+    if (linked.length === 0) {
+      alert(`No questions in bank for ${sheet.chapter}.`);
+      return;
+    }
+
+    compileAndLaunchArena(`Sheet Drill: ${sheet.title}`, linked.slice(0, 10), Math.max(5, Math.round(linked.slice(0, 10).length * 1.5)));
+  }
+
+  async function openCompendiumStudio() {
+    pushHistoryState("compendium-fullscreen-view");
+    document.getElementById("compendium-fullscreen-view").style.display = "flex";
+    await handleCompStudioSubjectChange(activeCompSubject || "QA");
+  }
+
+  function closeCompendiumStudio() {
+    document.getElementById("compendium-fullscreen-view").style.display = "none";
+  }
+
+  async function handleCompStudioSubjectChange(sub) {
+    activeCompSubject = sub;
+    const chapSelect = document.getElementById("comp-studio-chapter-select");
+    chapSelect.innerHTML = "";
+
+    const allDossiers = await getAllRecords("store_concepts");
+    const canonChaps = TAXONOMY[sub] ? TAXONOMY[sub].chapters : [];
+    const existingChaps = [...new Set(allDossiers.filter(d => d.subject === sub).map(d => d.chapter))];
+    const combined = [...new Set([...canonChaps, ...existingChaps])];
+
+    combined.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c;
+      opt.innerText = c;
+      chapSelect.appendChild(opt);
+    });
+
+    if (combined.length > 0) {
+      activeCompChapter = combined[0];
+      chapSelect.value = activeCompChapter;
+    }
+
+    await renderCompStudioSheets();
+  }
+
+  async function handleCompStudioChapterChange(chap) {
+    activeCompChapter = chap;
+    activeCompSheetIndex = 0;
+    await renderCompStudioSheets();
+  }
+
+  async function renderCompStudioSheets() {
+    const allDossiers = await getAllRecords("store_concepts");
+    currentCompSheets = allDossiers.filter(d => d.subject === activeCompSubject && d.chapter === activeCompChapter);
+
+    const tabsBar = document.getElementById("comp-studio-sheet-tabs");
+    const docContent = document.getElementById("comp-studio-doc-content");
+    tabsBar.innerHTML = "";
+    docContent.innerHTML = "";
+
+    if (currentCompSheets.length === 0) {
+      docContent.innerHTML = `
+        <div style="text-align:center; padding:50px 14px; color:var(--text-muted);">
+          <h3 style="font-size:16px; margin-bottom:8px; color:#fff;">No Topic Sheets in ${activeCompChapter}</h3>
+          <p style="font-size:12px; margin-bottom:14px;">This chapter is currently empty. Create your first scrollable sheet.</p>
+          <button class="btn" onclick="CGL_OS.openConceptEditorModal(true)">+ Create First Sheet</button>
+        </div>
+      `;
+      document.getElementById("comp-studio-scratchpad").value = "";
+      document.getElementById("comp-linked-q-count").innerText = "0 Questions Linked";
+      return;
+    }
+
+    if (activeCompSheetIndex >= currentCompSheets.length) activeCompSheetIndex = 0;
+
+    currentCompSheets.forEach((sheet, idx) => {
+      const tab = document.createElement("button");
+      tab.className = "comp-sheet-tab" + (idx === activeCompSheetIndex ? " active" : "");
+      tab.innerText = sheet.title || `Sheet ${idx + 1}`;
+      tab.addEventListener("click", () => {
+        activeCompSheetIndex = idx;
+        renderActiveCompSheet();
+      });
+      tabsBar.appendChild(tab);
+    });
+
+    await renderActiveCompSheet();
+  }
+
+  async function renderActiveCompSheet() {
+    const sheet = currentCompSheets[activeCompSheetIndex];
+    if (!sheet) return;
+
+    document.querySelectorAll(".comp-sheet-tab").forEach((t, i) => {
+      t.classList.toggle("active", i === activeCompSheetIndex);
+    });
+
+    document.getElementById("comp-studio-header-title").innerText = sheet.title;
+    document.getElementById("comp-studio-header-sub").innerText = `${sheet.chapter} • Sheet ${activeCompSheetIndex + 1} of ${currentCompSheets.length}`;
+
+    const allQs = await getAllRecords("store_questions");
+    const linkedCount = allQs.filter(q => q.conceptId === sheet.id || (q.chapter === sheet.chapter && q.subtopic === sheet.title)).length;
+    document.getElementById("comp-linked-q-count").innerText = `${linkedCount} Associated Questions Linked`;
+
+    let imgHtml = "";
+    if (sheet.imageUrl && sheet.imageUrl.trim().length > 0) {
+      imgHtml = `<div style="text-align:center; margin:16px 0;"><img src="${sheet.imageUrl}" style="max-height:280px; max-width:100%; border-radius:8px; border:1px solid var(--border-color);"></div>`;
+    }
+
+    const docContent = document.getElementById("comp-studio-doc-content");
+    docContent.innerHTML = `
+      <div style="border-bottom:1px solid var(--border-color); padding-bottom:10px; margin-bottom:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="badge" style="background:#1f6feb;">${sheet.chapter}</span>
+          <span style="font-size:11px; color:var(--text-muted);">${new Date(sheet.timestamp || Date.now()).toLocaleDateString()}</span>
+        </div>
+        <h1 style="font-size:22px; font-weight:800; color:#fff; margin-top:8px;">${sheet.title}</h1>
+        ${sheet.subtitle ? `<div style="font-size:13px; color:var(--accent-cyan); font-family:var(--font-mono); margin-top:2px;">${sheet.subtitle}</div>` : ''}
+      </div>
+      ${imgHtml}
+      <div style="font-size:14.5px; line-height:1.75; color:var(--text-main);">${formatRichText(sheet.content)}</div>
+    `;
+
+    const noteKey = `scratch_${sheet.id}`;
+    const savedNote = await getRecord("store_notes", noteKey);
+    document.getElementById("comp-studio-scratchpad").value = savedNote ? savedNote.content : "";
+  }
+
+  function navCompStudioSheet(step) {
+    if (currentCompSheets.length === 0) return;
+    activeCompSheetIndex += step;
+    if (activeCompSheetIndex < 0) activeCompSheetIndex = currentCompSheets.length - 1;
+    if (activeCompSheetIndex >= currentCompSheets.length) activeCompSheetIndex = 0;
+    renderActiveCompSheet();
+  }
+
+  async function autoSaveCompScratchpad(val) {
+    const sheet = currentCompSheets[activeCompSheetIndex];
+    if (!sheet) return;
+    await putRecord("store_notes", { id: `scratch_${sheet.id}`, content: val, timestamp: Date.now() });
+    const st = document.getElementById("comp-scratchpad-status");
+    st.style.display = "inline";
+    setTimeout(() => { st.style.display = "none"; }, 1500);
+  }
+
+  async function deleteCurrentCompendiumSheet() {
+    if (!currentCompSheets || currentCompSheets.length === 0) return;
+    const curr = currentCompSheets[activeCompSheetIndex];
+    if (confirm(`Permanently delete living sheet: "${curr.title}"?`)) {
+      await deleteRecordFromStore("store_concepts", curr.id);
+      await renderCompStudioSheets();
+    }
+  }
+
+  async function promptCreateNewChapter() {
+    const chapName = prompt(`Enter new chapter tag for ${activeCompSubject} (e.g. ${activeCompSubject}_NEW_TOPIC):`);
+    if (!chapName || !chapName.trim()) return;
+    const formatted = chapName.trim().toUpperCase().replace(/\s+/g, '_');
+
+    if (!TAXONOMY[activeCompSubject].chapters.includes(formatted)) {
+      TAXONOMY[activeCompSubject].chapters.push(formatted);
+      await putRecord("store_config", { key: "system_taxonomy", value: TAXONOMY });
+    }
+
+    await handleCompStudioSubjectChange(activeCompSubject);
+    document.getElementById("comp-studio-chapter-select").value = formatted;
+    await handleCompStudioChapterChange(formatted);
+  }
+
+  function openOmniSearchModal() {
+    pushHistoryState("modal-comp-omni-search");
+    document.getElementById("modal-comp-omni-search").classList.add("active");
+    document.getElementById("comp-omni-search-input").value = "";
+    document.getElementById("comp-omni-results-list").innerHTML = `<p style="color:var(--text-muted); text-align:center; padding:20px;">Type keywords above to query across all living sheets.</p>`;
+    setTimeout(() => document.getElementById("comp-omni-search-input").focus(), 150);
+  }
+
+  async function executeOmniSearch(keyword) {
+    const list = document.getElementById("comp-omni-results-list");
+    const term = keyword.trim().toLowerCase();
+    if (!term) {
+      list.innerHTML = `<p style="color:var(--text-muted); text-align:center; padding:20px;">Type keywords above to query across all living sheets.</p>`;
+      return;
+    }
+
+    const allDossiers = await getAllRecords("store_concepts");
+    const results = allDossiers.filter(d => 
+      (d.title && d.title.toLowerCase().includes(term)) ||
+      (d.subtitle && d.subtitle.toLowerCase().includes(term)) ||
+      (d.chapter && d.chapter.toLowerCase().includes(term)) ||
+      (d.content && d.content.toLowerCase().includes(term))
+    );
+
+    list.innerHTML = "";
+    if (results.length === 0) {
+      list.innerHTML = `<p style="color:var(--text-muted); text-align:center; padding:20px;">No matching formulas, traps, or sheets found.</p>`;
+      return;
+    }
+
+    results.forEach(res => {
+      const div = document.createElement("div");
+      div.className = "card";
+      div.style.padding = "10px";
+      div.style.marginBottom = "8px";
+      div.style.cursor = "pointer";
+      div.innerHTML = `
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+          <span class="badge" style="background:#1f6feb;">${res.subject} • ${res.chapter}</span>
+        </div>
+        <b style="font-size:14px; color:#fff;">${res.title}</b>
+        <div style="font-size:11px; color:var(--accent-cyan); font-family:var(--font-mono); margin-bottom:4px;">${res.subtitle || ''}</div>
+        <div style="font-size:12px; color:var(--text-muted); max-height:40px; overflow:hidden; text-overflow:ellipsis;">${res.content.slice(0, 100)}...</div>
+      `;
+      div.addEventListener("click", () => {
+        document.getElementById("modal-comp-omni-search").classList.remove("active");
+        openCompendiumToSheet(res.id, res.subject, res.chapter);
+      });
+      list.appendChild(div);
+    });
+  }
+
+  function insertDossierSnippet(type) {
+    const textarea = document.getElementById("concept-edit-body");
+    let snippet = "";
+    if (type === "FORMULA") snippet = "\n> [!formula] Key Identity\n> $$a^2 + b^2 = c^2$$\n";
+    if (type === "TRAP") snippet = "\n> [!trap] Critical TCS Deduction\n> Verify whether radius or diameter is specified.\n";
+    if (type === "TABLE") snippet = "\n| Condition | Method | Shortcut |\n| :--- | :--- | :--- |\n| Case 1 | Direct Tangent | $2\\sqrt{r_1 r_2}$ |\n";
+    textarea.value += snippet;
+    textarea.focus();
+  }
+
+  function openConceptEditorModal(isNew = true) {
+    currentConceptImageBase64 = "";
+    document.getElementById("concept-editor-title").innerText = isNew ? "Add Topic Sheet" : "Edit Topic Sheet";
+
+    if (isNew || currentCompSheets.length === 0) {
+      document.getElementById("concept-edit-id").value = "top_" + Date.now();
+      document.getElementById("concept-edit-subject").value = activeCompSubject || "QA";
+      document.getElementById("concept-edit-chapter").value = activeCompChapter || "QA_GEOMETRY";
+      document.getElementById("concept-edit-title").value = "";
+      document.getElementById("concept-edit-sub").value = "";
+      document.getElementById("concept-edit-body").value = "";
+      document.getElementById("concept-edit-img-url").value = "";
+      document.getElementById("concept-edit-img-file").value = "";
+    } else {
+      const curr = currentCompSheets[activeCompSheetIndex];
+      document.getElementById("concept-edit-id").value = curr.id;
+      document.getElementById("concept-edit-subject").value = curr.subject;
+      document.getElementById("concept-edit-chapter").value = curr.chapter;
+      document.getElementById("concept-edit-title").value = curr.title;
+      document.getElementById("concept-edit-sub").value = curr.subtitle || "";
+      document.getElementById("concept-edit-body").value = curr.content;
+      document.getElementById("concept-edit-img-url").value = curr.imageUrl || "";
+      document.getElementById("concept-edit-img-file").value = "";
+    }
+
+    pushHistoryState("modal-concept-editor");
+    document.getElementById("modal-concept-editor").classList.add("active");
+  }
+
+  async function handleConceptImageUpload(input) {
+    if (input.files && input.files[0]) {
+      currentConceptImageBase64 = await compressImageFile(input.files[0]);
+    }
+  }
+
+  async function saveConceptCard() {
+    const id = document.getElementById("concept-edit-id").value;
+    const subject = document.getElementById("concept-edit-subject").value;
+    const chapter = document.getElementById("concept-edit-chapter").value.trim().toUpperCase();
+    const title = document.getElementById("concept-edit-title").value.trim();
+    const subtitle = document.getElementById("concept-edit-sub").value.trim();
+    const content = document.getElementById("concept-edit-body").value.trim();
+    const urlInput = document.getElementById("concept-edit-img-url").value.trim();
+
+    if (!title || !content || !chapter) {
+      alert("Chapter, Topic Title, and Content are required.");
+      return;
+    }
+
+    const obj = {
+      id: id,
+      subject: subject,
+      chapter: chapter,
+      title: title,
+      subtitle: subtitle,
+      content: content,
+      imageUrl: currentConceptImageBase64 || urlInput,
+      timestamp: Date.now()
+    };
+
+    await putRecord("store_concepts", obj);
+    document.getElementById("modal-concept-editor").classList.remove("active");
+    openCompendiumToSheet(id, subject, chapter);
+  }
+
+  /* -------------------------------------------------------------
+   * 7. MULTI-SUBJECT CUSTOM MOCK BUILDER & SAVED PRESETS
+   * ------------------------------------------------------------- */
+  let customSequenceRows = [];
+
+  function openCustomMockModal() {
+    if (customSequenceRows.length === 0) {
+      customSequenceRows = [
+        { id: 1, subject: "QA", count: 25, durationMin: 15 },
+        { id: 2, subject: "ENG", count: 25, durationMin: 15 }
+      ];
+    }
+    renderCustomSequenceRows();
+    pushHistoryState("modal-mock-builder");
+    document.getElementById("modal-mock-builder").classList.add("active");
+  }
+
+  function addCustomSectionRow() {
+    const nextId = customSequenceRows.length + 1;
+    customSequenceRows.push({ id: nextId, subject: "QA", count: 25, durationMin: 15 });
+    renderCustomSequenceRows();
+  }
+
+  function removeCustomSectionRow(idx) {
+    if (customSequenceRows.length > 1) {
+      customSequenceRows.splice(idx, 1);
+      renderCustomSequenceRows();
+    }
+  }
+
+  function renderCustomSequenceRows() {
+    const container = document.getElementById("custom-sequence-rows-container");
+    container.innerHTML = "";
+
+    customSequenceRows.forEach((row, idx) => {
+      const div = document.createElement("div");
+      div.style.background = "var(--bg-elevated)";
+      div.style.border = "1px solid var(--border-color)";
+      div.style.borderRadius = "8px";
+      div.style.padding = "10px";
+      div.style.marginBottom = "8px";
+      div.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <span style="font-weight:700; font-size:12px; color:var(--accent-cyan);">Section ${idx + 1}</span>
+          ${customSequenceRows.length > 1 ? `<button class="btn btn-secondary" style="padding:2px 6px; font-size:10px; color:var(--status-red);" onclick="CGL_OS.removeCustomSectionRow(${idx})">Remove</button>` : ''}
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;">
+          <div>
+            <label style="font-size:10px; color:var(--text-muted);">Subject</label>
+            <select class="form-control" style="padding:6px; font-size:12px;" onchange="CGL_OS.updateCustomRowSubject(${idx}, this.value)">
+              ${Object.keys(TAXONOMY).map(k => `<option value="${k}" ${row.subject === k ? 'selected' : ''}>${k}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <label style="font-size:10px; color:var(--text-muted);">Qs</label>
+            <input type="number" class="form-control" style="padding:6px; font-size:12px;" value="${row.count}" min="5" max="50" onchange="CGL_OS.updateCustomRowCount(${idx}, this.value)">
+          </div>
+          <div>
+            <label style="font-size:10px; color:var(--text-muted);">Mins</label>
+            <input type="number" class="form-control" style="padding:6px; font-size:12px;" value="${row.durationMin}" min="1" max="60" onchange="CGL_OS.updateCustomRowDuration(${idx}, this.value)">
+          </div>
+        </div>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  function updateCustomRowSubject(idx, val) { customSequenceRows[idx].subject = val; }
+  function updateCustomRowCount(idx, val) { customSequenceRows[idx].count = parseInt(val) || 25; }
+  function updateCustomRowDuration(idx, val) { customSequenceRows[idx].durationMin = parseInt(val) || 15; }
+
+  function applyBlueprintPreset(val) {
+    const wrap = document.getElementById("custom-sequence-stack-wrap");
+    if (val === "CUSTOM_BUILDER") {
+      wrap.style.display = "block";
+    } else if (val === "TIER1_FULL") {
+      wrap.style.display = "none";
+      customSequenceRows = [
+        { id: 1, subject: "REAS", count: 25, durationMin: 15 },
+        { id: 2, subject: "GA", count: 25, durationMin: 15 },
+        { id: 3, subject: "QA", count: 25, durationMin: 15 },
+        { id: 4, subject: "ENG", count: 25, durationMin: 15 }
+      ];
+    } else if (val === "TIER2_SEC1") {
+      wrap.style.display = "none";
+      customSequenceRows = [
+        { id: 1, subject: "QA", count: 30, durationMin: 30 },
+        { id: 2, subject: "REAS", count: 30, durationMin: 30 }
+      ];
+    } else if (val === "QA_BLITZ") {
+      wrap.style.display = "none";
+      customSequenceRows = [
+        { id: 1, subject: "QA", count: 15, durationMin: 10 }
+      ];
+    }
+  }
+
+  function openSaveBlueprintModal(mode = "DYNAMIC_BLUEPRINT", targetId = "") {
+    document.getElementById("save-preset-mode").value = mode;
+    document.getElementById("save-preset-target-id").value = targetId;
+
+    const titleInput = document.getElementById("blueprint-title-input");
+    const modalTitle = document.getElementById("save-preset-modal-title");
+
+    if (mode === "FIXED_PAPER") {
+      modalTitle.innerText = "Freeze Mock as Fixed Paper";
+      titleInput.placeholder = "e.g. CGL 2024 Tier 1 Replica (Exact Questions)";
+    } else {
+      modalTitle.innerText = "Save Dynamic Blueprint Ruleset";
+      titleInput.placeholder = "e.g. Speed Blitz Alpha (QA + REAS)";
+    }
+
+    titleInput.value = "";
+    pushHistoryState("modal-save-blueprint");
+    document.getElementById("modal-save-blueprint").classList.add("active");
+  }
+
+  async function saveCurrentPresetAction() {
+    const mode = document.getElementById("save-preset-mode").value;
+    const targetId = document.getElementById("save-preset-target-id").value;
+    const title = document.getElementById("blueprint-title-input").value.trim();
+
+    if (!title) {
+      alert("Title is required.");
+      return;
+    }
+
+    let record;
+
+    if (mode === "FIXED_PAPER") {
+      const attempts = await getAllRecords("store_attempts");
+      const target = attempts.find(a => a.sessionId === targetId);
+      if (!target || !target.questions || target.questions.length === 0) {
+        alert("Unable to locate questions for fixed paper.");
+        return;
+      }
+
+      record = {
+        id: "paper_" + Date.now(),
+        type: "FIXED_PAPER",
+        title: title,
+        isSectionLocked: !!target.isSectionLocked,
+        sections: target.sections ? JSON.parse(JSON.stringify(target.sections)) : [],
+        questions: JSON.parse(JSON.stringify(target.questions))
+      };
+    } else {
+      const isLock = document.getElementById("builder-sectional-lock").value === "YES";
+      record = {
+        id: "bp_" + Date.now(),
+        type: "DYNAMIC_BLUEPRINT",
+        title: title,
+        isSectionLocked: isLock,
+        sections: JSON.parse(JSON.stringify(customSequenceRows)),
+        questions: null
+      };
+    }
+
+    await putRecord("store_saved_mocks", record);
+    document.getElementById("modal-save-blueprint").classList.remove("active");
+    alert(`Saved "${title}" (${mode === "FIXED_PAPER" ? "Fixed Question Paper" : "Dynamic Blueprint"}) to Dashboard.`);
+    await renderDashboardBlueprints();
+  }
+
+  async function renderDashboardBlueprints() {
+    const pillsContainer = document.getElementById("dash-blueprints-pills");
+    pillsContainer.innerHTML = "";
+    const blueprints = await getAllRecords("store_saved_mocks");
+
+    if (blueprints.length === 0) {
+      pillsContainer.innerHTML = `<span style="font-size:11px; color:var(--text-muted);">No saved setups. Save blueprints or freeze past test papers to launch them here.</span>`;
+      return;
+    }
+
+    blueprints.forEach(bp => {
+      const pill = document.createElement("button");
+      pill.className = "anchor-pill";
+      pill.style.display = "inline-flex";
+      pill.style.alignItems = "center";
+      pill.style.gap = "6px";
+      const icon = bp.type === "FIXED_PAPER" ? "📌" : "⚡";
+      pill.innerHTML = `<span>${icon} ${bp.title}</span><span style="opacity:0.6; font-size:9px;" onclick="event.stopPropagation(); CGL_OS.deleteSavedPreset('${bp.id}')">✕</span>`;
+      pill.addEventListener("click", () => launchSavedPreset(bp.id));
+      pillsContainer.appendChild(pill);
+    });
+  }
+
+  async function launchSavedPreset(id) {
+    const preset = await getRecord("store_saved_mocks", id);
+    if (!preset) return;
+
+    if (preset.type === "FIXED_PAPER" && preset.questions && preset.questions.length > 0) {
+      const parsedSections = preset.sections && preset.sections.length > 0 
+        ? JSON.parse(JSON.stringify(preset.sections)).map(s => ({ ...s, locked: false }))
+        : [{ id: "SEC_1", name: "Paper Arena", durationSec: 900, locked: false }];
+
+      activeExam = {
+        sessionId: "fixed_mock_" + Date.now(),
+        timestamp: Date.now(),
+        title: preset.title,
+        mockType: "CUSTOM",
+        signatureTag: "FIXED_PAPER",
+        isVaultSprint: false,
+        isSectionLocked: !!preset.isSectionLocked,
+        sections: parsedSections,
+        activeSectionIndex: 0,
+        currentQuestionIndex: 0,
+        questions: preset.questions.map((q, idx) => ({ 
+          ...q, 
+          sectionIndex: (typeof q.sectionIndex === "number" && q.sectionIndex >= 0 && q.sectionIndex < parsedSections.length) ? q.sectionIndex : 0,
+          globalNumber: idx + 1 
+        })),
+        sectionRemainingSec: parsedSections[0].durationSec || 900,
+        currentQTimeSpentSec: 0,
+        userResponses: {},
+        isPaused: false,
+        isReviewMode: false
+      };
+
+      activeExam.questions.forEach(q => {
+        activeExam.userResponses[q.id] = {
+          selectedOption: null,
+          initialOption: null,
+          status: "unanswered",
+          switches: 0,
+          decisionTrail: [],
+          timeSpentSec: 0,
+          struck: []
+        };
+      });
+
+      await putRecord("store_active_session", { id: "current_session", session: activeExam });
+      hideMiniPlayer();
+
+      pushHistoryState("exam-arena");
+      document.getElementById("exam-arena").style.display = "flex";
+      renderActiveExamQuestion();
+      startExamTimers();
+    } else {
+      customSequenceRows = preset.sections;
+      document.getElementById("builder-sectional-lock").value = preset.isSectionLocked ? "YES" : "NO";
+      await launchConfiguredMock();
+    }
+  }
+
+  async function deleteSavedPreset(id) {
+    if (confirm("Delete this saved mock setup?")) {
+      await deleteRecordFromStore("store_saved_mocks", id);
+      await renderDashboardBlueprints();
+    }
+  }
+
+  async function launchConfiguredMock() {
+    const modal = document.getElementById("modal-mock-builder");
+    if (modal) modal.classList.remove("active");
+
+    const preset = document.getElementById("builder-blueprint-preset").value;
+    const isLock = document.getElementById("builder-sectional-lock").value === "YES";
+    const allQuestions = await getAllRecords("store_questions");
+
+    let sections = [];
+    let flattened = [];
+    let signatureTags = [];
+    let globalCounter = 1;
+
+    customSequenceRows.forEach((row, sIdx) => {
+      let pool = allQuestions.filter(q => q.subject === row.subject);
+      if (pool.length === 0) pool = allQuestions;
+      const sectionQuestions = pool.slice(0, row.count);
+      signatureTags.push(row.subject);
+
+      const secObj = {
+        id: `SEC_${sIdx + 1}_${row.subject}`,
+        subject: row.subject,
+        name: `${TAXONOMY[row.subject] ? TAXONOMY[row.subject].name : row.subject} (Sec ${sIdx + 1})`,
+        durationSec: row.durationMin * 60,
+        questionCount: sectionQuestions.length,
+        locked: false
+      };
+      sections.push(secObj);
+
+      sectionQuestions.forEach((q, qIdx) => {
+        flattened.push({
+          ...q,
+          sectionIndex: sIdx,
+          sectionName: secObj.name,
+          localNumber: qIdx + 1,
+          globalNumber: globalCounter++
+        });
+      });
+    });
+
+    if (flattened.length === 0) {
+      alert("Database question pool empty for configured routine.");
+      return;
+    }
+
+    const isStandardTier1 = preset === "TIER1_FULL";
+    const isSingleSectional = customSequenceRows.length === 1;
+
+    activeExam = {
+      sessionId: "mock_" + Date.now(),
+      timestamp: Date.now(),
+      title: isStandardTier1 ? "SSC CGL Tier 1 Full Mock" : (isSingleSectional ? `${customSequenceRows[0].subject} Sectional Mock` : `Custom Routine (${signatureTags.join('➔')})`),
+      mockType: isStandardTier1 ? "TIER_1" : (isSingleSectional ? "SECTIONAL" : "CUSTOM"),
+      signatureTag: `CUSTOM_${signatureTags.join('_')}`,
+      isVaultSprint: false,
+      isSectionLocked: isLock,
+      sections: sections,
+      activeSectionIndex: 0,
+      currentQuestionIndex: 0,
+      questions: flattened,
+      sectionRemainingSec: sections[0].durationSec,
+      currentQTimeSpentSec: 0,
+      userResponses: {},
+      isPaused: false,
+      isReviewMode: false
+    };
+
+    activeExam.questions.forEach(q => {
+      activeExam.userResponses[q.id] = {
+        selectedOption: null,
+        initialOption: null,
+        status: "unanswered",
+        switches: 0,
+        decisionTrail: [],
+        timeSpentSec: 0,
+        struck: []
+      };
+    });
+
+    await putRecord("store_active_session", { id: "current_session", session: activeExam });
+    hideMiniPlayer();
+
+    pushHistoryState("exam-arena");
+    document.getElementById("exam-arena").style.display = "flex";
+    renderActiveExamQuestion();
+    startExamTimers();
+  }
+
+  /* -------------------------------------------------------------
+   * 8. TIMED EXAM ARENA & STAGE 2 FULL-SCREEN REVIEW
+   * ------------------------------------------------------------- */
+  function startExamTimers() {
+    clearInterval(examTimerInterval);
+    clearInterval(questionTimerInterval);
+
+    if (activeExam && activeExam.isReviewMode) {
+      document.getElementById("hud-countdown").innerText = "REVIEW";
+      document.getElementById("hud-countdown").className = "hud-timer";
+      return;
+    }
+
+    examTimerInterval = setInterval(() => {
+      if (!activeExam || activeExam.isPaused || activeExam.isReviewMode) return;
+
+      activeExam.sectionRemainingSec--;
+      const m = Math.floor(activeExam.sectionRemainingSec / 60);
+      const s = activeExam.sectionRemainingSec % 60;
+      const clockEl = document.getElementById("hud-countdown");
+      clockEl.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+
+      if (activeExam.sectionRemainingSec < 180) clockEl.className = "hud-timer crimson";
+      else if (activeExam.sectionRemainingSec < 300) clockEl.className = "hud-timer amber";
+      else clockEl.className = "hud-timer";
+
+      if (activeExam.sectionRemainingSec <= 0) {
+        handleSectionLockTransition(true);
+      }
+    }, 1000);
+
+    questionTimerInterval = setInterval(() => {
+      if (!activeExam || activeExam.isPaused || activeExam.isReviewMode) return;
+      activeExam.currentQTimeSpentSec++;
+      const m = Math.floor(activeExam.currentQTimeSpentSec / 60);
+      const s = activeExam.currentQTimeSpentSec % 60;
+      document.getElementById("arena-q-timer").innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      document.getElementById("hud-pacing-status").innerText = `${activeExam.currentQTimeSpentSec}s on Q`;
+
+      const curQ = activeExam.questions[activeExam.currentQuestionIndex];
+      if (curQ && activeExam.userResponses[curQ.id]) {
+        activeExam.userResponses[curQ.id].timeSpentSec++;
+      }
+    }, 1000);
+  }
+
+  function requestEndSectionEarly() {
+    if (!activeExam || activeExam.isReviewMode) return;
+    const curSec = activeExam.sections[activeExam.activeSectionIndex];
+    const m = Math.floor(activeExam.sectionRemainingSec / 60);
+    const s = activeExam.sectionRemainingSec % 60;
+
+    document.getElementById("lock-confirm-msg").innerHTML = `
+      You have <b>${m}m ${s}s</b> remaining in <b>${curSec.name}</b>.<br><br>
+      Locking early will permanently seal this section. You cannot return to it.
+    `;
+    document.getElementById("modal-section-lock-confirm").classList.add("active");
+  }
+
+  function confirmEndSectionEarly() {
+    document.getElementById("modal-section-lock-confirm").classList.remove("active");
+    handleSectionLockTransition(false);
+  }
+
+  function handleSectionLockTransition(isAutoExpired) {
+    if (!activeExam) return;
+    activeExam.sections[activeExam.activeSectionIndex].locked = true;
+
+    if (activeExam.activeSectionIndex < activeExam.sections.length - 1) {
+      activeExam.activeSectionIndex++;
+      const nextSec = activeExam.sections[activeExam.activeSectionIndex];
+      activeExam.sectionRemainingSec = nextSec.durationSec;
+      const nextIdx = activeExam.questions.findIndex(q => q.sectionIndex === activeExam.activeSectionIndex);
+      if (nextIdx !== -1) activeExam.currentQuestionIndex = nextIdx;
+
+      showSectionToast(isAutoExpired 
+        ? `Section time expired! Locked and transitioned to: ${nextSec.name}` 
+        : `Section locked early! Transitioned to: ${nextSec.name}`);
+
+      renderActiveExamQuestion();
+    } else {
+      submitExamSession();
+    }
+  }
+
+  function showSectionToast(msg) {
+    const toast = document.getElementById("arena-lock-toast");
+    toast.innerText = msg;
+    toast.style.display = "block";
+    setTimeout(() => { toast.style.display = "none"; }, 3500);
+  }
+
+  function renderActiveExamQuestion() {
+    const q = activeExam.questions[activeExam.currentQuestionIndex];
+    const resp = activeExam.userResponses[q.id] || {};
+    const isRev = !!activeExam.isReviewMode;
+
+    const pauseBtn = document.getElementById("btn-arena-pause");
+    const exitRevBtn = document.getElementById("btn-arena-exit-review");
+    const lockBtn = document.getElementById("btn-arena-early-lock");
+    const drawerLockBtn = document.getElementById("btn-drawer-early-lock");
+    const revBtn = document.getElementById("btn-q-review");
+    const saveNextBtn = document.getElementById("btn-q-save-next");
+    const telemBanner = document.getElementById("arena-review-telemetry-banner");
+    const solutionBlock = document.getElementById("arena-review-solution-block");
+    const conceptBridgeBox = document.getElementById("arena-concept-bridge-box");
+    const researchBtn = document.getElementById("btn-arena-research");
+    const panicFlag = document.getElementById("hud-panic-flag");
+
+    researchBtn.style.display = "inline-flex";
+
+    if (isRev) {
+      pauseBtn.style.display = "none";
+      exitRevBtn.style.display = "inline-flex";
+      lockBtn.style.display = "none";
+      drawerLockBtn.style.display = "none";
+      revBtn.style.display = "none";
+      saveNextBtn.innerText = "Next Question ►";
+      document.getElementById("btn-submit-exam").style.display = "none";
+      document.getElementById("palette-drawer-title").innerText = "Review Palette";
+      document.getElementById("palette-legend-bar").innerHTML = `
+        <span>🟢 Correct</span>
+        <span>🔴 Incorrect</span>
+        <span>⚪ Unattempted</span>
+      `;
+      panicFlag.style.display = resp.isPanicSlip ? "inline-block" : "none";
+    } else {
+      pauseBtn.style.display = "inline-flex";
+      exitRevBtn.style.display = "none";
+      revBtn.style.display = "inline-flex";
+      saveNextBtn.innerText = "Save & Next";
+      document.getElementById("btn-submit-exam").style.display = "block";
+      document.getElementById("palette-drawer-title").innerText = "Question Palette";
+      panicFlag.style.display = "none";
+
+      if (activeExam.isSectionLocked) {
+        lockBtn.style.display = "inline-flex";
+        drawerLockBtn.style.display = "block";
+        const isLast = activeExam.activeSectionIndex === activeExam.sections.length - 1;
+        lockBtn.innerText = isLast ? "🔒 Submit Final Section" : "🔒 End Section Early";
+        drawerLockBtn.innerText = isLast ? "🔒 Lock & Submit Final Section" : "🔒 End & Advance Section Early";
+      } else {
+        lockBtn.style.display = "none";
+        drawerLockBtn.style.display = "none";
+      }
+    }
+
+    const secQs = activeExam.questions.filter(item => item.sectionIndex === q.sectionIndex);
+    document.getElementById("hud-section-badge").innerText = `${q.sectionName ? q.sectionName.toUpperCase() : 'EXAM'}`;
+    document.getElementById("hud-section-qinfo").innerText = `Sec Q${q.localNumber || (activeExam.currentQuestionIndex + 1)} of ${secQs.length} (Global Q${q.globalNumber || (activeExam.currentQuestionIndex + 1)})`;
+    document.getElementById("arena-q-num").innerText = `Q${q.globalNumber || (activeExam.currentQuestionIndex + 1)}`;
+    document.getElementById("arena-q-text").innerHTML = formatRichText(q.questionText);
+
+    if (!isRev) {
+      if (resp.status === "marked") {
+        revBtn.style.color = "#fff";
+        revBtn.style.background = "var(--status-purple)";
+        revBtn.innerText = "Unmark Review";
+      } else {
+        revBtn.style.color = "var(--status-purple)";
+        revBtn.style.background = "var(--bg-elevated)";
+        revBtn.innerText = "Mark Review";
+      }
+    }
+
+    const imgBox = document.getElementById("arena-image-container");
+    if (q.imageUrl && q.imageUrl.trim().length > 0) {
+      imgBox.style.display = "block";
+      imgBox.innerHTML = `<img src="${q.imageUrl}" alt="Question Diagram">`;
+    } else {
+      imgBox.style.display = "none";
+      imgBox.innerHTML = "";
+    }
+
+    // Bi-Directional Concept Bridge Button in Review Mode
+    if (isRev) {
+      conceptBridgeBox.style.display = "block";
+      const bridgeBtn = document.getElementById("btn-jump-to-concept");
+      if (q.conceptId && q.conceptId.trim().length > 0) {
+        bridgeBtn.innerText = "📖 Jump to Underlying Theorem Sheet";
+        bridgeBtn.onclick = () => jumpToConceptFromReview(q.conceptId);
+      } else {
+        bridgeBtn.innerText = `📖 Browse Living Sheets for ${q.chapter}`;
+        bridgeBtn.onclick = () => openCompendiumToSheet(null, q.subject, q.chapter);
+      }
+    } else {
+      conceptBridgeBox.style.display = "none";
+    }
+
+    // Review Mode Telemetry Banner
+    if (isRev) {
+      const isAtt = resp.selectedOption !== null && resp.selectedOption !== undefined;
+      const isCor = isAtt && resp.selectedOption === q.correctIndex;
+      telemBanner.style.display = "block";
+      telemBanner.innerHTML = `
+        <div style="background:var(--bg-elevated); border:1px solid ${isCor ? 'var(--status-green)' : (isAtt ? 'var(--status-red)' : 'var(--border-color)')}; border-radius:8px; padding:10px; font-size:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight:800; color:${isCor ? 'var(--status-green)' : (isAtt ? 'var(--status-red)' : 'var(--text-muted)')};">
+              ${isCor ? '✓ CORRECT (+2.0)' : (isAtt ? '✗ INCORRECT (-0.5)' : '⚪ UNATTEMPTED (0.0)')}
+            </span>
+            <span style="font-family:var(--font-mono); color:var(--text-muted);">${resp.timeSpentSec || 0}s spent</span>
+          </div>
+          ${resp.decisionTrail && resp.decisionTrail.length > 0 ? `
+            <div style="margin-top:6px; color:var(--accent-cyan); font-size:11px;">
+              <b>Hesitation Trail:</b> ${resp.decisionTrail.map(d => `Opt ${d.opt} (${d.atSec}s)`).join(' ➔ ')}
+            </div>
+          ` : ''}
+          ${resp.isPanicSlip ? `<div style="margin-top:4px; color:var(--status-red); font-size:11px; font-weight:700;">⚠️ Detected as Panic Slip (<12s solve in final minutes).</div>` : ''}
+        </div>
+      `;
+
+      // Solution & Mistake Tag Dropdown
+      solutionBlock.style.display = "block";
+      getAllRecords("store_vault").then(vaultRecords => {
+        const existingVault = vaultRecords.find(v => v.questionId === q.id);
+        const currentTag = existingVault ? existingVault.errorTag : "UNCLASSIFIED";
+
+        let optionsHtml = `<option value="UNCLASSIFIED" ${currentTag==='UNCLASSIFIED'?'selected':''}>Tag Mistake Type...</option>`;
+        customMistakeTags.forEach(t => {
+          optionsHtml += `<option value="${t}" ${currentTag===t?'selected':''}>${t.replace(/_/g, ' ')}</option>`;
+        });
+        optionsHtml += `<option value="__NEW_TAG__">+ Create New Tag...</option>`;
+
+        solutionBlock.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-weight:700; color:var(--accent-cyan); font-size:13px;">Method & Detailed Solution</span>
+            ${!isCor && isAtt ? `
+              <select onchange="CGL_OS.handleMistakeTagSelect('${q.id}', this.value)" style="background:#151a24; color:#fff; border:1px solid #da3633; font-size:11px; padding:3px 6px; border-radius:4px;">
+                ${optionsHtml}
+              </select>
+            ` : ''}
+          </div>
+          <div style="font-size:13.5px; line-height:1.6;">${formatRichText(q.explanation || 'No method registered.')}</div>
+        `;
+      });
+
+    } else {
+      telemBanner.style.display = "none";
+      solutionBlock.style.display = "none";
+    }
+
+    const container = document.getElementById("arena-options-container");
+    container.innerHTML = "";
+
+    q.options.forEach((optText, idx) => {
+      const card = document.createElement("div");
+      card.className = "opt-card";
+
+      if (isRev) {
+        if (idx === q.correctIndex) card.classList.add("correct-peek");
+        else if (idx === resp.selectedOption) card.classList.add("wrong-peek");
+      } else {
+        if (resp.selectedOption === idx) card.classList.add("selected");
+        if (resp.struck && resp.struck.includes(idx)) card.classList.add("struck-through");
+
+        card.addEventListener("click", () => {
+          if (resp.struck && resp.struck.includes(idx)) return;
+          if (navigator.vibrate) navigator.vibrate(15);
+
+          if (resp.initialOption === null) resp.initialOption = idx;
+          if (resp.selectedOption !== null && resp.selectedOption !== idx) resp.switches++;
+
+          resp.selectedOption = idx;
+          resp.decisionTrail.push({ opt: idx + 1, atSec: activeExam.currentQTimeSpentSec });
+          if (resp.status !== "marked") resp.status = "answered";
+          renderActiveExamQuestion();
+        });
+
+        let timer;
+        card.addEventListener("touchstart", () => {
+          timer = setTimeout(() => {
+            if (navigator.vibrate) navigator.vibrate([25, 40]);
+            if (!resp.struck) resp.struck = [];
+            if (resp.struck.includes(idx)) {
+              resp.struck = resp.struck.filter(i => i !== idx);
+            } else {
+              resp.struck.push(idx);
+              if (resp.selectedOption === idx) {
+                resp.selectedOption = null;
+                if (resp.status === "answered") resp.status = "unanswered";
+              }
+            }
+            renderActiveExamQuestion();
+          }, 550);
+        });
+        card.addEventListener("touchend", () => clearTimeout(timer));
+      }
+
+      card.innerHTML = `
+        <span style="font-weight:700; color:var(--text-muted); font-size:13px;">${idx + 1}.</span>
+        <div style="flex:1;">${formatRichText(optText)}</div>
+        ${isRev && idx === q.correctIndex ? '<span style="font-size:11px; font-weight:800; color:var(--status-green);">✓ Correct</span>' : ''}
+        ${isRev && idx === resp.selectedOption && idx !== q.correctIndex ? '<span style="font-size:11px; font-weight:800; color:var(--status-red);">✗ Your Pick</span>' : ''}
+      `;
+
+      container.appendChild(card);
+    });
+
+    if (!isRev) activeExam.currentQTimeSpentSec = 0;
+  }
+
+  document.getElementById("btn-q-save-next").addEventListener("click", () => {
+    const q = activeExam.questions[activeExam.currentQuestionIndex];
+    const resp = activeExam.userResponses[q.id];
+
+    if (!activeExam.isReviewMode && resp.selectedOption !== null && resp.status !== "marked") {
+      resp.status = "answered";
+    }
+
+    const nextIdx = activeExam.currentQuestionIndex + 1;
+    if (nextIdx < activeExam.questions.length) {
+      if (activeExam.isReviewMode || !activeExam.isSectionLocked || activeExam.questions[nextIdx].sectionIndex === activeExam.activeSectionIndex) {
+        activeExam.currentQuestionIndex = nextIdx;
+        renderActiveExamQuestion();
+        return;
+      }
+    }
+    toggleExamPalette(true);
+  });
+
+  document.getElementById("btn-q-prev").addEventListener("click", () => {
+    const prevIdx = activeExam.currentQuestionIndex - 1;
+    if (prevIdx >= 0) {
+      if (activeExam.isReviewMode || !activeExam.isSectionLocked || activeExam.questions[prevIdx].sectionIndex === activeExam.activeSectionIndex) {
+        activeExam.currentQuestionIndex = prevIdx;
+        renderActiveExamQuestion();
+      }
+    }
+  });
+
+  document.getElementById("btn-q-review").addEventListener("click", () => {
+    if (activeExam.isReviewMode) return;
+    const q = activeExam.questions[activeExam.currentQuestionIndex];
+    const resp = activeExam.userResponses[q.id];
+    if (resp.status === "marked") {
+      resp.status = resp.selectedOption !== null ? "answered" : "unanswered";
+    } else {
+      resp.status = "marked";
+    }
+    renderActiveExamQuestion();
+  });
+
+  function toggleExamPalette(forceOpen = null) {
+    const drawer = document.getElementById("exam-palette-drawer");
+    const overlay = document.getElementById("exam-drawer-overlay");
+    const open = forceOpen !== null ? forceOpen : !drawer.classList.contains("open");
+
+    if (open) {
+      renderExamPaletteGrid();
+      drawer.classList.add("open");
+      overlay.classList.add("active");
+    } else {
+      drawer.classList.remove("open");
+      overlay.classList.remove("active");
+    }
+  }
+
+  document.getElementById("btn-toggle-exam-palette").addEventListener("click", () => toggleExamPalette());
+  document.getElementById("exam-drawer-overlay").addEventListener("click", () => toggleExamPalette(false));
+
+  function renderExamPaletteGrid(filterSectionIndex = null) {
+    const grid = document.getElementById("exam-palette-grid");
+    grid.innerHTML = "";
+
+    const tabsWrap = document.getElementById("exam-palette-section-tabs");
+    tabsWrap.innerHTML = "";
+
+    const isRev = !!activeExam.isReviewMode;
+
+    activeExam.sections.forEach((sec, sIdx) => {
+      const tabBtn = document.createElement("button");
+      tabBtn.className = "anchor-pill" + (sIdx === activeExam.activeSectionIndex ? " active" : "");
+      
+      if (!isRev && activeExam.isSectionLocked && sec.locked) {
+        tabBtn.innerText = `🔒 ${sec.name.split(" ")[0]}`;
+        tabBtn.style.opacity = "0.5";
+        tabBtn.style.cursor = "not-allowed";
+      } else {
+        tabBtn.innerText = sec.name.split(" ")[0];
+        tabBtn.addEventListener("click", () => {
+          if (!isRev && activeExam.isSectionLocked) {
+            if (sIdx !== activeExam.activeSectionIndex) {
+              alert("Sectional lock is active! Sections must be completed sequentially.");
+            }
+            return;
+          }
+          activeExam.activeSectionIndex = sIdx;
+          renderExamPaletteGrid(sIdx);
+        });
+      }
+      tabsWrap.appendChild(tabBtn);
+    });
+
+    const targetSec = filterSectionIndex !== null ? filterSectionIndex : (!isRev && activeExam.isSectionLocked ? activeExam.activeSectionIndex : null);
+    const displayedQs = targetSec !== null ? activeExam.questions.filter(q => q.sectionIndex === targetSec) : activeExam.questions;
+
+    if (!isRev) {
+      let ans = 0, marked = 0, unans = 0;
+      activeExam.questions.forEach(q => {
+        const resp = activeExam.userResponses[q.id];
+        if (resp.status === "answered") ans++;
+        else if (resp.status === "marked") marked++;
+        else unans++;
+      });
+      document.getElementById("exam-count-ans").innerText = ans;
+      document.getElementById("exam-count-marked").innerText = marked;
+      document.getElementById("exam-count-unans").innerText = unans;
+    }
+
+    displayedQs.forEach(q => {
+      const resp = activeExam.userResponses[q.id] || {};
+      const isSecLocked = !isRev && activeExam.sections[q.sectionIndex] && activeExam.sections[q.sectionIndex].locked;
+
+      const cell = document.createElement("div");
+      cell.className = "palette-cell";
+
+      if (isRev) {
+        const isAtt = resp.selectedOption !== null && resp.selectedOption !== undefined;
+        const isCor = isAtt && resp.selectedOption === q.correctIndex;
+        if (isCor) cell.classList.add("rev-correct");
+        else if (isAtt) cell.classList.add("rev-incorrect");
+        else cell.classList.add("rev-unanswered");
+      } else {
+        if (isSecLocked) cell.classList.add("locked-cell");
+        else if (resp.status === "answered") cell.classList.add("answered");
+        else if (resp.status === "marked") cell.classList.add("marked");
+        else cell.classList.add("unanswered");
+      }
+
+      if (activeExam.questions[activeExam.currentQuestionIndex].id === q.id) {
+        cell.classList.add("current");
+      }
+
+      cell.innerText = q.globalNumber || (activeExam.questions.findIndex(item => item.id === q.id) + 1);
+
+      cell.addEventListener("click", () => {
+        if (isSecLocked) {
+          alert("This section is sealed and locked!");
+          return;
+        }
+        activeExam.currentQuestionIndex = activeExam.questions.findIndex(item => item.id === q.id);
+        toggleExamPalette(false);
+        renderActiveExamQuestion();
+      });
+
+      grid.appendChild(cell);
+    });
+  }
+
+  document.getElementById("btn-arena-pause").addEventListener("click", async () => {
+    if (!activeExam || activeExam.isReviewMode) return;
+    activeExam.isPaused = true;
+    clearInterval(examTimerInterval);
+    clearInterval(questionTimerInterval);
+    await putRecord("store_active_session", { id: "current_session", session: activeExam });
+
+    const shield = document.getElementById("pause-shield");
+    shield.style.setProperty("display", "flex", "important");
+  });
+
+  document.getElementById("btn-resume-exam").addEventListener("click", () => {
+    const shield = document.getElementById("pause-shield");
+    shield.style.setProperty("display", "none", "important");
+    if (activeExam) {
+      activeExam.isPaused = false;
+      startExamTimers();
+    }
+  });
+
+  document.getElementById("btn-minimize-exam").addEventListener("click", async () => {
+    const shield = document.getElementById("pause-shield");
+    shield.style.setProperty("display", "none", "important");
+    document.getElementById("exam-arena").style.display = "none";
+    updateMiniPlayerDock();
+  });
+
+  document.getElementById("btn-exit-exam").addEventListener("click", async () => {
+    if (confirm("Abandon active mock test? Current unsubmitted progress will be lost.")) {
+      const shield = document.getElementById("pause-shield");
+      shield.style.setProperty("display", "none", "important");
+      document.getElementById("exam-arena").style.display = "none";
+      clearInterval(examTimerInterval);
+      clearInterval(questionTimerInterval);
+      await deleteRecordFromStore("store_active_session", "current_session");
+      activeExam = null;
+      hideMiniPlayer();
+      renderDashboard();
+    }
+  });
+
+  function updateMiniPlayerDock() {
+    if (!activeExam || activeExam.isReviewMode) {
+      hideMiniPlayer();
+      return;
+    }
+    const dock = document.getElementById("mini-player-dock");
+    const q = activeExam.questions[activeExam.currentQuestionIndex];
+    const m = Math.floor(activeExam.sectionRemainingSec / 60);
+    const s = activeExam.sectionRemainingSec % 60;
+    let ansCount = 0;
+    Object.values(activeExam.userResponses).forEach(r => { if (r.status === "answered") ansCount++; });
+
+    document.getElementById("mini-player-title").innerText = activeExam.title;
+    document.getElementById("mini-player-sub").innerText = `${q && q.sectionName ? q.sectionName.split(' ')[0] : 'Exam'} • Q${q ? (q.globalNumber || 1) : 1}`;
+    document.getElementById("mini-player-time").innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    document.getElementById("mini-player-ans").innerText = `${ansCount}/${activeExam.questions.length} Ans`;
+
+    dock.style.display = "flex";
+  }
+
+  function hideMiniPlayer() {
+    document.getElementById("mini-player-dock").style.display = "none";
+  }
+
+  async function resumeFromMiniPlayer() {
+    if (!activeExam) {
+      const saved = await getRecord("store_active_session", "current_session");
+      if (saved && saved.session) activeExam = saved.session;
+    }
+    if (!activeExam) return;
+
+    hideMiniPlayer();
+    activeExam.isPaused = false;
+    pushHistoryState("exam-arena");
+    document.getElementById("exam-arena").style.display = "flex";
+    renderActiveExamQuestion();
+    startExamTimers();
+  }
+
+  document.getElementById("btn-submit-exam").addEventListener("click", () => {
+    if (confirm("Confirm final submission of full mock test?")) {
+      toggleExamPalette(false);
+      submitExamSession();
+    }
+  });
+
+  async function submitExamSession() {
+    clearInterval(examTimerInterval);
+    clearInterval(questionTimerInterval);
+
+    let correct = 0, incorrect = 0, traps = 0, totalMarks = 0;
+    let penaltyDrag = 0, switchDelta = 0;
+
+    for (const q of activeExam.questions) {
+      const resp = activeExam.userResponses[q.id];
+      if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
+        const isCorrect = resp.selectedOption === q.correctIndex;
+        
+        if (resp.timeSpentSec < 12 && activeExam.sectionRemainingSec < 180) {
+          resp.isPanicSlip = true;
+        }
+
+        if (isCorrect) {
+          totalMarks += 2.0;
+          correct++;
+          if (resp.initialOption !== null && resp.initialOption !== q.correctIndex) {
+            switchDelta++;
+          }
+          if (activeExam.isVaultSprint) {
+            await advanceVaultBox(q.id, resp.timeSpentSec);
+          }
+        } else {
+          totalMarks -= 0.5;
+          penaltyDrag += 0.5;
+          incorrect++;
+
+          if (resp.initialOption === q.correctIndex) {
+            switchDelta--;
+          }
+
+          if (!activeExam.isVaultSprint) {
+            await putRecord("store_vault", {
+              questionId: q.id,
+              chapter: q.chapter,
+              subject: q.subject,
+              errorTag: "UNCLASSIFIED",
+              leitnerBox: 1,
+              lastAttempted: Date.now()
+            });
+          } else {
+            await demoteVaultBox(q.id);
+          }
+
+          if (resp.timeSpentSec > 90) traps++;
+        }
+      }
+    }
+
+    activeExam.completed = true;
+    activeExam.finalScore = totalMarks;
+    activeExam.correctCount = correct;
+    activeExam.incorrectCount = incorrect;
+    activeExam.q4Traps = traps;
+    activeExam.penaltyDrag = penaltyDrag;
+    activeExam.switchDelta = switchDelta;
+
+    await deleteRecordFromStore("store_active_session", "current_session");
+    hideMiniPlayer();
+
+    if (activeExam.isVaultSprint) {
+      await putRecord("store_vault_sprints", {
+        sessionId: activeExam.sessionId,
+        timestamp: activeExam.timestamp,
+        totalQuestions: activeExam.questions.length,
+        correctCount: correct,
+        incorrectCount: incorrect,
+        accuracy: activeExam.questions.length > 0 ? Math.round((correct / activeExam.questions.length) * 100) : 0
+      });
+      renderVaultSprintHistory();
+    } else {
+      await putRecord("store_attempts", activeExam);
+    }
+
+    document.getElementById("exam-arena").style.display = "none";
+    renderDashboard();
+    openMockReview(activeExam);
+  }
+
+  async function reattemptMock(sessionId) {
+    const attempts = await getAllRecords("store_attempts");
+    const target = attempts.find(a => a.sessionId === sessionId);
+    if (!target) return;
+
+    const modalReview = document.getElementById("modal-mock-review");
+    if (modalReview) modalReview.classList.remove("active");
+    const modalArchive = document.getElementById("modal-history-archive");
+    if (modalArchive) modalArchive.classList.remove("active");
+
+    const parsedSections = target.sections && target.sections.length > 0 
+      ? JSON.parse(JSON.stringify(target.sections)).map(s => ({ ...s, locked: false })) 
+      : [{ id: "SEC_1", name: "Section 1", durationSec: 900, locked: false }];
+
+    activeExam = {
+      sessionId: "mock_re_" + Date.now(),
+      timestamp: Date.now(),
+      title: `Re-attempt: ${target.title}`,
+      mockType: target.mockType || "CUSTOM",
+      signatureTag: target.signatureTag || "",
+      isVaultSprint: false,
+      isSectionLocked: !!target.isSectionLocked,
+      sections: parsedSections,
+      activeSectionIndex: 0,
+      currentQuestionIndex: 0,
+      questions: target.questions.map((q, idx) => ({ 
+        ...q, 
+        sectionIndex: (typeof q.sectionIndex === "number" && q.sectionIndex >= 0 && q.sectionIndex < parsedSections.length) ? q.sectionIndex : 0,
+        globalNumber: idx + 1 
+      })),
+      sectionRemainingSec: parsedSections[0].durationSec || 900,
+      currentQTimeSpentSec: 0,
+      userResponses: {},
+      isPaused: false,
+      isReviewMode: false
+    };
+
+    activeExam.questions.forEach(q => {
+      activeExam.userResponses[q.id] = {
+        selectedOption: null,
+        initialOption: null,
+        status: "unanswered",
+        switches: 0,
+        decisionTrail: [],
+        timeSpentSec: 0,
+        struck: []
+      };
+    });
+
+    await putRecord("store_active_session", { id: "current_session", session: activeExam });
+    hideMiniPlayer();
+
+    pushHistoryState("exam-arena");
+    document.getElementById("exam-arena").style.display = "flex";
+    renderActiveExamQuestion();
+    startExamTimers();
+  }
+
+  function enterFullScreenReviewArena() {
+    if (!activeReviewAttempt) return;
+    document.getElementById("modal-mock-review").classList.remove("active");
+
+    activeExam = {
+      ...JSON.parse(JSON.stringify(activeReviewAttempt)),
+      isReviewMode: true,
+      activeSectionIndex: 0,
+      currentQuestionIndex: 0,
+      currentQTimeSpentSec: 0,
+      isPaused: false
+    };
+
+    pushHistoryState("exam-arena");
+    document.getElementById("exam-arena").style.display = "flex";
+    renderActiveExamQuestion();
+    startExamTimers();
+  }
+
+  function exitReviewArena() {
+    document.getElementById("exam-arena").style.display = "none";
+    activeExam = null;
+    if (activeReviewAttempt) {
+      openMockReview(activeReviewAttempt);
+    }
+  }
+
+  /* -------------------------------------------------------------
+   * 9. UNTIMED DOJO ARENA ENGINE
+   * ------------------------------------------------------------- */
+  async function updateDojoChapters() {
+    const sub = document.getElementById("dojo-nav-subject").value;
+    const chapSelect = document.getElementById("dojo-nav-chapter");
+    chapSelect.innerHTML = `<option value="ALL">Entire ${sub} (All Chapters)</option>`;
+
+    const allQs = await getAllRecords("store_questions");
+    const availableChaps = [...new Set(allQs.filter(q => q.subject === sub).map(q => q.chapter))];
+    const chaps = availableChaps.length > 0 ? availableChaps : (TAXONOMY[sub] ? TAXONOMY[sub].chapters : []);
+
+    chaps.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c;
+      opt.innerText = c;
+      chapSelect.appendChild(opt);
+    });
+
+    updateDojoMethods();
+  }
+
+  async function updateDojoMethods() {
+    const sub = document.getElementById("dojo-nav-subject").value;
+    const chap = document.getElementById("dojo-nav-chapter").value;
+    const methodSelect = document.getElementById("dojo-nav-method");
+    methodSelect.innerHTML = `<option value="ALL">All Methods & Types in Scope</option>`;
+
+    const allQs = await getAllRecords("store_questions");
+    let pool = allQs.filter(q => q.subject === sub);
+    if (chap !== "ALL") pool = pool.filter(q => q.chapter === chap);
+
+    const methods = [...new Set(pool.filter(q => q.method).map(q => q.method))];
+    methods.forEach(m => {
+      const opt = document.createElement("option");
+      opt.value = m;
+      opt.innerText = m;
+      methodSelect.appendChild(opt);
+    });
+  }
+
+  async function launchFilteredDojo() {
+    const sub = document.getElementById("dojo-nav-subject").value;
+    const chap = document.getElementById("dojo-nav-chapter").value;
+    const method = document.getElementById("dojo-nav-method").value;
+
+    const allQs = await getAllRecords("store_questions");
+    let pool = allQs.filter(q => q.subject === sub);
+    if (chap !== "ALL") pool = pool.filter(q => q.chapter === chap);
+    if (method !== "ALL") pool = pool.filter(q => q.method === method);
+
+    if (pool.length === 0) {
+      alert("No questions found matching this selection.");
+      return;
+    }
+
+    pool.sort((a, b) => {
+      if (a.subject !== b.subject) return a.subject.localeCompare(b.subject);
+      if (a.chapter !== b.chapter) return a.chapter.localeCompare(b.chapter);
+      return (a.subtopic || "").localeCompare(b.subtopic || "");
+    });
+
+    const allDossiers = await getAllRecords("store_concepts");
+    const matchedDossier = allDossiers.find(c => c.chapter === chap || (method !== "ALL" && c.title === method));
+
+    dojoExam = {
+      subject: sub,
+      chapter: chap,
+      method: method,
+      title: chap === "ALL" ? `${sub} • Entire Subject Dojo` : (method !== "ALL" ? `${chap} • ${method}` : `${chap} Dojo`),
+      formulaBrief: matchedDossier ? matchedDossier.content : null,
+      questions: pool,
+      currentIndex: 0,
+      userResponses: {}
+    };
+
+    dojoExam.questions.forEach((q, idx) => {
+      q.dojoSequentialNum = idx + 1;
+      dojoExam.userResponses[q.id] = {
+        selectedOption: null,
+        status: "unanswered",
+        revealed: false
+      };
+    });
+
+    pushHistoryState("dojo-arena-view");
+    document.getElementById("dojo-arena-view").style.display = "flex";
+    renderDojoArenaQuestion();
+  }
+
+  function exitDojoArena() {
+    document.getElementById("dojo-arena-view").style.display = "none";
+  }
+
+  function renderDojoArenaQuestion() {
+    const q = dojoExam.questions[dojoExam.currentIndex];
+    const resp = dojoExam.userResponses[q.id];
+
+    document.getElementById("dojo-arena-title").innerText = dojoExam.title;
+    document.getElementById("dojo-arena-chap-badge").innerText = q.chapter;
+    document.getElementById("dojo-arena-method-badge").innerText = q.method || q.subtopic || "General";
+    document.getElementById("dojo-arena-qnum").innerText = q.dojoSequentialNum;
+    document.getElementById("dojo-arena-total-tag").innerText = `Question ${q.dojoSequentialNum} of ${dojoExam.questions.length}`;
+    document.getElementById("dojo-arena-qtext").innerHTML = formatRichText(q.questionText);
+
+    const imgBox = document.getElementById("dojo-image-container");
+    if (q.imageUrl && q.imageUrl.trim().length > 0) {
+      imgBox.style.display = "block";
+      imgBox.innerHTML = `<img src="${q.imageUrl}" alt="Diagram">`;
+    } else {
+      imgBox.style.display = "none";
+      imgBox.innerHTML = "";
+    }
+
+    const theoryBanner = document.getElementById("dojo-theory-banner");
+    if (dojoExam.formulaBrief) {
+      theoryBanner.style.display = "block";
+      theoryBanner.innerHTML = `<strong>Concept Brief:</strong> ${formatRichText(dojoExam.formulaBrief)}`;
+    } else {
+      theoryBanner.style.display = "none";
+    }
+
+    const fb = document.getElementById("dojo-arena-feedback");
+    fb.style.display = "none";
+
+    const mb = document.getElementById("dojo-arena-method-box");
+    mb.style.display = resp.revealed ? "block" : "none";
+    mb.innerHTML = `<strong>Solution & Method:</strong><br>${formatRichText(q.explanation || 'No method registered.')}`;
+
+    document.getElementById("dojo-arena-annotation").value = q.annotation || "";
+
+    const optContainer = document.getElementById("dojo-arena-options");
+    optContainer.innerHTML = "";
+
+    q.options.forEach((optText, idx) => {
+      const card = document.createElement("div");
+      card.className = "opt-card" + (resp.selectedOption === idx ? " selected" : "");
+
+      if (resp.selectedOption !== null) {
+        if (idx === q.correctIndex) card.classList.add("correct-peek");
+        else if (resp.selectedOption === idx) card.classList.add("wrong-peek");
+      }
+
+      card.innerHTML = `
+        <span style="font-weight:700; color:var(--text-muted); font-size:13px;">${idx + 1}.</span>
+        <div style="flex:1;">${formatRichText(optText)}</div>
+      `;
+
+      card.addEventListener("click", () => {
+        resp.selectedOption = idx;
+        resp.status = "answered";
+        if (navigator.vibrate) navigator.vibrate(idx === q.correctIndex ? 25 : [40, 40]);
+
+        fb.style.display = "block";
+        if (idx === q.correctIndex) {
+          fb.style.background = "rgba(35, 134, 54, 0.22)";
+          fb.style.color = "var(--status-green)";
+          fb.innerText = "✓ Correct Answer!";
+        } else {
+          fb.style.background = "rgba(218, 54, 51, 0.22)";
+          fb.style.color = "var(--status-red)";
+          fb.innerText = `✗ Incorrect. Correct is Option ${q.correctIndex + 1}.`;
+        }
+        renderDojoArenaQuestion();
+      });
+
+      optContainer.appendChild(card);
+    });
+  }
+
+  function navDojoArena(step) {
+    const next = dojoExam.currentIndex + step;
+    if (next >= 0 && next < dojoExam.questions.length) {
+      dojoExam.currentIndex = next;
+      renderDojoArenaQuestion();
+    }
+  }
+
+  function toggleDojoMethod() {
+    const q = dojoExam.questions[dojoExam.currentIndex];
+    const resp = dojoExam.userResponses[q.id];
+    resp.revealed = !resp.revealed;
+    const mb = document.getElementById("dojo-arena-method-box");
+    mb.style.display = resp.revealed ? "block" : "none";
+  }
+
+  async function autoSaveDojoAnnotation(val) {
+    if (!dojoExam) return;
+    const q = dojoExam.questions[dojoExam.currentIndex];
+    q.annotation = val;
+    await putRecord("store_questions", q);
+  }
+
+  function toggleDojoPalette(open) {
+    const drawer = document.getElementById("dojo-palette-drawer");
+    const overlay = document.getElementById("dojo-drawer-overlay");
+
+    if (open) {
+      renderDojoPaletteGrid();
+      drawer.classList.add("open");
+      overlay.classList.add("active");
+    } else {
+      drawer.classList.remove("open");
+      overlay.classList.remove("active");
+    }
+  }
+
+  function renderDojoPaletteGrid() {
+    const scrollBody = document.getElementById("dojo-palette-scroll-body");
+    scrollBody.innerHTML = "";
+    document.getElementById("dojo-palette-count-badge").innerText = `${dojoExam.questions.length} Qs`;
+
+    const grouped = {};
+    dojoExam.questions.forEach((q, idx) => {
+      const ch = q.chapter || "GENERAL";
+      if (!grouped[ch]) grouped[ch] = [];
+      grouped[ch].push({ q, idx });
+    });
+
+    Object.keys(grouped).forEach(chapterKey => {
+      const items = grouped[chapterKey];
+
+      const header = document.createElement("div");
+      header.style.padding = "6px 0";
+      header.style.fontSize = "11px";
+      header.style.fontWeight = "700";
+      header.style.color = "var(--accent-cyan)";
+      header.innerHTML = `<span>${chapterKey} (${items.length} Qs)</span>`;
+      scrollBody.appendChild(header);
+
+      const grid = document.createElement("div");
+      grid.className = "palette-grid";
+
+      items.forEach(item => {
+        const resp = dojoExam.userResponses[item.q.id];
+        const cell = document.createElement("div");
+        cell.className = "palette-cell" +
+          (resp.status === "answered" ? " answered" : " unanswered") +
+          (item.idx === dojoExam.currentIndex ? " current" : "");
+
+        cell.innerText = item.q.dojoSequentialNum;
+        cell.addEventListener("click", () => {
+          dojoExam.currentIndex = item.idx;
+          toggleDojoPalette(false);
+          renderDojoArenaQuestion();
+        });
+
+        grid.appendChild(cell);
+      });
+
+      scrollBody.appendChild(grid);
+    });
+  }
+
+  /* -------------------------------------------------------------
+   * 10. STAGE 1 COCKPIT & MISTAKE TAGGING
+   * ------------------------------------------------------------- */
+  async function openMockReview(attemptOrId) {
+    let att = typeof attemptOrId === "string" 
+      ? (await getAllRecords("store_attempts")).find(a => a.sessionId === attemptOrId)
+      : attemptOrId;
+
+    if (!att) return;
+    activeReviewAttempt = att;
+
+    document.getElementById("review-modal-title").innerText = att.title || "SSC CGL Mock Analysis";
+    document.getElementById("review-modal-date").innerText = new Date(att.timestamp || Date.now()).toLocaleString();
+    document.getElementById("rev-score").innerText = (att.finalScore || 0).toFixed(2);
+
+    const totalAtt = (att.correctCount || 0) + (att.incorrectCount || 0);
+    document.getElementById("rev-acc").innerText = totalAtt > 0 ? `${Math.round((att.correctCount / totalAtt) * 100)}%` : "0%";
+    document.getElementById("rev-cor").innerText = att.correctCount || 0;
+    document.getElementById("rev-inc").innerText = att.incorrectCount || 0;
+
+    document.getElementById("rev-penalty").innerText = `-${(att.penaltyDrag || 0).toFixed(2)}`;
+    document.getElementById("rev-switch-delta").innerText = `${att.switchDelta > 0 ? '+' : ''}${att.switchDelta || 0} Net`;
+    document.getElementById("rev-traps").innerText = att.q4Traps || 0;
+
+    document.getElementById("btn-review-reattempt").onclick = () => reattemptMock(att.sessionId);
+    document.getElementById("btn-review-save-fixed").onclick = () => openSaveBlueprintModal("FIXED_PAPER", att.sessionId);
+
+    const secGrid = document.getElementById("rev-sectional-breakdown-grid");
+    secGrid.innerHTML = "";
+    const secScores = {};
+    if (att.questions && Array.isArray(att.questions) && att.userResponses) {
+      att.questions.forEach(q => {
+        const secName = q.subject || "GEN";
+        if (!secScores[secName]) secScores[secName] = { score: 0, cor: 0, inc: 0, att: 0 };
+        const resp = att.userResponses[q.id];
+        if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
+          secScores[secName].att++;
+          if (resp.selectedOption === q.correctIndex) {
+            secScores[secName].score += 2.0;
+            secScores[secName].cor++;
+          } else {
+            secScores[secName].score -= 0.5;
+            secScores[secName].inc++;
+          }
+        }
+      });
+    }
+
+    Object.keys(secScores).forEach(sKey => {
+      const s = secScores[sKey];
+      const div = document.createElement("div");
+      div.style.background = "var(--bg-elevated)";
+      div.style.padding = "6px 8px";
+      div.style.borderRadius = "6px";
+      div.style.border = "1px solid var(--border-color)";
+      div.innerHTML = `
+        <div style="font-weight:700; font-size:11px; color:var(--accent-cyan);">${sKey}</div>
+        <div style="font-size:13px; font-weight:800;">${s.score.toFixed(1)} pts</div>
+        <div style="font-size:10px; color:var(--text-muted);">${s.att > 0 ? Math.round((s.cor / s.att) * 100) : 0}% Acc</div>
+      `;
+      secGrid.appendChild(div);
+    });
+
+    const tagPills = document.getElementById("rev-mistake-tags-pills");
+    tagPills.innerHTML = "";
+    const vaultRecords = await getAllRecords("store_vault");
+    const tagCounts = {};
+    att.questions.forEach(q => {
+      const v = vaultRecords.find(item => item.questionId === q.id);
+      if (v && v.errorTag) {
+        tagCounts[v.errorTag] = (tagCounts[v.errorTag] || 0) + 1;
+      }
+    });
+
+    if (Object.keys(tagCounts).length === 0) {
+      tagPills.innerHTML = `<span style="font-size:11px; color:var(--text-muted);">No tagged errors registered for this attempt.</span>`;
+    } else {
+      Object.keys(tagCounts).forEach(tag => {
+        const span = document.createElement("span");
+        span.className = "badge";
+        span.style.background = "#5a1e1e";
+        span.style.color = "#f87171";
+        span.innerText = `${tag.replace(/_/g, ' ')}: ${tagCounts[tag]}`;
+        tagPills.appendChild(span);
+      });
+    }
+
+    pushHistoryState("modal-mock-review");
+    document.getElementById("modal-mock-review").classList.add("active");
+  }
+
+  async function handleMistakeTagSelect(qId, val) {
+    if (val === "__NEW_TAG__") {
+      const raw = prompt("Enter new custom mistake tag (e.g., RUSHED_PANIC):");
+      if (!raw || !raw.trim()) return;
+      const formatted = raw.trim().toUpperCase().replace(/\s+/g, '_');
+      if (!customMistakeTags.includes(formatted)) {
+        customMistakeTags.push(formatted);
+        await putRecord("store_config", { key: "custom_mistake_tags", value: customMistakeTags });
+      }
+      await setMistakeTag(qId, formatted);
+    } else {
+      await setMistakeTag(qId, val);
+    }
+  }
+
+  async function setMistakeTag(qId, tag) {
+    const vault = await getAllRecords("store_vault");
+    const rec = vault.find(v => v.questionId === qId);
+    if (rec) {
+      rec.errorTag = tag;
+      await putRecord("store_vault", rec);
+    } else {
+      await putRecord("store_vault", {
+        questionId: qId,
+        errorTag: tag,
+        leitnerBox: 1,
+        lastAttempted: Date.now()
+      });
+    }
+    renderVault();
+  }
+
+  /* -------------------------------------------------------------
+   * 11. INTERACTIVE SUBJECT DIAGNOSTIC MODAL
+   * ------------------------------------------------------------- */
+  async function openSubjectDiagnosticModal(subKey) {
+    const sub = TAXONOMY[subKey];
+    if (!sub) return;
+
+    document.getElementById("diag-subject-name").innerText = `${sub.name} (${subKey})`;
+    document.getElementById("diag-subject-sub").innerText = `Complete Syllabus & Chapter Analysis`;
+
+    const attempts = await getAllRecords("store_attempts");
+    const completed = attempts.filter(a => a.completed && !a.isVaultSprint);
+    const allQuestions = await getAllRecords("store_questions");
+
+    let subAtt = 0, subCor = 0;
+    completed.forEach(c => {
+      if (c.questions && Array.isArray(c.questions)) {
+        c.questions.forEach(q => {
+          if (q.subject === subKey) {
+            const resp = (c.userResponses && typeof c.userResponses === "object") ? c.userResponses[q.id] : null;
+            if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
+              subAtt++;
+              if (resp.selectedOption === q.correctIndex) subCor++;
+            }
+          }
+        });
+      }
+    });
+
+    const acc = subAtt > 0 ? Math.round((subCor / subAtt) * 100) : 0;
+    document.getElementById("diag-subject-acc").innerText = subAtt > 0 ? `${acc}%` : "--";
+    document.getElementById("diag-subject-counts").innerText = `${subAtt} Solved • ${subCor} Correct`;
+
+    const gauge = document.getElementById("diag-acc-gauge");
+    gauge.setAttribute("stroke-dasharray", `${acc}, 100`);
+    if (acc >= 80) gauge.style.stroke = "var(--status-green-border)";
+    else if (acc >= 65) gauge.style.stroke = "var(--status-amber)";
+    else gauge.style.stroke = "var(--status-red)";
+
+    const chapList = document.getElementById("diag-chapter-coverage-list");
+    chapList.innerHTML = "";
+
+    sub.chapters.forEach(chap => {
+      let cAtt = 0, cCor = 0;
+      completed.forEach(c => {
+        if (c.questions && Array.isArray(c.questions)) {
+          c.questions.forEach(q => {
+            if (q.chapter === chap) {
+              const resp = (c.userResponses && typeof c.userResponses === "object") ? c.userResponses[q.id] : null;
+              if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
+                cAtt++;
+                if (resp.selectedOption === q.correctIndex) cCor++;
+              }
+            }
+          });
+        }
+      });
+
+      const cAcc = cAtt > 0 ? Math.round((cCor / cAtt) * 100) : 0;
+
+      const div = document.createElement("div");
+      div.className = "card";
+      div.style.padding = "8px 10px";
+      div.style.marginBottom = "6px";
+      div.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+          <span style="font-weight:700; font-family:var(--font-mono); font-size:12px;">${chap}</span>
+          <span class="badge" style="background:${cAtt > 0 ? '#1b4d2e' : '#151a24'}; color:${cAtt > 0 ? '#4ade80' : '#8b949e'};">
+            ${cAtt > 0 ? `${cAcc}% (${cAtt} Qs)` : '0 Qs'}
+          </span>
+        </div>
+        <div class="battery-bar-container" style="height:6px;">
+          <div class="battery-bar-fill" style="width:${cAcc}%; background:${cAcc >= 80 ? 'var(--status-green)' : (cAcc >= 60 ? 'var(--status-amber)' : 'var(--accent-blue)')};"></div>
+        </div>
+      `;
+      chapList.appendChild(div);
+    });
+
+    document.getElementById("btn-launch-subject-blitz").onclick = () => {
+      document.getElementById("modal-subject-diagnostic").classList.remove("active");
+      launchConfiguredMockDirect(subKey, "ALL", 10, 8);
+    };
+
+    pushHistoryState("modal-subject-diagnostic");
+    document.getElementById("modal-subject-diagnostic").classList.add("active");
+  }
+
+  async function launchConfiguredMockDirect(sub, chap, count, durMin) {
+    const allQuestions = await getAllRecords("store_questions");
+    let pool = chap === "ALL" 
+      ? allQuestions.filter(q => q.subject === sub) 
+      : allQuestions.filter(q => q.chapter === chap);
+
+    if (pool.length === 0) {
+      alert("No questions found in bank for this selection.");
+      return;
+    }
+
+    const selectedQs = pool.slice(0, count);
+
+    activeExam = {
+      sessionId: "blitz_" + Date.now(),
+      timestamp: Date.now(),
+      title: `${chap === 'ALL' ? sub : chap} Blitz Drill`,
+      mockType: "CUSTOM",
+      isVaultSprint: false,
+      isSectionLocked: false,
+      sections: [{
+        id: "SEC_" + (chap === 'ALL' ? sub : chap),
+        name: (chap === 'ALL' ? sub : chap),
+        durationSec: durMin * 60,
+        questions: selectedQs,
+        locked: false
+      }],
+      activeSectionIndex: 0,
+      currentQuestionIndex: 0,
+      questions: selectedQs.map((q, idx) => ({ ...q, sectionIndex: 0, sectionName: chap, localNumber: idx + 1, globalNumber: idx + 1 })),
+      sectionRemainingSec: durMin * 60,
+      currentQTimeSpentSec: 0,
+      userResponses: {},
+      isPaused: false,
+      isReviewMode: false
+    };
+
+    activeExam.questions.forEach(q => {
+      activeExam.userResponses[q.id] = {
+        selectedOption: null,
+        initialOption: null,
+        status: "unanswered",
+        switches: 0,
+        decisionTrail: [],
+        timeSpentSec: 0,
+        struck: []
+      };
+    });
+
+    await putRecord("store_active_session", { id: "current_session", session: activeExam });
+    hideMiniPlayer();
+
+    pushHistoryState("exam-arena");
+    document.getElementById("exam-arena").style.display = "flex";
+    renderActiveExamQuestion();
+    startExamTimers();
+  }
+
+  /* -------------------------------------------------------------
+   * 12. MULTI-TIER AI EXPORTS & GEM LEDGER
+   * ------------------------------------------------------------- */
+  function openAiExportModal() {
+    if (!activeReviewAttempt) return;
+    pushHistoryState("modal-ai-export");
+    document.getElementById("modal-ai-export").classList.add("active");
+    updateAiExportPreview();
+  }
+
+  async function updateAiExportPreview() {
+    const mode = document.getElementById("ai-export-mode").value;
+    const att = activeReviewAttempt;
+    let payload = "";
+
+    if (mode === "LEAN_GEM") {
+      payload = JSON.stringify({
+        action: "FEEDBACK_AUDIT",
+        mockTitle: att.title,
+        score: att.finalScore,
+        penalty: att.penaltyDrag,
+        traps: att.q4Traps,
+        telemetry: att.questions.map(q => {
+          const r = att.userResponses && att.userResponses[q.id] ? att.userResponses[q.id] : {};
+          return {
+            id: q.id,
+            sel: r.selectedOption !== undefined ? r.selectedOption : null,
+            cor: q.correctIndex,
+            t: r.timeSpentSec || 0,
+            trail: (r.decisionTrail || []).map(d => d.opt)
+          };
+        })
+      }, null, 2);
+    } else if (mode === "DEEP_AUDIT") {
+      payload = JSON.stringify({
+        meta: { title: att.title, timestamp: att.timestamp, finalScore: att.finalScore },
+        questions: att.questions.map(q => {
+          const r = att.userResponses && att.userResponses[q.id] ? att.userResponses[q.id] : {};
+          return {
+            id: q.id,
+            chapter: q.chapter,
+            conceptId: q.conceptId || "",
+            text: q.questionText,
+            options: q.options,
+            userOption: r.selectedOption !== undefined ? r.selectedOption : null,
+            correctIndex: q.correctIndex,
+            timeSpentSec: r.timeSpentSec || 0,
+            decisionTrail: r.decisionTrail || [],
+            explanation: q.explanation
+          };
+        })
+      }, null, 2);
+    } else if (mode === "LONGITUDINAL") {
+      const allAtt = await getAllRecords("store_attempts");
+      const vault = await getAllRecords("store_vault");
+      payload = `# SSC CGL Strategic Telemetry Audit\n` +
+        `• Completed Standard Mocks: ${allAtt.length}\n` +
+        `• Active Leitner Vault Traps: ${vault.length}\n` +
+        `• Active Traps Inventory:\n` +
+        vault.map(v => `- [${v.chapter}] Tag: ${v.errorTag} | Box ${v.leitnerBox}`).join('\n');
+    }
+
+    document.getElementById("ai-export-preview").value = payload;
+  }
+
+  function copyAiExportToClipboard() {
+    const text = document.getElementById("ai-export-preview").value;
+    navigator.clipboard.writeText(text);
+    alert("Payload copied! Paste into chat with Gemini to diagnose vulnerabilities and generate remedies.");
+    document.getElementById("modal-ai-export").classList.remove("active");
+  }
+
+  function openMasterLedgerExportModal() {
+    pushHistoryState("modal-ledger-export");
+    document.getElementById("modal-ledger-export").classList.add("active");
+  }
+
+  async function downloadLedgerJson() {
+    const includeImages = document.getElementById("ledger-include-images").checked;
+    const allQs = await getAllRecords("store_questions");
+    const sanitized = allQs.map(q => {
+      if (!includeImages) {
+        const copy = { ...q };
+        if (copy.imageUrl && copy.imageUrl.startsWith("data:image")) {
+          copy.imageUrl = "[BASE64_IMAGE_OMITTED_FOR_LIGHTWEIGHT_LEDGER]";
+        }
+        return copy;
+      }
+      return q;
+    });
+
+    const blob = new Blob([JSON.stringify(sanitized, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `cgl_master_bank_ledger_${Date.now()}.json`;
+    a.click();
+    document.getElementById("modal-ledger-export").classList.remove("active");
+  }
+
+  async function downloadLedgerMarkdown() {
+    const allQs = await getAllRecords("store_questions");
+    let txt = `# SSC CGL MASTER QUESTION BANK REFERENCE LEDGER\nGenerated on: ${new Date().toISOString()}\nTotal Questions: ${allQs.length}\n\n`;
+
+    allQs.forEach((q, idx) => {
+      txt += `--- [RECORD ${idx + 1}] ---\n`;
+      txt += `ID: ${q.id}\n`;
+      txt += `SUBJECT: ${q.subject} | CHAPTER: ${q.chapter} | CONCEPT_REF: ${q.conceptId || 'None'}\n`;
+      txt += `QUESTION: ${q.questionText}\n`;
+      q.options.forEach((opt, oIdx) => {
+        txt += `OPTION ${oIdx + 1}: ${opt}\n`;
+      });
+      txt += `CORRECT OPTION: ${q.correctIndex + 1}\n`;
+      txt += `EXPLANATION: ${q.explanation || 'None'}\n`;
+      if (q.annotation) txt += `USER ANNOTATION: ${q.annotation}\n`;
+      txt += `\n`;
+    });
+
+    const blob = new Blob([txt], { type: "text/plain;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `cgl_master_bank_gem_pack_${Date.now()}.txt`;
+    a.click();
+    document.getElementById("modal-ledger-export").classList.remove("active");
+  }
+
+  async function exportCleanMarkdownVault() {
+    const vault = await getAllRecords("store_vault");
+    const questions = await getAllRecords("store_questions");
+    let md = `# SSC CGL Error Vault Export\n\n`;
+
+    vault.forEach(v => {
+      const q = questions.find(item => item.id === v.questionId);
+      if (q) {
+        md += `### ${q.id} - ${q.chapter}\n`;
+        md += `**Error Tag:** #${v.errorTag || 'UNCLASSIFIED'} | **Box:** ${v.leitnerBox || 1}\n\n`;
+        md += `> ${q.questionText}\n\n`;
+        md += `**Solution:**\n${q.explanation}\n\n---\n\n`;
+      }
+    });
+
+    const blob = new Blob([md], { type: "text/plain;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `CGL_Vault_${Date.now()}.md`;
+    a.click();
+  }
+
+  async function copyLiveSystemManifestToClipboard() {
+    const questions = await getAllRecords("store_questions");
+    const attempts = await getAllRecords("store_attempts");
+    const vault = await getAllRecords("store_vault");
+    const concepts = await getAllRecords("store_concepts");
+    const savedMocks = await getAllRecords("store_saved_mocks");
+
+    const qSubjectCounts = {};
+    Object.keys(TAXONOMY).forEach(k => qSubjectCounts[k] = 0);
+    questions.forEach(q => {
+      if (qSubjectCounts[q.subject] !== undefined) qSubjectCounts[q.subject]++;
+    });
+
+    const manifest = `# SSC CGL Intelligence OS - Live Runtime Introspection Manifest
+Generated at: ${new Date().toISOString()}
+Target Candidate: Ankit (SSC CGL 2026 Tier 1 & Tier 2)
+
+## 1. Live Database Telemetry Metrics
+- Total Master Questions: ${questions.length} (${Object.keys(qSubjectCounts).map(k => `${k}: ${qSubjectCounts[k]}`).join(', ')})
+- Standard Mocks Completed: ${attempts.filter(a => a.completed && !a.isVaultSprint).length}
+- Active Leitner Vault Traps: ${vault.length}
+- Living Document Topic Sheets: ${concepts.length}
+- Saved Blueprints & Fixed Papers: ${savedMocks.length}
+
+## 2. Active System Taxonomy & Chapters
+${JSON.stringify(TAXONOMY, null, 2)}
+
+## 3. Bi-Directional Bridge Keys (Concept IDs in Question Bank)
+${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.chapter, title: c.title })), null, 2)}
+
+## 4. Supported JSON Action Contracts
+- INGEST_AND_LAUNCH_MOCK
+- AI_PRESCRIBE_REMEDY
+- BATCH_INGEST_QUESTIONS
+- BATCH_INGEST_COMPENDIUM
+- SAVE_MOCK_PRESET
+- MODIFY_TAXONOMY
+- RAW_DB_OPERATION
+`;
+    navigator.clipboard.writeText(manifest);
+    alert("Live AI Introspection Manifest copied to clipboard! Paste it into your coaching chat.");
+  }
+
+  /* -------------------------------------------------------------
+   * 13. DASHBOARD RENDER ENGINE (FIXED NEGLECT & ERI DIAL)
+   * ------------------------------------------------------------- */
+  async function renderDashboard() {
+    const attempts = await getAllRecords("store_attempts");
+    const completed = attempts.filter(a => a.completed && !a.isVaultSprint);
+    const vaultRecords = await getAllRecords("store_vault");
+
+    document.getElementById("kpi-total-mocks").innerText = completed.length;
+
+    const circleGauge = document.getElementById("gauge-acc-circle");
+
+    let accPercent = 0;
+    let avgSpeed = 0;
+    let traps = 0;
+
+    if (completed.length === 0) {
+      document.getElementById("kpi-global-acc").innerText = "--";
+      document.getElementById("kpi-avg-speed").innerText = "--";
+      document.getElementById("kpi-traps-hit").innerText = "0";
+      if (circleGauge) {
+        circleGauge.setAttribute("stroke-dasharray", "0, 100");
+        circleGauge.style.stroke = "var(--border-color)";
+      }
+    } else {
+      let totalCor = 0, totalAtt = 0, totalSec = 0;
+      completed.forEach(c => {
+        totalCor += (c.correctCount || 0);
+        totalAtt += ((c.correctCount || 0) + (c.incorrectCount || 0));
+        traps += (c.q4Traps || 0);
+        if (c.userResponses && typeof c.userResponses === "object") {
+          Object.values(c.userResponses).forEach(r => totalSec += (r ? (r.timeSpentSec || 0) : 0));
+        }
+      });
+
+      accPercent = totalAtt > 0 ? Math.round((totalCor / totalAtt) * 100) : 0;
+      avgSpeed = totalAtt > 0 ? Math.round(totalSec / totalAtt) : 0;
+
+      document.getElementById("kpi-global-acc").innerText = `${accPercent}%`;
+      document.getElementById("kpi-avg-speed").innerText = `${avgSpeed}s`;
+      document.getElementById("kpi-traps-hit").innerText = traps;
+
+      if (circleGauge) {
+        circleGauge.setAttribute("stroke-dasharray", `${accPercent}, 100`);
+        if (accPercent >= 80) circleGauge.style.stroke = "var(--status-green-border)";
+        else if (accPercent >= 65) circleGauge.style.stroke = "var(--status-amber)";
+        else circleGauge.style.stroke = "var(--status-red)";
+      }
+
+      const speedEl = document.getElementById("kpi-speed-benchmark");
+      if (avgSpeed <= 45) speedEl.innerHTML = `<span style="color:var(--status-green);">⚡ Elite Speed Zone (≤45s)</span>`;
+      else if (avgSpeed <= 60) speedEl.innerHTML = `<span style="color:var(--status-amber);">Pacing Acceptable (46-60s)</span>`;
+      else speedEl.innerHTML = `<span style="color:var(--status-red);">⚠️ Drag Alert (>60s / Q)</span>`;
+    }
+
+    calculateAndRenderERI(accPercent, avgSpeed, vaultRecords.length, completed.length);
+    checkAndRenderNeglectIndex(completed);
+    renderCognitiveTrapHeatStrip(vaultRecords);
+
+    try { renderDashboardSubjectBatteries(completed); } catch(e) { console.error("Batteries error:", e); }
+    try { renderRecentHistory(completed); } catch(e) { console.error("Recent history error:", e); }
+    try { await renderDashboardBlueprints(); } catch(e) { console.error("Blueprints error:", e); }
+    try { await renderDrilldownSubjectLevel(); } catch(e) { console.error("Drilldown error:", e); }
+  }
+
+  function calculateAndRenderERI(accPercent, avgSpeed, activeVaultTraps, completedCount) {
+    if (completedCount === 0) {
+      document.getElementById("eri-score-val").innerText = "--";
+      document.getElementById("eri-status-tier").innerText = "Calibrating";
+      return;
+    }
+
+    const accComponent = accPercent * 0.40;
+    
+    let velScore = 100;
+    if (avgSpeed > 45) velScore = Math.max(0, 100 - (avgSpeed - 45) * 2.5);
+    const velComponent = velScore * 0.30;
+
+    const vaultClearScore = Math.max(0, 100 - (activeVaultTraps * 5));
+    const vaultComponent = vaultClearScore * 0.30;
+
+    const eri = Math.min(100, Math.max(0, accComponent + velComponent + vaultComponent)).toFixed(1);
+    document.getElementById("eri-score-val").innerText = eri;
+
+    const circle = document.getElementById("eri-gauge-circle");
+    if (circle) circle.setAttribute("stroke-dasharray", `${eri}, 100`);
+
+    const tierBadge = document.getElementById("eri-status-tier");
+    if (tierBadge && circle) {
+      if (eri >= 85) {
+        tierBadge.innerText = "Tier-1 Formidable";
+        tierBadge.style.color = "var(--status-green)";
+        circle.style.stroke = "var(--status-green-border)";
+      } else if (eri >= 70) {
+        tierBadge.innerText = "Competitive Form";
+        tierBadge.style.color = "var(--accent-cyan)";
+        circle.style.stroke = "var(--accent-cyan)";
+      } else {
+        tierBadge.innerText = "Vulnerable";
+        tierBadge.style.color = "var(--status-red)";
+        circle.style.stroke = "var(--status-red)";
+      }
+    }
+  }
+
+  function checkAndRenderNeglectIndex(completed) {
+    const alertBox = document.getElementById("dash-neglect-alert");
+    if (!alertBox) return;
+
+    if (completed.length === 0) {
+      alertBox.style.display = "none";
+      return;
+    }
+
+    const now = Date.now();
+    const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+    let neglectedChap = null;
+    let maxNeglectTime = 0;
+    let hasNeverAttempted = false;
+
+    for (const subKey of Object.keys(TAXONOMY)) {
+      for (const chap of TAXONOMY[subKey].chapters) {
+        let lastAttemptTime = 0;
+
+        for (const att of completed) {
+          if (att.questions && Array.isArray(att.questions)) {
+            if (att.questions.some(q => q.chapter === chap)) {
+              if (att.timestamp > lastAttemptTime) {
+                lastAttemptTime = att.timestamp;
+              }
+            }
+          }
+        }
+
+        if (lastAttemptTime === 0) {
+          neglectedChap = { subKey, chap, days: "Never", never: true };
+          hasNeverAttempted = true;
+          break;
+        } else {
+          const diff = now - lastAttemptTime;
+          if (diff > sevenDaysMs && diff > maxNeglectTime) {
+            maxNeglectTime = diff;
+            neglectedChap = { 
+              subKey, 
+              chap, 
+              days: Math.floor(diff / (24 * 60 * 60 * 1000)), 
+              never: false 
+            };
+          }
+        }
+      }
+      if (hasNeverAttempted) break;
+    }
+
+    if (neglectedChap) {
+      alertBox.style.display = "flex";
+      const desc = neglectedChap.never 
+        ? `${neglectedChap.chap} has NEVER been tested in completed mocks.` 
+        : `${neglectedChap.chap} untouched for ${neglectedChap.days} days.`;
+      document.getElementById("dash-neglect-text").innerText = desc;
+      document.getElementById("btn-neglect-drill").onclick = () => {
+        launchConfiguredMockDirect(neglectedChap.subKey, neglectedChap.chap, 5, 5);
+      };
+    } else {
+      alertBox.style.display = "none";
+    }
+  }
+
+  function renderCognitiveTrapHeatStrip(vaultRecords) {
+    const bar = document.getElementById("dash-trap-heat-bar");
+    const legend = document.getElementById("dash-trap-legend");
+    bar.innerHTML = "";
+    legend.innerHTML = "";
+
+    if (vaultRecords.length === 0) {
+      bar.innerHTML = `<div class="trap-heat-seg" style="width:100%; background:var(--status-green);"></div>`;
+      legend.innerHTML = `<span style="color:var(--status-green);">Zero active cognitive traps logged!</span>`;
+      return;
+    }
+
+    const colors = {
+      CALCULATION_SLIP: "#da3633",
+      READING_TRAP: "#d29922",
+      FORMULA_AMNESIA: "#8957e5",
+      CONCEPT_VOID: "#38bdf8",
+      RUSHED_PANIC: "#f43f5e",
+      UNCLASSIFIED: "#484f58"
+    };
+
+    const counts = {};
+    vaultRecords.forEach(v => {
+      const t = v.errorTag || "UNCLASSIFIED";
+      counts[t] = (counts[t] || 0) + 1;
+    });
+
+    Object.keys(counts).forEach(tag => {
+      const percent = Math.round((counts[tag] / vaultRecords.length) * 100);
+      const segColor = colors[tag] || "#388bfd";
+
+      const seg = document.createElement("div");
+      seg.className = "trap-heat-seg";
+      seg.style.width = `${percent}%`;
+      seg.style.background = segColor;
+      seg.style.cursor = "pointer";
+      seg.title = `${tag}: ${counts[tag]} (${percent}%)`;
+      seg.onclick = () => filterVaultByMistakeTag(tag);
+      bar.appendChild(seg);
+
+      const legItem = document.createElement("span");
+      legItem.style.cursor = "pointer";
+      legItem.innerHTML = `<span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:${segColor}; margin-right:4px;"></span>${tag.replace(/_/g, ' ')} (${percent}%)`;
+      legItem.onclick = () => filterVaultByMistakeTag(tag);
+      legend.appendChild(legItem);
+    });
+  }
+
+  async function filterVaultByMistakeTag(tag) {
+    switchTab("tab-vault", document.getElementById("nav-btn-tab-vault"));
+    const vault = await getAllRecords("store_vault");
+    const filtered = vault.filter(v => v.errorTag === tag);
+    const container = document.getElementById("vault-list-container");
+    container.innerHTML = `<div style="font-size:12px; font-weight:700; color:var(--accent-cyan); margin-bottom:8px;">Filtered by: #${tag} (${filtered.length} Traps)</div>`;
+
+    const allQs = await getAllRecords("store_questions");
+    filtered.forEach(v => {
+      const q = allQs.find(item => item.id === v.questionId);
+      if (q) {
+        const div = document.createElement("div");
+        div.className = "card";
+        div.style.borderColor = "#da3633";
+        div.style.marginBottom = "8px";
+        div.innerHTML = `
+          <div style="font-size:13px; line-height:1.5;">${formatRichText(q.questionText)}</div>
+          <div style="margin-top:6px; display:flex; justify-content:space-between; align-items:center;">
+            <span class="badge" style="background:#da3633;">${v.errorTag}</span>
+            <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.advanceVaultBox('${v.questionId}', 30)">Level Up</button>
+          </div>
+        `;
+        container.appendChild(div);
+      }
+    });
+  }
+
+  function renderDashboardSubjectBatteries(completed) {
+    const container = document.getElementById("dash-subject-batteries");
+    container.innerHTML = "";
+
+    Object.keys(TAXONOMY).forEach(subKey => {
+      let subAtt = 0, subCor = 0;
+      completed.forEach(c => {
+        if (c.questions && Array.isArray(c.questions)) {
+          c.questions.forEach(q => {
+            if (q.subject === subKey) {
+              const resp = (c.userResponses && typeof c.userResponses === "object") ? c.userResponses[q.id] : null;
+              if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
+                subAtt++;
+                if (resp.selectedOption === q.correctIndex) subCor++;
+              }
+            }
+          });
+        }
+      });
+
+      const acc = subAtt > 0 ? Math.round((subCor / subAtt) * 100) : 0;
+      const div = document.createElement("div");
+      div.style.marginBottom = "8px";
+      div.style.cursor = "pointer";
+      div.innerHTML = `
+        <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:2px;">
+          <span style="font-weight:700;">${TAXONOMY[subKey].name} (${subKey})</span>
+          <span style="font-family:var(--font-mono); color:${acc >= 80 ? 'var(--status-green)' : (acc >= 60 ? 'var(--status-amber)' : 'var(--text-muted)')};">${subAtt > 0 ? `${acc}% (${subAtt} Qs)` : '0%'}</span>
+        </div>
+        <div class="battery-bar-container">
+          <div class="battery-bar-fill" style="width:${acc}%; background:${acc >= 80 ? 'var(--status-green)' : (acc >= 60 ? 'var(--status-amber)' : 'var(--accent-blue)')};"></div>
+        </div>
+      `;
+      div.addEventListener("click", () => openSubjectDiagnosticModal(subKey));
+      container.appendChild(div);
+    });
+  }
+
+  function renderRecentHistory(completed) {
+    const container = document.getElementById("mock-history-container");
+    if (completed.length === 0) {
+      container.innerHTML = `<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">No mocks submitted yet. Launch your first mock above.</p>`;
+      return;
+    }
+
+    container.innerHTML = "";
+    completed.slice(-3).reverse().forEach(att => {
+      const secScores = {};
+      if (att.questions && Array.isArray(att.questions) && att.userResponses) {
+        att.questions.forEach(q => {
+          const secName = q.subject || "GEN";
+          if (!secScores[secName]) secScores[secName] = 0;
+          const resp = att.userResponses[q.id];
+          if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
+            if (resp.selectedOption === q.correctIndex) secScores[secName] += 2.0;
+            else secScores[secName] -= 0.5;
+          }
+        });
+      }
+
+      const card = document.createElement("div");
+      card.className = "ticket-card";
+      card.innerHTML = `
+        <div class="ticket-header">
+          <div>
+            <b style="font-size:14px; color:#fff;">${att.title || 'SSC CGL Mock'}</b>
+            <div style="font-size:11px; color:var(--text-muted);">${new Date(att.timestamp || Date.now()).toLocaleDateString()}</div>
+          </div>
+          <div style="text-align:right;">
+            <span style="font-size:16px; font-weight:800; color:var(--accent-cyan);">${(att.finalScore || 0).toFixed(2)} pts</span>
+          </div>
+        </div>
+
+        <div class="ticket-pills-row">
+          ${Object.keys(secScores).map(k => `<span class="ticket-sec-pill"><b>${k}:</b> ${secScores[k].toFixed(1)}</span>`).join('')}
+          <span class="ticket-sec-pill" style="color:var(--status-red);">Traps: ${att.q4Traps || 0}</span>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:10px;">
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.openSaveBlueprintModal('FIXED_PAPER', '${att.sessionId}')">📌 Freeze Paper</button>
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.reattemptMock('${att.sessionId}')">🔁 Re-attempt</button>
+          <button class="btn btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openMockReview('${att.sessionId}')">Inspect Solutions</button>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  function openHistoryArchiveModal() {
+    pushHistoryState("modal-history-archive");
+    document.getElementById("modal-history-archive").classList.add("active");
+    renderArchiveList("ALL");
+  }
+
+  async function renderArchiveList(filterType) {
+    const attempts = await getAllRecords("store_attempts");
+    const completed = attempts.filter(a => a.completed && !a.isVaultSprint);
+    const container = document.getElementById("archive-list-container");
+    container.innerHTML = "";
+
+    let list = completed.slice().reverse();
+    if (filterType !== "ALL") {
+      list = list.filter(a => a.mockType === filterType);
+    }
+
+    if (list.length === 0) {
+      container.innerHTML = `<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:12px;">No tests found in this category.</p>`;
+      return;
+    }
+
+    list.forEach(att => {
+      const div = document.createElement("div");
+      div.className = "card";
+      div.style.marginBottom = "8px";
+      div.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <b style="font-size:14px;">${att.title}</b>
+              ${att.signatureTag ? `<span class="badge" style="background:#1f6feb; font-size:9px;">${att.signatureTag}</span>` : ''}
+            </div>
+            <div style="font-size:11px; color:var(--text-muted);">${new Date(att.timestamp).toLocaleString()}</div>
+          </div>
+          <div style="text-align:right;">
+            <span style="font-size:14px; font-weight:800; color:var(--accent-cyan);">${(att.finalScore || 0).toFixed(2)} pts</span><br>
+            <div style="display:flex; gap:4px; margin-top:4px;">
+              <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px; color:var(--accent-cyan);" onclick="CGL_OS.openSaveBlueprintModal('FIXED_PAPER', '${att.sessionId}')" title="Freeze Paper">📌</button>
+              <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px;" onclick="CGL_OS.reattemptMock('${att.sessionId}')" title="Re-attempt">🔁</button>
+              <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openMockReview('${att.sessionId}')">Inspect</button>
+            </div>
+          </div>
+        </div>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  async function renderDrilldownSubjectLevel() {
+    document.getElementById("drilldown-breadcrumb").innerText = "Global";
+    document.getElementById("drill-level-tag").innerText = "LEVEL: SUBJECT";
+
+    const list = document.getElementById("drilldown-list");
+    list.innerHTML = "";
+
+    const attempts = await getAllRecords("store_attempts");
+    const completed = attempts.filter(a => a.completed && !a.isVaultSprint);
+
+    Object.keys(TAXONOMY).forEach(subKey => {
+      const sub = TAXONOMY[subKey];
+      let subAtt = 0, subCor = 0;
+
+      completed.forEach(c => {
+        if (c.questions && Array.isArray(c.questions)) {
+          c.questions.forEach(q => {
+            if (q.subject === subKey) {
+              const resp = (c.userResponses && typeof c.userResponses === "object") ? c.userResponses[q.id] : null;
+              if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
+                subAtt++;
+                if (resp.selectedOption === q.correctIndex) subCor++;
+              }
+            }
+          });
+        }
+      });
+
+      const div = document.createElement("div");
+      div.className = "card";
+      div.style.padding = "12px";
+      div.style.marginBottom = "8px";
+      div.style.cursor = "pointer";
+      div.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div style="font-weight:700;">${sub.name} (${subKey})</div>
+            <div style="font-size:11px; color:var(--text-muted);">${sub.chapters.length} Standard Chapters</div>
+          </div>
+          <div style="text-align:right;">
+            <span class="badge" style="background:#151a24; color:#38bdf8;">
+              ${subAtt > 0 ? `Acc: ${Math.round((subCor / subAtt) * 100)}%` : "Unattempted"}
+            </span>
+          </div>
+        </div>
+      `;
+      div.addEventListener("click", () => renderDrilldownChapterLevel(subKey));
+      list.appendChild(div);
+    });
+  }
+
+  async function renderDrilldownChapterLevel(subKey) {
+    const sub = TAXONOMY[subKey];
+    document.getElementById("drilldown-breadcrumb").innerHTML = `<span onclick="CGL_OS.renderDashboard()">Global</span> &gt; <b>${subKey}</b>`;
+    document.getElementById("drill-level-tag").innerText = "LEVEL: CHAPTERS";
+
+    const list = document.getElementById("drilldown-list");
+    list.innerHTML = "";
+
+    const attempts = await getAllRecords("store_attempts");
+    const completed = attempts.filter(a => a.completed && !a.isVaultSprint);
+    const allQuestions = await getAllRecords("store_questions");
+
+    sub.chapters.forEach(chap => {
+      let chapAtt = 0, chapCor = 0, chapSec = 0;
+      completed.forEach(c => {
+        if (c.questions && Array.isArray(c.questions)) {
+          c.questions.forEach(q => {
+            if (q.chapter === chap) {
+              const resp = (c.userResponses && typeof c.userResponses === "object") ? c.userResponses[q.id] : null;
+              if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
+                chapAtt++;
+                chapSec += (resp.timeSpentSec || 0);
+                if (resp.selectedOption === q.correctIndex) chapCor++;
+              }
+            }
+          });
+        }
+      });
+
+      const totalInBank = allQuestions.filter(q => q.chapter === chap).length;
+      const div = document.createElement("div");
+      div.className = "card";
+      div.style.padding = "12px";
+      div.style.marginBottom = "8px";
+      div.style.cursor = "pointer";
+
+      div.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div style="font-weight:700; font-family:var(--font-mono); font-size:13px;">${chap}</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
+              Bank: ${totalInBank} Qs • ${chapAtt > 0 ? `Speed: ${Math.round(chapSec / chapAtt)}s` : "No solve data"}
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <span class="badge" style="background:${chapAtt > 0 ? '#1b4d2e' : '#151a24'}; color:${chapAtt > 0 ? '#4ade80' : '#8b949e'};">
+              ${chapAtt > 0 ? `Acc: ${Math.round((chapCor / chapAtt) * 100)}%` : "Unattempted"}
+            </span>
+          </div>
+        </div>
+      `;
+      div.addEventListener("click", () => openChapterInspector(subKey, chap, chapAtt, chapCor, chapSec));
+      list.appendChild(div);
+    });
+  }
+
+  async function openChapterInspector(subKey, chap, attCount, corCount, secCount) {
+    document.getElementById("insp-chapter-title").innerText = chap;
+    document.getElementById("insp-subject-title").innerText = TAXONOMY[subKey] ? TAXONOMY[subKey].name : subKey;
+
+    const acc = attCount > 0 ? Math.round((corCount / attCount) * 100) : 0;
+    const avgSpeed = attCount > 0 ? Math.round(secCount / attCount) : 0;
+    document.getElementById("insp-acc").innerText = attCount > 0 ? `${acc}%` : "--";
+    document.getElementById("insp-speed").innerText = attCount > 0 ? `${avgSpeed}s` : "--";
+
+    const nc = attCount > 0 ? Math.max(0, (1 - (attCount / 50))).toFixed(2) : "1.00";
+    document.getElementById("insp-nc").innerText = nc;
+
+    const vault = await getAllRecords("store_vault");
+    const allQs = await getAllRecords("store_questions");
+    const vList = document.getElementById("insp-vulnerability-list");
+    vList.innerHTML = "";
+
+    const chapterVault = vault.filter(v => allQs.some(q => q.id === v.questionId && q.chapter === chap));
+    if (chapterVault.length === 0) {
+      vList.innerHTML = `<span style="color:var(--status-green);">Zero active errors logged in this chapter!</span>`;
+    } else {
+      chapterVault.forEach(v => {
+        const q = allQs.find(item => item.id === v.questionId);
+        if (q) {
+          const item = document.createElement("div");
+          item.style.padding = "4px 0";
+          item.style.borderBottom = "1px solid var(--border-color)";
+          item.innerHTML = `• ${q.questionText.slice(0, 75)}... <span style="color:var(--status-red);">[${v.errorTag}]</span>`;
+          vList.appendChild(item);
+        }
+      });
+    }
+
+    document.getElementById("btn-launch-chapter-blitz").onclick = () => {
+      document.getElementById("modal-chapter-inspector").classList.remove("active");
+      launchConfiguredMockDirect(subKey, chap, 5, 5);
+    };
+
+    pushHistoryState("modal-chapter-inspector");
+    document.getElementById("modal-chapter-inspector").classList.add("active");
+  }
+
+  /* -------------------------------------------------------------
+   * 14. LEITNER VAULT SPRINT ENGINE & ADAPTIVE INTERVALS
+   * ------------------------------------------------------------- */
+  async function renderVault() {
+    const vault = await getAllRecords("store_vault");
+    const questions = await getAllRecords("store_questions");
+    const container = document.getElementById("vault-list-container");
+    container.innerHTML = "";
+
+    const validTraps = [];
+    for (const v of vault) {
+      const q = questions.find(item => item.id === v.questionId);
+      if (q) validTraps.push({ v, q });
+      else await deleteRecordFromStore("store_vault", v.questionId);
+    }
+
+    document.getElementById("vault-count-badge").innerText = `${validTraps.length} Traps`;
+
+    if (validTraps.length === 0) {
+      container.innerHTML = `<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:12px;">Error Vault is clear. Zero failed questions recorded.</div>`;
+      return;
+    }
+
+    validTraps.forEach(({ v, q }) => {
+      const div = document.createElement("div");
+      div.className = "card";
+      div.style.borderColor = "#da3633";
+      div.style.marginBottom = "8px";
+
+      let img = q.imageUrl ? `<div style="text-align:center; margin:6px 0;"><img src="${q.imageUrl}" style="max-height:140px; max-width:100%; border-radius:6px;"></div>` : '';
+
+      div.innerHTML = `
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+          <span class="badge" style="background:#da3633;">${v.errorTag || 'UNCLASSIFIED'}</span>
+          <span class="badge" style="background:#151a24; color:#a371f7;">Leitner Box ${v.leitnerBox || 1} / 3</span>
+        </div>
+        <div style="font-size:13px; line-height:1.5;">${formatRichText(q.questionText)}</div>
+        ${img}
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+          <span style="font-size:11px; color:var(--accent-cyan);">Correct: Option ${q.correctIndex + 1}</span>
+          <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.advanceVaultBox('${v.questionId}', 30)">Promote (Level Up)</button>
+        </div>
+      `;
+      container.appendChild(div);
+    });
+
+    renderVaultSprintHistory();
+  }
+
+  async function renderVaultSprintHistory() {
+    const sprints = await getAllRecords("store_vault_sprints");
+    const list = document.getElementById("vault-sprint-history-list");
+    document.getElementById("vault-sprint-count-badge").innerText = `${sprints.length} Sprints`;
+    list.innerHTML = "";
+
+    if (sprints.length === 0) {
+      list.innerHTML = `<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">No sprints recorded yet.</p>`;
+      return;
+    }
+
+    sprints.slice().reverse().forEach(s => {
+      const div = document.createElement("div");
+      div.style.padding = "6px 8px";
+      div.style.borderBottom = "1px solid var(--border-color)";
+      div.style.fontSize = "12px";
+      div.style.display = "flex";
+      div.style.justifyContent = "space-between";
+      div.innerHTML = `
+        <div>
+          <b>Trap Sprint (${s.totalQuestions} Qs)</b><br>
+          <span style="font-size:10px; color:var(--text-muted);">${new Date(s.timestamp).toLocaleString()}</span>
+        </div>
+        <div style="text-align:right;">
+          <span style="color:var(--status-green); font-weight:700;">Acc: ${s.accuracy}%</span><br>
+          <span style="font-size:10px; color:var(--text-muted);">${s.correctCount} Cor / ${s.incorrectCount} Inc</span>
+        </div>
+      `;
+      list.appendChild(div);
+    });
+  }
+
+  async function advanceVaultBox(qId, timeSpentSec = 30) {
+    const rec = await getRecord("store_vault", qId);
+    if (rec) {
+      if (rec.leitnerBox === 3 && timeSpentSec > 45) {
+        alert(`Correct, but solve took ${timeSpentSec}s (>45s). Retained in Box 3 for final hesitation clearance.`);
+        rec.lastAttempted = Date.now();
+        await putRecord("store_vault", rec);
+        renderVault();
+        return;
+      }
+
+      rec.leitnerBox = (rec.leitnerBox || 1) + 1;
+      if (rec.leitnerBox > 3) {
+        await deleteRecordFromStore("store_vault", qId);
+        alert("Mastered! Question graduated completely out of Error Vault.");
+      } else {
+        await putRecord("store_vault", rec);
+        alert(`Promoted to Leitner Box ${rec.leitnerBox}! Review scheduled.`);
+      }
+      renderVault();
+    }
+  }
+
+  async function demoteVaultBox(qId) {
+    const rec = await getRecord("store_vault", qId);
+    if (rec) {
+      rec.leitnerBox = 1;
+      await putRecord("store_vault", rec);
+    }
+  }
+
+  async function launchVaultSprint() {
+    const vault = await getAllRecords("store_vault");
+    const questions = await getAllRecords("store_questions");
+    const failedQs = questions.filter(q => vault.some(v => v.questionId === q.id));
+
+    if (failedQs.length === 0) {
+      alert("Error Vault is clear! Zero failed questions logged.");
+      return;
+    }
+
+    activeExam = {
+      sessionId: "vault_sprint_" + Date.now(),
+      timestamp: Date.now(),
+      title: "Trap-Breaker Sprint",
+      isVaultSprint: true,
+      isSectionLocked: false,
+      sections: [{
+        id: "SEC_VAULT",
+        name: "Error Vault Traps",
+        durationSec: failedQs.length * 60,
+        questions: failedQs,
+        locked: false
+      }],
+      activeSectionIndex: 0,
+      currentQuestionIndex: 0,
+      questions: failedQs.map((q, idx) => ({ ...q, sectionIndex: 0, sectionName: "Error Vault", localNumber: idx + 1, globalNumber: idx + 1 })),
+      sectionRemainingSec: failedQs.length * 60,
+      currentQTimeSpentSec: 0,
+      userResponses: {},
+      isPaused: false,
+      isReviewMode: false
+    };
+
+    activeExam.questions.forEach(q => {
+      activeExam.userResponses[q.id] = {
+        selectedOption: null,
+        initialOption: null,
+        status: "unanswered",
+        switches: 0,
+        decisionTrail: [],
+        timeSpentSec: 0,
+        struck: []
+      };
+    });
+
+    await putRecord("store_active_session", { id: "current_session", session: activeExam });
+    hideMiniPlayer();
+
+    pushHistoryState("exam-arena");
+    document.getElementById("exam-arena").style.display = "flex";
+    renderActiveExamQuestion();
+    startExamTimers();
+  }
+
+  /* -------------------------------------------------------------
+   * 15. QUESTION GUI EDITOR
+   * ------------------------------------------------------------- */
+  let currentQuestionImageBase64 = "";
+
+  function openEditQuestionModal(qData) {
+    const isNew = !qData;
+    currentQuestionImageBase64 = "";
+    document.getElementById("editor-title").innerText = isNew ? "Add New Question" : "Edit Question";
+    document.getElementById("edit-q-id").value = isNew ? "q_cgl_" + Date.now() : qData.id;
+    document.getElementById("edit-q-subject").value = isNew ? "QA" : qData.subject;
+    document.getElementById("edit-q-chapter").value = isNew ? "QA_GEOMETRY" : qData.chapter;
+    document.getElementById("edit-q-subtopic").value = isNew ? "" : (qData.subtopic || "");
+    document.getElementById("edit-q-method").value = isNew ? "" : (qData.method || "");
+    document.getElementById("edit-q-concept-id").value = isNew ? "" : (qData.conceptId || "");
+    document.getElementById("edit-q-text").value = isNew ? "" : qData.questionText;
+    document.getElementById("edit-q-img-url").value = isNew ? "" : (qData.imageUrl || "");
+    document.getElementById("edit-q-img-file").value = "";
+
+    document.getElementById("edit-opt-0").value = isNew ? "" : (qData.options[0] || "");
+    document.getElementById("edit-opt-1").value = isNew ? "" : (qData.options[1] || "");
+    document.getElementById("edit-opt-2").value = isNew ? "" : (qData.options[2] || "");
+    document.getElementById("edit-opt-3").value = isNew ? "" : (qData.options[3] || "");
+
+    document.getElementById("edit-q-correct").value = isNew ? "0" : qData.correctIndex;
+    document.getElementById("edit-q-explanation").value = isNew ? "" : (qData.explanation || "");
+
+    document.getElementById("btn-delete-q").style.display = isNew ? "none" : "block";
+    pushHistoryState("modal-question-editor");
+    document.getElementById("modal-question-editor").classList.add("active");
+  }
+
+  function openEditCurrentDojoQuestion() {
+    if (!dojoExam) return;
+    openEditQuestionModal(dojoExam.questions[dojoExam.currentIndex]);
+  }
+
+  async function handleQuestionImageUpload(input) {
+    if (input.files && input.files[0]) {
+      currentQuestionImageBase64 = await compressImageFile(input.files[0]);
+    }
+  }
+
+  async function saveQuestionEditor() {
+    const id = document.getElementById("edit-q-id").value;
+    const urlInput = document.getElementById("edit-q-img-url").value.trim();
+
+    const qObj = {
+      id: id,
+      subject: document.getElementById("edit-q-subject").value,
+      chapter: document.getElementById("edit-q-chapter").value.trim().toUpperCase(),
+      subtopic: document.getElementById("edit-q-subtopic").value.trim(),
+      method: document.getElementById("edit-q-method").value.trim(),
+      conceptId: document.getElementById("edit-q-concept-id").value.trim(),
+      questionText: document.getElementById("edit-q-text").value.trim(),
+      imageUrl: currentQuestionImageBase64 || urlInput,
+      options: [
+        document.getElementById("edit-opt-0").value.trim(),
+        document.getElementById("edit-opt-1").value.trim(),
+        document.getElementById("edit-opt-2").value.trim(),
+        document.getElementById("edit-opt-3").value.trim()
+      ],
+      correctIndex: parseInt(document.getElementById("edit-q-correct").value),
+      explanation: document.getElementById("edit-q-explanation").value.trim(),
+      tags: ["UserSaved"]
+    };
+
+    await putRecord("store_questions", qObj);
+    document.getElementById("modal-question-editor").classList.remove("active");
+    if (dojoExam) {
+      dojoExam.questions[dojoExam.currentIndex] = qObj;
+      renderDojoArenaQuestion();
+    }
+    refreshDbInspector();
+  }
+
+  async function deleteCurrentEditingQuestion() {
+    const id = document.getElementById("edit-q-id").value;
+    if (confirm(`Delete question ${id}?`)) {
+      await deleteRecordFromStore("store_questions", id);
+      document.getElementById("modal-question-editor").classList.remove("active");
+      if (dojoExam) {
+        dojoExam.questions = dojoExam.questions.filter(q => q.id !== id);
+        if (dojoExam.currentIndex >= dojoExam.questions.length) dojoExam.currentIndex = 0;
+        renderDojoArenaQuestion();
+      }
+      refreshDbInspector();
+    }
+  }
+
+  /* -------------------------------------------------------------
+   * 16. HARDENED COMMAND BUS & AI DISPATCHER
+   * ------------------------------------------------------------- */
+  async function executeConsoleCommand() {
+    const raw = document.getElementById("console-payload").value.trim();
+    let cmd;
+    try {
+      cmd = JSON.parse(raw);
+    } catch (err) {
+      alert("Invalid JSON Syntax: " + err.message);
+      return;
+    }
+
+    try {
+      const database = await getDB();
+      if (!database) throw new Error("IndexedDB instance unavailable.");
+
+      if (cmd.action === "INGEST_AND_LAUNCH_MOCK") {
+        const questions = (cmd.payload.questions || []).map(sanitizeQuestion);
+        if (questions.length === 0) {
+          alert("No questions found in payload to launch mock.");
+          return;
+        }
+
+        const tx = database.transaction(["store_questions"], "readwrite");
+        const st = tx.objectStore("store_questions");
+        questions.forEach(q => st.put(q));
+        await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
+
+        compileAndLaunchArena(
+          cmd.payload.title || "AI Custom Practice Mock",
+          questions,
+          cmd.payload.durationMin || 15
+        );
+
+      } else if (cmd.action === "AI_PRESCRIBE_REMEDY") {
+        const qIds = cmd.payload.questionIds || [];
+        const newQuestions = (cmd.payload.newQuestions || []).map(sanitizeQuestion);
+
+        if (newQuestions.length > 0) {
+          const tx = database.transaction(["store_questions"], "readwrite");
+          const st = tx.objectStore("store_questions");
+          newQuestions.forEach(q => st.put(q));
+          await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
+        }
+
+        const allQs = await getAllRecords("store_questions");
+        let remedialPool = allQs.filter(q => qIds.includes(q.id));
+        if (newQuestions.length > 0) {
+          remedialPool = [...remedialPool, ...newQuestions];
+        }
+
+        if (remedialPool.length === 0) {
+          alert("Could not compile remedy pool. No matching questions found in bank.");
+          return;
+        }
+
+        compileAndLaunchArena(
+          cmd.payload.title || "AI Prescribed Remedial Blitz",
+          remedialPool,
+          cmd.payload.durationMin || 10
+        );
+
+      } else if (cmd.action === "BATCH_INGEST_QUESTIONS") {
+        const list = (cmd.payload.questions || []).map(sanitizeQuestion);
+        const tx = database.transaction(["store_questions"], "readwrite");
+        const st = tx.objectStore("store_questions");
+        list.forEach(q => st.put(q));
+        await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
+        alert(`Ingested ${list.length} questions successfully into bank.`);
+
+      } else if (cmd.action === "BATCH_INGEST_COMPENDIUM") {
+        const dossiers = (cmd.payload.dossiers || []).map(sanitizeDossier);
+        const tx = database.transaction(["store_concepts"], "readwrite");
+        const st = tx.objectStore("store_concepts");
+        dossiers.forEach(d => st.put(d));
+        await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
+        alert(`Ingested ${dossiers.length} topic dossiers successfully.`);
+
+      } else if (cmd.action === "SAVE_MOCK_PRESET") {
+        const preset = sanitizeSavedMock(cmd.payload, Date.now());
+        await putRecord("store_saved_mocks", preset);
+        alert(`Saved mock setup: "${preset.title}".`);
+        await renderDashboardBlueprints();
+
+      } else if (cmd.action === "MODIFY_TAXONOMY") {
+        const { operation, subject, chapter } = cmd.payload;
+        if (operation === "ADD_CHAPTER" && TAXONOMY[subject]) {
+          if (!TAXONOMY[subject].chapters.includes(chapter)) {
+            TAXONOMY[subject].chapters.push(chapter);
+          }
+        } else if (operation === "DELETE_CHAPTER" && TAXONOMY[subject]) {
+          TAXONOMY[subject].chapters = TAXONOMY[subject].chapters.filter(c => c !== chapter);
+        }
+        await putRecord("store_config", { key: "system_taxonomy", value: TAXONOMY });
+        alert(`Taxonomy updated: ${operation} on ${chapter}`);
+        await syncAllTaxonomyDropdowns();
+
+      } else if (cmd.action === "RAW_DB_OPERATION") {
+        const { store, operation, key, record } = cmd.payload;
+        if (operation === "PUT") await putRecord(store, record);
+        else if (operation === "DELETE") await deleteRecordFromStore(store, key);
+        else if (operation === "CLEAR") await clearStore(store);
+        alert(`Executed ${operation} on ${store}`);
+
+      } else {
+        alert("Unknown Command Action: " + (cmd.action || "undefined"));
+      }
+
+      refreshDbInspector();
+      renderDashboard();
+    } catch(err) {
+      alert("Command Execution Error: " + err.message);
+    }
+  }
+
+  async function compileAndLaunchArena(title, questionsPool, durationMin) {
+    clearInterval(examTimerInterval);
+    clearInterval(questionTimerInterval);
+
+    activeExam = {
+      sessionId: "ai_mock_" + Date.now(),
+      timestamp: Date.now(),
+      title: title,
+      mockType: "CUSTOM",
+      isVaultSprint: false,
+      isSectionLocked: false,
+      sections: [{
+        id: "SEC_AI",
+        name: "AI Test Session",
+        durationSec: durationMin * 60,
+        questions: questionsPool,
+        locked: false
+      }],
+      activeSectionIndex: 0,
+      currentQuestionIndex: 0,
+      questions: questionsPool.map((q, idx) => ({ 
+        ...q, 
+        sectionIndex: 0, 
+        sectionName: "AI Test Session", 
+        localNumber: idx + 1, 
+        globalNumber: idx + 1 
+      })),
+      sectionRemainingSec: durationMin * 60,
+      currentQTimeSpentSec: 0,
+      userResponses: {},
+      isPaused: false,
+      isReviewMode: false
+    };
+
+    activeExam.questions.forEach(q => {
+      activeExam.userResponses[q.id] = {
+        selectedOption: null,
+        initialOption: null,
+        status: "unanswered",
+        switches: 0,
+        decisionTrail: [],
+        timeSpentSec: 0,
+        struck: []
+      };
+    });
+
+    await putRecord("store_active_session", { id: "current_session", session: activeExam });
+    hideMiniPlayer();
+
+    pushHistoryState("exam-arena");
+    document.getElementById("exam-arena").style.display = "flex";
+    renderActiveExamQuestion();
+    startExamTimers();
+  }
+
+  function loadSamplePayload(type) {
+    if (type === "REMEDY") {
+      const sample = {
+        action: "AI_PRESCRIBE_REMEDY",
+        payload: {
+          title: "Geometry & Time-Work Remedial Blitz",
+          durationMin: 10,
+          questionIds: ["q_cgl_qa_geom_011", "q_cgl_qa_tw_010", "q_qa_geom_002"],
+          newQuestions: []
+        }
+      };
+      document.getElementById("console-payload").value = JSON.stringify(sample, null, 2);
+    }
+  }
+
+  async function refreshDbInspector() {
+    const storeName = document.getElementById("db-store-select").value;
+    const records = await getAllRecords(storeName);
+    const list = document.getElementById("db-inspector-list");
+    list.innerHTML = "";
+
+    records.forEach(rec => {
+      const key = rec.id || rec.sessionId || rec.questionId || rec.key;
+      const row = document.createElement("div");
+      row.style.display = "flex";
+      row.style.justifyContent = "space-between";
+      row.style.padding = "6px 0";
+      row.style.borderBottom = "1px solid var(--border-color)";
+      row.innerHTML = `
+        <span style="font-family:var(--font-mono);">${key}</span>
+        <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.editDbRecordModal('${storeName}', '${key}')">Inspect</button>
+      `;
+      list.appendChild(row);
+    });
+  }
+
+  async function editDbRecordModal(sName, key) {
+    const rec = await getRecord(sName, key);
+    if (sName === "store_questions") {
+      openEditQuestionModal(rec);
+    } else if (sName === "store_concepts") {
+      openCompendiumToSheet(rec.id, rec.subject, rec.chapter);
+    } else {
+      alert(`Record Details (${key}):\n` + JSON.stringify(rec, null, 2));
+    }
+  }
+
+  async function wipeTestAttempts() {
+    if (confirm("Permanently clear standard mock test history?")) {
+      await clearStore("store_attempts");
+      alert("Standard test history cleared.");
+      renderDashboard();
+      refreshDbInspector();
+    }
+  }
+
+  async function wipeErrorVault() {
+    if (confirm("Permanently clear active Error Vault traps?")) {
+      await clearStore("store_vault");
+      alert("Error Vault cleared.");
+      renderVault();
+      refreshDbInspector();
+    }
+  }
+
+  async function factoryResetAll() {
+    if (confirm("WARNING: Complete factory reset will wipe all data and re-seed defaults!")) {
+      const storeKeys = [
+        "store_questions", "store_attempts", "store_vault", 
+        "store_vault_sprints", "store_concepts", "store_notes", 
+        "store_saved_mocks", "store_active_session", "store_config"
+      ];
+      for (const sName of storeKeys) {
+        await clearStore(sName);
+      }
+      await seedData();
+      alert("Factory reset complete.");
+      await syncAllTaxonomyDropdowns();
+      renderDashboard();
+      refreshDbInspector();
+    }
+  }
+
+  /* -------------------------------------------------------------
+   * 17. UNIVERSAL TOUCH GESTURES (VIEWPORT & HARDWARE SHIELD)
+   * ------------------------------------------------------------- */
+  function initGestureControllers() {
+    const attachSwipeHandler = (elementId, onLeftSwipe, onRightSwipe) => {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      let startX = 0, startY = 0;
+
+      el.addEventListener("touchstart", (e) => {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+      }, { passive: true });
+
+      el.addEventListener("touchend", (e) => {
+        const deltaX = e.changedTouches[0].clientX - startX;
+        const deltaY = e.changedTouches[0].clientY - startY;
+
+        if (Math.abs(deltaX) > 60 && Math.abs(deltaY) < 35) {
+          if (navigator.vibrate) navigator.vibrate(15);
+          if (deltaX < 0) onLeftSwipe();
+          else onRightSwipe();
+        }
+      }, { passive: true });
+    };
+
+    attachSwipeHandler("arena-body", () => document.getElementById("btn-q-save-next").click(), () => document.getElementById("btn-q-prev").click());
+    attachSwipeHandler("dojo-arena-body", () => navDojoArena(1), () => navDojoArena(-1));
+    attachSwipeHandler("comp-studio-canvas", () => navCompStudioSheet(1), () => navCompStudioSheet(-1));
+
+    const viewportRoot = document.getElementById("app-viewport-root");
+    let rootStartX = 0, rootStartY = 0;
+    const tabSequence = ["tab-dashboard", "tab-dojo", "tab-console", "tab-vault"];
+
+    viewportRoot.addEventListener("touchstart", (e) => {
+      rootStartX = e.touches[0].clientX;
+      rootStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    viewportRoot.addEventListener("touchend", (e) => {
+      const arenaView = document.getElementById("exam-arena");
+      const dojoView = document.getElementById("dojo-arena-view");
+      const compView = document.getElementById("compendium-fullscreen-view");
+      const openModals = document.querySelectorAll(".modal-overlay.active");
+      if (arenaView.style.display === "flex" || dojoView.style.display === "flex" || compView.style.display === "flex" || openModals.length > 0) {
+        return;
+      }
+
+      const target = e.target;
+      if (target.closest("textarea") || target.closest(".sticky-anchor-bar") || target.closest(".palette-scroll-body") || target.closest("#dash-blueprints-pills") || target.closest(".synapse-tree-container")) {
+        return;
+      }
+
+      const deltaX = e.changedTouches[0].clientX - rootStartX;
+      const deltaY = e.changedTouches[0].clientY - rootStartY;
+
+      if (Math.abs(deltaX) > 70 && Math.abs(deltaY) < 35) {
+        const activeTabEl = document.querySelector(".view-container.active");
+        if (!activeTabEl) return;
+        const currentIdx = tabSequence.indexOf(activeTabEl.id);
+        if (currentIdx === -1) return;
+
+        if (deltaX < 0 && currentIdx < tabSequence.length - 1) {
+          switchTab(tabSequence[currentIdx + 1], document.getElementById(`nav-btn-${tabSequence[currentIdx + 1]}`));
+        } else if (deltaX > 0 && currentIdx > 0) {
+          switchTab(tabSequence[currentIdx - 1], document.getElementById(`nav-btn-${tabSequence[currentIdx - 1]}`));
+        }
+      }
+    }, { passive: true });
+
+    window.addEventListener("popstate", () => {
+      const openModals = document.querySelectorAll(".modal-overlay.active");
+      if (openModals.length > 0) {
+        openModals.forEach(m => m.classList.remove("active"));
+        return;
+      }
+
+      const arenaView = document.getElementById("exam-arena");
+      if (arenaView.style.display === "flex") {
+        if (activeExam && activeExam.isReviewMode) {
+          exitReviewArena();
+        } else {
+          document.getElementById("btn-arena-pause").click();
+        }
+        return;
+      }
+
+      const compView = document.getElementById("compendium-fullscreen-view");
+      if (compView.style.display === "flex") {
+        closeCompendiumStudio();
+        return;
+      }
+
+      const dojoView = document.getElementById("dojo-arena-view");
+      if (dojoView.style.display === "flex") {
+        exitDojoArena();
+      }
+    });
+  }
+
+  function pushHistoryState(name) {
+    history.pushState({ panel: name }, "");
+  }
+
+  /* -------------------------------------------------------------
+   * 18. SELECTIVE PRINT ENGINE
+   * ------------------------------------------------------------- */
+  async function openPrintConfigModal() {
+    await updatePrintChapters();
+    await populatePrintMockDropdown();
+    pushHistoryState("modal-print-config");
+    document.getElementById("modal-print-config").classList.add("active");
+  }
+
+  async function populatePrintMockDropdown() {
+    const attempts = await getAllRecords("store_attempts");
+    const select = document.getElementById("print-mock-select");
+    select.innerHTML = "";
+    attempts.forEach(a => {
+      const opt = document.createElement("option");
+      opt.value = a.sessionId;
+      opt.innerText = `${a.title} (${new Date(a.timestamp).toLocaleDateString()})`;
+      select.appendChild(opt);
+    });
+  }
+
+  function handlePrintTypeChange(type) {
+    const isQ = type === "QUESTIONS" || type === "COMPENDIUM";
+    const isMock = type === "PAST_MOCK";
+    document.getElementById("print-sub-wrap").style.display = isQ ? "block" : "none";
+    document.getElementById("print-chap-wrap").style.display = isQ ? "block" : "none";
+    document.getElementById("print-mock-select-wrap").style.display = isMock ? "block" : "none";
+  }
+
+  async function updatePrintChapters() {
+    const sub = document.getElementById("print-subject").value;
+    const chapSelect = document.getElementById("print-chapter");
+    chapSelect.innerHTML = `<option value="ALL">All Chapters</option>`;
+
+    const allQs = await getAllRecords("store_questions");
+    const chaps = [...new Set(allQs.filter(q => sub === "ALL" || q.subject === sub).map(q => q.chapter))];
+
+    chaps.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c;
+      opt.innerText = c;
+      chapSelect.appendChild(opt);
+    });
+  }
+
+  async function generateAndPrintSheet() {
+    document.getElementById("modal-print-config").classList.remove("active");
+    const pType = document.getElementById("print-type").value;
+    const sub = document.getElementById("print-subject").value;
+    const chap = document.getElementById("print-chapter").value;
+    const incAns = document.getElementById("print-include-ans").value === "YES";
+
+    const root = document.getElementById("print-sheet-root");
+    root.innerHTML = "";
+
+    if (pType === "QUESTIONS") {
+      const allQs = await getAllRecords("store_questions");
+      let pool = sub === "ALL" ? allQs : allQs.filter(q => q.subject === sub);
+      if (chap !== "ALL") pool = pool.filter(q => q.chapter === chap);
+
+      root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Practice Spool (${sub} - ${chap})</h2>`;
+      pool.forEach((q, idx) => {
+        const item = document.createElement("div");
+        item.className = "print-question";
+        let img = q.imageUrl ? `<br><img src="${q.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
+        item.innerHTML = `
+          <strong>Q${idx + 1}.</strong> ${formatRichText(q.questionText)}${img}<br>
+          ${q.options.map((opt, i) => `(${i + 1})${formatRichText(opt)} &nbsp;`).join(' ')}
+          ${incAns ? `<div style="font-size:10px; margin-top:4px;"><b>Answer:</b> Option ${q.correctIndex + 1} \vert{} <i>${q.explanation || ''}</i></div>` : ''}
+        `;
+        root.appendChild(item);
+      });
+    } else if (pType === "PAST_MOCK") {
+      const mockId = document.getElementById("print-mock-select").value;
+      const attempts = await getAllRecords("store_attempts");
+      const targetMock = attempts.find(a => a.sessionId === mockId);
+      if (!targetMock) return;
+
+      root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">${targetMock.title} - Score: ${targetMock.finalScore.toFixed(2)} (${new Date(targetMock.timestamp).toLocaleDateString()})</h2>`;
+      targetMock.questions.forEach((q, idx) => {
+        const resp = targetMock.userResponses && targetMock.userResponses[q.id] ? targetMock.userResponses[q.id] : {};
+        const item = document.createElement("div");
+        item.className = "print-question";
+        let img = q.imageUrl ? `<br><img src="${q.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
+        item.innerHTML = `
+          <strong>Q${idx + 1}.</strong> ${formatRichText(q.questionText)}${img}<br>
+          ${q.options.map((opt, i) => `(${i + 1})${formatRichText(opt)} &nbsp;`).join(' ')}
+          ${incAns ? `<div style="font-size:10px; margin-top:4px;"><b>Selected:</b> Option ${resp.selectedOption !== null && resp.selectedOption !== undefined ? resp.selectedOption + 1 : 'None'} | <b>Correct:</b> Option ${q.correctIndex + 1} \vert{} <i>${q.explanation || ''}</i></div>` : ''}
+        `;
+        root.appendChild(item);
+      });
+    } else if (pType === "COMPENDIUM") {
+      const dossiers = await getAllRecords("store_concepts");
+      let pool = sub === "ALL" ? dossiers : dossiers.filter(d => d.subject === sub);
+      if (chap !== "ALL") pool = pool.filter(d => d.chapter === chap);
+
+      root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Knowledge Compendium (${sub} - ${chap})</h2>`;
+      pool.forEach((t, idx) => {
+        const item = document.createElement("div");
+        item.className = "print-question";
+        let img = t.imageUrl ? `<br><img src="${t.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
+        item.innerHTML = `
+          <strong>${idx + 1}. ${t.title} [${t.chapter}]</strong> ${t.subtitle ? `<i>(${t.subtitle})</i>` : ''}<br>
+          ${formatRichText(t.content)}${img}
+        `;
+        root.appendChild(item);
+      });
+    } else if (pType === "VAULT") {
+      const vault = await getAllRecords("store_vault");
+      const allQs = await getAllRecords("store_questions");
+      root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Error Vault Revision Sheet</h2>`;
+      vault.forEach((v, idx) => {
+        const q = allQs.find(item => item.id === v.questionId);
+        if (!q) return;
+        const item = document.createElement("div");
+        item.className = "print-question";
+        let img = q.imageUrl ? `<br><img src="${q.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
+        item.innerHTML = `
+          <strong>Q${idx + 1}. [Box ${v.leitnerBox || 1} - ${v.errorTag}]</strong> ${formatRichText(q.questionText)}${img}<br>
+          ${q.options.map((opt, i) => `(${i + 1})${formatRichText(opt)} &nbsp;`).join(' ')}
+          <div style="font-size:10px; margin-top:4px;"><b>Correct: Option ${q.correctIndex + 1}</b> | ${q.explanation || ''}</div>
+        `;
+        root.appendChild(item);
+      });
+    }
+
+    window.print();
+  }
+
+  /* -------------------------------------------------------------
+   * 19. NAVIGATION, TAB SWITCHING & SYSTEM BOOT
+   * ------------------------------------------------------------- */
+  function switchTab(tId, btn) {
+    document.querySelectorAll(".view-container").forEach(el => el.classList.remove("active"));
+    document.querySelectorAll(".nav-btn").forEach(el => el.classList.remove("active"));
+
+    const targetEl = document.getElementById(tId);
+    if (targetEl) targetEl.classList.add("active");
+
+    const targetNavBtn = btn || document.getElementById(`nav-btn-${tId}`);
+    if (targetNavBtn) targetNavBtn.classList.add("active");
+
+    if (tId === "tab-dashboard") renderDashboard();
+    if (tId === "tab-dojo") updateDojoChapters();
+    if (tId === "tab-console") refreshDbInspector();
+    if (tId === "tab-vault") renderVault();
+  }
+
+  window.addEventListener("DOMContentLoaded", async () => {
+    const shield = document.getElementById("pause-shield");
+    shield.style.setProperty("display", "none", "important");
+
+    await getDB();
+    await syncAllTaxonomyDropdowns();
+    await renderDashboard();
+    await updateDojoChapters();
+    await renderVault();
+    initGestureControllers();
+
+    const savedSessionRec = await getRecord("store_active_session", "current_session");
+    if (savedSessionRec && savedSessionRec.session && !savedSessionRec.session.completed) {
+      activeExam = savedSessionRec.session;
+      activeExam.isPaused = true;
+      updateMiniPlayerDock();
+    }
+  });
+
+  return {
+    switchTab,
+    openCustomMockModal,
+    addCustomSectionRow,
+    removeCustomSectionRow,
+    updateCustomRowSubject,
+    updateCustomRowCount,
+    updateCustomRowDuration,
+    applyBlueprintPreset,
+    openSaveBlueprintModal,
+    saveCurrentPresetAction,
+    launchSavedPreset,
+    deleteSavedPreset,
+    launchConfiguredMock,
+    requestEndSectionEarly,
+    confirmEndSectionEarly,
+    resumeFromMiniPlayer,
+    reattemptMock,
+    enterFullScreenReviewArena,
+    exitReviewArena,
+    openCompendiumToSheet,
+    jumpToConceptFromReview,
+    jumpToConceptFromDojo,
+    openOmniResearchForCurrentQuestion,
+    openOmniResearchForDojoQuestion,
+    launchCurrentSheetQuestionsDrill,
+    openSynapseGraphModal,
+    toggleSynapseNode,
+    expandAllSynapseNodes,
+    collapseAllSynapseNodes,
+    launchSynapseChapterBlitz,
+    launchDirectSheetDrill,
+    updateDojoChapters,
+    updateDojoMethods,
+    launchFilteredDojo,
+    exitDojoArena,
+    navDojoArena,
+    toggleDojoMethod,
+    autoSaveDojoAnnotation,
+    toggleDojoPalette,
+    openCompendiumStudio,
+    closeCompendiumStudio,
+    handleCompStudioSubjectChange,
+    handleCompStudioChapterChange,
+    navCompStudioSheet,
+    autoSaveCompScratchpad,
+    deleteCurrentCompendiumSheet,
+    promptCreateNewChapter,
+    openOmniSearchModal,
+    executeOmniSearch,
+    openSubjectDiagnosticModal,
+    insertDossierSnippet,
+    openConceptEditorModal,
+    handleConceptImageUpload,
+    saveConceptCard,
+    openPrintConfigModal,
+    handlePrintTypeChange,
+    updatePrintChapters,
+    generateAndPrintSheet,
+    openEditQuestionModal,
+    openEditCurrentDojoQuestion,
+    handleQuestionImageUpload,
+    saveQuestionEditor,
+    deleteCurrentEditingQuestion,
+    openMockReview,
+    handleMistakeTagSelect,
+    setMistakeTag,
+    filterVaultByMistakeTag,
+    openTaxonomyManagerModal,
+    addNewSubjectAction,
+    promptAddChapterToSubject,
+    deleteChapterFromSubject,
+    deleteSubjectAction,
+    syncEditorChapterDropdown,
+    openAiExportModal,
+    updateAiExportPreview,
+    copyAiExportToClipboard,
+    openMasterLedgerExportModal,
+    downloadLedgerJson,
+    downloadLedgerMarkdown,
+    openBackupRestoreModal,
+    handleBackupFileSelect,
+    executeHydrationRestore,
+    copyLiveSystemManifestToClipboard,
+    openHistoryArchiveModal,
+    renderArchiveList,
+    executeConsoleCommand,
+    loadSamplePayload,
+    refreshDbInspector,
+    editDbRecordModal,
+    wipeTestAttempts,
+    wipeErrorVault,
+    factoryResetAll,
+    renderDashboard,
+    renderVault,
+    advanceVaultBox,
+    launchVaultSprint,
+    exportFullBackup,
+    exportCleanMarkdownVault
+  };
+})();
