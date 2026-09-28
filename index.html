@@ -1038,9 +1038,14 @@
             <h2 style="font-size:20px; font-weight:800; color:#fff;">Welcome back, Ankit</h2>
             <p style="font-size:12px; color:var(--accent-cyan); margin-top:2px;">Target: Tier 1 & Tier 2 Master Preparation</p>
           </div>
-          <button class="btn" id="btn-dash-launch-mock" onclick="CGL_OS.openCustomMockModal()" style="padding:10px 16px; font-size:13px; box-shadow:0 0 14px rgba(56,139,253,0.5); z-index:5;">
-            Launch Mock
-          </button>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-secondary" onclick="CGL_OS.openTaxonomyManagerModal()" style="padding:10px 12px; font-size:13px;" title="Taxonomy & Module Studio">
+              ⚙️ Modules
+            </button>
+            <button class="btn" id="btn-dash-launch-mock" onclick="CGL_OS.openCustomMockModal()" style="padding:10px 16px; font-size:13px; box-shadow:0 0 14px rgba(56,139,253,0.5); z-index:5;">
+              Launch Mock
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1061,7 +1066,7 @@
       </div>
 
       <!-- Neglect Index (Nc) Alert Banner -->
-      <div id="dash-neglect-alert" style="display:none; background:#1b1315; border:1px solid #da3633; border-radius:10px; padding:10px 14px; margin-bottom:14px; font-size:12px; color:#fca5a5; display:flex; justify-content:space-between; align-items:center;">
+      <div id="dash-neglect-alert" style="display:none; background:#1b1315; border:1px solid #da3633; border-radius:10px; padding:10px 14px; margin-bottom:14px; font-size:12px; color:#fca5a5; justify-content:space-between; align-items:center;">
         <div>
           <b>⚠️ High Neglect Warning:</b> <span id="dash-neglect-text">QA_TIME_WORK untouched for 8 days.</span>
         </div>
@@ -1899,6 +1904,34 @@
   </div>
 
 
+  <!-- ==================== DYNAMIC TAXONOMY & SUBJECT MANAGER ==================== -->
+  <div class="modal-overlay" id="modal-taxonomy-manager">
+    <div class="modal-window" style="max-width:540px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+        <div>
+          <h3 style="font-size:16px; font-weight:800; color:var(--accent-cyan);">Taxonomy & Module Studio</h3>
+          <span style="font-size:11px; color:var(--text-muted);">Manage Subjects, Modules & Custom Chapters</span>
+        </div>
+        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-taxonomy-manager').classList.remove('active')">✕</button>
+      </div>
+
+      <!-- Add New Subject -->
+      <div style="background:var(--bg-elevated); padding:10px; border-radius:8px; margin-bottom:12px; border:1px solid var(--border-color);">
+        <label style="font-size:11px; font-weight:700; color:var(--accent-cyan); display:block; margin-bottom:6px;">+ Create New Subject / Module</label>
+        <div style="display:grid; grid-template-columns:100px 1fr auto; gap:6px;">
+          <input type="text" id="new-sub-key" class="form-control" placeholder="KEY (e.g. CA)">
+          <input type="text" id="new-sub-name" class="form-control" placeholder="Full Name (e.g. Current Affairs)">
+          <button class="btn" style="padding:6px 12px; font-size:12px;" onclick="CGL_OS.addNewSubjectAction()">Add</button>
+        </div>
+      </div>
+
+      <!-- Existing Taxonomy List -->
+      <div class="card-title">Configured Syllabus Hierarchy</div>
+      <div id="taxonomy-manager-list" style="max-height:300px; overflow-y:auto;"></div>
+    </div>
+  </div>
+
+
   <!-- ==================== 23. HARDENED PAUSE OVERLAY SHIELD ==================== -->
   <div id="pause-shield" style="display:none !important; position:fixed !important; inset:0 !important; width:100vw !important; height:100vh !important; background:rgba(6, 8, 13, 0.98) !important; z-index:9999 !important; flex-direction:column !important; align-items:center !important; justify-content:center !important; padding:24px !important; text-align:center !important;">
     <h2 style="font-size:22px; font-weight:800; margin-bottom:8px; color:#fff;">TEST PAUSED</h2>
@@ -1934,9 +1967,7 @@
   </nav>
 
   <div id="print-sheet-root" style="display:none;" class="print-page"></div>
-
-
-  <!-- ==================== 25. MASTER JAVASCRIPT RUNTIME ==================== -->
+  <!-- ==================== 25. MASTER JAVASCRIPT RUNTIME (PART 1) ==================== -->
   <script>
     const CGL_OS = (() => {
       const DB_NAME = "cgl_os_db";
@@ -1965,6 +1996,7 @@
       let synapseSelectedNode = null;
       let isSynapseDragging = false;
       let synapseDragStartX = 0, synapseDragStartY = 0;
+      let synapseExpandedNodes = new Set(["root"]);
 
       // Disaster Recovery Hydration State
       let pendingHydrationData = null;
@@ -2625,7 +2657,6 @@
           stores.store_config = raw.config || raw.store_config || [];
         }
 
-        // Defensive Schema Sanitizers (Guarantees zero undefined property crashes on dashboard renders)
         stores.store_questions = (stores.store_questions || []).map(sanitizeQuestion);
         stores.store_concepts = (stores.store_concepts || []).map(sanitizeDossier);
         stores.store_vault = (stores.store_vault || []).map(sanitizeVaultEntry);
@@ -2783,90 +2814,11 @@ ${JSON.stringify(TAXONOMY, null, 2)}
 
 ## 3. Bi-Directional Bridge Keys (Concept IDs in Question Bank)
 ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.chapter, title: c.title })), null, 2)}
-
-## 4. Supported JSON Action Contracts
-Formulate responses strictly as valid JSON adhering to these contracts:
-
-### A. INGEST_AND_LAUNCH_MOCK
-\`\`\`json
-{
-  "action": "INGEST_AND_LAUNCH_MOCK",
-  "payload": {
-    "title": "Full-Spectrum Tier 1 Benchmark Mock",
-    "durationMin": 15,
-    "questions": [
-      {
-        "id": "q_cgl_sample_01",
-        "subject": "QA",
-        "chapter": "QA_GEOMETRY",
-        "subtopic": "Circles",
-        "method": "Common Tangents",
-        "conceptId": "top_stress_qa_geometry_circles",
-        "questionText": "Question text in Markdown with KaTeX $...$",
-        "imageUrl": "",
-        "options": ["Opt 1", "Opt 2", "Opt 3", "Opt 4"],
-        "correctIndex": 0,
-        "explanation": "Detailed explanation with KaTeX...",
-        "tags": ["Geometry"]
-      }
-    ]
-  }
-}
-\`\`\`
-
-### B. AI_PRESCRIBE_REMEDY
-\`\`\`json
-{
-  "action": "AI_PRESCRIBE_REMEDY",
-  "payload": {
-    "title": "Targeted Remedial Weakness Blitz",
-    "durationMin": 10,
-    "questionIds": ["q_cgl_qa_geom_011", "q_cgl_qa_tw_010"],
-    "newQuestions": []
-  }
-}
-\`\`\`
-
-### C. BATCH_INGEST_COMPENDIUM
-\`\`\`json
-{
-  "action": "BATCH_INGEST_COMPENDIUM",
-  "payload": {
-    "dossiers": [
-      {
-        "id": "top_geo_tangents_01",
-        "subject": "QA",
-        "chapter": "QA_GEOMETRY",
-        "title": "Circles & Tangents",
-        "subtitle": "Direct & Transverse Tangent Equations",
-        "content": "### Direct Common Tangent\\n$$DCT = \\\\sqrt{d^2 - (r_1 - r_2)^2}$$\\n\\n> [!trap] Critical TCS Deduction\\n> If circles touch externally, $DCT = 2\\\\sqrt{r_1 r_2}$.",
-        "imageUrl": ""
-      }
-    ]
-  }
-}
-\`\`\`
-
-### D. SAVE_MOCK_PRESET
-\`\`\`json
-{
-  "action": "SAVE_MOCK_PRESET",
-  "payload": {
-    "id": "preset_speed_blitz",
-    "type": "DYNAMIC_BLUEPRINT",
-    "title": "Speed Blitz (QA + REAS)",
-    "isSectionLocked": true,
-    "sections": [
-      { "id": 1, "subject": "QA", "count": 25, "durationMin": 15 },
-      { "id": 2, "subject": "REAS", "count": 25, "durationMin": 15 }
-    ]
-  }
-}
-\`\`\`
 `;
         navigator.clipboard.writeText(manifest);
         alert("Live AI Introspection Manifest copied to clipboard! Paste it into your coaching chat.");
       }
+
       /* -------------------------------------------------------------
        * 3. MULTI-SUBJECT CUSTOM MOCK BUILDER & SAVED PRESETS
        * ------------------------------------------------------------- */
@@ -2917,10 +2869,7 @@ Formulate responses strictly as valid JSON adhering to these contracts:
               <div>
                 <label style="font-size:10px; color:var(--text-muted);">Subject</label>
                 <select class="form-control" style="padding:6px; font-size:12px;" onchange="CGL_OS.updateCustomRowSubject(${idx}, this.value)">
-                  <option value="QA" ${row.subject==='QA'?'selected':''}>QA</option>
-                  <option value="REAS" ${row.subject==='REAS'?'selected':''}>REAS</option>
-                  <option value="ENG" ${row.subject==='ENG'?'selected':''}>ENG</option>
-                  <option value="GA" ${row.subject==='GA'?'selected':''}>GA</option>
+                  ${Object.keys(TAXONOMY).map(subKey => `<option value="${subKey}" ${row.subject===subKey?'selected':''}>${subKey}</option>`).join('')}
                 </select>
               </div>
               <div>
@@ -3383,10 +3332,17 @@ Formulate responses strictly as valid JSON adhering to these contracts:
           imgBox.innerHTML = "";
         }
 
-        // Bi-Directional Concept Bridge Resolution
-        if (isRev && q.conceptId && q.conceptId.trim().length > 0) {
+        // Bi-Directional Concept Bridge Button (Now visible whenever conceptId or chapter concepts exist)
+        if (isRev) {
           conceptBridgeBox.style.display = "block";
-          document.getElementById("btn-jump-to-concept").onclick = () => jumpToConceptFromReview(q.conceptId);
+          const bridgeBtn = document.getElementById("btn-jump-to-concept");
+          if (q.conceptId && q.conceptId.trim().length > 0) {
+            bridgeBtn.innerText = "📖 Jump to Underlying Theorem Sheet";
+            bridgeBtn.onclick = () => jumpToConceptFromReview(q.conceptId);
+          } else {
+            bridgeBtn.innerText = `📖 Browse Living Sheets for ${q.chapter}`;
+            bridgeBtn.onclick = () => openCompendiumToSheet(null, q.subject, q.chapter);
+          }
         } else {
           conceptBridgeBox.style.display = "none";
         }
@@ -3750,7 +3706,6 @@ Formulate responses strictly as valid JSON adhering to these contracts:
           if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
             const isCorrect = resp.selectedOption === q.correctIndex;
             
-            // Panic Blitz Detection: answered in under 12 seconds in the final 3 minutes of the section
             if (resp.timeSpentSec < 12 && activeExam.sectionRemainingSec < 180) {
               resp.isPanicSlip = true;
             }
@@ -3907,38 +3862,57 @@ Formulate responses strictly as valid JSON adhering to these contracts:
       }
 
       /* -------------------------------------------------------------
-       * 5. BI-DIRECTIONAL CONCEPT BRIDGE & OMNI-RESEARCH RESOLVER
+       * 5. UNIVERSAL CONCEPT ROUTER & MODAL-SAFE DRILL LAUNCHERS
        * ------------------------------------------------------------- */
-      async function jumpToConceptFromReview(conceptId) {
-        const item = await getRecord("store_concepts", conceptId);
-        if (!item) {
-          alert("Linked living concept sheet not found.");
-          return;
+      async function openCompendiumToSheet(conceptId, targetSub, targetChap) {
+        // 1. Close any intercepting modals to prevent z-index freeze
+        const openModals = document.querySelectorAll(".modal-overlay.active");
+        openModals.forEach(m => m.classList.remove("active"));
+
+        let item = null;
+        if (conceptId) {
+          item = await getRecord("store_concepts", conceptId);
+        }
+        if (!item && targetChap) {
+          const allConcepts = await getAllRecords("store_concepts");
+          item = allConcepts.find(c => c.chapter === targetChap);
         }
 
-        activeCompSubject = item.subject;
-        activeCompChapter = item.chapter;
-        openCompendiumStudio();
-        setTimeout(() => {
-          const sheetIdx = currentCompSheets.findIndex(s => s.id === conceptId);
+        activeCompSubject = item ? item.subject : (targetSub || "QA");
+        activeCompChapter = item ? item.chapter : (targetChap || "QA_GEOMETRY");
+
+        // 2. Open Studio
+        pushHistoryState("compendium-fullscreen-view");
+        document.getElementById("compendium-fullscreen-view").style.display = "flex";
+
+        // 3. Render subject & chapter directly without reset
+        const subSelect = document.getElementById("comp-studio-subject-select");
+        if (subSelect) subSelect.value = activeCompSubject;
+        await handleCompStudioSubjectChange(activeCompSubject);
+
+        const chapSelect = document.getElementById("comp-studio-chapter-select");
+        if (chapSelect) chapSelect.value = activeCompChapter;
+        await renderCompStudioSheets();
+
+        // 4. Activate matching sheet tab
+        if (item) {
+          const sheetIdx = currentCompSheets.findIndex(s => s.id === item.id);
           if (sheetIdx !== -1) {
             activeCompSheetIndex = sheetIdx;
             renderActiveCompSheet();
           }
-        }, 150);
+        }
       }
 
-      async function jumpToConceptFromDojo() {
+      function jumpToConceptFromReview(conceptId) {
+        const q = activeExam.questions[activeExam.currentQuestionIndex];
+        openCompendiumToSheet(conceptId, q.subject, q.chapter);
+      }
+
+      function jumpToConceptFromDojo() {
         if (!dojoExam) return;
         const q = dojoExam.questions[dojoExam.currentIndex];
-        if (q && q.conceptId) {
-          jumpToConceptFromReview(q.conceptId);
-        } else {
-          // Fallback to chapter search
-          activeCompSubject = q.subject;
-          activeCompChapter = q.chapter;
-          openCompendiumStudio();
-        }
+        openCompendiumToSheet(q.conceptId, q.subject, q.chapter);
       }
 
       function openOmniResearchForCurrentQuestion() {
@@ -3959,11 +3933,9 @@ Formulate responses strictly as valid JSON adhering to these contracts:
         document.getElementById("omni-research-query-sub").innerText = `${q.subject} • ${q.chapter}`;
         document.getElementById("omni-research-prompt-preview").innerText = q.questionText.slice(0, 160) + "...";
 
-        // Encode deep intent search URLs
         const wikiUrl = `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(queryText + " SSC CGL")}`;
         const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(q.questionText.slice(0, 100) + " " + queryText)}`;
         
-        // Extract math formulas for Wolfram Alpha if present
         let wolframQuery = queryText;
         const mathMatch = q.questionText.match(/\$([^\$]+)\$/);
         if (mathMatch && mathMatch[1]) {
@@ -3979,24 +3951,42 @@ Formulate responses strictly as valid JSON adhering to these contracts:
         document.getElementById("modal-omni-research").classList.add("active");
       }
 
+      function launchDirectSheetDrill(conceptId, subject, chapter) {
+        // Close modal first to remove touch event blocking
+        const modal = document.getElementById("modal-synapse-tree");
+        if (modal) modal.classList.remove("active");
+
+        getAllRecords("store_questions").then(allQs => {
+          let linked = allQs.filter(q => q.conceptId === conceptId);
+          if (linked.length === 0) {
+            linked = allQs.filter(q => q.chapter === chapter);
+          }
+          if (linked.length > 0) {
+            compileAndLaunchArena(`Sheet Drill: ${chapter}`, linked.slice(0, 10), 10);
+          } else {
+            alert(`No questions in bank for ${chapter}.`);
+          }
+        });
+      }
+
       async function launchCurrentSheetQuestionsDrill() {
         const sheet = currentCompSheets[activeCompSheetIndex];
         if (!sheet) return;
+        closeCompendiumStudio();
 
         const allQs = await getAllRecords("store_questions");
-        const linked = allQs.filter(q => q.conceptId === sheet.id || (q.chapter === sheet.chapter && q.subtopic === sheet.title));
+        let linked = allQs.filter(q => q.conceptId === sheet.id || (q.chapter === sheet.chapter && q.subtopic === sheet.title));
+        if (linked.length === 0) {
+          linked = allQs.filter(q => q.chapter === sheet.chapter);
+        }
 
         if (linked.length === 0) {
-          alert(`No questions explicitly tagged to "${sheet.title}". Launching entire ${sheet.chapter} drill instead.`);
-          closeCompendiumStudio();
-          launchConfiguredMockDirect(sheet.subject, sheet.chapter, 5, 5);
+          alert(`No questions found in bank for chapter ${sheet.chapter}.`);
           return;
         }
 
-        closeCompendiumStudio();
-        compileAndLaunchArena(`Concept Drill: ${sheet.title}`, linked, Math.max(5, Math.round(linked.length * 1.5)));
+        compileAndLaunchArena(`Drill: ${sheet.title}`, linked.slice(0, 10), Math.max(5, Math.round(linked.slice(0, 10).length * 1.5)));
       }
-
       /* -------------------------------------------------------------
        * 6. FULL-SCREEN LIVING COMPENDIUM & KNOWLEDGE STUDIO
        * ------------------------------------------------------------- */
@@ -4090,7 +4080,6 @@ Formulate responses strictly as valid JSON adhering to these contracts:
         document.getElementById("comp-studio-header-title").innerText = sheet.title;
         document.getElementById("comp-studio-header-sub").innerText = `${sheet.chapter} • Sheet ${activeCompSheetIndex + 1} of ${currentCompSheets.length}`;
 
-        // Compute linked questions count
         const allQs = await getAllRecords("store_questions");
         const linkedCount = allQs.filter(q => q.conceptId === sheet.id || (q.chapter === sheet.chapter && q.subtopic === sheet.title)).length;
         document.getElementById("comp-linked-q-count").innerText = `${linkedCount} Associated Questions Linked`;
@@ -4302,7 +4291,7 @@ Formulate responses strictly as valid JSON adhering to these contracts:
       }
 
       /* -------------------------------------------------------------
-       * 7. INTERACTIVE SYNAPSE NODE TREE (CANVAS 2D ENGINE)
+       * 7. EXPANDABLE SYNAPSE KNOWLEDGE GRAPH ENGINE
        * ------------------------------------------------------------- */
       async function openSynapseGraphModal() {
         pushHistoryState("modal-synapse-tree");
@@ -4326,30 +4315,35 @@ Formulate responses strictly as valid JSON adhering to these contracts:
       async function buildSynapseTopology() {
         synapseNodes = [];
         synapseLinks = [];
-
         const allQuestions = await getAllRecords("store_questions");
         const allConcepts = await getAllRecords("store_concepts");
         const allVault = await getAllRecords("store_vault");
-        const attempts = await getAllRecords("store_attempts");
-        const completed = attempts.filter(a => a.completed && !a.isVaultSprint);
 
-        // Root Node
+        // Master Root
         synapseNodes.push({
           id: "root",
           label: "SSC CGL Syllabus",
           type: "ROOT",
-          x: 400, y: 50,
-          radius: 22,
-          color: "#38bdf8"
+          x: 400,
+          y: 60,
+          radius: 24,
+          color: "#38bdf8",
+          expanded: synapseExpandedNodes.has("root")
         });
 
+        if (!synapseExpandedNodes.has("root")) return;
+
         const subjects = synapseFilterSub === "ALL" ? Object.keys(TAXONOMY) : [synapseFilterSub];
-        const subSpacing = 700 / (subjects.length + 1);
+        const subCount = subjects.length;
+        const subWidth = 720;
+        const startX = 400 - (subWidth / 2);
+        const subSpacing = subWidth / Math.max(1, subCount - 1 || 1);
 
         subjects.forEach((subKey, sIdx) => {
           const subNodeId = `sub_${subKey}`;
-          const subX = 80 + (sIdx + 1) * subSpacing;
-          const subY = 160;
+          const isSubExpanded = synapseExpandedNodes.has(subNodeId);
+          const subX = subCount === 1 ? 400 : startX + (sIdx * subSpacing);
+          const subY = 170;
 
           synapseNodes.push({
             id: subNodeId,
@@ -4357,21 +4351,26 @@ Formulate responses strictly as valid JSON adhering to these contracts:
             sub: TAXONOMY[subKey].name,
             type: "SUBJECT",
             subject: subKey,
-            x: subX, y: subY,
-            radius: 18,
-            color: "#1f6feb"
+            x: subX,
+            y: subY,
+            radius: 20,
+            color: "#1f6feb",
+            expanded: isSubExpanded
           });
           synapseLinks.push({ from: "root", to: subNodeId });
 
-          const chapters = TAXONOMY[subKey].chapters.slice(0, 5); // display top 5 chapters per branch for visual clarity
-          const chapSpacing = 160 / Math.max(1, chapters.length);
+          if (!isSubExpanded) return;
+
+          const chapters = TAXONOMY[subKey].chapters;
+          const chapCount = chapters.length;
+          const chapSpacing = 48;
+          const chapStartY = subY + 90;
 
           chapters.forEach((chap, cIdx) => {
             const chapNodeId = `chap_${chap}`;
-            const chapX = subX - 70 + (cIdx * 35);
-            const chapY = subY + 110 + (cIdx * 20);
-
-            // Compute chapter health
+            const isChapExpanded = synapseExpandedNodes.has(chapNodeId);
+            const chapX = subX + ((cIdx % 2 === 0 ? -1 : 1) * Math.floor((cIdx + 1) / 2) * 55);
+            const chapY = chapStartY + (Math.floor(cIdx / 2) * chapSpacing);
             const chapVaultCount = allVault.filter(v => v.chapter === chap).length;
             const chapColor = chapVaultCount > 2 ? "var(--status-red)" : (chapVaultCount > 0 ? "var(--status-amber)" : "var(--status-green)");
 
@@ -4381,29 +4380,33 @@ Formulate responses strictly as valid JSON adhering to these contracts:
               fullChap: chap,
               type: "CHAPTER",
               subject: subKey,
-              x: chapX, y: chapY,
+              x: chapX,
+              y: chapY,
               radius: 14,
               color: chapColor,
-              vaultCount: chapVaultCount
+              vaultCount: chapVaultCount,
+              expanded: isChapExpanded
             });
             synapseLinks.push({ from: subNodeId, to: chapNodeId });
 
-            // Connect Topic Sheets
+            if (!isChapExpanded) return;
+
             const sheets = allConcepts.filter(d => d.subject === subKey && d.chapter === chap);
             sheets.forEach((sheet, shIdx) => {
               const sheetNodeId = `sheet_${sheet.id}`;
-              const sheetX = chapX + (shIdx * 25) - 20;
-              const sheetY = chapY + 90;
+              const sheetX = chapX + ((shIdx - (sheets.length - 1) / 2) * 60);
+              const sheetY = chapY + 70;
 
               synapseNodes.push({
                 id: sheetNodeId,
-                label: sheet.title.slice(0, 16) + "..",
+                label: sheet.title.slice(0, 14) + "...",
                 fullTitle: sheet.title,
                 conceptId: sheet.id,
                 type: "SHEET",
                 subject: subKey,
                 chapter: chap,
-                x: sheetX, y: sheetY,
+                x: sheetX,
+                y: sheetY,
                 radius: 11,
                 color: "#a371f7"
               });
@@ -4466,11 +4469,23 @@ Formulate responses strictly as valid JSON adhering to these contracts:
         const hit = synapseNodes.find(node => {
           const dx = node.x - clickX;
           const dy = node.y - clickY;
-          return Math.sqrt(dx * dx + dy * dy) <= (node.radius + 6);
+          return Math.sqrt(dx * dx + dy * dy) <= (node.radius + 8);
         });
 
         if (hit) {
           synapseSelectedNode = hit;
+          if (hit.type === "ROOT" || hit.type === "SUBJECT" || hit.type === "CHAPTER") {
+            if (synapseExpandedNodes.has(hit.id)) {
+              synapseExpandedNodes.delete(hit.id);
+            } else {
+              synapseExpandedNodes.add(hit.id);
+            }
+            buildSynapseTopology().then(() => {
+              showSynapseHud(hit);
+              drawSynapseGraph();
+            });
+            return;
+          }
           showSynapseHud(hit);
           drawSynapseGraph();
         } else {
@@ -4490,31 +4505,22 @@ Formulate responses strictly as valid JSON adhering to these contracts:
           title.innerText = node.fullTitle;
           sub.innerText = `Topic Sheet • ${node.chapter}`;
           actions.innerHTML = `
-            <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.jumpToConceptFromReview('${node.conceptId}')">Open Sheet</button>
+            <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.openCompendiumToSheet('${node.conceptId}', '${node.subject}', '${node.chapter}')">📖 Read Sheet</button>
             <button class="btn btn-cyan" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.launchDirectSheetDrill('${node.conceptId}', '${node.subject}', '${node.chapter}')">⚡ Drill Qs</button>
           `;
         } else if (node.type === "CHAPTER") {
           title.innerText = node.fullChap;
-          sub.innerText = `Chapter Branch • ${node.vaultCount} Active Traps`;
+          sub.innerText = `Chapter • ${node.vaultCount} Traps • Tap to ${node.expanded ? 'Collapse' : 'Expand Sheets'}`;
           actions.innerHTML = `
-            <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.launchConfiguredMockDirect('${node.subject}', '${node.fullChap}', 5, 5)">5-Q Blitz</button>
+            <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="document.getElementById('modal-synapse-tree').classList.remove('active'); CGL_OS.launchConfiguredMockDirect('${node.subject}', '${node.fullChap}', 5, 5)">5-Q Blitz</button>
           `;
+        } else if (node.type === "SUBJECT") {
+          title.innerText = `${node.subject} - ${node.sub}`;
+          sub.innerText = `Subject Branch • Tap to ${node.expanded ? 'Collapse' : 'Expand Chapters'}`;
         } else {
           title.innerText = node.label;
-          sub.innerText = node.sub || "Master Node";
+          sub.innerText = "Master Syllabus Root";
         }
-      }
-
-      function launchDirectSheetDrill(conceptId, subject, chapter) {
-        document.getElementById("modal-synapse-tree").classList.remove("active");
-        getAllRecords("store_questions").then(allQs => {
-          const linked = allQs.filter(q => q.conceptId === conceptId);
-          if (linked.length > 0) {
-            compileAndLaunchArena(`Drill: ${conceptId}`, linked, 5);
-          } else {
-            launchConfiguredMockDirect(subject, chapter, 5, 5);
-          }
-        });
       }
 
       function drawSynapseGraph() {
@@ -4528,7 +4534,7 @@ Formulate responses strictly as valid JSON adhering to these contracts:
         ctx.scale(synapseZoom, synapseZoom);
 
         // Draw Links
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.14)";
         ctx.lineWidth = 1.5;
         synapseLinks.forEach(link => {
           const fromNode = synapseNodes.find(n => n.id === link.from);
@@ -4536,7 +4542,7 @@ Formulate responses strictly as valid JSON adhering to these contracts:
           if (fromNode && toNode) {
             ctx.beginPath();
             ctx.moveTo(fromNode.x, fromNode.y);
-            ctx.bezierCurveTo(fromNode.x, fromNode.y + 40, toNode.x, toNode.y - 40, toNode.x, toNode.y);
+            ctx.bezierCurveTo(fromNode.x, fromNode.y + 45, toNode.x, toNode.y - 45, toNode.x, toNode.y);
             ctx.stroke();
           }
         });
@@ -4551,7 +4557,6 @@ Formulate responses strictly as valid JSON adhering to these contracts:
           ctx.strokeStyle = (synapseSelectedNode && synapseSelectedNode.id === node.id) ? "#ffffff" : "rgba(255,255,255,0.4)";
           ctx.stroke();
 
-          // Labels
           ctx.fillStyle = "#f0f6fc";
           ctx.font = "10px -apple-system, BlinkMacSystemFont, sans-serif";
           ctx.textAlign = "center";
@@ -4967,7 +4972,6 @@ Formulate responses strictly as valid JSON adhering to these contracts:
 
         const attempts = await getAllRecords("store_attempts");
         const completed = attempts.filter(a => a.completed && !a.isVaultSprint);
-        const allQuestions = await getAllRecords("store_questions");
 
         let subAtt = 0, subCor = 0;
         completed.forEach(c => {
@@ -5190,7 +5194,7 @@ Formulate responses strictly as valid JSON adhering to these contracts:
       }
 
       /* -------------------------------------------------------------
-       * 13. DASHBOARD RENDER ENGINE (ERI DIAL & COGNITIVE HEAT STRIP)
+       * 13. DASHBOARD RENDER ENGINE, FIXED NEGLECT & ERI CALCULATORS
        * ------------------------------------------------------------- */
       async function renderDashboard() {
         const attempts = await getAllRecords("store_attempts");
@@ -5266,14 +5270,10 @@ Formulate responses strictly as valid JSON adhering to these contracts:
           return;
         }
 
-        // Weight: Accuracy (40%), Velocity (30%), Vault Clearance (30%)
         const accComponent = accPercent * 0.40;
-        
         let velScore = 100;
         if (avgSpeed > 45) velScore = Math.max(0, 100 - (avgSpeed - 45) * 2.5);
         const velComponent = velScore * 0.30;
-
-        // More than 10 active traps penalizes vault clearance
         const vaultClearScore = Math.max(0, 100 - (activeVaultTraps * 5));
         const vaultComponent = vaultClearScore * 0.30;
 
@@ -5281,26 +5281,30 @@ Formulate responses strictly as valid JSON adhering to these contracts:
         document.getElementById("eri-score-val").innerText = eri;
 
         const circle = document.getElementById("eri-gauge-circle");
-        circle.setAttribute("stroke-dasharray", `${eri}, 100`);
+        if (circle) circle.setAttribute("stroke-dasharray", `${eri}, 100`);
 
         const tierBadge = document.getElementById("eri-status-tier");
-        if (eri >= 85) {
-          tierBadge.innerText = "Tier-1 Formidable";
-          tierBadge.style.color = "var(--status-green)";
-          circle.style.stroke = "var(--status-green-border)";
-        } else if (eri >= 70) {
-          tierBadge.innerText = "Competitive Form";
-          tierBadge.style.color = "var(--accent-cyan)";
-          circle.style.stroke = "var(--accent-cyan)";
-        } else {
-          tierBadge.innerText = "Vulnerable";
-          tierBadge.style.color = "var(--status-red)";
-          circle.style.stroke = "var(--status-red)";
+        if (tierBadge && circle) {
+          if (eri >= 85) {
+            tierBadge.innerText = "Tier-1 Formidable";
+            tierBadge.style.color = "var(--status-green)";
+            circle.style.stroke = "var(--status-green-border)";
+          } else if (eri >= 70) {
+            tierBadge.innerText = "Competitive Form";
+            tierBadge.style.color = "var(--accent-cyan)";
+            circle.style.stroke = "var(--accent-cyan)";
+          } else {
+            tierBadge.innerText = "Vulnerable";
+            tierBadge.style.color = "var(--status-red)";
+            circle.style.stroke = "var(--status-red)";
+          }
         }
       }
 
       function checkAndRenderNeglectIndex(completed) {
         const alertBox = document.getElementById("dash-neglect-alert");
+        if (!alertBox) return;
+
         if (completed.length === 0) {
           alertBox.style.display = "none";
           return;
@@ -5310,28 +5314,45 @@ Formulate responses strictly as valid JSON adhering to these contracts:
         const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
         let neglectedChap = null;
         let maxNeglectTime = 0;
+        let hasNeverAttempted = false;
 
-        Object.keys(TAXONOMY).forEach(subKey => {
-          TAXONOMY[subKey].chapters.forEach(chap => {
+        for (const subKey of Object.keys(TAXONOMY)) {
+          for (const chap of TAXONOMY[subKey].chapters) {
             let lastAttemptTime = 0;
-            completed.forEach(att => {
-              if (att.questions && att.questions.some(q => q.chapter === chap)) {
-                if (att.timestamp > lastAttemptTime) lastAttemptTime = att.timestamp;
+            for (const att of completed) {
+              if (att.questions && Array.isArray(att.questions)) {
+                if (att.questions.some(q => q.chapter === chap)) {
+                  if (att.timestamp > lastAttemptTime) {
+                    lastAttemptTime = att.timestamp;
+                  }
+                }
               }
-            });
-
-            const diff = now - lastAttemptTime;
-            if (diff > sevenDaysMs && diff > maxNeglectTime) {
-              maxNeglectTime = diff;
-              neglectedChap = { subKey, chap, days: Math.floor(diff / (24 * 60 * 60 * 1000)) };
             }
-          });
-        });
+
+            if (lastAttemptTime === 0) {
+              neglectedChap = { subKey, chap, days: "Never", never: true };
+              hasNeverAttempted = true;
+              break;
+            } else {
+              const diff = now - lastAttemptTime;
+              if (diff > sevenDaysMs && diff > maxNeglectTime) {
+                maxNeglectTime = diff;
+                neglectedChap = { subKey, chap, days: Math.floor(diff / (24 * 60 * 60 * 1000)), never: false };
+              }
+            }
+          }
+          if (hasNeverAttempted) break;
+        }
 
         if (neglectedChap) {
           alertBox.style.display = "flex";
-          document.getElementById("dash-neglect-text").innerText = `${neglectedChap.chap} untouched for ${neglectedChap.days} days.`;
-          document.getElementById("btn-neglect-drill").onclick = () => launchConfiguredMockDirect(neglectedChap.subKey, neglectedChap.chap, 5, 5);
+          const desc = neglectedChap.never 
+            ? `${neglectedChap.chap} has NEVER been tested in completed mocks.` 
+            : `${neglectedChap.chap} untouched for ${neglectedChap.days} days.`;
+          document.getElementById("dash-neglect-text").innerText = desc;
+          document.getElementById("btn-neglect-drill").onclick = () => {
+            launchConfiguredMockDirect(neglectedChap.subKey, neglectedChap.chap, 5, 5);
+          };
         } else {
           alertBox.style.display = "none";
         }
@@ -5492,7 +5513,7 @@ Formulate responses strictly as valid JSON adhering to these contracts:
 
             <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:10px;">
               <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.openSaveBlueprintModal('FIXED_PAPER', '${att.sessionId}')">📌 Freeze Paper</button>
-              <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.reattemptMock('${att.sessionId}')">🔁 Re-attempt</button>
+              <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--status-green);" onclick="CGL_OS.reattemptMock('${att.sessionId}')">🔁 Re-attempt</button>
               <button class="btn btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openMockReview('${att.sessionId}')">Inspect Solutions</button>
             </div>
           `;
@@ -5840,7 +5861,6 @@ Formulate responses strictly as valid JSON adhering to these contracts:
       async function advanceVaultBox(qId, timeSpentSec = 30) {
         const rec = await getRecord("store_vault", qId);
         if (rec) {
-          // Trap-breaker gatekeeper: cannot graduate out of Box 3 unless solved without hesitation (<45s)
           if (rec.leitnerBox === 3 && timeSpentSec > 45) {
             alert(`Correct, but velocity took ${timeSpentSec}s (>45s). Held in Box 3 for final hesitation clearance.`);
             rec.lastAttempted = Date.now();
@@ -6343,7 +6363,6 @@ Formulate responses strictly as valid JSON adhering to these contracts:
           }
         }, { passive: true });
 
-        // Hardware Gesture Shield (Intercepts back-swipes to prevent closing Chrome/WebAPK)
         window.addEventListener("popstate", () => {
           const openModals = document.querySelectorAll(".modal-overlay.active");
           if (openModals.length > 0) {
@@ -6509,7 +6528,102 @@ Formulate responses strictly as valid JSON adhering to these contracts:
       }
 
       /* -------------------------------------------------------------
-       * 19. NAVIGATION, TAB SWITCHING & SYSTEM BOOT
+       * 19. DYNAMIC TAXONOMY MANAGEMENT
+       * ------------------------------------------------------------- */
+      function openTaxonomyManagerModal() {
+        renderTaxonomyManagerList();
+        pushHistoryState("modal-taxonomy-manager");
+        document.getElementById("modal-taxonomy-manager").classList.add("active");
+      }
+
+      function renderTaxonomyManagerList() {
+        const container = document.getElementById("taxonomy-manager-list");
+        if (!container) return;
+        container.innerHTML = "";
+
+        Object.keys(TAXONOMY).forEach(subKey => {
+          const sub = TAXONOMY[subKey];
+          const div = document.createElement("div");
+          div.className = "card";
+          div.style.padding = "10px";
+          div.style.marginBottom = "8px";
+          div.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <div>
+                <b style="color:#fff; font-size:13px;">${sub.name}</b>
+                <span class="badge" style="background:#1f6feb; margin-left:6px;">${subKey}</span>
+              </div>
+              <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px; color:var(--accent-cyan);" onclick="CGL_OS.promptAddChapterToSubject('${subKey}')">+ Chapter</button>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:4px;">
+              ${sub.chapters.map(c => `
+                <span style="font-size:10px; font-family:var(--font-mono); background:var(--bg-elevated); border:1px solid var(--border-color); padding:2px 6px; border-radius:4px; display:inline-flex; align-items:center; gap:4px;">
+                  ${c}
+                  <span style="cursor:pointer; color:var(--status-red); opacity:0.7;" onclick="CGL_OS.deleteChapterFromSubject('${subKey}', '${c}')">✕</span>
+                </span>
+              `).join('')}
+            </div>
+          `;
+          container.appendChild(div);
+        });
+      }
+
+      async function addNewSubjectAction() {
+        const keyInput = document.getElementById("new-sub-key");
+        const nameInput = document.getElementById("new-sub-name");
+        const key = keyInput.value.trim().toUpperCase().replace(/\s+/g, '_');
+        const name = nameInput.value.trim();
+
+        if (!key || !name) {
+          alert("Both Key and Full Name are required.");
+          return;
+        }
+
+        if (TAXONOMY[key]) {
+          alert(`Subject ${key} already exists.`);
+          return;
+        }
+
+        TAXONOMY[key] = {
+          name: name,
+          weight: 25,
+          chapters: [`${key}_GENERAL`]
+        };
+
+        await putRecord("store_config", { key: "system_taxonomy", value: TAXONOMY });
+        keyInput.value = "";
+        nameInput.value = "";
+        renderTaxonomyManagerList();
+        renderDashboard();
+        updateDojoChapters();
+      }
+
+      async function promptAddChapterToSubject(subKey) {
+        const chap = prompt(`Enter chapter name for ${subKey} (e.g. ${subKey}_TOPIC):`);
+        if (!chap || !chap.trim()) return;
+        const formatted = chap.trim().toUpperCase().replace(/\s+/g, '_');
+
+        if (!TAXONOMY[subKey].chapters.includes(formatted)) {
+          TAXONOMY[subKey].chapters.push(formatted);
+          await putRecord("store_config", { key: "system_taxonomy", value: TAXONOMY });
+          renderTaxonomyManagerList();
+          renderDashboard();
+          updateDojoChapters();
+        }
+      }
+
+      async function deleteChapterFromSubject(subKey, chap) {
+        if (confirm(`Remove chapter ${chap} from ${subKey}?`)) {
+          TAXONOMY[subKey].chapters = TAXONOMY[subKey].chapters.filter(c => c !== chap);
+          await putRecord("store_config", { key: "system_taxonomy", value: TAXONOMY });
+          renderTaxonomyManagerList();
+          renderDashboard();
+          updateDojoChapters();
+        }
+      }
+
+      /* -------------------------------------------------------------
+       * 20. NAVIGATION, TAB SWITCHING & SYSTEM BOOT
        * ------------------------------------------------------------- */
       function switchTab(tId, btn) {
         document.querySelectorAll(".view-container").forEach(el => el.classList.remove("active"));
@@ -6565,6 +6679,7 @@ Formulate responses strictly as valid JSON adhering to these contracts:
         reattemptMock,
         enterFullScreenReviewArena,
         exitReviewArena,
+        openCompendiumToSheet,
         jumpToConceptFromReview,
         jumpToConceptFromDojo,
         openOmniResearchForCurrentQuestion,
@@ -6635,7 +6750,11 @@ Formulate responses strictly as valid JSON adhering to these contracts:
         advanceVaultBox,
         launchVaultSprint,
         exportFullBackup,
-        exportCleanMarkdownVault
+        exportCleanMarkdownVault,
+        openTaxonomyManagerModal,
+        addNewSubjectAction,
+        promptAddChapterToSubject,
+        deleteChapterFromSubject
       };
     })();
   </script>
