@@ -301,7 +301,7 @@
           </div>
         </div>
 
-        <!-- Responsive DOM Tree Container (Replaces unreadable 2D Canvas) -->
+        <!-- Responsive DOM Tree Container -->
         <div class="synapse-tree-container" id="synapse-dom-tree-root"></div>
       </div>
     </div>
@@ -338,7 +338,7 @@
         </div>
       </div>
 
-      <!-- Neglect Index (Nc) Alert Banner (Fixed zero-epoch calculation) -->
+      <!-- Neglect Index (Nc) Alert Banner -->
       <div id="dash-neglect-alert" style="display:none; background:#1b1315; border:1px solid #da3633; border-radius:10px; padding:10px 14px; margin-bottom:14px; font-size:12px; color:#fca5a5; display:flex; justify-content:space-between; align-items:center;">
         <div>
           <b>⚠️ High Neglect Warning:</b> <span id="dash-neglect-text">Calculating...</span>
@@ -472,7 +472,7 @@
         </div>
       </div>
 
-      <!-- Module & Method Selector (Dynamically populated from IndexedDB taxonomy) -->
+      <!-- Module & Method Selector -->
       <div class="card">
         <div class="card-title">
           <span>Select Module & Method to Practice</span>
@@ -547,52 +547,63 @@
     </div>
 
 
-    <!-- ==================== 8. TAB 4: ERROR VAULT & EXTRACTIONS ==================== -->
+    <!-- ==================== 8. TAB 4: AUTOMATED SM-2 ERROR VAULT ==================== -->
     <div id="tab-vault" class="view-container">
-      <div class="card" style="border-color:#5a1e1e;">
-        <div class="card-title" style="color:#f87171;">
-          <span>Spaced-Repetition Error Vault</span>
-          <div style="display:flex; gap:6px; align-items:center;">
-            <span class="badge" style="background:#da3633;" id="vault-count-badge">0 Traps</span>
-            <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.wipeErrorVault()">Clear</button>
-          </div>
-        </div>
-        
-        <div style="background:#161012; border:1px solid #4a1d20; border-radius:8px; padding:10px; font-size:11px; line-height:1.5; margin-bottom:12px; color:#fca5a5;">
-          <b>Leitner Spaced-Repetition Mechanics:</b><br>
-          • Questions log here automatically when answered incorrectly during full mocks.<br>
-          • <b>Box 1:</b> Daily Review Queue (Immediate intervention).<br>
-          • <b>Box 2:</b> 4-Day Interval (Reinforced comprehension).<br>
-          • <b>Box 3:</b> 14-Day Interval (Final mastery test).<br>
-          • Correct answers promote questions; solving a Box 3 question within 45s graduates and removes it permanently.
+      <div class="card" style="border-color: rgba(218, 54, 51, 0.4);">
+        <div class="card-title" style="color: #f87171;">
+          <span>Anki SM-2 Spaced Repetition Vault</span>
+          <span class="badge" style="background: #da3633;" id="vault-due-badge">0 Due</span>
         </div>
 
-        <button class="btn btn-danger" style="width:100%; margin-bottom:12px;" onclick="CGL_OS.launchVaultSprint()">
-          Launch Trap-Breaker Sprint (Failed Qs Only)
+        <!-- SM-2 Daily Pipeline Metrics -->
+        <div class="sm2-kpi-grid">
+          <div class="sm2-kpi-tile">
+            <div style="font-size: 10px; color: var(--text-muted);">DUE TODAY</div>
+            <div class="sm2-kpi-val" style="color: var(--status-red);" id="sm2-count-due">0</div>
+          </div>
+          <div class="sm2-kpi-tile">
+            <div style="font-size: 10px; color: var(--text-muted);">LEARNING</div>
+            <div class="sm2-kpi-val" style="color: var(--status-amber);" id="sm2-count-learning">0</div>
+          </div>
+          <div class="sm2-kpi-tile">
+            <div style="font-size: 10px; color: var(--text-muted);">MASTERED</div>
+            <div class="sm2-kpi-val" style="color: var(--status-green);" id="sm2-count-mastered">0</div>
+          </div>
+        </div>
+
+        <button class="btn btn-danger" id="btn-launch-vault-sprint" style="width: 100%; padding: 12px; font-size: 14px; margin-bottom: 12px;" onclick="CGL_OS.launchVaultDueSprint()">
+          ⚡ Start Daily Due Sprint (<span id="vault-btn-count">0</span> Questions Due)
         </button>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span style="font-size: 11px; font-weight: 700; color: var(--text-muted);">RETENTION QUEUE</span>
+          <span style="font-size: 10px; color: var(--accent-cyan); cursor: pointer;" onclick="CGL_OS.renderVault()">Refresh</span>
+        </div>
+
         <div id="vault-list-container"></div>
       </div>
 
-      <!-- Vault Sprint History Log Card -->
+      <!-- Sprint History -->
       <div class="card">
         <div class="card-title">
-          <span>Vault Sprint History (Isolated)</span>
-          <span class="badge" style="background:#238636;" id="vault-sprint-count-badge">0 Sprints</span>
+          <span>Vault Sprint History</span>
+          <span class="badge" style="background: #238636;" id="vault-sprint-count-badge">0 Sprints</span>
         </div>
-        <div id="vault-sprint-history-list" style="max-height:180px; overflow-y:auto;">
-          <p style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">No sprints recorded yet.</p>
+        <div id="vault-sprint-history-list" style="max-height: 180px; overflow-y: auto;">
+          <p style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 10px;">No sprints recorded yet.</p>
         </div>
       </div>
 
+      <!-- Backup & Disaster Recovery -->
       <div class="card">
         <div class="card-title">Disaster Recovery & Universal Plain Text Exports</div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
-          <button class="btn btn-secondary" style="font-size:12px;" onclick="CGL_OS.exportFullBackup()">Export Backup (.json)</button>
-          <button class="btn btn-secondary" style="font-size:12px;" onclick="CGL_OS.openBackupRestoreModal()">Restore Backup (.json)</button>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+          <button class="btn btn-secondary" style="font-size: 12px;" onclick="CGL_OS.exportFullBackup()">Export Backup (.json)</button>
+          <button class="btn btn-secondary" style="font-size: 12px;" onclick="CGL_OS.openBackupRestoreModal()">Restore Backup (.json)</button>
         </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
-          <button class="btn btn-secondary" style="font-size:12px;" onclick="CGL_OS.exportCleanMarkdownVault()">Export Vault (.md)</button>
-          <button class="btn btn-secondary" style="font-size:12px;" onclick="CGL_OS.openPrintConfigModal()">Print Sheet (PDF)</button>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+          <button class="btn btn-secondary" style="font-size: 12px;" onclick="CGL_OS.exportCleanMarkdownVault()">Export Vault (.md)</button>
+          <button class="btn btn-secondary" style="font-size: 12px;" onclick="CGL_OS.openPrintConfigModal()">Print Sheet (PDF)</button>
         </div>
       </div>
     </div>
