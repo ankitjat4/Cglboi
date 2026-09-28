@@ -17,7 +17,7 @@ const CGL_OS = (() => {
   let currentCompSheets = [];
   let currentConceptImageBase64 = "";
 
-  // Synapse DOM Tree State
+  // Responsive Synapse DOM Tree State
   let synapseExpandedNodes = new Set(["root", "sub_QA", "sub_REAS", "sub_ENG", "sub_GA"]);
 
   // Disaster Recovery Hydration State
@@ -40,7 +40,8 @@ const CGL_OS = (() => {
       options: ["Article 124", "Article 131", "Article 214", "Article 143"],
       correctIndex: 0,
       explanation: "Article 124 of the Constitution establishes the Supreme Court of India and governs its composition and appointments.",
-      tags: ["Polity", "SupremeCourt", "RestoredVault"]
+      tags: ["Polity", "SupremeCourt", "RestoredVault"],
+      annotation: ""
     },
     {
       id: "q_cgl_qa_geom_011",
@@ -54,7 +55,8 @@ const CGL_OS = (() => {
       options: ["$60^\\circ$", "$70^\\circ$", "$80^\\circ$", "$75^\\circ$"],
       correctIndex: 1,
       explanation: "Opposite angles of a cyclic quadrilateral sum to $180^\\circ$. $(2x + 10) + (3x + 20) = 180 \\implies 5x + 30 = 180 \\implies 5x = 150 \\implies x = 30^\\circ$. Therefore, $\\angle A = 2(30) + 10 = 70^\\circ$.",
-      tags: ["Geometry", "CyclicQuadrilateral", "RestoredVault"]
+      tags: ["Geometry", "CyclicQuadrilateral", "RestoredVault"],
+      annotation: ""
     },
     {
       id: "q_cgl_qa_tw_010",
@@ -68,7 +70,8 @@ const CGL_OS = (() => {
       options: ["$7.2\\text{ hours}$", "$7.5\\text{ hours}$", "$8.0\\text{ hours}$", "$6.8\\text{ hours}$"],
       correctIndex: 0,
       explanation: "Combined rate $= \\frac{1}{12} + \\frac{1}{18} = \\frac{3 + 2}{36} = \\frac{5}{36}\\text{ tank/hour}$. Total time $= \\frac{36}{5} = 7.2\\text{ hours}$.",
-      tags: ["TimeAndWork", "Pipes", "RestoredVault"]
+      tags: ["TimeAndWork", "Pipes", "RestoredVault"],
+      annotation: ""
     },
     {
       id: "q_cgl_reas_analogy_012",
@@ -82,7 +85,8 @@ const CGL_OS = (() => {
       options: ["$324$", "$342$", "$360$", "$306$"],
       correctIndex: 1,
       explanation: "Pattern: $n : n(n + 1)$. Here, $14 \\times 15 = 210$. Similarly, $18 \\times 19 = 342$.",
-      tags: ["Reasoning", "Analogy", "RestoredVault"]
+      tags: ["Reasoning", "Analogy", "RestoredVault"],
+      annotation: ""
     },
     {
       id: "q_ga_polity_001",
@@ -96,7 +100,8 @@ const CGL_OS = (() => {
       options: ["42nd Amendment Act", "44th Amendment Act", "61st Amendment Act", "73rd Amendment Act"],
       correctIndex: 2,
       explanation: "The 61st Constitutional Amendment Act, 1988 lowered the voting age from 21 to 18.",
-      tags: ["Polity", "Amendments", "RestoredVault"]
+      tags: ["Polity", "Amendments", "RestoredVault"],
+      annotation: ""
     },
     {
       id: "q_qa_geom_002",
@@ -110,7 +115,8 @@ const CGL_OS = (() => {
       options: ["$124^\\circ$", "$136^\\circ$", "$112^\\circ$", "$146^\\circ$"],
       correctIndex: 0,
       explanation: "Incenter formula: $\\angle BIC = 90^\\circ + \\frac{\\angle A}{2} = 90^\\circ + 34^\\circ = 124^\\circ$.",
-      tags: ["Geometry", "Incenter", "RestoredVault"]
+      tags: ["Geometry", "Incenter", "RestoredVault"],
+      annotation: ""
     },
     {
       id: "q_qa_pl_001",
@@ -124,7 +130,8 @@ const CGL_OS = (() => {
       options: ["$8.00\\%$", "$8.69\\%$", "$9.20\\%$", "$7.85\\%$"],
       correctIndex: 1,
       explanation: "Gain $\\% = \\frac{\\text{Error}}{\\text{True Value} - \\text{Error}} \\times 100 = \\frac{80}{920} \\times 100 = 8.69\\%$.",
-      tags: ["ProfitLoss", "DishonestDealer", "RestoredVault"]
+      tags: ["ProfitLoss", "DishonestDealer", "RestoredVault"],
+      annotation: ""
     },
     {
       id: "q_reas_analogy_001",
@@ -138,7 +145,8 @@ const CGL_OS = (() => {
       options: ["$45$", "$47$", "$49$", "$51$"],
       correctIndex: 1,
       explanation: "Logic: $n \\times 5 + 2 = 6 \\times 5 + 2 = 32$; $2 \\times 5 + 2 = 12$; $9 \\times 5 + 2 = 47$.",
-      tags: ["Reasoning", "Analogy", "RestoredVault"]
+      tags: ["Reasoning", "Analogy", "RestoredVault"],
+      annotation: ""
     },
     {
       id: "q_qa_geo_001",
@@ -152,7 +160,8 @@ const CGL_OS = (() => {
       options: ["$6\\text{ cm}$", "$8\\text{ cm}$", "$10\\text{ cm}$", "$7.5\\text{ cm}$"],
       correctIndex: 1,
       explanation: "By Angle Bisector Theorem: $\\frac{BD}{DC} = \\frac{AB}{AC} = \\frac{12}{15} = \\frac{4}{5}$. Since $BC = 18\\text{ cm}$, $BD = \\frac{4}{9} \\times 18 = 8\\text{ cm}$.",
-      tags: ["AngleBisector", "Geometry"]
+      tags: ["AngleBisector", "Geometry"],
+      annotation: ""
     },
     {
       id: "q_qa_alg_002",
@@ -166,7 +175,8 @@ const CGL_OS = (() => {
       options: ["$110$", "$125$", "$140$", "$115$"],
       correctIndex: 0,
       explanation: "$x^3 + \\frac{1}{x^3} = \\left(x + \\frac{1}{x}\\right)^3 - 3\\left(x + \\frac{1}{x}\\right) = 5^3 - 3(5) = 125 - 15 = 110$.",
-      tags: ["Algebra", "Identities"]
+      tags: ["Algebra", "Identities"],
+      annotation: ""
     },
     {
       id: "q_qa_perc_001",
@@ -180,7 +190,8 @@ const CGL_OS = (() => {
       options: ["$8\\%\\text{ increase}$", "$10\\%\\text{ increase}$", "$8\\%\\text{ decrease}$", "$12\\%\\text{ increase}$"],
       correctIndex: 0,
       explanation: "Net change $= a + b + \\frac{ab}{100} = 20 - 10 - \\frac{200}{100} = +8\\%$.",
-      tags: ["Percentage", "Successive"]
+      tags: ["Percentage", "Successive"],
+      annotation: ""
     },
     {
       id: "q_reas_cod_001",
@@ -194,7 +205,8 @@ const CGL_OS = (() => {
       options: ["3-8-1-13-16", "3-8-2-14-16", "3-9-1-13-15", "4-8-1-12-16"],
       correctIndex: 0,
       explanation: "Each letter is represented directly by its forward alphabet rank ($C=3, H=8, A=1, M=13, P=16$).",
-      tags: ["CodingDecoding", "Alphabet"]
+      tags: ["CodingDecoding", "Alphabet"],
+      annotation: ""
     },
     {
       id: "q_eng_ows_001",
@@ -208,7 +220,8 @@ const CGL_OS = (() => {
       options: ["Insolvent", "Mercenary", "Stoic", "Ascetic"],
       correctIndex: 0,
       explanation: "**Insolvent** means unable to pay one's debts. Mercenary is someone working merely for money.",
-      tags: ["OWS", "Vocabulary"]
+      tags: ["OWS", "Vocabulary"],
+      annotation: ""
     },
     {
       id: "q_ga_pol_001",
@@ -222,7 +235,8 @@ const CGL_OS = (() => {
       options: ["Article 32", "Article 131", "Article 226", "Article 143"],
       correctIndex: 2,
       explanation: "Article 226 empowers High Courts to issue writs. Article 32 gives writ powers strictly to the Supreme Court.",
-      tags: ["Polity", "Writs"]
+      tags: ["Polity", "Writs"],
+      annotation: ""
     },
     {
       id: "q_ga_ca_001",
@@ -236,7 +250,8 @@ const CGL_OS = (() => {
       options: ["Switzerland", "Germany", "France", "Austria"],
       correctIndex: 0,
       explanation: "The World Economic Forum Annual Meeting is held annually in Davos-Klosters, Switzerland.",
-      tags: ["CurrentAffairs", "Summits"]
+      tags: ["CurrentAffairs", "Summits"],
+      annotation: ""
     }
   ];
 
@@ -316,7 +331,8 @@ const CGL_OS = (() => {
         { id: 2, subject: "GA", count: 25, durationMin: 15 },
         { id: 3, subject: "QA", count: 25, durationMin: 15 },
         { id: 4, subject: "ENG", count: 25, durationMin: 15 }
-      ]
+      ],
+      questions: null
     },
     {
       id: "bp_qa_reas_speed_blitz",
@@ -326,7 +342,8 @@ const CGL_OS = (() => {
       sections: [
         { id: 1, subject: "QA", count: 25, durationMin: 18 },
         { id: 2, subject: "REAS", count: 25, durationMin: 12 }
-      ]
+      ],
+      questions: null
     }
   ];
 
@@ -626,7 +643,219 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 4. DYNAMIC TAXONOMY & DROP-DOWN SYNCHRONIZER
+   * 4. BACKUP, DISASTER RECOVERY & SCHEMA SANITIZERS
+   * ------------------------------------------------------------- */
+  async function exportFullBackup() {
+    const envelope = {
+      cgl_os_envelope: {
+        magic_header: "CGL_INTELLIGENCE_OS_BACKUP",
+        engine_version: DB_VERSION,
+        exported_at: Date.now(),
+        exported_date: new Date().toISOString()
+      },
+      stores: {
+        store_questions: await getAllRecords("store_questions"),
+        store_attempts: await getAllRecords("store_attempts"),
+        store_vault: await getAllRecords("store_vault"),
+        store_vault_sprints: await getAllRecords("store_vault_sprints"),
+        store_concepts: await getAllRecords("store_concepts"),
+        store_notes: await getAllRecords("store_notes"),
+        store_saved_mocks: await getAllRecords("store_saved_mocks"),
+        store_config: await getAllRecords("store_config")
+      }
+    };
+
+    const blob = new Blob([JSON.stringify(envelope, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `cgl_os_backup_${Date.now()}.json`;
+    a.click();
+  }
+
+  function openBackupRestoreModal() {
+    pendingHydrationData = null;
+    document.getElementById("restore-backup-file-input").value = "";
+    document.getElementById("btn-execute-restore").disabled = true;
+    document.getElementById("restore-file-preview-stats").style.display = "none";
+    pushHistoryState("modal-backup-restore");
+    document.getElementById("modal-backup-restore").classList.add("active");
+  }
+
+  function handleBackupFileSelect(input) {
+    if (!input.files || !input.files[0]) return;
+    const file = input.files[0];
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      try {
+        const parsed = JSON.parse(e.target.result);
+        pendingHydrationData = normalizeBackupStructure(parsed);
+
+        const statsBox = document.getElementById("restore-file-preview-stats");
+        statsBox.style.display = "block";
+        statsBox.innerHTML = `
+          <b>Backup File Validated:</b><br>
+          • Questions: ${pendingHydrationData.store_questions.length}<br>
+          • Attempts & Scores: ${pendingHydrationData.store_attempts.length}<br>
+          • Active SM-2 Error Vault Traps: ${pendingHydrationData.store_vault.length}<br>
+          • Living Document Sheets: ${pendingHydrationData.store_concepts.length}<br>
+          • Saved Blueprints & Papers: ${pendingHydrationData.store_saved_mocks.length}
+        `;
+        document.getElementById("btn-execute-restore").disabled = false;
+      } catch(err) {
+        alert("Corrupted Backup File: " + err.message);
+        document.getElementById("btn-execute-restore").disabled = true;
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function normalizeBackupStructure(raw) {
+    let stores = {};
+    if (raw.cgl_os_envelope && raw.stores) {
+      stores = raw.stores;
+    } else {
+      stores.store_questions = raw.questions || raw.store_questions || [];
+      stores.store_attempts = raw.attempts || raw.store_attempts || [];
+      stores.store_vault = raw.vault || raw.store_vault || [];
+      stores.store_vault_sprints = raw.sprints || raw.store_vault_sprints || [];
+      stores.store_concepts = raw.concepts || raw.formulas || raw.vocab || raw.store_concepts || [];
+      stores.store_notes = raw.notes || raw.store_notes || [];
+      stores.store_saved_mocks = raw.savedMocks || raw.store_saved_mocks || [];
+      stores.store_config = raw.config || raw.store_config || [];
+    }
+
+    stores.store_questions = (stores.store_questions || []).map(sanitizeQuestion);
+    stores.store_concepts = (stores.store_concepts || []).map(sanitizeDossier);
+    stores.store_vault = (stores.store_vault || []).map(sanitizeVaultEntry);
+    stores.store_attempts = (stores.store_attempts || []).map(sanitizeAttempt);
+    stores.store_saved_mocks = (stores.store_saved_mocks || []).map(sanitizeSavedMock);
+    stores.store_vault_sprints = stores.store_vault_sprints || [];
+    stores.store_notes = stores.store_notes || [];
+    stores.store_config = stores.store_config || [];
+
+    return stores;
+  }
+
+  function sanitizeQuestion(q, idx) {
+    return {
+      id: q.id || `q_restored_${Date.now()}_${idx}`,
+      subject: q.subject || "QA",
+      chapter: q.chapter || "QA_GENERAL",
+      subtopic: q.subtopic || "",
+      method: q.method || "",
+      conceptId: q.conceptId || "",
+      questionText: q.questionText || "",
+      imageUrl: q.imageUrl || "",
+      options: Array.isArray(q.options) && q.options.length === 4 ? q.options : ["Option 1", "Option 2", "Option 3", "Option 4"],
+      correctIndex: typeof q.correctIndex === "number" ? q.correctIndex : 0,
+      explanation: q.explanation || "",
+      tags: Array.isArray(q.tags) ? q.tags : ["Hydrated"],
+      annotation: q.annotation || ""
+    };
+  }
+
+  function sanitizeDossier(d, idx) {
+    return {
+      id: d.id || `top_restored_${Date.now()}_${idx}`,
+      subject: d.subject || "QA",
+      chapter: d.chapter || "QA_GENERAL",
+      title: d.title || d.word || "Untitled Topic",
+      subtitle: d.subtitle || d.root || "",
+      content: d.content || d.meaning || "",
+      imageUrl: d.imageUrl || "",
+      timestamp: d.timestamp || Date.now()
+    };
+  }
+
+  function sanitizeVaultEntry(v, idx) {
+    return {
+      questionId: v.questionId || `q_vault_err_${idx}`,
+      chapter: v.chapter || "QA_GENERAL",
+      subject: v.subject || "QA",
+      errorTag: v.errorTag || "UNCLASSIFIED",
+      interval: typeof v.interval === "number" ? v.interval : 1,
+      repetition: typeof v.repetition === "number" ? v.repetition : 0,
+      easeFactor: typeof v.easeFactor === "number" ? v.easeFactor : 2.5,
+      nextReviewDate: typeof v.nextReviewDate === "number" ? v.nextReviewDate : Date.now(),
+      lastAttempted: v.lastAttempted || Date.now()
+    };
+  }
+
+  function sanitizeAttempt(a, idx) {
+    return {
+      sessionId: a.sessionId || `mock_${Date.now()}_${idx}`,
+      title: a.title || "SSC CGL Practice Mock",
+      timestamp: a.timestamp || Date.now(),
+      mockType: a.mockType || "CUSTOM",
+      signatureTag: a.signatureTag || "",
+      finalScore: typeof a.finalScore === "number" ? a.finalScore : 0,
+      correctCount: typeof a.correctCount === "number" ? a.correctCount : 0,
+      incorrectCount: typeof a.incorrectCount === "number" ? a.incorrectCount : 0,
+      q4Traps: typeof a.q4Traps === "number" ? a.q4Traps : 0,
+      penaltyDrag: typeof a.penaltyDrag === "number" ? a.penaltyDrag : 0,
+      switchDelta: typeof a.switchDelta === "number" ? a.switchDelta : 0,
+      completed: a.completed !== undefined ? a.completed : true,
+      isVaultSprint: !!a.isVaultSprint,
+      isSectionLocked: !!a.isSectionLocked,
+      questions: Array.isArray(a.questions) ? a.questions.map(sanitizeQuestion) : [],
+      userResponses: (a.userResponses && typeof a.userResponses === "object") ? a.userResponses : {},
+      sections: Array.isArray(a.sections) ? a.sections : []
+    };
+  }
+
+  function sanitizeSavedMock(b, idx) {
+    return {
+      id: b.id || `preset_${Date.now()}_${idx}`,
+      type: b.type || (b.questions ? "FIXED_PAPER" : "DYNAMIC_BLUEPRINT"),
+      title: b.title || `Saved Setup ${idx + 1}`,
+      isSectionLocked: b.isSectionLocked !== undefined ? b.isSectionLocked : true,
+      sections: Array.isArray(b.sections) ? b.sections : [{ id: 1, subject: "QA", count: 25, durationMin: 15 }],
+      questions: Array.isArray(b.questions) ? b.questions.map(sanitizeQuestion) : null
+    };
+  }
+
+  async function executeHydrationRestore() {
+    if (!pendingHydrationData) return;
+    const mode = document.getElementById("restore-hydration-mode").value;
+    const d = await getDB();
+
+    try {
+      const storeKeys = [
+        "store_questions", "store_attempts", "store_vault", 
+        "store_vault_sprints", "store_concepts", "store_notes", 
+        "store_saved_mocks", "store_config"
+      ];
+
+      if (mode === "WIPE_REPLACE") {
+        for (const sName of storeKeys) {
+          await clearStore(sName);
+        }
+      }
+
+      for (const sName of storeKeys) {
+        const items = pendingHydrationData[sName] || [];
+        if (items.length > 0 && d.objectStoreNames.contains(sName)) {
+          const tx = d.transaction([sName], "readwrite");
+          const st = tx.objectStore(sName);
+          items.forEach(item => st.put(item));
+          await new Promise(r => tx.oncomplete = r);
+        }
+      }
+
+      alert("Disaster Recovery Complete! All database tables and mock records restored.");
+      document.getElementById("modal-backup-restore").classList.remove("active");
+      await syncAllTaxonomyDropdowns();
+      await renderDashboard();
+      await updateDojoChapters();
+      await renderVault();
+    } catch(err) {
+      alert("Hydration Error: " + err.message);
+    }
+  }
+
+  /* -------------------------------------------------------------
+   * 5. DYNAMIC TAXONOMY & DROP-DOWN SYNCHRONIZER
    * ------------------------------------------------------------- */
   async function syncAllTaxonomyDropdowns() {
     const saved = await getRecord("store_config", "system_taxonomy");
@@ -785,9 +1014,8 @@ const CGL_OS = (() => {
       chapInput.value = TAXONOMY[subKey].chapters[0];
     }
   }
-
   /* -------------------------------------------------------------
-   * 5. RESPONSIVE SYNAPSE TREE ENGINE (DOM-BASED HIERARCHY)
+   * 6. RESPONSIVE SYNAPSE TREE ENGINE (DOM-BASED HIERARCHY)
    * ------------------------------------------------------------- */
   async function openSynapseGraphModal() {
     pushNavLayer("modal-synapse-tree", () => {
@@ -827,7 +1055,6 @@ const CGL_OS = (() => {
       subNodeWrap.appendChild(subRow);
 
       if (isSubExpanded) {
-        // Merge defined chapters with dynamically added ones
         const qChaps = allQuestions.filter(q => q.subject === subKey).map(q => q.chapter);
         const cChaps = allConcepts.filter(c => c.subject === subKey).map(c => c.chapter);
         const mergedChaps = [...new Set([...sub.chapters, ...qChaps, ...cChaps])];
@@ -918,7 +1145,7 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 6. BI-DIRECTIONAL CONCEPT ROUTER & LIVING STUDIO
+   * 7. BI-DIRECTIONAL CONCEPT ROUTER & LIVING STUDIO
    * ------------------------------------------------------------- */
   async function openCompendiumToSheet(conceptId, targetSub, targetChap) {
     const openModals = document.querySelectorAll(".modal-overlay.active");
@@ -1350,7 +1577,7 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 7. MULTI-SUBJECT CUSTOM MOCK BUILDER & SAVED PRESETS
+   * 8. MULTI-SUBJECT CUSTOM MOCK BUILDER & SAVED PRESETS
    * ------------------------------------------------------------- */
   let customSequenceRows = [];
 
@@ -1693,7 +1920,7 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 8. TIMED EXAM ARENA & STAGE 2 FULL-SCREEN REVIEW
+   * 9. TIMED EXAM ARENA & STAGE 2 FULL-SCREEN REVIEW
    * ------------------------------------------------------------- */
   function startExamTimers() {
     clearInterval(examTimerInterval);
@@ -2389,7 +2616,7 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 9. UNTIMED DOJO ARENA ENGINE
+   * 10. UNTIMED DOJO ARENA ENGINE
    * ------------------------------------------------------------- */
   async function updateDojoChapters() {
     const sub = document.getElementById("dojo-nav-subject").value;
@@ -2653,7 +2880,7 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 10. STAGE 1 COCKPIT & MISTAKE TAGGING
+   * 11. STAGE 1 COCKPIT & MISTAKE TAGGING
    * ------------------------------------------------------------- */
   async function openMockReview(attemptOrId) {
     let att = typeof attemptOrId === "string" 
@@ -2779,7 +3006,7 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 11. INTERACTIVE SUBJECT DIAGNOSTIC MODAL
+   * 12. INTERACTIVE SUBJECT DIAGNOSTIC MODAL
    * ------------------------------------------------------------- */
   async function openSubjectDiagnosticModal(subKey) {
     const sub = TAXONOMY[subKey];
@@ -2926,7 +3153,7 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 12. MULTI-TIER AI EXPORTS & GEM LEDGER
+   * 13. MULTI-TIER AI EXPORTS & GEM LEDGER
    * ------------------------------------------------------------- */
   function openAiExportModal() {
     if (!activeReviewAttempt) return;
@@ -3116,7 +3343,7 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
   }
 
   /* -------------------------------------------------------------
-   * 13. DASHBOARD RENDER ENGINE (FIXED NEGLECT & ERI DIAL)
+   * 14. DASHBOARD RENDER ENGINE (FIXED NEGLECT & ERI DIAL)
    * ------------------------------------------------------------- */
   async function renderDashboard() {
     const attempts = await getAllRecords("store_attempts");
@@ -3645,7 +3872,7 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
   }
 
   /* -------------------------------------------------------------
-   * 14. AUTOMATED ANKI SM-2 SPACED REPETITION ENGINE
+   * 15. AUTOMATED ANKI SM-2 SPACED REPETITION ENGINE
    * ------------------------------------------------------------- */
   function calculateSM2(card, quality) {
     let { interval = 1, repetition = 0, easeFactor = 2.5 } = card;
@@ -3908,7 +4135,7 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
   }
 
   /* -------------------------------------------------------------
-   * 15. QUESTION GUI EDITOR
+   * 16. QUESTION GUI EDITOR
    * ------------------------------------------------------------- */
   let currentQuestionImageBase64 = "";
 
@@ -3971,7 +4198,8 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
       ],
       correctIndex: parseInt(document.getElementById("edit-q-correct").value),
       explanation: document.getElementById("edit-q-explanation").value.trim(),
-      tags: ["UserSaved"]
+      tags: ["UserSaved"],
+      annotation: ""
     };
 
     await putRecord("store_questions", qObj);
@@ -3998,7 +4226,7 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
   }
 
   /* -------------------------------------------------------------
-   * 16. HARDENED COMMAND BUS & AI DISPATCHER
+   * 17. HARDENED COMMAND BUS & AI DISPATCHER
    * ------------------------------------------------------------- */
   async function executeConsoleCommand() {
     const raw = document.getElementById("console-payload").value.trim();
@@ -4254,7 +4482,7 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
   }
 
   /* -------------------------------------------------------------
-   * 17. UNIVERSAL TOUCH GESTURES (VIEWPORT & HARDWARE SHIELD)
+   * 18. UNIVERSAL TOUCH GESTURES (VIEWPORT & HARDWARE SHIELD)
    * ------------------------------------------------------------- */
   function initGestureControllers() {
     const attachSwipeHandler = (elementId, onLeftSwipe, onRightSwipe) => {
@@ -4349,7 +4577,7 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
   }
 
   /* -------------------------------------------------------------
-   * 18. SELECTIVE PRINT ENGINE
+   * 19. SELECTIVE PRINT ENGINE
    * ------------------------------------------------------------- */
   async function openPrintConfigModal() {
     await updatePrintChapters();
@@ -4479,7 +4707,7 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
   }
 
   /* -------------------------------------------------------------
-   * 19. NAVIGATION, TAB SWITCHING & SYSTEM BOOT
+   * 20. NAVIGATION, TAB SWITCHING & SYSTEM BOOT
    * ------------------------------------------------------------- */
   function switchTab(tId, btn) {
     document.querySelectorAll(".view-container").forEach(el => el.classList.remove("active"));
