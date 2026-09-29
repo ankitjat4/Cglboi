@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#05070b">
+  <meta name="theme-color" content="#04060b">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>SSC CGL Intelligence OS</title>
@@ -12,8 +12,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 
-  <!-- External Stylesheet with Tactical WebAPK Cache-Busting Parameter -->
-  <link rel="stylesheet" href="style.css?v=2.5">
+  <!-- External Stylesheet with Tactical Cache-Buster -->
+  <link rel="stylesheet" href="style.css?v=3.3">
 </head>
 <body>
 
@@ -31,7 +31,7 @@
         <div id="mini-player-time" style="font-family:var(--font-mono); font-size:13px; font-weight:800; color:#fff;">15:00</div>
         <div id="mini-player-ans" style="font-size:10px; color:var(--text-muted);">0 Ans</div>
       </div>
-      <button class="btn" style="padding:6px 14px; font-size:12px; box-shadow:0 0 12px rgba(56, 139, 253, 0.6);" onclick="CGL_OS.resumeFromMiniPlayer()">Resume</button>
+      <button class="btn" style="padding:6px 14px; font-size:12px; box-shadow:0 0 12px rgba(37, 99, 235, 0.6);" onclick="CGL_OS.resumeFromMiniPlayer()">Resume</button>
     </div>
   </div>
 
@@ -97,14 +97,13 @@
         <div class="q-image-container" id="arena-image-container" style="display:none;"></div>
         <div id="arena-options-container"></div>
 
-        <!-- Bi-Directional Concept Bridge Button in Review -->
-        <div id="arena-concept-bridge-box" style="display:none; margin:12px 0;">
-          <button class="btn btn-cyan" style="width:100%; padding:10px; font-size:13px;" id="btn-jump-to-concept">
-            📖 Jump to Underlying Theorem Sheet
-          </button>
+        <!-- Multi-Concept Bridge Container: Multiple Linked Sheets -->
+        <div id="arena-concept-bridge-box" style="display:none; margin:14px 0; background:rgba(56, 189, 248, 0.05); border:1px solid rgba(56, 189, 248, 0.2); border-radius:10px; padding:12px;">
+          <div style="font-size:10.5px; font-weight:800; color:var(--accent-cyan); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:8px;">// Associated Concept Sheets</div>
+          <div id="arena-concept-pills-wrap"></div>
         </div>
 
-        <!-- Solution & Mistake Tag Editor in Review Mode -->
+        <!-- Solution & Mistake Tag Override in Review Mode -->
         <div id="arena-review-solution-block" style="display:none; margin-top:14px; background:#0b0f17; border:1px solid var(--border-color); border-radius:10px; padding:14px;"></div>
       </div>
 
@@ -174,13 +173,13 @@
         </div>
       </div>
 
-      <div class="sectional-banner">
+      <div class="sectional-banner" style="flex-wrap:wrap; gap:6px;">
         <div style="display:flex; gap:6px; align-items:center;">
           <span class="badge" style="background:#238636;" id="dojo-arena-chap-badge">QA_PERCENTAGE</span>
           <span class="badge" style="background:#151a24; color:#38bdf8;" id="dojo-arena-method-badge">General</span>
         </div>
-        <div style="display:flex; gap:6px;">
-          <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" id="btn-dojo-jump-concept" onclick="CGL_OS.jumpToConceptFromDojo()">📖 Sheet</button>
+        <div id="dojo-concept-pills-wrap"></div>
+        <div>
           <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openEditCurrentDojoQuestion()">Edit</button>
         </div>
       </div>
@@ -301,7 +300,6 @@
           </div>
         </div>
 
-        <!-- Responsive Synchronous DOM Tree Container -->
         <div class="synapse-tree-container" id="synapse-dom-tree-root"></div>
       </div>
     </div>
@@ -319,13 +317,13 @@
             <h2 style="font-size:20px; font-weight:800; color:#fff; margin-top:2px;">Welcome back, Ankit</h2>
             <p style="font-size:12px; color:var(--accent-cyan); margin-top:2px;">Command Center • Tier-1 & Tier-2 Master Preparation</p>
           </div>
-          <button class="btn" id="btn-dash-launch-mock" onclick="CGL_OS.openCustomMockModal()" style="padding:10px 16px; font-size:13px; box-shadow:0 0 16px rgba(56,139,253,0.5); z-index:5;">
+          <button class="btn" id="btn-dash-launch-mock" onclick="CGL_OS.openCustomMockModal()" style="padding:10px 16px; font-size:13px; box-shadow:0 0 16px rgba(37,99,235,0.5); z-index:5;">
             Launch Mock
           </button>
         </div>
       </div>
 
-      <!-- Exam Readiness Index (ERI) Hero Dial -->
+      <!-- Exam Readiness Index (ERI) Dial -->
       <div class="eri-dial-wrap">
         <svg class="eri-dial-svg" viewBox="0 0 36 36">
           <path class="gauge-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
@@ -349,16 +347,16 @@
         <button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" id="btn-neglect-drill">5-Q Tuneup</button>
       </div>
 
-      <!-- Quick Launch Fixed Papers & Saved Blueprints Row -->
+      <!-- Saved Papers & Mission Cartridges -->
       <div style="margin-bottom:14px;">
         <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px; display:flex; justify-content:space-between;">
           <span>Saved Papers & Blueprints</span>
           <span style="color:var(--accent-cyan); cursor:pointer;" onclick="CGL_OS.openCustomMockModal()">+ New Setup</span>
         </div>
-        <div id="dash-blueprints-pills" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;"></div>
+        <div id="dash-blueprints-pills"></div>
       </div>
 
-      <!-- Cognitive Trap Distribution Matrix Strip (Interactive Clinic Trigger) -->
+      <!-- Cognitive Trap Distribution Matrix -->
       <div class="card" style="padding:12px; margin-bottom:14px;">
         <div class="card-title" style="margin-bottom:4px;">
           <span>Cognitive Trap Distribution</span>
@@ -403,7 +401,7 @@
         </div>
       </div>
 
-      <!-- Subject Mastery Battery Meters -->
+      <!-- Subject Mastery Batteries -->
       <div class="card">
         <div class="card-title">
           <span>Subject Mastery Matrix</span>
@@ -412,7 +410,7 @@
         <div id="dash-subject-batteries"></div>
       </div>
 
-      <!-- Recent Mocks & History Archive (Attempt Thread Support) -->
+      <!-- Recent Mocks -->
       <div class="card">
         <div class="card-title">
           <span>Recent Mock Scorecards</span>
@@ -449,7 +447,6 @@
         </p>
       </div>
 
-      <!-- Synapse Knowledge Tree Launcher Card -->
       <div class="card" style="border-color:var(--accent-cyan);">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <div>
@@ -462,7 +459,6 @@
         </div>
       </div>
 
-      <!-- Living Knowledge Studio Launcher Card -->
       <div class="card" style="border-color:#38bdf8;">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <div>
@@ -475,7 +471,6 @@
         </div>
       </div>
 
-      <!-- Module & Method Selector -->
       <div class="card">
         <div class="card-title">
           <span>Select Module & Method to Practice</span>
@@ -504,7 +499,7 @@
     </div>
 
 
-    <!-- ==================== 7. TAB 3: COMMAND TERMINAL & MASTER FORENSIC STUDIO ==================== -->
+    <!-- ==================== 7. TAB 3: CONSOLE & MASTER FORENSIC STUDIO ==================== -->
     <div id="tab-console" class="view-container">
       
       <!-- Primary Command Bus & AI Dispatch -->
@@ -523,31 +518,46 @@
         </div>
       </div>
 
-      <!-- ONE-TAP GLOBAL 360° MASTER FORENSIC DOSSIER EXPORT -->
-      <div class="card" style="background: linear-gradient(135deg, #101c30 0%, #0a111e 100%); border-color: rgba(56, 189, 248, 0.45); box-shadow: 0 4px 18px rgba(0,0,0,0.5);">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-          <div>
-            <b style="font-size:14px; color:#fff;">Global 360° Forensic Audit Exporter</b>
-            <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Complete Candidate Case File • Trajectory • Vault • Consultations</div>
-          </div>
-          <span class="badge" style="background:#1f6feb;">Master AI Dossier</span>
+      <!-- UNIVERSAL DATA EXTRACTION MATRIX (FULL DATA SOVEREIGNTY) -->
+      <div class="card" style="background: linear-gradient(135deg, #101c30 0%, #090e18 100%); border: 1.5px solid var(--accent-cyan); box-shadow: 0 0 24px rgba(56, 189, 248, 0.2);">
+        <div class="card-title" style="color:#fff; margin-bottom:6px;">
+          <span>⚡ Universal Data Extraction Matrix</span>
+          <span class="badge" style="background:#2563eb;">Full Sovereignty</span>
         </div>
-        <p style="font-size:12px; color:var(--text-main); margin:8px 0; line-height:1.5;">
-          Generates an unabridged, pre-sorted forensic audit of your entire preparation history across all subjects, diurnal time slots, and card vaults for your Gemini consultation.
+        <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px; line-height:1.5;">
+          Export any slice of your preparation database on demand. Zero boundaries.
         </p>
-        <button class="btn" id="btn-export-global-master-dossier" style="width:100%; padding:12px; font-size:14px; font-weight:800; background:linear-gradient(135deg, #388bfd, #8957e5);" onclick="CGL_OS.exportGlobalMasterDossier()">
-          ⚡ Download Master Forensic Dossier (Global 360° .json)
+
+        <!-- Master All-in-One Package -->
+        <button class="btn" style="width:100%; padding:12px; font-size:13.5px; font-weight:800; background:linear-gradient(135deg, #2563eb, #8957e5); margin-bottom:10px;" onclick="CGL_OS.exportUnifiedAiHandoffPackage()">
+          📦 Download Complete AI Master Package (All Data .json)
         </button>
+
+        <!-- Granular Individual Store Download Grid -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+          <button class="btn btn-secondary" style="font-size:12px; padding:9px;" onclick="CGL_OS.exportKnowledgeBankJson()">
+            📖 Knowledge Sheets (.json)
+          </button>
+          <button class="btn btn-secondary" style="font-size:12px; padding:9px;" onclick="CGL_OS.exportFlashcardVaultJson()">
+            🗂️ Card Vault (.json)
+          </button>
+          <button class="btn btn-secondary" style="font-size:12px; padding:9px;" onclick="CGL_OS.downloadLedgerJson()">
+            📚 Master Bank (.json)
+          </button>
+          <button class="btn btn-secondary" style="font-size:12px; padding:9px;" onclick="CGL_OS.exportGlobalMasterDossier()">
+            📊 360° Telemetry Dossier (.json)
+          </button>
+        </div>
       </div>
 
-      <!-- Scoped Forensic Dossier Extractor (UI Filter Panel) -->
+      <!-- Scoped Forensic Dossier Extractor -->
       <div class="scoped-extractor-panel">
         <div class="card-title" style="color:var(--accent-cyan); margin-bottom:8px;">
           <span>🔍 Scoped Forensic Dossier Extractor</span>
           <span class="badge" style="background:rgba(56, 189, 248, 0.2); color:var(--accent-cyan);">Specialist Biopsy</span>
         </div>
         <p style="font-size:11.5px; color:var(--text-muted); margin-bottom:12px; line-height:1.5;">
-          Export hyper-focused forensic telemetry slices for specific subjects, time horizons, or cognitive traps without context bloat.
+          Export hyper-focused forensic telemetry slices for specific subjects, time horizons, or cognitive traps.
         </p>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
@@ -589,26 +599,31 @@
         </button>
       </div>
 
-      <!-- Direct Database Studio Inspector -->
+      <!-- Direct Database Studio with Table-Level Dumper -->
       <div class="card">
         <div class="card-title">
           <span>Direct Database Studio</span>
-          <select id="db-store-select" class="form-control" style="width:auto; padding:4px 8px; font-size:12px;" onchange="CGL_OS.refreshDbInspector()">
-            <option value="store_questions">store_questions</option>
-            <option value="store_attempts">store_attempts</option>
-            <option value="store_flashcards">store_flashcards (Vault)</option>
-            <option value="store_concepts">store_concepts</option>
-            <option value="store_notes">store_notes</option>
-            <option value="store_saved_mocks">store_saved_mocks</option>
-            <option value="store_ai_consultations">store_ai_consultations</option>
-            <option value="store_active_session">store_active_session</option>
-            <option value="store_config">store_config</option>
-          </select>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <select id="db-store-select" class="form-control" style="width:auto; padding:4px 8px; font-size:12px;" onchange="CGL_OS.refreshDbInspector()">
+              <option value="store_questions">store_questions</option>
+              <option value="store_attempts">store_attempts</option>
+              <option value="store_flashcards">store_flashcards (Vault)</option>
+              <option value="store_concepts">store_concepts</option>
+              <option value="store_notes">store_notes</option>
+              <option value="store_saved_mocks">store_saved_mocks</option>
+              <option value="store_ai_consultations">store_ai_consultations</option>
+              <option value="store_active_session">store_active_session</option>
+              <option value="store_config">store_config</option>
+            </select>
+            <button class="btn btn-cyan" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.exportCurrentSelectedStoreJson()" title="Export whichever table is currently selected">
+              💾 Export Table (.json)
+            </button>
+          </div>
         </div>
         <div id="db-inspector-list" style="max-height:220px; overflow-y:auto; font-size:12px;"></div>
       </div>
 
-      <!-- Danger Zone Operations -->
+      <!-- Danger Zone -->
       <div class="card" style="border-color:#5a1e1e;">
         <div class="card-title" style="color:var(--status-red);">Danger Zone Operations</div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
@@ -635,7 +650,7 @@
           Authoring vault for high-yield formulas, idioms, and traps. Review untimed on-demand or export natively to AnkiDroid with MathJax and data-URI diagrams.
         </p>
 
-        <!-- Vault Inventory Overview -->
+        <!-- Vault KPI Overview -->
         <div class="vault-kpi-grid">
           <div class="vault-kpi-tile">
             <div style="font-size: 10px; color: var(--accent-cyan);">TOTAL CARDS</div>
@@ -651,7 +666,7 @@
           </div>
         </div>
 
-        <!-- Quick Flip-Through / Review Mode -->
+        <!-- Quick Flip / Review Buttons -->
         <div style="display:flex; gap:8px; margin-bottom:12px;">
           <button class="btn" style="flex:1; padding:10px; font-size:13px; font-weight:700; background:linear-gradient(135deg, #1f6feb, #8957e5);" onclick="CGL_OS.launchUntimedQuickCarousel()">
             ⚡ Untimed Quick Carousel
@@ -661,7 +676,7 @@
           </button>
         </div>
 
-        <!-- Interactive Vault Command Bar (Scalable Search & Filtering) -->
+        <!-- Interactive Command Bar -->
         <div class="vault-command-bar">
           <input type="text" id="vault-search-input" class="vault-search-input" placeholder="Search prompts, formulas, articles, tags (e.g. Incenter, Article 124, Gauntlet)..." oninput="CGL_OS.handleVaultSearchInput(this.value)">
           <div class="vault-tag-scroll" id="vault-tag-scroll-pills"></div>
@@ -678,11 +693,11 @@
         <div id="flashcard-list-container"></div>
       </div>
 
-      <!-- Disaster Recovery & Printing -->
+      <!-- Plain Text, Backup & PDF Exports -->
       <div class="card">
         <div class="card-title">Universal Plain Text & Typeset PDF Exports</div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
-          <button class="btn btn-secondary" style="font-size: 12px;" onclick="CGL_OS.exportFullBackup()">Export Backup (.json)</button>
+          <button class="btn btn-secondary" style="font-size: 12px;" onclick="CGL_OS.exportFullBackup()">Export Full Backup (.json)</button>
           <button class="btn btn-secondary" style="font-size: 12px;" onclick="CGL_OS.openBackupRestoreModal()">Restore Backup (.json)</button>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
@@ -695,7 +710,7 @@
   </div> <!-- /#app-viewport-root -->
 
 
-  <!-- ==================== 9. COGNITIVE TRAP FORENSIC CLINIC MODAL ==================== -->
+  <!-- ==================== 9. COGNITIVE TRAP CLINIC MODAL ==================== -->
   <div class="modal-overlay child-layer" id="modal-trap-clinic">
     <div class="modal-window" style="max-width:680px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -723,13 +738,14 @@
 
   <!-- ==================== 10. STAGE 1: ANALYTICAL COCKPIT MODAL ==================== -->
   <div class="modal-overlay child-layer" id="modal-mock-review">
-    <div class="modal-window" style="max-width:700px; max-height:92vh;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+    <div class="modal-window" style="max-width:720px; max-height:92vh;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px; flex-wrap:wrap; gap:8px;">
         <div>
           <h3 style="font-size:16px; font-weight:800;" id="review-modal-title">Mock Analytical Cockpit</h3>
           <span style="font-size:11px; color:var(--text-muted);" id="review-modal-date">Submitted on Date</span>
         </div>
-        <div style="display:flex; gap:6px;">
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.exportCurrentReviewMockJson()">📥 Export This Mock (.json)</button>
           <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--accent-cyan);" id="btn-review-save-fixed">📌 Freeze Paper</button>
           <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--status-green);" id="btn-review-reattempt">🔁 Re-attempt</button>
           <button class="btn" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openAiExportModal()">Export for AI</button>
@@ -737,13 +753,13 @@
         </div>
       </div>
 
-      <!-- Attempt Thread Switcher (When test has multiple re-attempts) -->
+      <!-- Iteration Switcher -->
       <div id="rev-attempt-switcher-wrap" style="display:none; background:#070a10; border:1px solid var(--border-color); border-radius:8px; padding:8px 12px; margin-bottom:10px; justify-content:space-between; align-items:center;">
         <span style="font-size:11.5px; font-weight:700; color:var(--accent-cyan);">Inspect Attempt Iteration:</span>
         <select id="rev-attempt-select" class="form-control" style="width:auto; padding:4px 8px; font-size:11px;" onchange="CGL_OS.switchReviewAttempt(this.value)"></select>
       </div>
 
-      <!-- High-Level Metric Tiles -->
+      <!-- Metric Tiles -->
       <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:10px; text-align:center;">
         <div style="background:var(--bg-elevated); padding:8px; border-radius:6px;">
           <div style="font-size:10px; color:var(--text-muted);">SCORE</div>
@@ -763,7 +779,7 @@
         </div>
       </div>
 
-      <!-- Time & Pacing Audit -->
+      <!-- Pacing Audit -->
       <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:12px; text-align:center;">
         <div class="forensic-tile">
           <div style="font-size:9px; color:var(--status-purple);">PENALTY DRAG</div>
@@ -779,27 +795,27 @@
         </div>
       </div>
 
-      <!-- High-Fidelity Sectional Efficiency Grid -->
+      <!-- Sectional Breakdown Grid -->
       <div class="card" style="padding:10px; margin-bottom:12px;">
         <div class="card-title" style="margin-bottom:8px;">Sectional Performance Breakdown (High-Fidelity)</div>
         <div id="rev-sectional-breakdown-grid" class="sec-fidelity-grid"></div>
       </div>
 
-      <!-- Cognitive Trap Distribution Badges -->
+      <!-- Cognitive Trap Badges -->
       <div class="card" style="padding:10px; margin-bottom:14px;">
         <div class="card-title" style="margin-bottom:6px;">Cognitive Trap Distribution</div>
         <div id="rev-mistake-tags-pills" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
       </div>
 
-      <!-- Primary Action: Boot Stage 2 Full-Screen Arena -->
-      <button class="btn" style="width:100%; padding:14px; font-size:15px; font-weight:800; box-shadow:0 0 16px rgba(56, 139, 253, 0.4);" onclick="CGL_OS.enterFullScreenReviewArena()">
+      <!-- Action Button -->
+      <button class="btn" style="width:100%; padding:14px; font-size:15px; font-weight:800; box-shadow:0 0 16px rgba(37, 99, 235, 0.4);" onclick="CGL_OS.enterFullScreenReviewArena()">
         📖 Enter Full-Screen Review Arena
       </button>
     </div>
   </div>
 
 
-  <!-- ==================== 11. OMNI-RESEARCH CONTEXT DRAWER MODAL ==================== -->
+  <!-- ==================== 11. OMNI-RESEARCH CONTEXT DRAWER ==================== -->
   <div class="modal-overlay" id="modal-omni-research">
     <div class="modal-window" style="max-width:540px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -844,7 +860,7 @@
   </div>
 
 
-  <!-- ==================== 12. INTERACTIVE SUBJECT DIAGNOSTIC MODAL ==================== -->
+  <!-- ==================== 12. SUBJECT DIAGNOSTIC MODAL ==================== -->
   <div class="modal-overlay" id="modal-subject-diagnostic">
     <div class="modal-window" style="max-width:560px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -896,7 +912,7 @@
   </div>
 
 
-  <!-- ==================== 14. DYNAMIC TAXONOMY & SUBJECT MANAGER ==================== -->
+  <!-- ==================== 14. DYNAMIC TAXONOMY & MODULE MANAGER ==================== -->
   <div class="modal-overlay" id="modal-taxonomy-manager">
     <div class="modal-window" style="max-width:540px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -907,7 +923,6 @@
         <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-taxonomy-manager').classList.remove('active')">✕</button>
       </div>
 
-      <!-- Add New Subject -->
       <div style="background:var(--bg-elevated); padding:10px; border-radius:8px; margin-bottom:12px; border:1px solid var(--border-color);">
         <label style="font-size:11px; font-weight:700; color:var(--accent-cyan); display:block; margin-bottom:6px;">+ Create New Subject / Module</label>
         <div style="display:grid; grid-template-columns:100px 1fr auto; gap:6px;">
@@ -917,7 +932,6 @@
         </div>
       </div>
 
-      <!-- Existing Taxonomy List -->
       <div class="card-title">Configured Syllabus Hierarchy</div>
       <div id="taxonomy-manager-list" style="max-height:300px; overflow-y:auto;"></div>
     </div>
@@ -1197,7 +1211,7 @@
   </div>
 
 
-  <!-- ==================== 23. GUI QUESTION EDITOR ==================== -->
+  <!-- ==================== 23. MULTI-CONCEPT GUI QUESTION EDITOR ==================== -->
   <div class="modal-overlay" id="modal-question-editor">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1229,9 +1243,11 @@
         </div>
       </div>
 
+      <!-- Upgraded Multi-Concept Linking Input -->
       <div class="form-group">
-        <label>Concept ID Bridge (Optional: Link to Living Sheet)</label>
-        <input type="text" id="edit-q-concept-id" class="form-control" placeholder="e.g. top_stress_qa_geometry_triangles">
+        <label>Linked Concept Sheets (Comma-separated Concept IDs)</label>
+        <input type="text" id="edit-q-concept-ids" class="form-control" placeholder="e.g. top_qa_geo_circles, top_qa_trig_identities">
+        <span style="font-size:10px; color:var(--text-muted); margin-top:2px; display:block;">Link this question to multiple theorem sheets simultaneously.</span>
       </div>
 
       <div class="form-group">
@@ -1273,7 +1289,7 @@
   </div>
 
 
-  <!-- ==================== 24. ANKI UNIVERSAL CARD EDITOR (FRONT / BACK / EXTRA / CLOZE) ==================== -->
+  <!-- ==================== 24. ANKI UNIVERSAL CARD EDITOR ==================== -->
   <div class="modal-overlay" id="modal-flashcard-editor">
     <div class="modal-window" style="max-width:540px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1303,7 +1319,6 @@
         </select>
       </div>
 
-      <!-- Front Prompt & Front Diagram -->
       <div class="form-group">
         <label>Front Prompt / Question (KaTeX in $...$ or {{c1::cloze}})</label>
         <textarea id="edit-fc-front" class="form-control" style="height:70px;" placeholder="e.g. What is the incenter angle formula for vertex angle A?"></textarea>
@@ -1314,7 +1329,6 @@
         <input type="file" id="edit-fc-front-img-file" class="form-control" accept="image/*" onchange="CGL_OS.handleFlashcardFrontImageUpload(this)">
       </div>
 
-      <!-- Back Answer & Back Visual Proof -->
       <div class="form-group">
         <label>Back Solution / Target Core Fact (KaTeX in $...$ or $$...$$)</label>
         <textarea id="edit-fc-back" class="form-control" style="height:75px;" placeholder="e.g. $$\angle BIC = 90^\circ + \frac{\angle A}{2}$$"></textarea>
@@ -1325,7 +1339,6 @@
         <input type="file" id="edit-fc-back-img-file" class="form-control" accept="image/*" onchange="CGL_OS.handleFlashcardBackImageUpload(this)">
       </div>
 
-      <!-- Extra Field: Derivations, TCS Trap Caveats & Shortcuts -->
       <div class="form-group">
         <label>Extra Notes / TCS Caveats (Appended to Anki Back)</label>
         <textarea id="edit-fc-extra" class="form-control" style="height:55px;" placeholder="e.g. If exterior angle bisectors, angle becomes 90 - A/2."></textarea>
@@ -1344,7 +1357,7 @@
   </div>
 
 
-  <!-- ==================== 25. UNTIMED QUICK CAROUSEL BROWSE MODAL ==================== -->
+  <!-- ==================== 25. UNTIMED QUICK CAROUSEL MODAL ==================== -->
   <div class="modal-overlay" id="modal-flashcard-study">
     <div class="modal-window" style="max-width:560px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1355,7 +1368,6 @@
         <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-flashcard-study').classList.remove('active')">✕ Exit</button>
       </div>
 
-      <!-- Card Interactive Stage -->
       <div class="vault-carousel-wrap">
         <div class="vault-card-canvas" id="fc-card-view" onclick="CGL_OS.flipStudyFlashcard()">
           <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted);">
@@ -1367,7 +1379,6 @@
             Front Prompt Here
           </div>
 
-          <!-- Dual Diagram Containers -->
           <div class="fc-img-box" id="fc-card-front-img-box" style="display:none;"></div>
           <div class="fc-img-box" id="fc-card-back-img-box" style="display:none;"></div>
 
@@ -1377,7 +1388,6 @@
         </div>
       </div>
 
-      <!-- Carousel Navigation Buttons -->
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px;">
         <button class="btn btn-secondary" onclick="CGL_OS.navStudyCard(-1)">◄ Previous Card</button>
         <button class="btn" style="background:#8957e5;" onclick="CGL_OS.navStudyCard(1)">Next Card ►</button>
@@ -1386,7 +1396,7 @@
   </div>
 
 
-  <!-- ==================== 26. NATIVE ANKI EXPORT COCKPIT MODAL ==================== -->
+  <!-- ==================== 26. NATIVE ANKI EXPORT COCKPIT ==================== -->
   <div class="modal-overlay" id="modal-anki-export">
     <div class="modal-window" style="max-width:560px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1441,7 +1451,7 @@
   </div>
 
 
-  <!-- ==================== 27. DATABASE STUDIO INSPECTOR MODAL ==================== -->
+  <!-- ==================== 27. DATABASE STUDIO INSPECTOR ==================== -->
   <div class="modal-overlay child-layer" id="modal-db-inspector-viewer">
     <div class="modal-window" style="max-width:640px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1533,7 +1543,7 @@
   <!-- ==================== 31. PUBLISHING-GRADE TYPESET PRINT ROOT ==================== -->
   <div id="print-sheet-root" style="display:none;" class="print-page"></div>
 
-  <!-- Master JavaScript Controller with Tactical WebAPK Cache-Busting Parameter -->
-  <script src="app.js?v=2.5"></script>
+  <!-- Master JavaScript Controller with Cache-Buster Parameter -->
+  <script src="app.js?v=3.3"></script>
 </body>
 </html>
