@@ -1,7 +1,7 @@
 /**
  * SSC CGL Intelligence OS - Core Engine
  * Master Application Controller (Part 1 of 2)
- * Schema Version: 13 | Dual-Temporal IST + Clone-Safe Persistence + Dynamic Sections
+ * Schema Version: 14 | Hardened Multi-Store Transaction Harness + Zero-Flicker Synapse
  */
 
 // Global window anchor registration
@@ -9,7 +9,7 @@ window.CGL_OS = null;
 
 const CGL_OS = (() => {
   const DB_NAME = "cgl_os_db";
-  const DB_VERSION = 13;
+  const DB_VERSION = 14;
   let db = null;
   let dbInitPromise = null;
 
@@ -27,12 +27,15 @@ const CGL_OS = (() => {
   let currentCompSheets = [];
   let currentConceptImageBase64 = "";
 
-  // Two-Sided Image Flashcard Editor State
+  // Universal Anki Forge & Vault State (Tab 4 Refactor)
   let currentFcFrontImgBase64 = "";
   let currentFcBackImgBase64 = "";
+  let activeVaultDeck = [];
+  let activeVaultIndex = 0;
+  let activeVaultFlipped = false;
 
-  // Responsive Synapse DOM Tree State
-  let synapseExpandedNodes = new Set(["root", "sub_QA", "sub_REAS", "sub_ENG", "sub_GA"]);
+  // Synapse Knowledge Graph State (Synchronous Zero-Flicker)
+  let synapseTreeBuilt = false;
 
   // Disaster Recovery Hydration State
   let pendingHydrationData = null;
@@ -228,66 +231,54 @@ const CGL_OS = (() => {
     }
   ];
 
-  // Pre-Seeded SM-2 Flashcards with Two-Sided Image Support
+  // Pre-Seeded Universal Anki Cards (Archetypes: Basic, Basic+Extra, Cloze)
   const SEED_FLASHCARDS = [
     {
       id: "fc_qa_geo_001",
+      cardType: "BASIC_EXTRA",
       subject: "QA",
       chapter: "QA_GEOMETRY",
       front: "In $\\triangle ABC$ with incenter $I$, what is the formula for $\\angle BIC$ in terms of vertex angle $\\angle A$?",
       frontImageUrl: "",
       back: "$$\\angle BIC = 90^\\circ + \\frac{\\angle A}{2}$$",
       backImageUrl: "",
-      interval: 1,
-      repetition: 0,
-      easeFactor: 2.5,
-      nextReviewDate: Date.now() - 1000,
-      lastAttempted: Date.now(),
+      extra: "For excenter formed by external angle bisectors: $\\angle BEC = 90^\\circ - \\frac{\\angle A}{2}$.",
       tags: ["Formula", "Incenter", "Geometry"]
     },
     {
       id: "fc_qa_geo_002",
+      cardType: "BASIC_EXTRA",
       subject: "QA",
       chapter: "QA_GEOMETRY",
       front: "What is the length formula for a Direct Common Tangent ($DCT$) between two circles of radii $r_1, r_2$ and center separation $d$?",
       frontImageUrl: "",
       back: "$$DCT = \\sqrt{d^2 - (r_1 - r_2)^2}$$",
       backImageUrl: "",
-      interval: 1,
-      repetition: 0,
-      easeFactor: 2.5,
-      nextReviewDate: Date.now() - 1000,
-      lastAttempted: Date.now(),
+      extra: "Transverse Common Tangent ($TCT$) uses $(r_1 + r_2)^2$. $DCT$ is always longer than $TCT$.",
       tags: ["Formula", "Circles", "Geometry"]
     },
     {
       id: "fc_ga_pol_001",
+      cardType: "BASIC",
       subject: "GA",
       chapter: "GA_POLITY",
       front: "Which Article establishes and constitutes the Supreme Court of India?",
       frontImageUrl: "",
       back: "**Article 124** of the Constitution of India.",
       backImageUrl: "",
-      interval: 1,
-      repetition: 0,
-      easeFactor: 2.5,
-      nextReviewDate: Date.now() - 1000,
-      lastAttempted: Date.now(),
+      extra: "Article 129 establishes SC as a Court of Record. Article 131 covers Original Jurisdiction.",
       tags: ["Polity", "Articles", "Judiciary"]
     },
     {
       id: "fc_eng_ows_001",
+      cardType: "CLOZE",
       subject: "ENG",
       chapter: "ENG_OWS",
-      front: "One-Word Substitution: *'A person who is unable to pay their debts.'*",
+      front: "A person who is unable to pay their debts is officially termed {{c1::insolvent}} or bankrupt.",
       frontImageUrl: "",
-      back: "**Insolvent** (or Bankrupt).",
+      back: "Synonym: Indigent, Bankrupt. Antonym: Solvent, Affluent.",
       backImageUrl: "",
-      interval: 1,
-      repetition: 0,
-      easeFactor: 2.5,
-      nextReviewDate: Date.now() - 1000,
-      lastAttempted: Date.now(),
+      extra: "Often tested in SSC CGL Tier 1 Vocab shifts.",
       tags: ["Vocabulary", "OWS"]
     }
   ];
@@ -337,7 +328,7 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 2. FORMATTING & COMPRESSION UTILITIES
+   * 2. FORMATTING, MATHJAX CONVERTER & IMAGE COMPRESSION
    * ------------------------------------------------------------- */
   function formatRichText(str) {
     if (!str) return "";
@@ -370,6 +361,15 @@ const CGL_OS = (() => {
       });
     }
     return out.replace(/\n/g, "<br>");
+  }
+
+  // Translates KaTeX delimiters ($...$) to Anki-Native MathJax (\(...\) and \[...\])
+  function convertKatexToAnkiMathJax(str) {
+    if (!str) return "";
+    let out = String(str);
+    out = out.replace(/\$\$([\s\S]*?)\$\$/g, "\\[$1\\]");
+    out = out.replace(/\$([^\$\n]+?)\$/g, "\\($1\\)");
+    return out;
   }
 
   function compressImageFile(file) {
@@ -430,7 +430,7 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 4. INDEXEDDB PERSISTENCE ENGINE (SCHEMA V13 UPGRADE)
+   * 4. HARDENED INDEXEDDB ENGINE & UNIFIED TRANSACTION HARNESS
    * ------------------------------------------------------------- */
   function getDB() {
     if (db) return Promise.resolve(db);
@@ -440,7 +440,8 @@ const CGL_OS = (() => {
       const req = indexedDB.open(DB_NAME, DB_VERSION);
 
       req.onblocked = () => {
-        console.warn("Database upgrade temporarily blocked by an open connection.");
+        console.warn("Database upgrade temporarily blocked. Closing pending connections.");
+        if (db) { db.close(); db = null; }
       };
 
       req.onupgradeneeded = (e) => {
@@ -463,7 +464,7 @@ const CGL_OS = (() => {
           }
         });
 
-        // Safe auto-migration from deprecated store_vault if present
+        // Migration from legacy store_vault to universal store_flashcards
         if (d.objectStoreNames.contains("store_vault") && d.objectStoreNames.contains("store_flashcards")) {
           try {
             const tx = e.target.transaction;
@@ -475,17 +476,14 @@ const CGL_OS = (() => {
               records.forEach(v => {
                 flashcardStore.put({
                   id: `fc_migrated_${v.questionId}`,
+                  cardType: "BASIC_EXTRA",
                   subject: v.subject || "QA",
                   chapter: v.chapter || "QA_GENERAL",
                   front: `Vault Migrated Trap (${v.errorTag || 'UNCLASSIFIED'})`,
                   frontImageUrl: "",
                   back: `Question Reference ID: ${v.questionId}`,
                   backImageUrl: "",
-                  interval: v.interval || 1,
-                  repetition: v.repetition || 0,
-                  easeFactor: v.easeFactor || 2.5,
-                  nextReviewDate: v.nextReviewDate || Date.now(),
-                  lastAttempted: v.lastAttempted || Date.now(),
+                  extra: `Migrated error record: ${v.errorTag || 'UNCLASSIFIED'}`,
                   tags: ["MigratedVault", v.errorTag || "UNCLASSIFIED"]
                 });
               });
@@ -518,6 +516,28 @@ const CGL_OS = (() => {
     return dbInitPromise;
   }
 
+  // Unified Transaction Harness (Eliminates variable typos and dangling transaction drops)
+  async function runTx(storeNames, mode, callback) {
+    const database = await getDB();
+    return new Promise((resolve, reject) => {
+      const tx = database.transaction(storeNames, mode);
+      tx.oncomplete = () => resolve(true);
+      tx.onerror = (e) => {
+        console.error("runTx transaction error:", tx.error || e);
+        reject(tx.error || e);
+      };
+      tx.onabort = (e) => {
+        console.error("runTx transaction aborted:", tx.error || e);
+        reject(tx.error || e);
+      };
+      try {
+        callback(tx);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
   async function seedData(database) {
     const d = database || await getDB();
 
@@ -531,25 +551,19 @@ const CGL_OS = (() => {
     });
 
     if (existingCount === 0) {
-      const txQ = d.transaction(["store_questions"], "readwrite");
-      const stQ = txQ.objectStore("store_questions");
-      SEED_QUESTIONS.forEach(q => stQ.put(q));
-      await new Promise(r => txQ.oncomplete = r);
+      await runTx(["store_questions", "store_concepts", "store_saved_mocks", "store_flashcards"], "readwrite", (tx) => {
+        const stQ = tx.objectStore("store_questions");
+        SEED_QUESTIONS.forEach(q => stQ.put(q));
 
-      const txC = d.transaction(["store_concepts"], "readwrite");
-      const stC = txC.objectStore("store_concepts");
-      SEED_TOPIC_DOSSIERS.forEach(t => stC.put(t));
-      await new Promise(r => txC.oncomplete = r);
+        const stC = tx.objectStore("store_concepts");
+        SEED_TOPIC_DOSSIERS.forEach(t => stC.put(t));
 
-      const txB = d.transaction(["store_saved_mocks"], "readwrite");
-      const stB = txB.objectStore("store_saved_mocks");
-      SEED_SAVED_MOCKS.forEach(b => stB.put(b));
-      await new Promise(r => txB.oncomplete = r);
+        const stB = tx.objectStore("store_saved_mocks");
+        SEED_SAVED_MOCKS.forEach(b => stB.put(b));
 
-      const txF = d.transaction(["store_flashcards"], "readwrite");
-      const stF = txF.objectStore("store_flashcards");
-      SEED_FLASHCARDS.forEach(f => stF.put(f));
-      await new Promise(r => txF.oncomplete = r);
+        const stF = tx.objectStore("store_flashcards");
+        SEED_FLASHCARDS.forEach(f => stF.put(f));
+      });
     }
 
     const savedMistakeConfig = await getRecord("store_config", "custom_mistake_tags");
@@ -598,23 +612,12 @@ const CGL_OS = (() => {
     } catch (e) { return null; }
   }
 
-  // Clone-Safe Persistence Engine (Eliminates DataCloneError Drops)
+  // Clone-Safe Persistence Engine
   async function putRecord(sName, record) {
     try {
-      const d = await getDB();
-      if (!d.objectStoreNames.contains(sName)) {
-        console.error(`Store ${sName} not found in database.`);
-        return false;
-      }
       const cleanRecord = JSON.parse(JSON.stringify(record));
-      return new Promise(res => {
-        const tx = d.transaction([sName], "readwrite");
-        const req = tx.objectStore(sName).put(cleanRecord);
-        req.onsuccess = () => res(true);
-        req.onerror = (err) => {
-          console.error(`Failed write to ${sName}:`, err);
-          res(false);
-        };
+      return await runTx([sName], "readwrite", (tx) => {
+        tx.objectStore(sName).put(cleanRecord);
       });
     } catch (e) {
       console.error(`Exception writing to ${sName}:`, e);
@@ -624,26 +627,16 @@ const CGL_OS = (() => {
 
   async function deleteRecordFromStore(sName, key) {
     try {
-      const d = await getDB();
-      if (!d.objectStoreNames.contains(sName)) return false;
-      return new Promise(res => {
-        const tx = d.transaction([sName], "readwrite");
-        const req = tx.objectStore(sName).delete(key);
-        req.onsuccess = () => res(true);
-        req.onerror = () => res(false);
+      return await runTx([sName], "readwrite", (tx) => {
+        tx.objectStore(sName).delete(key);
       });
     } catch (e) { return false; }
   }
 
   async function clearStore(sName) {
     try {
-      const d = await getDB();
-      if (!d.objectStoreNames.contains(sName)) return false;
-      return new Promise(res => {
-        const tx = d.transaction([sName], "readwrite");
-        const req = tx.objectStore(sName).clear();
-        req.onsuccess = () => res(true);
-        req.onerror = () => res(false);
+      return await runTx([sName], "readwrite", (tx) => {
+        tx.objectStore(sName).clear();
       });
     } catch (e) { return false; }
   }
@@ -676,7 +669,10 @@ const CGL_OS = (() => {
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = `cgl_os_backup_${Date.now()}.json`;
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
   }
 
   function openBackupRestoreModal() {
@@ -704,7 +700,7 @@ const CGL_OS = (() => {
           <b>Backup File Validated:</b><br>
           • Questions: ${pendingHydrationData.store_questions.length}<br>
           • Attempts & Scores: ${pendingHydrationData.store_attempts.length}<br>
-          • Active SM-2 Flashcards: ${pendingHydrationData.store_flashcards.length}<br>
+          • Universal Flashcards: ${pendingHydrationData.store_flashcards.length}<br>
           • Living Document Sheets: ${pendingHydrationData.store_concepts.length}<br>
           • Clinical AI Consultations: ${pendingHydrationData.store_ai_consultations.length}<br>
           • Saved Blueprints & Papers: ${pendingHydrationData.store_saved_mocks.length}
@@ -779,17 +775,14 @@ const CGL_OS = (() => {
   function sanitizeFlashcard(f, idx) {
     return {
       id: f.id || `fc_restored_${Date.now()}_${idx}`,
+      cardType: f.cardType || (f.extra ? "BASIC_EXTRA" : "BASIC"),
       subject: f.subject || "QA",
       chapter: f.chapter || "QA_GENERAL",
       front: f.front || f.questionText || "Untitled Prompt",
       frontImageUrl: f.frontImageUrl || "",
       back: f.back || f.explanation || "Untitled Answer",
       backImageUrl: f.backImageUrl || "",
-      interval: typeof f.interval === "number" ? f.interval : 1,
-      repetition: typeof f.repetition === "number" ? f.repetition : 0,
-      easeFactor: typeof f.easeFactor === "number" ? f.easeFactor : 2.5,
-      nextReviewDate: typeof f.nextReviewDate === "number" ? f.nextReviewDate : Date.now(),
-      lastAttempted: f.lastAttempted || Date.now(),
+      extra: f.extra || "",
       tags: Array.isArray(f.tags) ? f.tags : ["Restored"]
     };
   }
@@ -834,7 +827,6 @@ const CGL_OS = (() => {
   async function executeHydrationRestore() {
     if (!pendingHydrationData) return;
     const mode = document.getElementById("restore-hydration-mode").value;
-    const d = await getDB();
 
     try {
       const storeKeys = [
@@ -851,16 +843,17 @@ const CGL_OS = (() => {
 
       for (const sName of storeKeys) {
         const items = pendingHydrationData[sName] || [];
-        if (items.length > 0 && d.objectStoreNames.contains(sName)) {
-          const tx = d.transaction([sName], "readwrite");
-          const st = tx.objectStore(sName);
-          items.forEach(item => st.put(item));
-          await new Promise(r => tx.oncomplete = r);
+        if (items.length > 0) {
+          await runTx([sName], "readwrite", (tx) => {
+            const st = tx.objectStore(sName);
+            items.forEach(item => st.put(item));
+          });
         }
       }
 
       alert("Disaster Recovery Complete! All records restored safely.");
       document.getElementById("modal-backup-restore").classList.remove("active");
+      synapseTreeBuilt = false;
       await syncAllTaxonomyDropdowns();
       await renderDashboard();
       await updateDojoChapters();
@@ -921,8 +914,9 @@ const CGL_OS = (() => {
     populateSelect("concept-edit-subject", false);
     populateSelect("edit-q-subject", false);
     populateSelect("edit-fc-subject", false);
-    populateSelect("sm2-deck-filter-sub", true);
+    populateSelect("vault-deck-filter-sub", true);
     populateSelect("scoped-export-subject", true);
+    populateSelect("anki-export-subject", true);
   }
 
   function openTaxonomyManagerModal() {
@@ -991,6 +985,7 @@ const CGL_OS = (() => {
     await putRecord("store_config", { key: "system_taxonomy", value: TAXONOMY });
     keyInput.value = "";
     nameInput.value = "";
+    synapseTreeBuilt = false;
     renderTaxonomyManagerList();
     await syncAllTaxonomyDropdowns();
     await renderDashboard();
@@ -1005,6 +1000,7 @@ const CGL_OS = (() => {
     if (!TAXONOMY[subKey].chapters.includes(formatted)) {
       TAXONOMY[subKey].chapters.push(formatted);
       await putRecord("store_config", { key: "system_taxonomy", value: TAXONOMY });
+      synapseTreeBuilt = false;
       renderTaxonomyManagerList();
       await syncAllTaxonomyDropdowns();
       await renderDashboard();
@@ -1016,6 +1012,7 @@ const CGL_OS = (() => {
     if (confirm(`Remove chapter ${chap} from ${subKey}?`)) {
       TAXONOMY[subKey].chapters = TAXONOMY[subKey].chapters.filter(c => c !== chap);
       await putRecord("store_config", { key: "system_taxonomy", value: TAXONOMY });
+      synapseTreeBuilt = false;
       renderTaxonomyManagerList();
       await syncAllTaxonomyDropdowns();
       await renderDashboard();
@@ -1027,6 +1024,7 @@ const CGL_OS = (() => {
     if (confirm(`Permanently remove subject ${subKey} and all its taxonomy mappings?`)) {
       delete TAXONOMY[subKey];
       await putRecord("store_config", { key: "system_taxonomy", value: TAXONOMY });
+      synapseTreeBuilt = false;
       renderTaxonomyManagerList();
       await syncAllTaxonomyDropdowns();
       await renderDashboard();
@@ -1049,14 +1047,18 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 7. RESPONSIVE SYNAPSE TREE ENGINE (DOM-BASED HIERARCHY)
+   * 7. SYNAPSE KNOWLEDGE GRAPH (SYNCHRONOUS ZERO-FLICKER ENGINE)
    * ------------------------------------------------------------- */
   async function openSynapseGraphModal() {
     pushNavLayer("modal-synapse-tree", () => {
       document.getElementById("modal-synapse-tree").classList.remove("active");
     });
     document.getElementById("modal-synapse-tree").classList.add("active");
-    await renderSynapseDomTree();
+
+    if (!synapseTreeBuilt) {
+      await renderSynapseDomTree();
+      synapseTreeBuilt = true;
+    }
   }
 
   async function renderSynapseDomTree() {
@@ -1070,8 +1072,7 @@ const CGL_OS = (() => {
 
     Object.keys(TAXONOMY).forEach(subKey => {
       const sub = TAXONOMY[subKey];
-      const subNodeId = `sub_${subKey}`;
-      const isSubExpanded = synapseExpandedNodes.has(subNodeId);
+      const subBranchId = `syn-sub-branch-${subKey}`;
 
       const subNodeWrap = document.createElement("div");
       subNodeWrap.className = "tree-node-item";
@@ -1080,100 +1081,106 @@ const CGL_OS = (() => {
       subRow.className = "tree-node-row subject-row";
       subRow.innerHTML = `
         <div style="display:flex; align-items:center; gap:8px;">
-          <span style="font-family:var(--font-mono); color:var(--accent-cyan); font-weight:800;">${isSubExpanded ? "▼" : "▶"}</span>
+          <span id="arrow-sub-${subKey}" style="font-family:var(--font-mono); color:var(--accent-cyan); font-weight:800;">▼</span>
           <b style="color:#fff; font-size:13px;">${sub.name} (${subKey})</b>
         </div>
         <span class="badge" style="background:#1f6feb;">${sub.chapters.length} Chapters</span>
       `;
-      subRow.onclick = () => toggleSynapseNode(subNodeId);
+      subRow.onclick = () => toggleSynapseBranch(subBranchId, `arrow-sub-${subKey}`);
       subNodeWrap.appendChild(subRow);
 
-      if (isSubExpanded) {
-        const qChaps = allQuestions.filter(q => q.subject === subKey).map(q => q.chapter);
-        const cChaps = allConcepts.filter(c => c.subject === subKey).map(c => c.chapter);
-        const fChaps = allFlashcards.filter(f => f.subject === subKey).map(f => f.chapter);
-        const mergedChaps = [...new Set([...sub.chapters, ...qChaps, ...cChaps, ...fChaps])];
+      // Synchronous branch container (initially open)
+      const subBranchWrap = document.createElement("div");
+      subBranchWrap.className = "synapse-branch-container open";
+      subBranchWrap.id = subBranchId;
 
-        mergedChaps.forEach(chap => {
-          const chapNodeId = `chap_${chap}`;
-          const isChapExpanded = synapseExpandedNodes.has(chapNodeId);
-          const chapCards = allFlashcards.filter(f => f.chapter === chap);
-          const chapSheets = allConcepts.filter(c => c.subject === subKey && c.chapter === chap);
-          const chapQs = allQuestions.filter(q => q.chapter === chap);
+      const qChaps = allQuestions.filter(q => q.subject === subKey).map(q => q.chapter);
+      const cChaps = allConcepts.filter(c => c.subject === subKey).map(c => c.chapter);
+      const fChaps = allFlashcards.filter(f => f.subject === subKey).map(f => f.chapter);
+      const mergedChaps = [...new Set([...sub.chapters, ...qChaps, ...cChaps, ...fChaps])];
 
-          const chapNodeWrap = document.createElement("div");
-          chapNodeWrap.className = "tree-node-item";
+      mergedChaps.forEach(chap => {
+        const chapBranchId = `syn-chap-branch-${chap}`;
+        const chapCards = allFlashcards.filter(f => f.chapter === chap);
+        const chapSheets = allConcepts.filter(c => c.subject === subKey && c.chapter === chap);
+        const chapQs = allQuestions.filter(q => q.chapter === chap);
 
-          const chapRow = document.createElement("div");
-          chapRow.className = "tree-node-row chapter-row";
-          chapRow.innerHTML = `
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-family:var(--font-mono); color:var(--text-muted); font-size:11px;">${isChapExpanded ? "▼" : "▶"}</span>
-              <span style="font-family:var(--font-mono); font-weight:700; color:#fff; font-size:12px;">${chap}</span>
-              ${chapCards.length > 0 ? `<span class="badge" style="background:#8957e5;">${chapCards.length} Cards</span>` : ''}
-              <span class="badge" style="background:#151a24; color:var(--text-muted);">${chapQs.length} Qs</span>
+        const chapNodeWrap = document.createElement("div");
+        chapNodeWrap.className = "tree-node-item";
+
+        const chapRow = document.createElement("div");
+        chapRow.className = "tree-node-row chapter-row";
+        chapRow.innerHTML = `
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span id="arrow-chap-${chap}" style="font-family:var(--font-mono); color:var(--text-muted); font-size:11px;">▶</span>
+            <span style="font-family:var(--font-mono); font-weight:700; color:#fff; font-size:12px;">${chap}</span>
+            ${chapCards.length > 0 ? `<span class="badge" style="background:#8957e5;">${chapCards.length} Vault Cards</span>` : ''}
+            <span class="badge" style="background:#151a24; color:var(--text-muted);">${chapQs.length} Qs</span>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-secondary" style="padding:2px 8px; font-size:10px; color:var(--accent-cyan);" onclick="event.stopPropagation(); CGL_OS.launchSynapseChapterBlitz('${subKey}', '${chap}')">⚡ 5-Q Blitz</button>
+          </div>
+        `;
+        chapRow.onclick = () => toggleSynapseBranch(chapBranchId, `arrow-chap-${chap}`);
+        chapNodeWrap.appendChild(chapRow);
+
+        // Child Branch Container (initially collapsed)
+        const chapBranchWrap = document.createElement("div");
+        chapBranchWrap.className = "synapse-branch-container";
+        chapBranchWrap.id = chapBranchId;
+
+        if (chapSheets.length === 0 && chapCards.length === 0) {
+          const emptyRow = document.createElement("div");
+          emptyRow.style.fontSize = "11px";
+          emptyRow.style.color = "var(--text-muted)";
+          emptyRow.style.padding = "6px 12px";
+          emptyRow.innerText = "No sheets or cards logged in this chapter yet.";
+          chapBranchWrap.appendChild(emptyRow);
+        }
+
+        chapSheets.forEach(sheet => {
+          const sheetRow = document.createElement("div");
+          sheetRow.className = "tree-node-row sheet-row";
+          sheetRow.style.marginTop = "4px";
+          sheetRow.innerHTML = `
+            <div style="display:flex; align-items:center; gap:6px; overflow:hidden;">
+              <span style="font-size:13px;">📖</span>
+              <span style="color:#fff; font-size:12px; font-weight:600; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">${sheet.title}</span>
             </div>
-            <div style="display:flex; gap:6px;">
-              <button class="btn btn-secondary" style="padding:2px 8px; font-size:10px; color:var(--accent-cyan);" onclick="event.stopPropagation(); CGL_OS.launchSynapseChapterBlitz('${subKey}', '${chap}')">⚡ 5-Q Blitz</button>
+            <div style="display:flex; gap:4px; flex-shrink:0;">
+              <button class="btn btn-secondary" style="padding:2px 8px; font-size:10px;" onclick="CGL_OS.openCompendiumToSheet('${sheet.id}', '${subKey}', '${chap}')">Read</button>
+              <button class="btn btn-cyan" style="padding:2px 8px; font-size:10px;" onclick="CGL_OS.launchDirectSheetDrill('${sheet.id}', '${subKey}', '${chap}')">Drill</button>
             </div>
           `;
-          chapRow.onclick = () => toggleSynapseNode(chapNodeId);
-          chapNodeWrap.appendChild(chapRow);
-
-          if (isChapExpanded) {
-            if (chapSheets.length === 0 && chapCards.length === 0) {
-              const emptyRow = document.createElement("div");
-              emptyRow.style.fontSize = "11px";
-              emptyRow.style.color = "var(--text-muted)";
-              emptyRow.style.padding = "6px 12px";
-              emptyRow.innerText = "No sheets or cards logged in this chapter yet.";
-              chapNodeWrap.appendChild(emptyRow);
-            }
-
-            chapSheets.forEach(sheet => {
-              const sheetRow = document.createElement("div");
-              sheetRow.className = "tree-node-row sheet-row";
-              sheetRow.style.marginTop = "4px";
-              sheetRow.innerHTML = `
-                <div style="display:flex; align-items:center; gap:6px; overflow:hidden;">
-                  <span style="font-size:13px;">📖</span>
-                  <span style="color:#fff; font-size:12px; font-weight:600; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">${sheet.title}</span>
-                </div>
-                <div style="display:flex; gap:4px; flex-shrink:0;">
-                  <button class="btn btn-secondary" style="padding:2px 8px; font-size:10px;" onclick="CGL_OS.openCompendiumToSheet('${sheet.id}', '${subKey}', '${chap}')">Read</button>
-                  <button class="btn btn-cyan" style="padding:2px 8px; font-size:10px;" onclick="CGL_OS.launchDirectSheetDrill('${sheet.id}', '${subKey}', '${chap}')">Drill</button>
-                </div>
-              `;
-              chapNodeWrap.appendChild(sheetRow);
-            });
-          }
-          subNodeWrap.appendChild(chapNodeWrap);
+          chapBranchWrap.appendChild(sheetRow);
         });
-      }
+
+        chapNodeWrap.appendChild(chapBranchWrap);
+        subBranchWrap.appendChild(chapNodeWrap);
+      });
+
+      subNodeWrap.appendChild(subBranchWrap);
       rootContainer.appendChild(subNodeWrap);
     });
   }
 
-  function toggleSynapseNode(nodeId) {
-    if (synapseExpandedNodes.has(nodeId)) {
-      synapseExpandedNodes.delete(nodeId);
-    } else {
-      synapseExpandedNodes.add(nodeId);
-    }
-    renderSynapseDomTree();
+  // Pure Synchronous DOM Toggling (Zero Repaint Flicker)
+  function toggleSynapseBranch(branchId, arrowId) {
+    const el = document.getElementById(branchId);
+    if (!el) return;
+    const isOpen = el.classList.toggle("open");
+    const arrow = document.getElementById(arrowId);
+    if (arrow) arrow.innerText = isOpen ? "▼" : "▶";
   }
 
   function expandAllSynapseNodes() {
-    Object.keys(TAXONOMY).forEach(subKey => {
-      synapseExpandedNodes.add(`sub_${subKey}`);
-      TAXONOMY[subKey].chapters.forEach(c => synapseExpandedNodes.add(`chap_${c}`));
-    });
-    renderSynapseDomTree();
+    document.querySelectorAll(".synapse-branch-container").forEach(el => el.classList.add("open"));
+    document.querySelectorAll('[id^="arrow-"]').forEach(a => a.innerText = "▼");
   }
 
   function collapseAllSynapseNodes() {
-    synapseExpandedNodes.clear();
-    renderSynapseDomTree();
+    document.querySelectorAll(".synapse-branch-container").forEach(el => el.classList.remove("open"));
+    document.querySelectorAll('[id^="arrow-"]').forEach(a => a.innerText = "▶");
   }
 
   function launchSynapseChapterBlitz(subKey, chap) {
@@ -1469,6 +1476,7 @@ const CGL_OS = (() => {
     const curr = currentCompSheets[activeCompSheetIndex];
     if (confirm(`Permanently delete living sheet: "${curr.title}"?`)) {
       await deleteRecordFromStore("store_concepts", curr.id);
+      synapseTreeBuilt = false;
       await renderCompStudioSheets();
     }
   }
@@ -1483,6 +1491,7 @@ const CGL_OS = (() => {
       await putRecord("store_config", { key: "system_taxonomy", value: TAXONOMY });
     }
 
+    synapseTreeBuilt = false;
     await handleCompStudioSubjectChange(activeCompSubject);
     document.getElementById("comp-studio-chapter-select").value = formatted;
     await handleCompStudioChapterChange(formatted);
@@ -1611,6 +1620,7 @@ const CGL_OS = (() => {
     };
 
     await putRecord("store_concepts", obj);
+    synapseTreeBuilt = false;
     document.getElementById("modal-concept-editor").classList.remove("active");
     openCompendiumToSheet(id, subject, chapter);
   }
@@ -2096,7 +2106,7 @@ const CGL_OS = (() => {
       `;
       panicFlag.style.display = resp.isPanicSlip ? "inline-block" : "none";
 
-      // CLOCK SYNC FIX: Synchronize live timers with the question's recorded dwell time
+      // CLOCK SYNC FIX: Synchronize live timer text with the question's recorded dwell time
       const spent = resp.timeSpentSec || 0;
       const mSpent = Math.floor(spent / 60);
       const sSpent = spent % 60;
@@ -2189,7 +2199,6 @@ const CGL_OS = (() => {
         </div>
       `;
 
-      // Solution & Mistake Tag Dropdown
       solutionBlock.style.display = "block";
       const currentTag = resp.errorTag || "UNCLASSIFIED";
 
@@ -2511,7 +2520,7 @@ const CGL_OS = (() => {
     }
   });
 
-  // SUBMISSION ENGINE WITH COGNITIVE TRAP AUTO-CLASSIFICATION & CLONE-SAFE WRITES
+  // SUBMISSION ENGINE: Auto-Classifies Cognitive Traps & Writes Atomically
   async function submitExamSession() {
     clearInterval(examTimerInterval);
     clearInterval(questionTimerInterval);
@@ -2545,7 +2554,7 @@ const CGL_OS = (() => {
 
           if (resp.timeSpentSec > 90) traps++;
 
-          // COGNITIVE TRAP AUTO-CLASSIFICATION
+          // Cognitive Trap Auto-Classification Heuristics
           if (!resp.errorTag || resp.errorTag === "UNCLASSIFIED") {
             if (resp.isPanicSlip) {
               resp.errorTag = "PANIC_SLIP";
@@ -2599,7 +2608,6 @@ const CGL_OS = (() => {
     const modalArchive = document.getElementById("modal-history-archive");
     if (modalArchive) modalArchive.classList.remove("active");
 
-    // Count existing attempts in thread
     const rootId = target.parentSessionId || target.sessionId;
     const threadAttempts = attempts.filter(a => a.sessionId === rootId || a.parentSessionId === rootId);
     const nextAttemptNumber = threadAttempts.length + 1;
@@ -3345,8 +3353,7 @@ const CGL_OS = (() => {
       payload = `# SSC CGL Strategic Telemetry Audit\n` +
         `• Generated at: ${formatISTDate(Date.now())}\n` +
         `• Completed Standard Mocks: ${allAtt.length}\n` +
-        `• Active SM-2 Flashcards: ${flashcards.length}\n` +
-        `• Flashcard Pipeline: Due: ${flashcards.filter(f => f.nextReviewDate <= Date.now()).length} | Mastered: ${flashcards.filter(f => f.repetition >= 3).length}\n`;
+        `• Vault Flashcards Registered: ${flashcards.length}\n`;
     }
 
     document.getElementById("ai-export-preview").value = payload;
@@ -3364,7 +3371,6 @@ const CGL_OS = (() => {
     document.getElementById("modal-ledger-export").classList.add("active");
   }
 
-  // HIERARCHICAL SORTING HELPER: Subject -> Chapter -> Subtopic -> ID
   function sortQuestionsHierarchical(questions) {
     const subOrder = ["QA", "REAS", "ENG", "GA"];
     return questions.slice().sort((a, b) => {
@@ -3397,7 +3403,10 @@ const CGL_OS = (() => {
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = `cgl_master_bank_ledger_${Date.now()}.json`;
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
     document.getElementById("modal-ledger-export").classList.remove("active");
   }
 
@@ -3435,26 +3444,33 @@ const CGL_OS = (() => {
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = `cgl_master_bank_gem_pack_${Date.now()}.txt`;
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
     document.getElementById("modal-ledger-export").classList.remove("active");
   }
 
   async function exportCleanMarkdownFlashcards() {
     const flashcards = await getAllRecords("store_flashcards");
-    let md = `# SSC CGL Flashcard Deck Export\nGenerated on: ${formatISTDate(Date.now())}\nTotal Cards: ${flashcards.length}\n\n`;
+    let md = `# SSC CGL Flashcard Vault Export\nGenerated on: ${formatISTDate(Date.now())}\nTotal Cards: ${flashcards.length}\n\n`;
 
     flashcards.forEach(f => {
-      md += `### [${f.subject} • ${f.chapter}] ${f.id}\n`;
+      md += `### [${f.subject} • ${f.chapter}] ${f.id} (${f.cardType || 'BASIC'})\n`;
       md += `**Prompt (Front):**\n${f.front}\n\n`;
       md += `**Answer (Back):**\n${f.back}\n\n`;
-      md += `*Interval: ${f.interval}d | Reps: ${f.repetition} | EF: ${f.easeFactor}*\n\n---\n\n`;
+      if (f.extra) md += `**Extra Notes:**\n${f.extra}\n\n`;
+      md += `---\n\n`;
     });
 
     const blob = new Blob([md], { type: "text/plain;charset=utf-8" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = `CGL_Flashcards_${Date.now()}.md`;
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
   }
 
   async function copyLiveSystemManifestToClipboard() {
@@ -3471,7 +3487,7 @@ Target Candidate: Ankit (SSC CGL 2026 Tier 1 & Tier 2 Master Preparation)
 ## 1. Live Telemetry Metrics
 - Master Question Pool: ${questions.length}
 - Completed Mocks: ${attempts.filter(a => a.completed).length}
-- Active SM-2 Flashcards: ${flashcards.length} (Due Today: ${flashcards.filter(f => f.nextReviewDate <= Date.now()).length})
+- Card Vault Inventory: ${flashcards.length}
 - Living Knowledge Sheets: ${concepts.length}
 - Clinical Consultations Logged: ${consultations.length}
 
@@ -3479,6 +3495,8 @@ Target Candidate: Ankit (SSC CGL 2026 Tier 1 & Tier 2 Master Preparation)
 ${JSON.stringify(TAXONOMY, null, 2)}
 
 ## 3. Supported JSON Action Contracts
+- INGEST_AND_ASSEMBLE_COMPLETE_MOCK (Single coordinated paper + sheets + question ingest)
+- CREATE_AND_SAVE_FIXED_MOCK (Resolve existing question IDs + save fixed preset)
 - EXECUTE_AI_CONSULTATION_BUNDLE
 - INGEST_AND_LAUNCH_MOCK
 - AI_PRESCRIBE_REMEDY
@@ -3522,7 +3540,6 @@ ${JSON.stringify(TAXONOMY, null, 2)}
 
     const filteredAttempts = allAttempts.filter(a => a.completed && a.timestamp >= cutoff);
 
-    // Build Chronological Question Exposures & Spacing History with Defensive IST Fallbacks
     const exposureMap = {};
     allAttempts.filter(a => a.completed).sort((a, b) => a.timestamp - b.timestamp).forEach(att => {
       if (att.questions && Array.isArray(att.questions) && att.userResponses) {
@@ -3556,7 +3573,6 @@ ${JSON.stringify(TAXONOMY, null, 2)}
       }
     });
 
-    // Compile Telemetry Slice
     const telemetryRows = [];
     const decisionTrails = {};
 
@@ -3617,15 +3633,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
         diurnalSlot: getDiurnalSlot(now),
         exportScope: isGlobalMaster ? "GLOBAL_360_MASTER_DOSSIER" : `${sub}_${timeframe}_${filter}`,
         encoding: encoding,
-        decoderInstructions: "CSV rows correspond to individual question attempts. Columns: mockId,mockIST,slot,qId,subject,chapter,sel,cor,t,sw,panic,tag. Check decisionTrails for chronological hesitation path.",
-        supportedActionContracts: [
-          "EXECUTE_AI_CONSULTATION_BUNDLE",
-          "INGEST_AND_LAUNCH_MOCK",
-          "AI_PRESCRIBE_REMEDY",
-          "BATCH_INGEST_FLASHCARDS",
-          "BATCH_INGEST_COMPENDIUM",
-          "REQUEST_HISTORICAL_DUMP"
-        ]
+        decoderInstructions: "CSV rows correspond to individual question attempts. Columns: mockId,mockIST,slot,qId,subject,chapter,sel,cor,t,sw,panic,tag. Check decisionTrails for hesitation paths."
       },
       cumulativeClinicalNarrative: consultations.length > 0 ? consultations[consultations.length - 1].cumulativeNarrative || "Baseline initialized." : "No prior consultations logged.",
       recentConsultationLogs: consultations.slice(-5),
@@ -3633,11 +3641,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
         target: "SSC CGL 2026 Tier 1 & Tier 2 Master Preparation",
         scopedAttemptsEvaluated: filteredAttempts.length,
         scopedTelemetryCount: telemetryRows.length,
-        flashcardQueue: {
-          totalCards: scopedFlashcards.length,
-          dueToday: scopedFlashcards.filter(f => f.nextReviewDate <= now).length,
-          mastered: scopedFlashcards.filter(f => f.repetition >= 3).length
-        }
+        vaultCardCount: scopedFlashcards.length
       },
       questionExposuresAndSpacing: exposureMap,
       telemetryData: telemetryPayload,
@@ -3650,7 +3654,10 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     a.download = isGlobalMaster 
       ? `cgl_master_forensic_dossier_360_${now}.json`
       : `cgl_forensic_dossier_${sub}_${timeframe}_${now}.json`;
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
   }
 
   /* -------------------------------------------------------------
@@ -3731,14 +3738,10 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     if (avgSpeed > 45) velScore = Math.max(0, 100 - (avgSpeed - 45) * 2.5);
     const velComponent = velScore * 0.30;
 
-    let retentionScore = 100;
-    if (flashcards.length > 0) {
-      const dueCount = flashcards.filter(f => f.nextReviewDate <= Date.now()).length;
-      retentionScore = Math.max(0, 100 - (dueCount * 3));
-    }
-    const retentionComponent = retentionScore * 0.30;
+    let bankScore = Math.min(100, flashcards.length * 2.5);
+    const bankComponent = bankScore * 0.30;
 
-    const eri = Math.min(100, Math.max(0, accComponent + velComponent + retentionComponent)).toFixed(1);
+    const eri = Math.min(100, Math.max(0, accComponent + velComponent + bankComponent)).toFixed(1);
     document.getElementById("eri-score-val").innerText = eri;
 
     const circle = document.getElementById("eri-gauge-circle");
@@ -3916,7 +3919,6 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     });
   }
 
-  // RECENT HISTORY RENDERER: Numerically sorted with Ticket-Card layout
   function renderRecentHistory(completed) {
     const container = document.getElementById("mock-history-container");
     if (completed.length === 0) {
@@ -3981,7 +3983,6 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     renderArchiveList("ALL");
   }
 
-  // MASTER HISTORY ARCHIVE: Chronologically Sorted with Threaded Accordions & Clean Buttons
   async function renderArchiveList(filterType) {
     const attempts = await getAllRecords("store_attempts");
     const completed = attempts.filter(a => a.completed);
@@ -4000,7 +4001,6 @@ ${JSON.stringify(TAXONOMY, null, 2)}
       return;
     }
 
-    // Group into threads
     const threads = {};
     list.forEach(att => {
       const rootId = att.parentSessionId || att.sessionId;
@@ -4060,7 +4060,6 @@ ${JSON.stringify(TAXONOMY, null, 2)}
       div.appendChild(header);
       div.appendChild(subList);
 
-      // Dedicated Action Bar to prevent button overflow
       const footerBar = document.createElement("div");
       footerBar.className = "ticket-actions-bar";
       footerBar.style.padding = "8px 12px";
@@ -4204,47 +4203,8 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   /* -------------------------------------------------------------
-   * 17. ANKI SM-2 FLASHCARD ENGINE WITH TWO-SIDED IMAGES
+   * 17. UNIVERSAL ANKI FORGE & VAULT (PATH 2 REFACTOR)
    * ------------------------------------------------------------- */
-  let activeStudyDeck = [];
-  let activeStudyIndex = 0;
-  let activeStudyFlipped = false;
-
-  function calculateSM2(card, quality) {
-    let { interval = 1, repetition = 0, easeFactor = 2.5 } = card;
-
-    if (quality < 3) {
-      repetition = 0;
-      interval = 1;
-    } else {
-      if (repetition === 0) {
-        interval = 1;
-      } else if (repetition === 1) {
-        interval = quality === 4 ? 4 : 2;
-      } else {
-        if (quality === 2) interval = Math.max(1, Math.round(interval * 1.2));
-        else if (quality === 3) interval = Math.round(interval * easeFactor);
-        else if (quality === 4) interval = Math.round(interval * easeFactor * 1.3);
-      }
-      repetition++;
-    }
-
-    const qFactor = quality + 1;
-    easeFactor = Math.max(1.3, easeFactor + (0.1 - (5 - qFactor) * (0.08 + (5 - qFactor) * 0.02)));
-
-    const now = Date.now();
-    const nextReviewDate = now + (interval * 24 * 60 * 60 * 1000);
-
-    return {
-      ...card,
-      interval,
-      repetition,
-      easeFactor: parseFloat(easeFactor.toFixed(2)),
-      nextReviewDate,
-      lastAttempted: now
-    };
-  }
-
   async function renderVault() {
     await renderFlashcardList();
   }
@@ -4255,55 +4215,41 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     if (!container) return;
     container.innerHTML = "";
 
-    const now = Date.now();
-    let dueCount = 0;
-    let learningCount = 0;
-    let masteredCount = 0;
+    let diagramCount = 0;
+    let extraCount = 0;
 
     flashcards.forEach(f => {
-      if (f.nextReviewDate <= now) dueCount++;
-      if (f.repetition >= 3 && f.interval >= 14) masteredCount++;
-      else learningCount++;
+      if ((f.frontImageUrl && f.frontImageUrl.length > 0) || (f.backImageUrl && f.backImageUrl.length > 0)) diagramCount++;
+      if (f.extra && f.extra.trim().length > 0) extraCount++;
     });
 
-    document.getElementById("sm2-due-badge").innerText = `${dueCount} Due`;
-    document.getElementById("sm2-btn-count").innerText = dueCount;
-    document.getElementById("sm2-count-due").innerText = dueCount;
-    document.getElementById("sm2-count-learning").innerText = learningCount;
-    document.getElementById("sm2-count-mastered").innerText = masteredCount;
+    document.getElementById("vault-count-total").innerText = flashcards.length;
+    document.getElementById("vault-count-diagrams").innerText = diagramCount;
+    document.getElementById("vault-count-extra").innerText = extraCount;
 
-    const filterSub = document.getElementById("sm2-deck-filter-sub") ? document.getElementById("sm2-deck-filter-sub").value : "ALL";
+    const filterSub = document.getElementById("vault-deck-filter-sub") ? document.getElementById("vault-deck-filter-sub").value : "ALL";
     const filteredCards = flashcards.filter(f => filterSub === "ALL" || f.subject === filterSub);
 
     if (filteredCards.length === 0) {
-      container.innerHTML = `<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:16px;">Deck is clear. Zero cards in this selection.</div>`;
+      container.innerHTML = `<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:16px;">Vault is clear. Zero cards logged in this selection.</div>`;
       return;
     }
 
-    filteredCards.sort((a, b) => a.nextReviewDate - b.nextReviewDate);
-
     filteredCards.slice(0, 30).forEach(f => {
-      const isDue = f.nextReviewDate <= now;
-      const daysUntil = Math.ceil((f.nextReviewDate - now) / (24 * 60 * 60 * 1000));
-      const dueStatusText = isDue 
-        ? `<b style="color:var(--status-red);">⚡ DUE NOW</b>` 
-        : `<span style="color:var(--text-muted);">Due in ${daysUntil}d (Int: ${f.interval}d)</span>`;
-
       const div = document.createElement("div");
-      div.className = "card";
-      div.style.borderColor = isDue ? "var(--status-red)" : "var(--border-color)";
-      div.style.marginBottom = "8px";
+      div.className = "anki-card-item";
 
       div.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
           <div>
             <span class="badge" style="background:#151a24; color:var(--accent-purple-light);">${f.subject}</span>
             <span class="badge" style="background:#151a24; color:var(--accent-cyan); margin-left:4px;">${f.chapter}</span>
           </div>
-          <div style="font-size:10px; font-family:var(--font-mono);">${dueStatusText}</div>
+          <span class="anki-type-tag">${f.cardType || (f.extra ? 'BASIC_EXTRA' : 'BASIC')}</span>
         </div>
         <div style="font-size:13.5px; line-height:1.5; margin:6px 0; color:#fff;">${formatRichText(f.front)}</div>
-        <div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">EF: ${f.easeFactor} • Reps: ${f.repetition} • Last: ${formatISTDate(f.lastAttempted)}</div>
+        <div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;"><b>Back:</b> ${f.back ? f.back.slice(0, 90) : ''}...</div>
+        ${f.extra ? `<div style="font-size:10px; color:var(--accent-cyan); margin-bottom:6px;"><b>Extra:</b> ${f.extra.slice(0, 70)}...</div>` : ''}
         <div style="display:flex; justify-content:flex-end; gap:6px;">
           <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openFlashcardEditorModal(false, '${f.id}')">Edit</button>
         </div>
@@ -4312,40 +4258,35 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     });
   }
 
-  async function launchFlashcardDueSprint() {
+  async function launchUntimedQuickCarousel() {
     const flashcards = await getAllRecords("store_flashcards");
-    const now = Date.now();
-    const filterSub = document.getElementById("sm2-deck-filter-sub") ? document.getElementById("sm2-deck-filter-sub").value : "ALL";
+    const filterSub = document.getElementById("vault-deck-filter-sub") ? document.getElementById("vault-deck-filter-sub").value : "ALL";
+    const filtered = flashcards.filter(f => filterSub === "ALL" || f.subject === filterSub);
 
-    let dueCards = flashcards.filter(f => (filterSub === "ALL" || f.subject === filterSub) && f.nextReviewDate <= now);
-    if (dueCards.length === 0) {
-      dueCards = flashcards.filter(f => filterSub === "ALL" || f.subject === filterSub);
-    }
-
-    if (dueCards.length === 0) {
-      alert("Flashcard deck is completely empty! Add cards or import an AI consultation payload.");
+    if (filtered.length === 0) {
+      alert("No cards in vault matching this selection.");
       return;
     }
 
-    activeStudyDeck = dueCards;
-    activeStudyIndex = 0;
-    activeStudyFlipped = false;
+    activeVaultDeck = filtered;
+    activeVaultIndex = 0;
+    activeVaultFlipped = false;
 
     pushNavLayer("modal-flashcard-study", () => {
       document.getElementById("modal-flashcard-study").classList.remove("active");
     });
     document.getElementById("modal-flashcard-study").classList.add("active");
-    renderCurrentStudyFlashcard();
+    renderCurrentVaultCard();
   }
 
-  function renderCurrentStudyFlashcard() {
-    const card = activeStudyDeck[activeStudyIndex];
+  function renderCurrentVaultCard() {
+    const card = activeVaultDeck[activeVaultIndex];
     if (!card) return;
 
-    activeStudyFlipped = false;
-    document.getElementById("fc-study-progress").innerText = `Card ${activeStudyIndex + 1} of ${activeStudyDeck.length}`;
+    activeVaultFlipped = false;
+    document.getElementById("fc-study-progress").innerText = `Card ${activeVaultIndex + 1} of ${activeVaultDeck.length}`;
     document.getElementById("fc-card-chapter").innerText = `${card.subject} • ${card.chapter}`;
-    document.getElementById("fc-card-interval-tag").innerText = `Int: ${card.interval}d | Reps: ${card.repetition}`;
+    document.getElementById("fc-card-type-tag").innerText = card.cardType || (card.extra ? 'BASIC_EXTRA' : 'BASIC');
     document.getElementById("fc-card-body").innerHTML = formatRichText(card.front);
 
     const fBox = document.getElementById("fc-card-front-img-box");
@@ -4362,49 +4303,117 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     bBox.innerHTML = "";
 
     document.getElementById("fc-card-cue").innerText = "Tap card to flip answer";
-    document.getElementById("fc-study-actions").style.display = "none";
   }
 
   function flipStudyFlashcard() {
-    if (activeStudyFlipped) return;
-    const card = activeStudyDeck[activeStudyIndex];
+    if (activeVaultFlipped) return;
+    const card = activeVaultDeck[activeVaultIndex];
     if (!card) return;
 
-    activeStudyFlipped = true;
+    activeVaultFlipped = true;
 
     const bBox = document.getElementById("fc-card-back-img-box");
     if (card.backImageUrl && card.backImageUrl.trim().length > 0) {
       bBox.style.display = "block";
-      bBox.innerHTML = `<img src="${card.backImageUrl}" alt="Back Visual Proof">`;
+      bBox.innerHTML = `<img src="${card.backImageUrl}" alt="Back Proof">`;
     } else {
       bBox.style.display = "none";
       bBox.innerHTML = "";
+    }
+
+    let extraHtml = "";
+    if (card.extra && card.extra.trim().length > 0) {
+      extraHtml = `<div class="callout-box" style="margin-top:10px; font-size:12px;"><b>Extra Derivation:</b><br>${formatRichText(card.extra)}</div>`;
     }
 
     document.getElementById("fc-card-body").innerHTML = `
       <div style="color:var(--text-muted); font-size:12px; margin-bottom:8px;">${formatRichText(card.front)}</div>
       <hr style="border:0; border-top:1px solid var(--border-color); margin:8px 0;">
       <div style="font-weight:700; color:#fff;">${formatRichText(card.back)}</div>
+      ${extraHtml}
     `;
-    document.getElementById("fc-card-cue").innerText = "Select recall rating below:";
-    document.getElementById("fc-study-actions").style.display = "block";
+    document.getElementById("fc-card-cue").innerText = "Revealed. Use arrows below to navigate.";
   }
 
-  async function gradeStudyFlashcard(quality) {
-    const card = activeStudyDeck[activeStudyIndex];
-    if (!card) return;
+  function navStudyCard(step) {
+    activeVaultIndex += step;
+    if (activeVaultIndex < 0) activeVaultIndex = activeVaultDeck.length - 1;
+    if (activeVaultIndex >= activeVaultDeck.length) activeVaultIndex = 0;
+    renderCurrentVaultCard();
+  }
 
-    const updated = calculateSM2(card, quality);
-    await putRecord("store_flashcards", updated);
+  function openAnkiExportModal() {
+    pushHistoryState("modal-anki-export");
+    document.getElementById("modal-anki-export").classList.add("active");
+  }
 
-    activeStudyIndex++;
-    if (activeStudyIndex < activeStudyDeck.length) {
-      renderCurrentStudyFlashcard();
-    } else {
-      alert("Daily Spaced Recall Sprint Complete! All due cards reviewed.");
-      document.getElementById("modal-flashcard-study").classList.remove("active");
-      renderVault();
+  // NATIVE ANKI EXPORTER ENGINE (MathJax Translation + Inline Base64 Data URIs)
+  async function generateAndDownloadAnkiTsv() {
+    const sub = document.getElementById("anki-export-subject").value;
+    const fieldMapping = document.getElementById("anki-export-fields").value;
+    const deckName = document.getElementById("anki-export-deck-name").value.trim() || "SSC CGL 2026";
+    const convertMath = document.getElementById("anki-convert-mathjax").checked;
+    const includeImages = document.getElementById("anki-include-data-images").checked;
+
+    const allCards = await getAllRecords("store_flashcards");
+    let pool = sub === "ALL" ? allCards : allCards.filter(c => c.subject === sub);
+
+    if (pool.length === 0) {
+      alert("No cards found in vault matching export scope.");
+      return;
     }
+
+    let tsv = "";
+    tsv += `#separator:Tab\n`;
+    tsv += `#html:true\n`;
+    tsv += `#deck:${deckName}\n`;
+    tsv += `#notetype:CGL-Master-Card\n`;
+
+    if (fieldMapping === "THREE_FIELD") {
+      tsv += `#columns:Front\tBack\tExtra\tTags\n`;
+    } else {
+      tsv += `#columns:Front\tBack\tTags\n`;
+    }
+
+    pool.forEach(c => {
+      let frontText = convertMath ? convertKatexToAnkiMathJax(c.front) : c.front;
+      let backText = convertMath ? convertKatexToAnkiMathJax(c.back) : c.back;
+      let extraText = c.extra ? (convertMath ? convertKatexToAnkiMathJax(c.extra) : c.extra) : "";
+
+      frontText = frontText.replace(/\n/g, "<br>").replace(/\t/g, " ");
+      backText = backText.replace(/\n/g, "<br>").replace(/\t/g, " ");
+      extraText = extraText.replace(/\n/g, "<br>").replace(/\t/g, " ");
+
+      if (includeImages) {
+        if (c.frontImageUrl && c.frontImageUrl.length > 0) {
+          frontText += `<br><img src="${c.frontImageUrl}">`;
+        }
+        if (c.backImageUrl && c.backImageUrl.length > 0) {
+          backText += `<br><img src="${c.backImageUrl}">`;
+        }
+      }
+
+      const tags = (Array.isArray(c.tags) ? c.tags : []).join(' ') + ` ${c.subject} ${c.chapter}`;
+
+      if (fieldMapping === "THREE_FIELD") {
+        tsv += `${frontText}\t${backText}\t${extraText}\t${tags}\n`;
+      } else {
+        if (extraText) backText += `<br><hr>${extraText}`;
+        tsv += `${frontText}\t${backText}\t${tags}\n`;
+      }
+    });
+
+    const blob = new Blob([tsv], { type: "text/tab-separated-values;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `Anki_${sub}_Deck_${Date.now()}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+
+    document.getElementById("modal-anki-export").classList.remove("active");
+    alert(`Exported ${pool.length} cards! Direct import into AnkiDroid or Desktop is ready.`);
   }
 
   async function openFlashcardEditorModal(isNew = true, cardId = null) {
@@ -4412,31 +4421,35 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     currentFcBackImgBase64 = "";
 
     if (isNew) {
-      document.getElementById("flashcard-editor-title").innerText = "Add New Flashcard";
+      document.getElementById("flashcard-editor-title").innerText = "Add New Card to Vault";
       document.getElementById("edit-fc-id").value = "fc_" + Date.now();
       document.getElementById("edit-fc-subject").value = "QA";
       document.getElementById("edit-fc-chapter").value = "QA_GEOMETRY";
+      document.getElementById("edit-fc-type").value = "BASIC_EXTRA";
       document.getElementById("edit-fc-front").value = "";
       document.getElementById("edit-fc-front-img-url").value = "";
       document.getElementById("edit-fc-front-img-file").value = "";
       document.getElementById("edit-fc-back").value = "";
       document.getElementById("edit-fc-back-img-url").value = "";
       document.getElementById("edit-fc-back-img-file").value = "";
+      document.getElementById("edit-fc-extra").value = "";
       document.getElementById("edit-fc-tags").value = "";
       document.getElementById("btn-delete-fc").style.display = "none";
     } else {
       const card = await getRecord("store_flashcards", cardId);
       if (!card) return;
-      document.getElementById("flashcard-editor-title").innerText = "Edit Flashcard";
+      document.getElementById("flashcard-editor-title").innerText = "Edit Vault Card";
       document.getElementById("edit-fc-id").value = card.id;
       document.getElementById("edit-fc-subject").value = card.subject;
       document.getElementById("edit-fc-chapter").value = card.chapter;
+      document.getElementById("edit-fc-type").value = card.cardType || (card.extra ? "BASIC_EXTRA" : "BASIC");
       document.getElementById("edit-fc-front").value = card.front;
       document.getElementById("edit-fc-front-img-url").value = card.frontImageUrl || "";
       document.getElementById("edit-fc-front-img-file").value = "";
       document.getElementById("edit-fc-back").value = card.back;
       document.getElementById("edit-fc-back-img-url").value = card.backImageUrl || "";
       document.getElementById("edit-fc-back-img-file").value = "";
+      document.getElementById("edit-fc-extra").value = card.extra || "";
       document.getElementById("edit-fc-tags").value = Array.isArray(card.tags) ? card.tags.join(', ') : "";
       document.getElementById("btn-delete-fc").style.display = "block";
     }
@@ -4461,52 +4474,54 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     const id = document.getElementById("edit-fc-id").value;
     const subject = document.getElementById("edit-fc-subject").value;
     const chapter = document.getElementById("edit-fc-chapter").value.trim().toUpperCase();
+    const cardType = document.getElementById("edit-fc-type").value;
     const front = document.getElementById("edit-fc-front").value.trim();
     const back = document.getElementById("edit-fc-back").value.trim();
+    const extra = document.getElementById("edit-fc-extra").value.trim();
     const frontUrl = document.getElementById("edit-fc-front-img-url").value.trim();
     const backUrl = document.getElementById("edit-fc-back-img-url").value.trim();
     const tagsRaw = document.getElementById("edit-fc-tags").value.trim();
 
     if (!front || !back || !chapter) {
-      alert("Front Prompt, Back Answer, and Chapter are required.");
+      alert("Front Prompt, Back Target Fact, and Chapter are required.");
       return;
     }
 
     const existing = await getRecord("store_flashcards", id);
     const cardObj = {
       id: id,
+      cardType: cardType,
       subject: subject,
       chapter: chapter,
       front: front,
       frontImageUrl: currentFcFrontImgBase64 || frontUrl || (existing ? existing.frontImageUrl : ""),
       back: back,
       backImageUrl: currentFcBackImgBase64 || backUrl || (existing ? existing.backImageUrl : ""),
-      interval: existing ? existing.interval : 1,
-      repetition: existing ? existing.repetition : 0,
-      easeFactor: existing ? existing.easeFactor : 2.5,
-      nextReviewDate: existing ? existing.nextReviewDate : Date.now(),
-      lastAttempted: Date.now(),
+      extra: extra,
       tags: tagsRaw ? tagsRaw.split(',').map(t => t.trim()) : ["Manual"]
     };
 
     await putRecord("store_flashcards", cardObj);
+    synapseTreeBuilt = false;
     document.getElementById("modal-flashcard-editor").classList.remove("active");
     renderVault();
   }
 
   async function deleteCurrentEditingFlashcard() {
     const id = document.getElementById("edit-fc-id").value;
-    if (confirm("Permanently delete this flashcard?")) {
+    if (confirm("Permanently delete this card from the vault?")) {
       await deleteRecordFromStore("store_flashcards", id);
+      synapseTreeBuilt = false;
       document.getElementById("modal-flashcard-editor").classList.remove("active");
       renderVault();
     }
   }
 
   async function wipeFlashcardStore() {
-    if (confirm("Permanently wipe all flashcards from the SM-2 engine?")) {
+    if (confirm("Permanently wipe all cards from the Vault?")) {
       await clearStore("store_flashcards");
-      alert("Flashcard deck wiped.");
+      synapseTreeBuilt = false;
+      alert("Card vault wiped.");
       renderVault();
     }
   }
@@ -4580,6 +4595,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     };
 
     await putRecord("store_questions", qObj);
+    synapseTreeBuilt = false;
     document.getElementById("modal-question-editor").classList.remove("active");
     if (dojoExam) {
       dojoExam.questions[dojoExam.currentIndex] = qObj;
@@ -4592,6 +4608,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     const id = document.getElementById("edit-q-id").value;
     if (confirm(`Delete question ${id}?`)) {
       await deleteRecordFromStore("store_questions", id);
+      synapseTreeBuilt = false;
       document.getElementById("modal-question-editor").classList.remove("active");
       if (dojoExam) {
         dojoExam.questions = dojoExam.questions.filter(q => q.id !== id);
@@ -4603,7 +4620,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   /* -------------------------------------------------------------
-   * 19. HARDENED COMMAND BUS & MULTI-SECTION ARENA ENGINE
+   * 19. HARDENED COMMAND BUS & CURATED PAPER PIPELINE
    * ------------------------------------------------------------- */
   async function executeConsoleCommand() {
     const raw = document.getElementById("console-payload").value.trim();
@@ -4616,10 +4633,127 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     }
 
     try {
-      const database = await getDB();
-      if (!database) throw new Error("IndexedDB instance unavailable.");
+      // 1. Unified Curated Ingestion Pipeline (PDF -> New Sheets + Ingest Qs + Link Old Qs + Assemble Mock)
+      if (cmd.action === "INGEST_AND_ASSEMBLE_COMPLETE_MOCK") {
+        const {
+          title = "Curated Practice Mock",
+          launchImmediately = false,
+          isSectionLocked = false,
+          durationMin = 20,
+          dossiers = [],
+          newQuestions = [],
+          linkExistingQuestions = [],
+          orderedMockQuestionIds = []
+        } = cmd.payload || {};
 
-      if (cmd.action === "EXECUTE_AI_CONSULTATION_BUNDLE") {
+        // Atomic write of new sheets and new questions
+        await runTx(["store_concepts", "store_questions", "store_saved_mocks"], "readwrite", async (tx) => {
+          const stC = tx.objectStore("store_concepts");
+          dossiers.forEach(d => stC.put(sanitizeDossier(d)));
+
+          const stQ = tx.objectStore("store_questions");
+          newQuestions.forEach(q => stQ.put(sanitizeQuestion(q)));
+        });
+
+        // Link pre-existing questions to newly added sheets
+        if (linkExistingQuestions.length > 0) {
+          for (const link of linkExistingQuestions) {
+            const oldQ = await getRecord("store_questions", link.questionId);
+            if (oldQ) {
+              oldQ.conceptId = link.assignConceptId;
+              await putRecord("store_questions", oldQ);
+            }
+          }
+        }
+
+        // Resolve all referenced questions in exact specified order
+        const allQuestions = await getAllRecords("store_questions");
+        const resolvedQuestions = [];
+        orderedMockQuestionIds.forEach(targetId => {
+          const found = allQuestions.find(q => q.id === targetId);
+          if (found) resolvedQuestions.push(found);
+        });
+
+        if (resolvedQuestions.length === 0) {
+          alert("Could not assemble mock. None of the specified question IDs were resolved.");
+          return;
+        }
+
+        const presetRecord = {
+          id: "paper_" + Date.now(),
+          type: "FIXED_PAPER",
+          title: title,
+          isSectionLocked: !!isSectionLocked,
+          sections: [{ id: "SEC_1", name: title, durationSec: durationMin * 60, locked: false }],
+          questions: resolvedQuestions
+        };
+        await putRecord("store_saved_mocks", presetRecord);
+
+        synapseTreeBuilt = false;
+        alert(`Success! Ingested ${dossiers.length} sheets, ${newQuestions.length} questions, linked ${linkExistingQuestions.length} pre-existing questions, and created fixed paper "${title}".`);
+        await renderDashboardBlueprints();
+
+        if (launchImmediately) {
+          compileAndLaunchArena(title, resolvedQuestions, durationMin);
+        }
+
+      // 2. Curated Paper Generator (Resolve existing IDs + Ingest authoring + Pin preset)
+      } else if (cmd.action === "CREATE_AND_SAVE_FIXED_MOCK") {
+        const {
+          title = "Curated Mock Paper",
+          isSectionLocked = true,
+          launchImmediately = false,
+          durationMin = 15,
+          existingQuestionIds = [],
+          newQuestions = []
+        } = cmd.payload || {};
+
+        if (newQuestions.length > 0) {
+          await runTx(["store_questions"], "readwrite", (tx) => {
+            const stQ = tx.objectStore("store_questions");
+            newQuestions.forEach(q => stQ.put(sanitizeQuestion(q)));
+          });
+        }
+
+        const allQuestions = await getAllRecords("store_questions");
+        const combinedPool = [];
+
+        existingQuestionIds.forEach(targetId => {
+          const found = allQuestions.find(q => q.id === targetId);
+          if (found) combinedPool.push(found);
+        });
+
+        newQuestions.forEach(q => {
+          const sanitized = sanitizeQuestion(q);
+          if (!combinedPool.some(item => item.id === sanitized.id)) {
+            combinedPool.push(sanitized);
+          }
+        });
+
+        if (combinedPool.length === 0) {
+          alert("No valid questions assembled for curated mock.");
+          return;
+        }
+
+        const presetRecord = {
+          id: "paper_" + Date.now(),
+          type: "FIXED_PAPER",
+          title: title,
+          isSectionLocked: !!isSectionLocked,
+          sections: [{ id: "SEC_1", name: title, durationSec: durationMin * 60, locked: false }],
+          questions: combinedPool
+        };
+        await putRecord("store_saved_mocks", presetRecord);
+
+        alert(`Saved curated mock: "${title}" (${combinedPool.length} questions) to Dashboard.`);
+        await renderDashboardBlueprints();
+
+        if (launchImmediately) {
+          compileAndLaunchArena(title, combinedPool, durationMin);
+        }
+
+      // 3. Clinical AI Consultation Bundle Execution
+      } else if (cmd.action === "EXECUTE_AI_CONSULTATION_BUNDLE") {
         const { consultationDossier, actions = [] } = cmd.payload || {};
         if (consultationDossier) {
           const now = Date.now();
@@ -4632,40 +4766,42 @@ ${JSON.stringify(TAXONOMY, null, 2)}
         for (const act of actions) {
           if (act.action === "BATCH_INGEST_FLASHCARDS") {
             const cards = (act.payload.cards || []).map(sanitizeFlashcard);
-            const txF = database.transaction(["store_flashcards"], "readwrite");
-            const stF = txF.objectStore("store_flashcards");
-            cards.forEach(c => stF.put(c));
-            await new Promise(r => txF.oncomplete = r);
+            await runTx(["store_flashcards"], "readwrite", (tx) => {
+              const stF = tx.objectStore("store_flashcards");
+              cards.forEach(c => stF.put(c));
+            });
             renderVault();
           } else if (act.action === "BATCH_INGEST_COMPENDIUM") {
             const dossiers = (act.payload.dossiers || []).map(sanitizeDossier);
-            const txC = database.transaction(["store_concepts"], "readwrite");
-            const stC = txC.objectStore("store_concepts");
-            dossiers.forEach(d => stC.put(d));
-            await new Promise(r => txC.oncomplete = r);
+            await runTx(["store_concepts"], "readwrite", (tx) => {
+              const stC = tx.objectStore("store_concepts");
+              dossiers.forEach(d => stC.put(d));
+            });
           } else if (act.action === "INGEST_AND_LAUNCH_MOCK") {
             const questions = (act.payload.questions || []).map(sanitizeQuestion);
             if (questions.length > 0) {
-              const txQ = database.transaction(["store_questions"], "readwrite");
-              const stQ = txQ.objectStore("store_questions");
-              questions.forEach(q => stQ.put(q));
-              await new Promise(r => txQ.oncomplete = r);
+              await runTx(["store_questions"], "readwrite", (tx) => {
+                const stQ = tx.objectStore("store_questions");
+                questions.forEach(q => stQ.put(q));
+              });
               compileAndLaunchArena(act.payload.title || "AI Remedial Test", questions, act.payload.durationMin || 15);
             }
           }
         }
+        synapseTreeBuilt = false;
         alert("AI Consultation Bundle Executed Successfully! Clinical record saved.");
 
+      // 4. Headless Parametric Historical Query
       } else if (cmd.action === "REQUEST_HISTORICAL_DUMP") {
         const { targetSubject, timeframeDays = 30 } = cmd.payload || {};
-        const cutoff = Date.now() - (timeframeDays * 24 * 60 * 60 * 1000);
+        const cutoff = timeframeDays > 0 ? Date.now() - (timeframeDays * 24 * 60 * 60 * 1000) : 0;
         const allAttempts = await getAllRecords("store_attempts");
         const dump = allAttempts.filter(a => a.completed && a.timestamp >= cutoff).map(a => ({
           sessionId: a.sessionId,
           timeIST: a.timeIST || formatISTDate(a.timestamp),
           diurnalSlot: a.diurnalSlot || getDiurnalSlot(a.timestamp),
           score: a.finalScore,
-          questions: a.questions.filter(q => !targetSubject || q.subject === targetSubject).map(q => ({
+          questions: (a.questions || []).filter(q => !targetSubject || q.subject === targetSubject).map(q => ({
             id: q.id,
             chapter: q.chapter,
             resp: a.userResponses[q.id]
@@ -4674,11 +4810,12 @@ ${JSON.stringify(TAXONOMY, null, 2)}
 
         document.getElementById("console-payload").value = JSON.stringify({
           action: "HISTORICAL_DUMP_RESPONSE",
-          payload: { targetSubject, timeframeDays, dump }
+          payload: { targetSubject, timeframeDays, count: dump.length, dump }
         }, null, 2);
-        alert(`Historical dump compiled (${dump.length} attempts)! Payload placed in console.`);
+        alert(`Historical dump compiled (${dump.length} attempts)! Result placed in console.`);
         return;
 
+      // 5. Ingest & Launch Standalone Mock
       } else if (cmd.action === "INGEST_AND_LAUNCH_MOCK") {
         const questions = (cmd.payload.questions || []).map(sanitizeQuestion);
         if (questions.length === 0) {
@@ -4686,10 +4823,10 @@ ${JSON.stringify(TAXONOMY, null, 2)}
           return;
         }
 
-        const tx = database.transaction(["store_questions"], "readwrite");
-        const st = tx.objectStore("store_questions");
-        questions.forEach(q => st.put(q));
-        await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
+        await runTx(["store_questions"], "readwrite", (tx) => {
+          const st = tx.objectStore("store_questions");
+          questions.forEach(q => st.put(q));
+        });
 
         compileAndLaunchArena(
           cmd.payload.title || "AI Practice Mock",
@@ -4697,15 +4834,16 @@ ${JSON.stringify(TAXONOMY, null, 2)}
           cmd.payload.durationMin || 15
         );
 
+      // 6. Prescribe Remedial Blitz
       } else if (cmd.action === "AI_PRESCRIBE_REMEDY") {
         const qIds = cmd.payload.questionIds || [];
         const newQuestions = (cmd.payload.newQuestions || []).map(sanitizeQuestion);
 
         if (newQuestions.length > 0) {
-          const tx = database.transaction(["store_questions"], "readwrite");
-          const st = tx.objectStore("store_questions");
-          newQuestions.forEach(q => st.put(q));
-          await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
+          await runTx(["store_questions"], "readwrite", (tx) => {
+            const st = tx.objectStore("store_questions");
+            newQuestions.forEach(q => st.put(q));
+          });
         }
 
         const allQs = await getAllRecords("store_questions");
@@ -4725,37 +4863,45 @@ ${JSON.stringify(TAXONOMY, null, 2)}
           cmd.payload.durationMin || 10
         );
 
+      // 7. Universal Flashcard Batch Ingestion
       } else if (cmd.action === "BATCH_INGEST_FLASHCARDS") {
         const cards = (cmd.payload.cards || []).map(sanitizeFlashcard);
-        const txF = database.transaction(["store_flashcards"], "readwrite");
-        const stF = txF.objectStore("store_flashcards");
-        cards.forEach(c => stF.put(c));
-        await new Promise(r => txF.oncomplete = r);
-        alert(`Ingested ${cards.length} flashcards into SM-2 engine.`);
+        await runTx(["store_flashcards"], "readwrite", (tx) => {
+          const stF = tx.objectStore("store_flashcards");
+          cards.forEach(c => stF.put(c));
+        });
+        synapseTreeBuilt = false;
+        alert(`Ingested ${cards.length} flashcards into Vault.`);
         renderVault();
 
+      // 8. Bulk Question Bank Ingestion
       } else if (cmd.action === "BATCH_INGEST_QUESTIONS") {
         const list = (cmd.payload.questions || []).map(sanitizeQuestion);
-        const tx = database.transaction(["store_questions"], "readwrite");
-        const st = tx.objectStore("store_questions");
-        list.forEach(q => st.put(q));
-        await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
+        await runTx(["store_questions"], "readwrite", (tx) => {
+          const st = tx.objectStore("store_questions");
+          list.forEach(q => st.put(q));
+        });
+        synapseTreeBuilt = false;
         alert(`Ingested ${list.length} questions successfully into bank.`);
 
+      // 9. Batch Compendium Sheet Ingestion (Fixed transaction typo)
       } else if (cmd.action === "BATCH_INGEST_COMPENDIUM") {
         const dossiers = (cmd.payload.dossiers || []).map(sanitizeDossier);
-        const txC = database.transaction(["store_concepts"], "readwrite");
-        const stC = txC.objectStore("store_concepts");
-        dossiers.forEach(d => stC.put(d));
-        await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
+        await runTx(["store_concepts"], "readwrite", (tx) => {
+          const stC = tx.objectStore("store_concepts");
+          dossiers.forEach(d => stC.put(d));
+        });
+        synapseTreeBuilt = false;
         alert(`Ingested ${dossiers.length} topic dossiers successfully.`);
 
+      // 10. Save Mock Preset
       } else if (cmd.action === "SAVE_MOCK_PRESET") {
         const preset = sanitizeSavedMock(cmd.payload, Date.now());
         await putRecord("store_saved_mocks", preset);
         alert(`Saved mock setup: "${preset.title}".`);
         await renderDashboardBlueprints();
 
+      // 11. Taxonomy Mutation
       } else if (cmd.action === "MODIFY_TAXONOMY") {
         const { operation, subject, chapter } = cmd.payload;
         if (operation === "ADD_CHAPTER" && TAXONOMY[subject]) {
@@ -4766,9 +4912,11 @@ ${JSON.stringify(TAXONOMY, null, 2)}
           TAXONOMY[subject].chapters = TAXONOMY[subject].chapters.filter(c => c !== chapter);
         }
         await putRecord("store_config", { key: "system_taxonomy", value: TAXONOMY });
+        synapseTreeBuilt = false;
         alert(`Taxonomy updated: ${operation} on ${chapter}`);
         await syncAllTaxonomyDropdowns();
 
+      // 12. Raw DB Directives
       } else if (cmd.action === "RAW_DB_OPERATION") {
         const { store, operation, key, record } = cmd.payload;
         if (operation === "PUT") await putRecord(store, record);
@@ -4787,12 +4935,11 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     }
   }
 
-  // MULTI-SECTION AWARE ARENA LAUNCHER (Eliminates Single-Section Flattening)
+  // MULTI-SECTION AWARE ARENA COMPILER
   async function compileAndLaunchArena(title, questionsPool, durationMin) {
     clearInterval(examTimerInterval);
     clearInterval(questionTimerInterval);
 
-    // Detect if questions contain multiple distinct sections or subject partitions
     const rawSections = {};
     questionsPool.forEach((q) => {
       const sKey = (q.sectionIndex !== undefined && q.sectionName) 
@@ -4889,7 +5036,6 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     await putRecord("store_active_session", { id: "current_session", session: activeExam });
     hideMiniPlayer();
 
-    // Release focus from background textareas on mobile
     if (document.activeElement) document.activeElement.blur();
 
     pushNavLayer("exam-arena", () => {
@@ -4902,14 +5048,45 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   function loadSamplePayload(type) {
-    if (type === "REMEDY") {
+    if (type === "COMPLETE_BUNDLE") {
       const sample = {
-        action: "AI_PRESCRIBE_REMEDY",
+        action: "INGEST_AND_ASSEMBLE_COMPLETE_MOCK",
         payload: {
-          title: "Geometry & Time-Work Remedial Blitz",
-          durationMin: 10,
-          questionIds: ["q_cgl_qa_geom_011", "q_cgl_qa_tw_010", "q_qa_geom_002"],
-          newQuestions: []
+          title: "Tier 1 Specialist: Circle Tangents & Alternating Work",
+          launchImmediately: true,
+          isSectionLocked: false,
+          durationMin: 15,
+          dossiers: [
+            {
+              id: "top_geo_tangents_advanced",
+              subject: "QA",
+              chapter: "QA_GEOMETRY",
+              title: "Direct & Transverse Tangent Lengths",
+              subtitle: "Formulas and Center Distance Conditions",
+              content: "### Direct Common Tangent (DCT)\n$$DCT = \\sqrt{d^2 - (r_1 - r_2)^2}$$\n\n### Transverse Common Tangent (TCT)\n$$TCT = \\sqrt{d^2 - (r_1 + r_2)^2}$$\n\n> [!trap] External Touching Circles\n> If $d = r_1 + r_2$, then $DCT = 2\\sqrt{r_1 r_2}$. Transverse tangent is 0."
+            }
+          ],
+          newQuestions: [
+            {
+              id: "q_sample_pipe_cycle_01",
+              subject: "QA",
+              chapter: "QA_TIME_WORK",
+              subtopic: "Pipes & Cisterns",
+              method: "Alternating Work",
+              questionText: "Pipe $A$ fills in $10\\text{ h}$, $B$ in $12\\text{ h}$, and $C$ empties in $15\\text{ h}$. Opened alternately for $1\\text{ h}$ ($A \\to B \\to C$). In how many hours will the tank be full?",
+              options: ["$24\\text{ h } 10\\text{ m}$", "$25\\text{ h } 15\\text{ m}$", "$23\\text{ h } 40\\text{ m}$", "$26\\text{ h }$"],
+              correctIndex: 0,
+              explanation: "Net 3-hour cycle $= 6 + 5 - 4 = 7\\text{ units}$. Work completes before the final drain cycle."
+            }
+          ],
+          linkExistingQuestions: [
+            { questionId: "q_cgl_qa_geom_011", assignConceptId: "top_geo_tangents_advanced" }
+          ],
+          orderedMockQuestionIds: [
+            "q_sample_pipe_cycle_01",
+            "q_cgl_qa_geom_011",
+            "q_cgl_qa_tw_010"
+          ]
         }
       };
       document.getElementById("console-payload").value = JSON.stringify(sample, null, 2);
@@ -4917,7 +5094,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   /* -------------------------------------------------------------
-   * 20. DIRECT DATABASE STUDIO (MODAL-BASED FULL INSPECTOR)
+   * 20. DIRECT DATABASE STUDIO (MODAL INSPECTOR VIEWER)
    * ------------------------------------------------------------- */
   async function refreshDbInspector() {
     const storeName = document.getElementById("db-store-select").value;
@@ -4941,7 +5118,6 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     });
   }
 
-  // DEDICATED JSON INSPECTOR MODAL (ELIMINATES ALERT TRUNCATION)
   let activeInspectedJsonString = "";
 
   async function editDbRecordModal(sName, key) {
@@ -4994,6 +5170,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
       }
       await seedData();
       alert("Factory reset complete.");
+      synapseTreeBuilt = false;
       await syncAllTaxonomyDropdowns();
       renderDashboard();
       refreshDbInspector();
@@ -5096,7 +5273,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   /* -------------------------------------------------------------
-   * 22. SELECTIVE PRINT ENGINE
+   * 22. PUBLISHING-GRADE TYPESET PRINT BOOK ENGINE
    * ------------------------------------------------------------- */
   async function openPrintConfigModal() {
     await updatePrintChapters();
@@ -5141,87 +5318,231 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     });
   }
 
+  // TYPESET PRINT BOOK COMPILER (COVER + DYNAMIC TOC + SUBJECT BREAKS + APPENDIX)
   async function generateAndPrintSheet() {
     document.getElementById("modal-print-config").classList.remove("active");
     const pType = document.getElementById("print-type").value;
     const sub = document.getElementById("print-subject").value;
     const chap = document.getElementById("print-chapter").value;
-    const incAns = document.getElementById("print-include-ans").value === "YES";
+    const ansMode = document.getElementById("print-include-ans").value;
 
     const root = document.getElementById("print-sheet-root");
     root.innerHTML = "";
 
-    if (pType === "QUESTIONS") {
+    const timestampIST = formatISTDate(Date.now());
+
+    // 1. Typeset Formula Book & Knowledge Compendium
+    if (pType === "COMPENDIUM") {
+      const dossiers = await getAllRecords("store_concepts");
+      let pool = sub === "ALL" ? dossiers : dossiers.filter(d => d.subject === sub);
+      if (chap !== "ALL") pool = pool.filter(d => d.chapter === chap);
+
+      pool.sort((a, b) => {
+        if (a.subject !== b.subject) return a.subject.localeCompare(b.subject);
+        return a.chapter.localeCompare(b.chapter);
+      });
+
+      // Automated Dynamic Table of Contents Compilation
+      const tocMap = {};
+      pool.forEach(item => {
+        if (!tocMap[item.subject]) tocMap[item.subject] = {};
+        if (!tocMap[item.subject][item.chapter]) tocMap[item.subject][item.chapter] = [];
+        tocMap[item.subject][item.chapter].push(item.title);
+      });
+
+      let tocHtml = `<div class="print-toc-container"><div class="print-toc-heading">Table of Contents</div>`;
+      let secCounter = 1;
+      Object.keys(tocMap).forEach(s => {
+        const subName = TAXONOMY[s] ? TAXONOMY[s].name : s;
+        tocHtml += `<div style="font-weight:bold; margin-top:8px; font-size:11pt;">${secCounter++}. ${subName} (${s})</div>`;
+        Object.keys(tocMap[s]).forEach(c => {
+          tocHtml += `<div style="padding-left:14px; font-weight:600; color:#333; margin-top:3px;">• ${c}</div>`;
+          tocMap[s][c].forEach(title => {
+            tocHtml += `<div class="print-toc-item" style="padding-left:28px;"><span>${title}</span><span style="color:#777;">Engineering Sheet</span></div>`;
+          });
+        });
+      });
+      tocHtml += `</div>`;
+
+      // Page 1: Formal Book Cover & TOC
+      let content = `
+        <div class="print-book-cover">
+          <div class="print-book-title">SSC CGL 2026 Master Preparation Compendium</div>
+          <div class="print-book-meta">
+            Candidate: Ankit Kumar &nbsp;|&nbsp; Generated: ${timestampIST} &nbsp;|&nbsp; Scope: ${sub} (${chap}) &nbsp;|&nbsp; Total Sheets: ${pool.length}
+          </div>
+          ${tocHtml}
+        </div>
+      `;
+
+      let curSub = "";
+      let curChap = "";
+
+      pool.forEach(sheet => {
+        if (sheet.subject !== curSub) {
+          curSub = sheet.subject;
+          content += `
+            <div class="print-subject-divider">
+              <div class="print-subject-title">${TAXONOMY[curSub] ? TAXONOMY[curSub].name : curSub} (${curSub})</div>
+            </div>
+          `;
+        }
+        if (sheet.chapter !== curChap) {
+          curChap = sheet.chapter;
+          content += `<div class="print-chapter-title">Chapter: ${curChap}</div>`;
+        }
+
+        let img = sheet.imageUrl ? `<div style="text-align:center; margin:8px 0;"><img src="${sheet.imageUrl}" style="max-height:160px; max-width:85%;"></div>` : '';
+
+        content += `
+          <div class="print-comp-entry">
+            <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;">
+              <b style="font-size:12pt;">${sheet.title}</b>
+              <span style="font-size:9pt; color:#666;">${sheet.chapter}</span>
+            </div>
+            ${sheet.subtitle ? `<div style="font-size:9.5pt; font-style:italic; color:#444; margin-bottom:6px;">${sheet.subtitle}</div>` : ''}
+            <div>${formatRichText(sheet.content)}</div>
+            ${img}
+          </div>
+        `;
+      });
+
+      root.innerHTML = content;
+
+    // 2. Standard Practice Paper (Dual-Column with Optional Appendix)
+    } else if (pType === "QUESTIONS") {
       const allQs = await getAllRecords("store_questions");
       let pool = sub === "ALL" ? allQs : allQs.filter(q => q.subject === sub);
       if (chap !== "ALL") pool = pool.filter(q => q.chapter === chap);
 
-      root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Practice Spool (${sub} - ${chap})</h2>`;
+      pool = sortQuestionsHierarchical(pool);
+
+      let content = `
+        <div class="print-book-cover">
+          <div class="print-book-title">SSC CGL Practice Exam Paper</div>
+          <div class="print-book-meta">
+            Target: 2026 Tier 1 / Tier 2 &nbsp;|&nbsp; Generated: ${timestampIST} &nbsp;|&nbsp; Total Questions: ${pool.length}
+          </div>
+        </div>
+        <div class="print-dual-col">
+      `;
+
+      let curSub = "";
       pool.forEach((q, idx) => {
-        const item = document.createElement("div");
-        item.className = "print-question";
+        if (q.subject !== curSub) {
+          curSub = q.subject;
+          content += `<div style="column-span:all; font-weight:800; font-size:13pt; border-bottom:1.5pt solid #000; margin:12px 0 8px 0; text-transform:uppercase;">${TAXONOMY[curSub] ? TAXONOMY[curSub].name : curSub}</div>`;
+        }
+
         let img = q.imageUrl ? `<br><img src="${q.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
-        item.innerHTML = `
-          <strong>Q${idx + 1}.</strong> ${formatRichText(q.questionText)}${img}<br>
-          ${q.options.map((opt, i) => `(${i + 1})${formatRichText(opt)} &nbsp;`).join(' ')}
-          ${incAns ? `<div style="font-size:10px; margin-top:4px;"><b>Answer:</b> Option ${q.correctIndex + 1} \vert{} <i>${q.explanation || ''}</i></div>` : ''}
+        content += `
+          <div class="print-question">
+            <strong>Q${idx + 1}.</strong> ${formatRichText(q.questionText)}${img}<br>
+            <div style="margin-top:4px;">
+              ${q.options.map((opt, i) => `(${i + 1})${formatRichText(opt)} &nbsp; `).join('')}
+            </div>
+            ${ansMode === "INLINE" ? `<div style="font-size:9pt; margin-top:6px; color:#222; background:#f4f4f4; padding:4px;"><b>Correct: Option ${q.correctIndex + 1}</b><br><i>${formatRichText(q.explanation || '')}</i></div>` : ''}
+          </div>
         `;
-        root.appendChild(item);
       });
+
+      content += `</div>`;
+
+      // Appendix: Blind Practice Mode Keys
+      if (ansMode === "APPENDIX") {
+        content += `
+          <div class="print-appendix">
+            <h2 style="font-size:16pt; font-weight:900; margin-bottom:12px; text-transform:uppercase;">Appendix: Answer Keys & Step-by-Step Solutions</h2>
+            <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:8px; margin-bottom:18px; font-size:10pt;">
+              ${pool.map((q, idx) => `<div><b>Q${idx + 1}:</b> Opt${q.correctIndex + 1}</div>`).join('')}
+            </div>
+            <hr style="margin-bottom:14px;">
+            ${pool.map((q, idx) => `
+              <div style="font-size:9.5pt; margin-bottom:10px; page-break-inside:avoid; break-inside:avoid;">
+                <b>Q${idx + 1} Explanation:</b>${formatRichText(q.explanation || 'No method registered.')}
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      root.innerHTML = content;
+
+    // 3. Past Completed Mock Audit
     } else if (pType === "PAST_MOCK") {
       const mockId = document.getElementById("print-mock-select").value;
       const attempts = await getAllRecords("store_attempts");
       const targetMock = attempts.find(a => a.sessionId === mockId);
       if (!targetMock) return;
 
-      root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">${targetMock.title} - Score: ${targetMock.finalScore.toFixed(2)} (${targetMock.timeIST || formatISTDate(targetMock.timestamp)})</h2>`;
+      let content = `
+        <div class="print-book-cover">
+          <div class="print-book-title">${targetMock.title} (Performance Audit)</div>
+          <div class="print-book-meta">
+            Attempt Score: ${(targetMock.finalScore || 0).toFixed(2)} pts &nbsp;|&nbsp; Correct: ${targetMock.correctCount} &nbsp;|&nbsp; Incorrect: ${targetMock.incorrectCount} &nbsp;|&nbsp; IST Date: ${targetMock.timeIST || formatISTDate(targetMock.timestamp)}
+          </div>
+        </div>
+        <div class="print-dual-col">
+      `;
+
       targetMock.questions.forEach((q, idx) => {
         const resp = targetMock.userResponses && targetMock.userResponses[q.id] ? targetMock.userResponses[q.id] : {};
-        const item = document.createElement("div");
-        item.className = "print-question";
+        const isCor = resp.selectedOption === q.correctIndex;
         let img = q.imageUrl ? `<br><img src="${q.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
-        item.innerHTML = `
-          <strong>Q${idx + 1}.</strong> ${formatRichText(q.questionText)}${img}<br>
-          ${q.options.map((opt, i) => `(${i + 1})${formatRichText(opt)} &nbsp;`).join(' ')}
-          ${incAns ? `<div style="font-size:10px; margin-top:4px;"><b>Selected:</b> Option ${resp.selectedOption !== null && resp.selectedOption !== undefined ? resp.selectedOption + 1 : 'None'} | <b>Correct:</b> Option ${q.correctIndex + 1} \vert{} <i>${q.explanation || ''}</i></div>` : ''}
-        `;
-        root.appendChild(item);
-      });
-    } else if (pType === "COMPENDIUM") {
-      const dossiers = await getAllRecords("store_concepts");
-      let pool = sub === "ALL" ? dossiers : dossiers.filter(d => d.subject === sub);
-      if (chap !== "ALL") pool = pool.filter(d => d.chapter === chap);
 
-      root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Knowledge Compendium (${sub} - ${chap})</h2>`;
-      pool.forEach((t, idx) => {
-        const item = document.createElement("div");
-        item.className = "print-question";
-        let img = t.imageUrl ? `<br><img src="${t.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
-        item.innerHTML = `
-          <strong>${idx + 1}. ${t.title} [${t.chapter}]</strong> ${t.subtitle ? `<i>(${t.subtitle})</i>` : ''}<br>
-          ${formatRichText(t.content)}${img}
+        content += `
+          <div class="print-question">
+            <strong>Q${idx + 1}.</strong> ${formatRichText(q.questionText)}${img}<br>
+            <div style="margin-top:4px;">
+              ${q.options.map((opt, i) => `(${i + 1})${formatRichText(opt)} &nbsp; `).join('')}
+            </div>
+            <div style="font-size:9pt; margin-top:6px; background:#f4f4f4; padding:6px; border-left:3px solid ${isCor ? '#238636' : '#da3633'};">
+              <b>Your Pick:</b> Option ${resp.selectedOption !== null && resp.selectedOption !== undefined ? resp.selectedOption + 1 : 'None'} (${isCor ? '✓ Correct' : '✗ Incorrect'}) | <b>Time:</b> ${resp.timeSpentSec || 0}s<br>
+              <b>Key:</b> Option ${q.correctIndex + 1} | <i>${formatRichText(q.explanation || '')}</i>
+            </div>
+          </div>
         `;
-        root.appendChild(item);
       });
+
+      content += `</div>`;
+      root.innerHTML = content;
+
+    // 4. Flashcard Vault Revision Sheet
     } else if (pType === "FLASHCARDS") {
       const flashcards = await getAllRecords("store_flashcards");
       let pool = sub === "ALL" ? flashcards : flashcards.filter(f => f.subject === sub);
-      root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL SM-2 Flashcard Revision Sheet</h2>`;
+
+      let content = `
+        <div class="print-book-cover">
+          <div class="print-book-title">SSC CGL Flashcard Vault Compendium</div>
+          <div class="print-book-meta">
+            Scope: ${sub} &nbsp;|&nbsp; Generated: ${timestampIST} &nbsp;|&nbsp; Total Cards: ${pool.length}
+          </div>
+        </div>
+        <div class="print-dual-col">
+      `;
+
       pool.forEach((f, idx) => {
-        const item = document.createElement("div");
-        item.className = "print-question";
         let fImg = f.frontImageUrl ? `<br><img src="${f.frontImageUrl}" style="max-height:100px; max-width:100%;">` : '';
         let bImg = f.backImageUrl ? `<br><img src="${f.backImageUrl}" style="max-height:100px; max-width:100%;">` : '';
-        item.innerHTML = `
-          <strong>Card ${idx + 1}. [${f.subject} • ${f.chapter}]</strong><br>
-          <b>Prompt:</b> ${formatRichText(f.front)}${fImg}<br>
-          <div style="font-size:11px; margin-top:4px;"><b>Answer:</b> ${formatRichText(f.back)}${bImg}</div>
+
+        content += `
+          <div class="print-question">
+            <strong>Card ${idx + 1}. [${f.subject} • ${f.chapter}]</strong> (${f.cardType || 'BASIC'})<br>
+            <b>Prompt:</b> ${formatRichText(f.front)}${fImg}<br>
+            <div style="font-size:9.5pt; margin-top:4px;"><b>Answer:</b> ${formatRichText(f.back)}${bImg}</div>
+            ${f.extra ? `<div style="font-size:9pt; color:#444; margin-top:2px;"><b>Extra:</b> ${formatRichText(f.extra)}</div>` : ''}
+          </div>
         `;
-        root.appendChild(item);
       });
+
+      content += `</div>`;
+      root.innerHTML = content;
     }
 
-    window.print();
+    setTimeout(() => {
+      window.print();
+    }, 250);
   }
 
   /* -------------------------------------------------------------
@@ -5299,7 +5620,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     openOmniResearchForDojoQuestion,
     launchCurrentSheetQuestionsDrill,
     openSynapseGraphModal,
-    toggleSynapseNode,
+    toggleSynapseBranch,
     expandAllSynapseNodes,
     collapseAllSynapseNodes,
     launchSynapseChapterBlitz,
@@ -5372,9 +5693,12 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     renderDashboard,
     renderVault,
     renderFlashcardList,
-    launchFlashcardDueSprint,
+    launchUntimedQuickCarousel,
+    renderCurrentVaultCard,
     flipStudyFlashcard,
-    gradeStudyFlashcard,
+    navStudyCard,
+    openAnkiExportModal,
+    generateAndDownloadAnkiTsv,
     openFlashcardEditorModal,
     handleFlashcardFrontImageUpload,
     handleFlashcardBackImageUpload,
