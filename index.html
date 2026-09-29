@@ -13,7 +13,7 @@
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 
   <!-- External Stylesheet with WebAPK Cache-Busting Parameter -->
-  <link rel="stylesheet" href="style.css?v=2.2">
+  <link rel="stylesheet" href="style.css?v=2.3">
 </head>
 <body>
 
@@ -110,7 +110,7 @@
 
       <div class="arena-footer">
         <button class="btn btn-secondary" style="padding:8px 14px;" id="btn-q-prev">Previous</button>
-        <button class="btn btn-secondary" style="padding:8px 12px; font-size:12px; color:var(--status-purple);" id="btn-q-review">Mark Review</button>
+        <button class="btn btn-secondary" style="padding:8px 12px; font-size:12px; color:var(--accent-purple);" id="btn-q-review">Mark Review</button>
         <button class="btn" style="padding:8px 18px;" id="btn-q-save-next">Save & Next</button>
       </div>
     </div>
@@ -355,7 +355,7 @@
         <div id="dash-blueprints-pills" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;"></div>
       </div>
 
-      <!-- Cognitive Trap Distribution Matrix Strip -->
+      <!-- Cognitive Trap Distribution Matrix Strip (Auto-Classifying) -->
       <div class="card" style="padding:12px; margin-bottom:14px;">
         <div class="card-title" style="margin-bottom:4px;">
           <span>Cognitive Trap Distribution</span>
@@ -409,7 +409,7 @@
         <div id="dash-subject-batteries"></div>
       </div>
 
-      <!-- Recent Mocks & History Archive (Ticket-Stub Design) -->
+      <!-- Recent Mocks & History Archive (Attempt Thread Support) -->
       <div class="card">
         <div class="card-title">
           <span>Recent Mock Scorecards</span>
@@ -501,7 +501,7 @@
     </div>
 
 
-    <!-- ==================== 7. TAB 3: COMMAND TERMINAL & SCOPED FORENSIC STUDIO ==================== -->
+    <!-- ==================== 7. TAB 3: COMMAND TERMINAL & MASTER FORENSIC STUDIO ==================== -->
     <div id="tab-console" class="view-container">
       
       <!-- Primary Command Bus & AI Dispatch -->
@@ -518,6 +518,23 @@
           <button class="btn btn-secondary" style="border-color:var(--accent-cyan); color:var(--accent-cyan);" onclick="CGL_OS.copyLiveSystemManifestToClipboard()">📋 Copy Live AI Manifest</button>
           <button class="btn btn-secondary" onclick="CGL_OS.openMasterLedgerExportModal()">Export Bank for Gem</button>
         </div>
+      </div>
+
+      <!-- ONE-TAP GLOBAL 360° MASTER FORENSIC DOSSIER EXPORT -->
+      <div class="card" style="background: linear-gradient(135deg, #101c30 0%, #0a111e 100%); border-color: rgba(56, 189, 248, 0.45); box-shadow: 0 4px 18px rgba(0,0,0,0.5);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <div>
+            <b style="font-size:14px; color:#fff;">Global 360° Forensic Audit Exporter</b>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Complete Candidate Case File • Trajectory • Flashcards • Consultations</div>
+          </div>
+          <span class="badge" style="background:#1f6feb;">Master AI Dossier</span>
+        </div>
+        <p style="font-size:12px; color:var(--text-main); margin:8px 0; line-height:1.5;">
+          Generates an unabridged, pre-sorted forensic audit of your entire preparation history across all subjects, diurnal time slots, and SM-2 queues for your Gemini consultation.
+        </p>
+        <button class="btn" id="btn-export-global-master-dossier" style="width:100%; padding:12px; font-size:14px; font-weight:800; background:linear-gradient(135deg, #388bfd, #8957e5);" onclick="CGL_OS.exportGlobalMasterDossier()">
+          ⚡ Download Master Forensic Dossier (Global 360° .json)
+        </button>
       </div>
 
       <!-- Scoped Forensic Dossier Extractor (UI Filter Panel) -->
@@ -612,7 +629,7 @@
         </div>
 
         <p style="font-size:11.5px; color:var(--text-muted); line-height:1.5; margin-bottom:12px;">
-          Atomic spaced-recall engine for high-yield formulas, grammar exceptions, vocabulary roots, and constitutional articles.
+          Atomic spaced-recall engine for high-yield formulas, grammar exceptions, vocabulary roots, and constitutional articles with dual image support.
         </p>
 
         <!-- SM-2 Daily Pipeline Metrics -->
@@ -665,7 +682,7 @@
 
 
   <!-- ==================== 9. STAGE 1: ANALYTICAL COCKPIT MODAL ==================== -->
-  <div class="modal-overlay" id="modal-mock-review">
+  <div class="modal-overlay child-layer" id="modal-mock-review">
     <div class="modal-window" style="max-width:700px; max-height:92vh;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
         <div>
@@ -678,6 +695,12 @@
           <button class="btn" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openAiExportModal()">Export for AI</button>
           <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-mock-review').classList.remove('active')">✕</button>
         </div>
+      </div>
+
+      <!-- Attempt Thread Switcher (When test has multiple re-attempts) -->
+      <div id="rev-attempt-switcher-wrap" style="display:none; background:#070a10; border:1px solid var(--border-color); border-radius:8px; padding:8px 12px; margin-bottom:10px; justify-content:space-between; align-items:center;">
+        <span style="font-size:11.5px; font-weight:700; color:var(--accent-cyan);">Inspect Attempt Iteration:</span>
+        <select id="rev-attempt-select" class="form-control" style="width:auto; padding:4px 8px; font-size:11px;" onchange="CGL_OS.switchReviewAttempt(this.value)"></select>
       </div>
 
       <!-- High-Level Metric Tiles -->
@@ -716,13 +739,13 @@
         </div>
       </div>
 
-      <!-- Sectional Efficiency Grid -->
+      <!-- High-Fidelity Sectional Efficiency Grid -->
       <div class="card" style="padding:10px; margin-bottom:12px;">
-        <div class="card-title" style="margin-bottom:8px;">Sectional Performance Breakdown</div>
-        <div id="rev-sectional-breakdown-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:6px;"></div>
+        <div class="card-title" style="margin-bottom:8px;">Sectional Performance Breakdown (High-Fidelity)</div>
+        <div id="rev-sectional-breakdown-grid" class="sec-fidelity-grid"></div>
       </div>
 
-      <!-- Mistake Tag Distribution Badges -->
+      <!-- Cognitive Trap Distribution Badges -->
       <div class="card" style="padding:10px; margin-bottom:14px;">
         <div class="card-title" style="margin-bottom:6px;">Cognitive Trap Distribution</div>
         <div id="rev-mistake-tags-pills" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
@@ -899,7 +922,7 @@
       </div>
 
       <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px;">
-        Generate static reference files formatted specifically for your Gemini Gem knowledge base.
+        Generate static reference files grouped hierarchically by Subject & Chapter for your Gemini Gem knowledge base.
       </p>
 
       <div class="form-group">
@@ -917,9 +940,9 @@
   </div>
 
 
-  <!-- ==================== 16. MOCK HISTORY ARCHIVE MODAL ==================== -->
+  <!-- ==================== 16. MOCK HISTORY ARCHIVE MODAL (TICKET CARD FIX) ==================== -->
   <div class="modal-overlay" id="modal-history-archive">
-    <div class="modal-window">
+    <div class="modal-window" style="max-width:680px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
         <h3 style="font-size:16px; font-weight:800;">Master Test History Archive</h3>
         <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-history-archive').classList.remove('active')">✕ Close</button>
@@ -1209,9 +1232,9 @@
   </div>
 
 
-  <!-- ==================== 23. ANKI FLASHCARD GUI EDITOR ==================== -->
+  <!-- ==================== 23. ANKI FLASHCARD GUI EDITOR (TWO-SIDED IMAGES) ==================== -->
   <div class="modal-overlay" id="modal-flashcard-editor">
-    <div class="modal-window" style="max-width:520px;">
+    <div class="modal-window" style="max-width:540px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
         <h3 style="font-size:16px; font-weight:800; color:#a371f7;" id="flashcard-editor-title">Add / Edit Flashcard</h3>
         <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-flashcard-editor').classList.remove('active')">✕</button>
@@ -1230,14 +1253,26 @@
         </div>
       </div>
 
+      <!-- Front Prompt & Front Diagram -->
       <div class="form-group">
         <label>Front Prompt / Question (KaTeX in $...$)</label>
-        <textarea id="edit-fc-front" class="form-control" style="height:80px;" placeholder="e.g. What is the incenter angle formula for vertex angle A?"></textarea>
+        <textarea id="edit-fc-front" class="form-control" style="height:70px;" placeholder="e.g. What is the incenter angle formula for vertex angle A?"></textarea>
+      </div>
+      <div class="form-group">
+        <label style="font-size:11px; color:var(--accent-cyan);">Front Diagram / Image (Optional)</label>
+        <input type="text" id="edit-fc-front-img-url" class="form-control" placeholder="Front image URL..." style="margin-bottom:4px; font-size:12px;">
+        <input type="file" id="edit-fc-front-img-file" class="form-control" accept="image/*" onchange="CGL_OS.handleFlashcardFrontImageUpload(this)">
       </div>
 
+      <!-- Back Answer & Back Visual Proof -->
       <div class="form-group">
         <label>Back Solution / Core Fact (KaTeX in $...$ or $$...$$)</label>
-        <textarea id="edit-fc-back" class="form-control" style="height:100px;" placeholder="e.g. $$\angle BIC = 90^\circ + \frac{\angle A}{2}$$"></textarea>
+        <textarea id="edit-fc-back" class="form-control" style="height:80px;" placeholder="e.g. $$\angle BIC = 90^\circ + \frac{\angle A}{2}$$"></textarea>
+      </div>
+      <div class="form-group">
+        <label style="font-size:11px; color:var(--accent-cyan);">Back Visual Proof / Derivation Image (Optional)</label>
+        <input type="text" id="edit-fc-back-img-url" class="form-control" placeholder="Back image URL..." style="margin-bottom:4px; font-size:12px;">
+        <input type="file" id="edit-fc-back-img-file" class="form-control" accept="image/*" onchange="CGL_OS.handleFlashcardBackImageUpload(this)">
       </div>
 
       <div class="form-group">
@@ -1276,6 +1311,10 @@
             Front Text Here
           </div>
 
+          <!-- Dual Image Containers -->
+          <div class="fc-img-box" id="fc-card-front-img-box" style="display:none;"></div>
+          <div class="fc-img-box" id="fc-card-back-img-box" style="display:none;"></div>
+
           <div style="font-size:11px; color:var(--text-muted); text-align:center;" id="fc-card-cue">
             Tap card to flip answer
           </div>
@@ -1296,7 +1335,28 @@
   </div>
 
 
-  <!-- ==================== 25. DISASTER RECOVERY RESTORE MODAL ==================== -->
+  <!-- ==================== 25. DATABASE STUDIO INSPECTOR MODAL ==================== -->
+  <div class="modal-overlay child-layer" id="modal-db-inspector-viewer">
+    <div class="modal-window" style="max-width:640px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+        <div>
+          <h3 style="font-size:15px; font-weight:800; color:var(--accent-cyan);" id="db-inspect-modal-title">Record Inspector</h3>
+          <span style="font-size:10px; font-family:var(--font-mono); color:var(--text-muted);" id="db-inspect-modal-key">KEY: null</span>
+        </div>
+        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-db-inspector-viewer').classList.remove('active')">✕</button>
+      </div>
+
+      <div class="json-code-box" id="db-inspect-code-content"></div>
+
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:12px;">
+        <button class="btn btn-secondary" onclick="CGL_OS.copyInspectedJsonToClipboard()">📋 Copy Raw JSON</button>
+        <button class="btn" onclick="document.getElementById('modal-db-inspector-viewer').classList.remove('active')">Close</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ==================== 26. DISASTER RECOVERY RESTORE MODAL ==================== -->
   <div class="modal-overlay" id="modal-backup-restore">
     <div class="modal-window" style="max-width:480px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1330,7 +1390,7 @@
   </div>
 
 
-  <!-- ==================== 26. HARDENED PAUSE OVERLAY SHIELD ==================== -->
+  <!-- ==================== 27. HARDENED PAUSE OVERLAY SHIELD ==================== -->
   <div id="pause-shield">
     <h2 style="font-size:22px; font-weight:800; margin-bottom:8px; color:#fff;">TEST PAUSED</h2>
     <p style="font-size:13px; color:var(--text-muted); max-width:280px; margin-bottom:20px;">
@@ -1344,7 +1404,7 @@
   </div>
 
 
-  <!-- ==================== 27. BOTTOM NAVIGATION ==================== -->
+  <!-- ==================== 28. BOTTOM NAVIGATION ==================== -->
   <nav id="bottom-nav">
     <button class="nav-btn active" id="nav-btn-tab-dashboard" onclick="CGL_OS.switchTab('tab-dashboard', this)">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
@@ -1367,6 +1427,6 @@
   <div id="print-sheet-root" style="display:none;" class="print-page"></div>
 
   <!-- Master JavaScript Logic with WebAPK Cache-Busting Parameter -->
-  <script src="app.js?v=2.2"></script>
+  <script src="app.js?v=2.3"></script>
 </body>
 </html>
