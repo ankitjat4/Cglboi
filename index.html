@@ -13,7 +13,7 @@
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 
   <!-- External Stylesheet with WebAPK Cache-Busting Parameter -->
-  <link rel="stylesheet" href="style.css?v=2.0">
+  <link rel="stylesheet" href="style.css?v=2.2">
 </head>
 <body>
 
@@ -62,7 +62,7 @@
           <button class="hud-icon-btn" id="btn-arena-research" style="display:none;" onclick="CGL_OS.openOmniResearchForCurrentQuestion()" title="Omni Deep Dive / Wikipedia / Math Plot">
             🌐
           </button>
-          <button class="hud-icon-btn" id="btn-toggle-exam-palette" title="Open Question Palette">
+          <button class="hud-icon-btn" id="btn-toggle-exam-palette" onclick="CGL_OS.toggleExamPalette()" title="Open Question Palette">
             <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
           </button>
         </div>
@@ -116,7 +116,7 @@
     </div>
 
     <!-- EXAM PALETTE DRAWER -->
-    <div class="drawer-overlay" id="exam-drawer-overlay"></div>
+    <div class="drawer-overlay" id="exam-drawer-overlay" onclick="CGL_OS.toggleExamPalette(false)"></div>
     <div class="palette-drawer-ui" id="exam-palette-drawer">
       <div style="padding:14px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
         <h3 style="font-size:14px; font-weight:700;" id="palette-drawer-title">Question Palette</h3>
@@ -334,7 +334,7 @@
             <span class="badge" style="background:#151a24; color:var(--accent-cyan);" id="eri-status-tier">Calibrating</span>
           </div>
           <div style="font-size:24px; font-weight:800; color:#fff; margin:2px 0;" id="eri-score-val">0.0</div>
-          <div style="font-size:10px; color:var(--text-muted);" id="eri-breakdown-sub">Accuracy 40% • Velocity 30% • Vault Cleared 30%</div>
+          <div style="font-size:10px; color:var(--text-muted);" id="eri-breakdown-sub">Accuracy 40% • Velocity 30% • Retention 30%</div>
         </div>
       </div>
 
@@ -359,7 +359,7 @@
       <div class="card" style="padding:12px; margin-bottom:14px;">
         <div class="card-title" style="margin-bottom:4px;">
           <span>Cognitive Trap Distribution</span>
-          <span style="font-size:10px; color:var(--accent-cyan);">Tap Segment to Drill Traps</span>
+          <span style="font-size:10px; color:var(--accent-cyan);">Tap Segment to Filter Traps</span>
         </div>
         <div class="trap-heat-bar" id="dash-trap-heat-bar"></div>
         <div id="dash-trap-legend" style="display:flex; flex-wrap:wrap; gap:8px; font-size:10px; color:var(--text-muted); margin-top:6px;"></div>
@@ -501,14 +501,16 @@
     </div>
 
 
-    <!-- ==================== 7. TAB 3: COMMAND TERMINAL ==================== -->
+    <!-- ==================== 7. TAB 3: COMMAND TERMINAL & SCOPED FORENSIC STUDIO ==================== -->
     <div id="tab-console" class="view-container">
+      
+      <!-- Primary Command Bus & AI Dispatch -->
       <div class="card">
         <div class="card-title">
           <span>JSON Command Bus & AI Dispatch</span>
-          <span class="badge" style="background:#1f6feb;">Live Telemetry</span>
+          <span class="badge" style="background:#1f6feb;">Live Telemetry Bus</span>
         </div>
-        <textarea class="form-control" id="console-payload" style="height:140px; font-family:var(--font-mono); font-size:12px; color:#38bdf8;" placeholder='Paste AI command payload here (e.g. AI_PRESCRIBE_REMEDY, INGEST_AND_LAUNCH_MOCK, BATCH_INGEST_COMPENDIUM, SAVE_MOCK_PRESET)...'></textarea>
+        <textarea class="form-control" id="console-payload" style="height:140px; font-family:var(--font-mono); font-size:12px; color:#38bdf8;" placeholder='Paste executable AI command payload here (e.g. EXECUTE_AI_CONSULTATION_BUNDLE, INGEST_AND_LAUNCH_MOCK, BATCH_INGEST_FLASHCARDS, REQUEST_HISTORICAL_DUMP)...'></textarea>
         <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
           <button class="btn" onclick="CGL_OS.executeConsoleCommand()">Execute Command</button>
           <button class="btn btn-secondary" onclick="document.getElementById('console-payload').value=''">Clear</button>
@@ -518,17 +520,67 @@
         </div>
       </div>
 
+      <!-- Scoped Forensic Dossier Extractor (UI Filter Panel) -->
+      <div class="scoped-extractor-panel">
+        <div class="card-title" style="color:var(--accent-cyan); margin-bottom:8px;">
+          <span>🔍 Scoped Forensic Dossier Extractor</span>
+          <span class="badge" style="background:rgba(56, 189, 248, 0.2); color:var(--accent-cyan);">Specialist Biopsy</span>
+        </div>
+        <p style="font-size:11.5px; color:var(--text-muted); margin-bottom:12px; line-height:1.5;">
+          Export hyper-focused forensic telemetry slices for specific subjects, time horizons, or cognitive traps without context bloat.
+        </p>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Subject Scope</label>
+            <select id="scoped-export-subject" class="form-control" style="padding:6px; font-size:12px;"></select>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Time Horizon (IST)</label>
+            <select id="scoped-export-timeframe" class="form-control" style="padding:6px; font-size:12px;">
+              <option value="ALL">Entire History (Baseline)</option>
+              <option value="7D">Last 7 Days (Micro-Delta)</option>
+              <option value="15D" selected>Last 15 Days (Bi-Weekly Sprint)</option>
+              <option value="30D">Last 30 Days (Monthly Cycle)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Telemetry Filter</label>
+            <select id="scoped-export-filter" class="form-control" style="padding:6px; font-size:12px;">
+              <option value="ALL">All Telemetry (Full Slice)</option>
+              <option value="TRAPS_ONLY">Cognitive Traps & Hesitations Only</option>
+              <option value="PANIC_ONLY">Panic Slips (<12s solves) Only</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Data Encoding</label>
+            <select id="scoped-export-encoding" class="form-control" style="padding:6px; font-size:12px;">
+              <option value="HYBRID_CSV">Hybrid Tuple (JSON + CSV Matrix)</option>
+              <option value="RAW_JSON">Full Raw JSON (Deep Audit)</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn btn-cyan" style="width:100%; padding:10px; font-size:13px; font-weight:700;" onclick="CGL_OS.exportScopedForensicDossier()">
+          ⚡ Download Scoped Forensic Dossier (.json)
+        </button>
+      </div>
+
+      <!-- Direct Database Studio Inspector -->
       <div class="card">
         <div class="card-title">
           <span>Direct Database Studio</span>
           <select id="db-store-select" class="form-control" style="width:auto; padding:4px 8px; font-size:12px;" onchange="CGL_OS.refreshDbInspector()">
             <option value="store_questions">store_questions</option>
             <option value="store_attempts">store_attempts</option>
-            <option value="store_vault">store_vault</option>
-            <option value="store_vault_sprints">store_vault_sprints</option>
+            <option value="store_flashcards">store_flashcards (SM-2)</option>
             <option value="store_concepts">store_concepts</option>
             <option value="store_notes">store_notes</option>
             <option value="store_saved_mocks">store_saved_mocks</option>
+            <option value="store_ai_consultations">store_ai_consultations</option>
             <option value="store_active_session">store_active_session</option>
             <option value="store_config">store_config</option>
           </select>
@@ -536,65 +588,66 @@
         <div id="db-inspector-list" style="max-height:220px; overflow-y:auto; font-size:12px;"></div>
       </div>
 
+      <!-- Danger Zone Operations -->
       <div class="card" style="border-color:#5a1e1e;">
         <div class="card-title" style="color:var(--status-red);">Danger Zone Operations</div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
           <button class="btn btn-danger" style="font-size:12px;" onclick="CGL_OS.wipeTestAttempts()">Wipe Test History</button>
-          <button class="btn btn-danger" style="font-size:12px;" onclick="CGL_OS.wipeErrorVault()">Wipe Error Vault</button>
+          <button class="btn btn-danger" style="font-size:12px;" onclick="CGL_OS.wipeFlashcardStore()">Wipe Flashcard Deck</button>
         </div>
         <button class="btn btn-danger" style="width:100%; margin-top:8px; font-size:12px;" onclick="CGL_OS.factoryResetAll()">Factory Reset Entire Database</button>
       </div>
     </div>
 
 
-    <!-- ==================== 8. TAB 4: AUTOMATED SM-2 ERROR VAULT ==================== -->
+    <!-- ==================== 8. TAB 4: ANKI SM-2 FLASHCARD ENGINE ==================== -->
     <div id="tab-vault" class="view-container">
-      <div class="card" style="border-color: rgba(218, 54, 51, 0.4);">
-        <div class="card-title" style="color: #f87171;">
-          <span>Anki SM-2 Spaced Repetition Vault</span>
-          <span class="badge" style="background: #da3633;" id="vault-due-badge">0 Due</span>
+      <div class="card" style="border-color: rgba(163, 113, 247, 0.4);">
+        <div class="card-title" style="color: #a371f7;">
+          <span>Anki SM-2 Spaced Repetition Engine</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="badge" style="background: #8957e5;" id="sm2-due-badge">0 Due</span>
+            <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openFlashcardEditorModal(true)">+ New Card</button>
+          </div>
         </div>
+
+        <p style="font-size:11.5px; color:var(--text-muted); line-height:1.5; margin-bottom:12px;">
+          Atomic spaced-recall engine for high-yield formulas, grammar exceptions, vocabulary roots, and constitutional articles.
+        </p>
 
         <!-- SM-2 Daily Pipeline Metrics -->
         <div class="sm2-kpi-grid">
           <div class="sm2-kpi-tile">
-            <div style="font-size: 10px; color: var(--text-muted);">DUE TODAY</div>
+            <div style="font-size: 10px; color: var(--status-red);">DUE TODAY</div>
             <div class="sm2-kpi-val" style="color: var(--status-red);" id="sm2-count-due">0</div>
           </div>
           <div class="sm2-kpi-tile">
-            <div style="font-size: 10px; color: var(--text-muted);">LEARNING</div>
+            <div style="font-size: 10px; color: var(--status-amber);">LEARNING</div>
             <div class="sm2-kpi-val" style="color: var(--status-amber);" id="sm2-count-learning">0</div>
           </div>
           <div class="sm2-kpi-tile">
-            <div style="font-size: 10px; color: var(--text-muted);">MASTERED</div>
+            <div style="font-size: 10px; color: var(--status-green);">MASTERED</div>
             <div class="sm2-kpi-val" style="color: var(--status-green);" id="sm2-count-mastered">0</div>
           </div>
         </div>
 
-        <button class="btn btn-danger" id="btn-launch-vault-sprint" style="width: 100%; padding: 12px; font-size: 14px; margin-bottom: 12px;" onclick="CGL_OS.launchVaultDueSprint()">
-          ⚡ Start Daily Due Sprint (<span id="vault-btn-count">0</span> Questions Due)
+        <!-- Launch Daily Due Sprint Button -->
+        <button class="btn" id="btn-launch-sm2-sprint" style="width: 100%; padding: 12px; font-size: 14px; font-weight:700; margin-bottom: 12px; background:linear-gradient(135deg, #1f6feb, #8957e5);" onclick="CGL_OS.launchFlashcardDueSprint()">
+          ⚡ Start Daily Due Sprint (<span id="sm2-btn-count">0</span> Cards Due)
         </button>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <span style="font-size: 11px; font-weight: 700; color: var(--text-muted);">RETENTION QUEUE</span>
-          <span style="font-size: 10px; color: var(--accent-cyan); cursor: pointer;" onclick="CGL_OS.renderVault()">Refresh</span>
+        <!-- Filter Deck Bar -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:6px;">
+          <select id="sm2-deck-filter-sub" class="form-control" style="padding:4px 8px; font-size:11px; width:auto;" onchange="CGL_OS.renderFlashcardList()">
+            <option value="ALL">All Subjects</option>
+          </select>
+          <span style="font-size: 11px; color: var(--accent-cyan); cursor: pointer;" onclick="CGL_OS.renderVault()">Refresh Queue</span>
         </div>
 
-        <div id="vault-list-container"></div>
+        <div id="flashcard-list-container"></div>
       </div>
 
-      <!-- Sprint History -->
-      <div class="card">
-        <div class="card-title">
-          <span>Vault Sprint History</span>
-          <span class="badge" style="background: #238636;" id="vault-sprint-count-badge">0 Sprints</span>
-        </div>
-        <div id="vault-sprint-history-list" style="max-height: 180px; overflow-y: auto;">
-          <p style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 10px;">No sprints recorded yet.</p>
-        </div>
-      </div>
-
-      <!-- Backup & Disaster Recovery -->
+      <!-- Disaster Recovery & Plain Text Exports -->
       <div class="card">
         <div class="card-title">Disaster Recovery & Universal Plain Text Exports</div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
@@ -602,7 +655,7 @@
           <button class="btn btn-secondary" style="font-size: 12px;" onclick="CGL_OS.openBackupRestoreModal()">Restore Backup (.json)</button>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
-          <button class="btn btn-secondary" style="font-size: 12px;" onclick="CGL_OS.exportCleanMarkdownVault()">Export Vault (.md)</button>
+          <button class="btn btn-secondary" style="font-size: 12px;" onclick="CGL_OS.exportCleanMarkdownFlashcards()">Export Deck (.md)</button>
           <button class="btn btn-secondary" style="font-size: 12px;" onclick="CGL_OS.openPrintConfigModal()">Print Sheet (PDF)</button>
         </div>
       </div>
@@ -819,9 +872,9 @@
       <div class="form-group">
         <label>Select Export Format</label>
         <select id="ai-export-mode" class="form-control" onchange="CGL_OS.updateAiExportPreview()">
-          <option value="LEAN_GEM">1. Lean Telemetry Pack (IDs, Dwell, Switches & Mistakes for Custom Gem)</option>
+          <option value="LEAN_GEM">1. Lean Telemetry Pack (IDs, Dwell, Switches & Mistakes)</option>
           <option value="DEEP_AUDIT">2. Autonomous Deep Audit (Full Text, Decision Trails, Explanations)</option>
-          <option value="LONGITUDINAL">3. Longitudinal Audit (Rolling Accuracy, Nc Index, Vault Inventory)</option>
+          <option value="LONGITUDINAL">3. Longitudinal Audit (Rolling Accuracy, Nc Index, SM-2 Retention)</option>
         </select>
       </div>
 
@@ -934,7 +987,7 @@
           <option value="QUESTIONS">Question Bank Practice Paper</option>
           <option value="PAST_MOCK">Past Mock Paper (from Exam History)</option>
           <option value="COMPENDIUM">Chapter Knowledge Compendium & Formulas</option>
-          <option value="VAULT">Active Error Vault Revision Sheet</option>
+          <option value="FLASHCARDS">Active Flashcard Deck (Atomic Recall)</option>
         </select>
       </div>
 
@@ -1156,7 +1209,94 @@
   </div>
 
 
-  <!-- ==================== 23. DISASTER RECOVERY RESTORE MODAL ==================== -->
+  <!-- ==================== 23. ANKI FLASHCARD GUI EDITOR ==================== -->
+  <div class="modal-overlay" id="modal-flashcard-editor">
+    <div class="modal-window" style="max-width:520px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+        <h3 style="font-size:16px; font-weight:800; color:#a371f7;" id="flashcard-editor-title">Add / Edit Flashcard</h3>
+        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-flashcard-editor').classList.remove('active')">✕</button>
+      </div>
+
+      <input type="hidden" id="edit-fc-id">
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <div class="form-group">
+          <label>Subject</label>
+          <select id="edit-fc-subject" class="form-control" onchange="CGL_OS.syncFlashcardChapterDropdown(this.value)"></select>
+        </div>
+        <div class="form-group">
+          <label>Chapter Tag</label>
+          <input type="text" id="edit-fc-chapter" class="form-control" placeholder="e.g. QA_GEOMETRY">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Front Prompt / Question (KaTeX in $...$)</label>
+        <textarea id="edit-fc-front" class="form-control" style="height:80px;" placeholder="e.g. What is the incenter angle formula for vertex angle A?"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Back Solution / Core Fact (KaTeX in $...$ or $$...$$)</label>
+        <textarea id="edit-fc-back" class="form-control" style="height:100px;" placeholder="e.g. $$\angle BIC = 90^\circ + \frac{\angle A}{2}$$"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Tags (Comma-separated)</label>
+        <input type="text" id="edit-fc-tags" class="form-control" placeholder="Formula, Incenter, Geometry">
+      </div>
+
+      <div style="display:flex; gap:8px;">
+        <button class="btn" style="flex:1; background:#8957e5;" onclick="CGL_OS.saveFlashcardEditor()">Save Flashcard</button>
+        <button class="btn btn-danger" id="btn-delete-fc" onclick="CGL_OS.deleteCurrentEditingFlashcard()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ==================== 24. FLASHCARD ACTIVE RECALL MODAL ==================== -->
+  <div class="modal-overlay" id="modal-flashcard-study">
+    <div class="modal-window" style="max-width:560px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+        <div>
+          <h3 style="font-size:16px; font-weight:800; color:#a371f7;" id="fc-study-header">Spaced Recall Sprint</h3>
+          <span style="font-size:11px; color:var(--text-muted);" id="fc-study-progress">Card 1 of 10</span>
+        </div>
+        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-flashcard-study').classList.remove('active')">✕ Exit</button>
+      </div>
+
+      <!-- Flashcard Interactive Canvas -->
+      <div class="flashcard-stage-container">
+        <div class="flashcard-card-view" id="fc-card-view" onclick="CGL_OS.flipStudyFlashcard()">
+          <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted);">
+            <span class="badge" style="background:#151a24; color:var(--accent-cyan);" id="fc-card-chapter">QA_GEOMETRY</span>
+            <span id="fc-card-interval-tag" style="font-family:var(--font-mono);">Int: 1d</span>
+          </div>
+
+          <div class="flashcard-content-area" id="fc-card-body">
+            Front Text Here
+          </div>
+
+          <div style="font-size:11px; color:var(--text-muted); text-align:center;" id="fc-card-cue">
+            Tap card to flip answer
+          </div>
+        </div>
+      </div>
+
+      <!-- 4-Button SM-2 Grading Bar (Revealed after flip) -->
+      <div id="fc-study-actions" style="display:none; margin-top:12px;">
+        <span style="font-size:11px; font-weight:700; color:var(--text-muted); display:block; text-align:center; margin-bottom:6px;">Select Recall Quality:</span>
+        <div class="sm2-grade-bar">
+          <button class="btn btn-sm2-again" onclick="CGL_OS.gradeStudyFlashcard(1)">Again (&lt;1d)</button>
+          <button class="btn btn-sm2-hard" onclick="CGL_OS.gradeStudyFlashcard(2)">Hard (+2d)</button>
+          <button class="btn btn-sm2-good" onclick="CGL_OS.gradeStudyFlashcard(3)">Good (+5d)</button>
+          <button class="btn btn-sm2-easy" onclick="CGL_OS.gradeStudyFlashcard(4)">Easy (+14d)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ==================== 25. DISASTER RECOVERY RESTORE MODAL ==================== -->
   <div class="modal-overlay" id="modal-backup-restore">
     <div class="modal-window" style="max-width:480px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1190,7 +1330,7 @@
   </div>
 
 
-  <!-- ==================== 24. HARDENED PAUSE OVERLAY SHIELD ==================== -->
+  <!-- ==================== 26. HARDENED PAUSE OVERLAY SHIELD ==================== -->
   <div id="pause-shield">
     <h2 style="font-size:22px; font-weight:800; margin-bottom:8px; color:#fff;">TEST PAUSED</h2>
     <p style="font-size:13px; color:var(--text-muted); max-width:280px; margin-bottom:20px;">
@@ -1204,7 +1344,7 @@
   </div>
 
 
-  <!-- ==================== 25. BOTTOM NAVIGATION ==================== -->
+  <!-- ==================== 27. BOTTOM NAVIGATION ==================== -->
   <nav id="bottom-nav">
     <button class="nav-btn active" id="nav-btn-tab-dashboard" onclick="CGL_OS.switchTab('tab-dashboard', this)">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
@@ -1219,14 +1359,14 @@
       Console
     </button>
     <button class="nav-btn" id="nav-btn-tab-vault" onclick="CGL_OS.switchTab('tab-vault', this)">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-      Vault
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+      Flashcards
     </button>
   </nav>
 
   <div id="print-sheet-root" style="display:none;" class="print-page"></div>
 
   <!-- Master JavaScript Logic with WebAPK Cache-Busting Parameter -->
-  <script src="app.js?v=2.0"></script>
+  <script src="app.js?v=2.2"></script>
 </body>
 </html>
