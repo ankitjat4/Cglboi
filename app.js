@@ -1,7 +1,7 @@
 /**
  * SSC CGL Intelligence OS - Core Engine
  * Master Application Controller (Part 1 of 2)
- * Schema Version: 14 | Hardened Multi-Store Transaction Harness + Zero-Flicker Synapse
+ * Schema Version: 15 | Tactical Command Center & Universal CGL Typesetter
  */
 
 // Global window anchor registration
@@ -9,7 +9,7 @@ window.CGL_OS = null;
 
 const CGL_OS = (() => {
   const DB_NAME = "cgl_os_db";
-  const DB_VERSION = 14;
+  const DB_VERSION = 15;
   let db = null;
   let dbInitPromise = null;
 
@@ -27,15 +27,21 @@ const CGL_OS = (() => {
   let currentCompSheets = [];
   let currentConceptImageBase64 = "";
 
-  // Universal Anki Forge & Vault State (Tab 4 Refactor)
+  // Universal Anki Forge & Scalable Vault State (Tab 4)
   let currentFcFrontImgBase64 = "";
   let currentFcBackImgBase64 = "";
   let activeVaultDeck = [];
   let activeVaultIndex = 0;
   let activeVaultFlipped = false;
+  let vaultSearchQuery = "";
+  let vaultActiveTag = "ALL";
 
   // Synapse Knowledge Graph State (Synchronous Zero-Flicker)
   let synapseTreeBuilt = false;
+
+  // Interactive Cognitive Trap Clinic State
+  let activeClinicTrapType = "TIME_TRAP_Q4";
+  let activeClinicQuestions = [];
 
   // Disaster Recovery Hydration State
   let pendingHydrationData = null;
@@ -48,7 +54,9 @@ const CGL_OS = (() => {
     "CONCEPT_VOID",
     "RUSHED_PANIC",
     "TIME_TRAP_Q4",
-    "SECOND_GUESS_BLUNDER"
+    "SECOND_GUESS_BLUNDER",
+    "SPEED_MISREAD",
+    "VALID_CALCULATED_RISK"
   ];
 
   // Default Invariable Taxonomy Baseline
@@ -105,7 +113,7 @@ const CGL_OS = (() => {
       options: ["Article 124", "Article 131", "Article 214", "Article 143"],
       correctIndex: 0,
       explanation: "Article 124 of the Constitution establishes the Supreme Court of India and governs its composition, appointment of judges, and operational rules.",
-      tags: ["Polity", "SupremeCourt"],
+      tags: ["Polity", "SupremeCourt", "Articles"],
       annotation: ""
     },
     {
@@ -120,7 +128,7 @@ const CGL_OS = (() => {
       options: ["$60^\\circ$", "$70^\\circ$", "$80^\\circ$", "$75^\\circ$"],
       correctIndex: 1,
       explanation: "Opposite angles sum to $180^\\circ$: $(2x + 10) + (3x + 20) = 180 \\implies 5x + 30 = 180 \\implies 5x = 150 \\implies x = 30^\\circ$. Therefore, $\\angle A = 2(30) + 10 = 70^\\circ$.",
-      tags: ["Geometry", "CyclicQuadrilateral"],
+      tags: ["Geometry", "CyclicQuadrilateral", "Formula"],
       annotation: ""
     },
     {
@@ -165,7 +173,7 @@ const CGL_OS = (() => {
       options: ["$124^\\circ$", "$136^\\circ$", "$112^\\circ$", "$146^\\circ$"],
       correctIndex: 0,
       explanation: "Incenter formula: $\\angle BIC = 90^\\circ + \\frac{\\angle A}{2} = 90^\\circ + 34^\\circ = 124^\\circ$.",
-      tags: ["Geometry", "Incenter"],
+      tags: ["Geometry", "Incenter", "Formula"],
       annotation: ""
     }
   ];
@@ -328,21 +336,57 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 2. FORMATTING, MATHJAX CONVERTER & IMAGE COMPRESSION
+   * 2. UNIVERSAL SSC CGL TYPESETTER & FORMATTING ENGINE
    * ------------------------------------------------------------- */
   function formatRichText(str) {
     if (!str) return "";
     let out = String(str);
 
+    // Callout Blocks
     out = out.replace(/^>\s*\[!trap\]\s*(.*)$/gm, '<div class="callout-box trap"><b>⚠️ Trapping Point:</b> $1</div>');
     out = out.replace(/^>\s*\[!formula\]\s*(.*)$/gm, '<div class="callout-box formula"><b>⚡ Formula:</b> $1</div>');
     out = out.replace(/^>\s*\[!tip\]\s*(.*)$/gm, '<div class="callout-box"><b>💡 Tip:</b> $1</div>');
 
+    // Headers
     out = out.replace(/^### (.*$)/gim, '<h3 style="font-size:15px; font-weight:700; color:var(--accent-cyan); margin:10px 0 4px 0;">$1</h3>');
     out = out.replace(/^## (.*$)/gim, '<h2 style="font-size:17px; font-weight:800; color:#fff; margin:12px 0 6px 0;">$1</h2>');
     out = out.replace(/^# (.*$)/gim, '<h1 style="font-size:19px; font-weight:800; color:#fff; margin:14px 0 8px 0;">$1</h1>');
     out = out.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 
+    // Archetype 1: Reading Passages & Cloze Context Box
+    out = out.replace(/(?:Passage|Directions?\s*\([^)]+\)|Read the following passage[^:]*:)\s*([\s\S]+?)(?=(?:Q\.\s*|Question\s*\d*:|Statement|Statements|Conclusion|\n\n[A-Z]|$))/i, (match, body) => {
+      return `<div class="q-passage-container"><span class="q-passage-tag">Passage / Reading Context</span>${body.trim()}</div>`;
+    });
+
+    // Archetype 2: Assertion & Reason Blocks
+    out = out.replace(/(?:Assertion\s*\(?A\)?|Assertion\s*:)\s*([^\n]+)/gi, '<div class="q-assertion-box"><b>[A] Assertion:</b> $1</div>');
+    out = out.replace(/(?:Reason\s*\(?R\)?|Reason\s*:)\s*([^\n]+)/gi, '<div class="q-reason-box"><b>[R] Reason:</b> $1</div>');
+
+    // Archetype 3: Syllogisms & Statements / Conclusions
+    out = out.replace(/(?:Statements?\s*:)\s*([\s\S]+?)(?=(?:Conclusions?\s*:|Conclusions?|$))/i, (match, body) => {
+      const items = body.split(/(?:\(\d+\)|\(\w+\)|\d+\.|\n•|\n-)/).map(s => s.trim()).filter(Boolean);
+      const rows = items.map((item, idx) => `
+        <div class="q-itemized-row">
+          <span class="q-item-num">(${idx + 1})</span>
+          <span>${item}</span>
+        </div>
+      `).join('');
+      return `<div class="q-structured-block"><div class="q-block-header"><span>📋 Statements:</span></div>${rows}</div>`;
+    });
+
+    out = out.replace(/(?:Conclusions?\s*:)\s*([\s\S]+?)(?=(?:\n\n[A-Z]|Options?|$))/i, (match, body) => {
+      const roman = ["I", "II", "III", "IV", "V", "VI"];
+      const items = body.split(/(?:\(\d+\)|\(\w+\)|\[\w+\]|\d+\.|\n•|\n-)/).map(s => s.trim()).filter(Boolean);
+      const rows = items.map((item, idx) => `
+        <div class="q-itemized-row">
+          <span class="q-item-num">[${roman[idx] || (idx + 1)}]</span>
+          <span>${item}</span>
+        </div>
+      `).join('');
+      return `<div class="q-structured-block" style="margin-top:6px;"><div class="q-block-header"><span style="color:var(--accent-purple-light);">🎯 Conclusions:</span></div>${rows}</div>`;
+    });
+
+    // Markdown Table Conversion
     out = out.replace(/(\|[^\n]+\|\r?\n)((?:\|:?[-]+:?)+\|)(\r?\n(?:\|[^\n]+\|\r?\n?)+)/g, (match, headerLine, alignLine, bodyLines) => {
       const headers = headerLine.trim().split('|').filter(c => c.trim().length > 0).map(c => `<th>${c.trim()}</th>`).join('');
       const rows = bodyLines.trim().split('\n').map(row => {
@@ -352,6 +396,7 @@ const CGL_OS = (() => {
       return `<table class="document-table"><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table>`;
     });
 
+    // KaTeX Inline & Display Math Parsing
     if (window.katex) {
       out = out.replace(/\$\$([\s\S]*?)\$\$/g, (m, f) => {
         try { return katex.renderToString(f, { displayMode: true, throwOnError: false }); } catch (e) { return m; }
@@ -360,6 +405,7 @@ const CGL_OS = (() => {
         try { return katex.renderToString(f, { displayMode: false, throwOnError: false }); } catch (e) { return m; }
       });
     }
+
     return out.replace(/\n/g, "<br>");
   }
 
@@ -440,7 +486,7 @@ const CGL_OS = (() => {
       const req = indexedDB.open(DB_NAME, DB_VERSION);
 
       req.onblocked = () => {
-        console.warn("Database upgrade temporarily blocked. Closing pending connections.");
+        console.warn("Database upgrade temporarily blocked. Closing pending connection.");
         if (db) { db.close(); db = null; }
       };
 
@@ -1308,7 +1354,7 @@ const CGL_OS = (() => {
     }
 
     if (linked.length > 0) {
-      compileAndLaunchArena(`Drill: ${chapter}`, linked.slice(0, 10), 10);
+      compileAndLaunchArena(`Drill: ${chapter}`, linked.slice(0, 10), 10, false);
     } else {
       alert(`No questions found in bank for ${chapter}.`);
     }
@@ -1331,7 +1377,7 @@ const CGL_OS = (() => {
       return;
     }
 
-    compileAndLaunchArena(`Sheet Drill: ${sheet.title}`, linked.slice(0, 10), Math.max(5, Math.round(linked.slice(0, 10).length * 1.5)));
+    compileAndLaunchArena(`Sheet Drill: ${sheet.title}`, linked.slice(0, 10), Math.max(5, Math.round(linked.slice(0, 10).length * 1.5)), false);
   }
 
   async function openCompendiumStudio() {
@@ -2106,7 +2152,6 @@ const CGL_OS = (() => {
       `;
       panicFlag.style.display = resp.isPanicSlip ? "inline-block" : "none";
 
-      // CLOCK SYNC FIX: Synchronize live timer text with the question's recorded dwell time
       const spent = resp.timeSpentSec || 0;
       const mSpent = Math.floor(spent / 60);
       const sSpent = spent % 60;
@@ -2161,7 +2206,6 @@ const CGL_OS = (() => {
       imgBox.innerHTML = "";
     }
 
-    // Bi-Directional Concept Bridge Button in Review Mode
     if (isRev) {
       conceptBridgeBox.style.display = "block";
       const bridgeBtn = document.getElementById("btn-jump-to-concept");
@@ -2176,7 +2220,7 @@ const CGL_OS = (() => {
       conceptBridgeBox.style.display = "none";
     }
 
-    // Review Mode Telemetry Banner
+    // Telemetry Banner in Review Mode
     if (isRev) {
       const isAtt = resp.selectedOption !== null && resp.selectedOption !== undefined;
       const isCor = isAtt && resp.selectedOption === q.correctIndex;
@@ -2194,25 +2238,31 @@ const CGL_OS = (() => {
               <b>Hesitation Trail:</b> ${resp.decisionTrail.map(d => `Opt ${d.opt} (${d.atSec}s)`).join(' ➔ ')}
             </div>
           ` : ''}
-          ${resp.isPanicSlip ? `<div style="margin-top:4px; color:var(--status-red); font-size:11px; font-weight:700;">⚠️ Detected as Panic Slip (&lt;12s solve in final minutes).</div>` : ''}
-          ${resp.errorTag && resp.errorTag !== 'UNCLASSIFIED' ? `<div style="margin-top:4px; color:#f87171; font-size:11px;"><b>Trap Classification:</b> #${resp.errorTag}</div>` : ''}
+          ${resp.isPanicSlip ? `<div style="margin-top:4px; color:var(--status-red); font-size:11px; font-weight:700;">⚠️ Detected as Panic Slip (&lt;8s solve under end-of-section pressure).</div>` : ''}
+          ${resp.errorTag && resp.errorTag !== 'UNCLASSIFIED' && resp.errorTag !== 'VALID_CALCULATED_RISK' ? `<div style="margin-top:4px; color:#f87171; font-size:11px;"><b>Active Classification:</b> #${resp.errorTag}</div>` : ''}
+          ${resp.errorTag === 'VALID_CALCULATED_RISK' ? `<div style="margin-top:4px; color:var(--status-green); font-size:11px;"><b>Tag Cleared:</b> Valid Calculated Risk / Speed Move</div>` : ''}
         </div>
       `;
 
       solutionBlock.style.display = "block";
       const currentTag = resp.errorTag || "UNCLASSIFIED";
 
-      let optionsHtml = `<option value="UNCLASSIFIED" ${currentTag==='UNCLASSIFIED'?'selected':''}>Tag Mistake Type...</option>`;
+      let optionsHtml = `
+        <option value="UNCLASSIFIED" ${currentTag==='UNCLASSIFIED'?'selected':''}>Select / Override Mistake Tag...</option>
+        <option value="VALID_CALCULATED_RISK" ${currentTag==='VALID_CALCULATED_RISK'?'selected':''}>✓ Valid Calculated Risk (Clear Trap Penalty)</option>
+      `;
       customMistakeTags.forEach(t => {
-        optionsHtml += `<option value="${t}" ${currentTag===t?'selected':''}>${t.replace(/_/g, ' ')}</option>`;
+        if (t !== "VALID_CALCULATED_RISK") {
+          optionsHtml += `<option value="${t}" ${currentTag===t?'selected':''}>${t.replace(/_/g, ' ')}</option>`;
+        }
       });
-      optionsHtml += `<option value="__NEW_TAG__">+ Create New Tag...</option>`;
+      optionsHtml += `<option value="__NEW_TAG__">+ Create New Custom Tag...</option>`;
 
       solutionBlock.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
           <span style="font-weight:700; color:var(--accent-cyan); font-size:13px;">Method & Detailed Solution</span>
-          ${!isCor && isAtt ? `
-            <select onchange="CGL_OS.handleMistakeTagSelect('${q.id}', this.value)" style="background:#151a24; color:#fff; border:1px solid #da3633; font-size:11px; padding:3px 6px; border-radius:4px;">
+          ${isAtt ? `
+            <select onchange="CGL_OS.handleMistakeTagSelect('${q.id}', this.value)" style="background:#151a24; color:#fff; border:1px solid #da3633; font-size:11px; padding:4px 8px; border-radius:4px;">
               ${optionsHtml}
             </select>
           ` : ''}
@@ -2284,6 +2334,7 @@ const CGL_OS = (() => {
     if (!isRev) activeExam.currentQTimeSpentSec = 0;
   }
 
+  // Navigation Buttons
   document.getElementById("btn-q-save-next").addEventListener("click", () => {
     const q = activeExam.questions[activeExam.currentQuestionIndex];
     const resp = activeExam.userResponses[q.id];
@@ -2326,6 +2377,7 @@ const CGL_OS = (() => {
   });
 
   function toggleExamPalette(forceOpen = null) {
+    if (document.activeElement) document.activeElement.blur();
     const drawer = document.getElementById("exam-palette-drawer");
     const overlay = document.getElementById("exam-drawer-overlay");
     const isOpen = drawer.classList.contains("open");
@@ -2349,22 +2401,24 @@ const CGL_OS = (() => {
     tabsWrap.innerHTML = "";
 
     const isRev = !!activeExam.isReviewMode;
+    const isLocked = activeExam.isSectionLocked && !isRev;
 
     activeExam.sections.forEach((sec, sIdx) => {
       const tabBtn = document.createElement("button");
       tabBtn.className = "anchor-pill" + (sIdx === activeExam.activeSectionIndex ? " active" : "");
       
-      if (!isRev && activeExam.isSectionLocked && sec.locked) {
+      if (isLocked && sec.locked) {
         tabBtn.innerText = `🔒 ${sec.name.split(" ")[0]}`;
         tabBtn.style.opacity = "0.5";
         tabBtn.style.cursor = "not-allowed";
+      } else if (isLocked && sIdx > activeExam.activeSectionIndex) {
+        tabBtn.innerText = `⏳ ${sec.name.split(" ")[0]}`;
+        tabBtn.style.opacity = "0.6";
       } else {
         tabBtn.innerText = sec.name.split(" ")[0];
         tabBtn.addEventListener("click", () => {
-          if (!isRev && activeExam.isSectionLocked) {
-            if (sIdx !== activeExam.activeSectionIndex) {
-              alert("Sectional lock is active! Sections must be completed sequentially.");
-            }
+          if (isLocked && sIdx !== activeExam.activeSectionIndex) {
+            alert("Sectional lock is active! Sections must be completed sequentially.");
             return;
           }
           activeExam.activeSectionIndex = sIdx;
@@ -2374,8 +2428,13 @@ const CGL_OS = (() => {
       tabsWrap.appendChild(tabBtn);
     });
 
-    const targetSec = filterSectionIndex !== null ? filterSectionIndex : (!isRev && activeExam.isSectionLocked ? activeExam.activeSectionIndex : null);
-    const displayedQs = targetSec !== null ? activeExam.questions.filter(q => q.sectionIndex === targetSec) : activeExam.questions;
+    const targetSec = filterSectionIndex !== null 
+      ? filterSectionIndex 
+      : (isLocked ? activeExam.activeSectionIndex : null);
+      
+    const displayedQs = targetSec !== null 
+      ? activeExam.questions.filter(q => q.sectionIndex === targetSec) 
+      : activeExam.questions;
 
     if (!isRev) {
       let ans = 0, marked = 0, unans = 0;
@@ -2392,7 +2451,7 @@ const CGL_OS = (() => {
 
     displayedQs.forEach(q => {
       const resp = activeExam.userResponses[q.id] || {};
-      const isSecLocked = !isRev && activeExam.sections[q.sectionIndex] && activeExam.sections[q.sectionIndex].locked;
+      const isSecLocked = isLocked && activeExam.sections[q.sectionIndex] && activeExam.sections[q.sectionIndex].locked;
 
       const cell = document.createElement("div");
       cell.className = "palette-cell";
@@ -2421,6 +2480,10 @@ const CGL_OS = (() => {
           alert("This section is sealed and locked!");
           return;
         }
+        if (isLocked && q.sectionIndex !== activeExam.activeSectionIndex) {
+          alert("Cannot access future sections until current section is locked!");
+          return;
+        }
         activeExam.currentQuestionIndex = activeExam.questions.findIndex(item => item.id === q.id);
         toggleExamPalette(false);
         renderActiveExamQuestion();
@@ -2430,16 +2493,21 @@ const CGL_OS = (() => {
     });
   }
 
-  document.getElementById("btn-arena-pause").addEventListener("click", async () => {
-    if (!activeExam || activeExam.isReviewMode) return;
-    activeExam.isPaused = true;
-    clearInterval(examTimerInterval);
-    clearInterval(questionTimerInterval);
-    await putRecord("store_active_session", { id: "current_session", session: activeExam });
+  // Zero-Ghost Touch Bindings for HUD Action Icons
+  const pauseBtnEl = document.getElementById("btn-arena-pause");
+  if (pauseBtnEl) {
+    pauseBtnEl.addEventListener("pointerdown", async (e) => {
+      e.preventDefault();
+      if (!activeExam || activeExam.isReviewMode) return;
+      activeExam.isPaused = true;
+      clearInterval(examTimerInterval);
+      clearInterval(questionTimerInterval);
+      await putRecord("store_active_session", { id: "current_session", session: activeExam });
 
-    const shield = document.getElementById("pause-shield");
-    shield.style.setProperty("display", "flex", "important");
-  });
+      const shield = document.getElementById("pause-shield");
+      shield.style.setProperty("display", "flex", "important");
+    });
+  }
 
   document.getElementById("btn-resume-exam").addEventListener("click", () => {
     const shield = document.getElementById("pause-shield");
@@ -2520,7 +2588,7 @@ const CGL_OS = (() => {
     }
   });
 
-  // SUBMISSION ENGINE: Auto-Classifies Cognitive Traps & Writes Atomically
+  // SUBMISSION ENGINE: High-Fidelity Heuristics (Distinguishes Instant Recall from Panic)
   async function submitExamSession() {
     clearInterval(examTimerInterval);
     clearInterval(questionTimerInterval);
@@ -2533,8 +2601,11 @@ const CGL_OS = (() => {
       if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
         const isCorrect = resp.selectedOption === q.correctIndex;
         
-        if (resp.timeSpentSec < 12 && activeExam.sectionRemainingSec < 180) {
+        // Gate: Fast solve is ONLY a panic slip if it resulted in an INCORRECT answer under time pressure
+        if (!isCorrect && resp.timeSpentSec <= 8 && activeExam.sectionRemainingSec < 90) {
           resp.isPanicSlip = true;
+        } else {
+          resp.isPanicSlip = false;
         }
 
         if (isCorrect) {
@@ -2542,6 +2613,9 @@ const CGL_OS = (() => {
           correct++;
           if (resp.initialOption !== null && resp.initialOption !== q.correctIndex) {
             switchDelta++;
+          }
+          if (resp.timeSpentSec <= 10) {
+            resp.errorTag = "SPEED_MASTERY";
           }
         } else {
           totalMarks -= 0.5;
@@ -2554,7 +2628,7 @@ const CGL_OS = (() => {
 
           if (resp.timeSpentSec > 90) traps++;
 
-          // Cognitive Trap Auto-Classification Heuristics
+          // Auto-classification for errors
           if (!resp.errorTag || resp.errorTag === "UNCLASSIFIED") {
             if (resp.isPanicSlip) {
               resp.errorTag = "PANIC_SLIP";
@@ -2562,6 +2636,8 @@ const CGL_OS = (() => {
               resp.errorTag = "SECOND_GUESS_BLUNDER";
             } else if (resp.timeSpentSec > 90) {
               resp.errorTag = "TIME_TRAP_Q4";
+            } else if (resp.timeSpentSec <= 12) {
+              resp.errorTag = "SPEED_MISREAD";
             } else {
               resp.errorTag = "CONCEPT_VOID";
             }
@@ -2585,12 +2661,7 @@ const CGL_OS = (() => {
     await deleteRecordFromStore("store_active_session", "current_session");
     hideMiniPlayer();
 
-    // Clone-Safe Write
-    const isSaved = await putRecord("store_attempts", activeExam);
-    if (!isSaved) {
-      console.warn("Retrying attempt persistence with sanitized payload...");
-      await putRecord("store_attempts", sanitizeAttempt(activeExam, 0));
-    }
+    await putRecord("store_attempts", activeExam);
 
     document.getElementById("exam-arena").style.display = "none";
     await renderDashboard();
@@ -2972,7 +3043,6 @@ const CGL_OS = (() => {
     if (!att) return;
     activeReviewAttempt = att;
 
-    // Auto-dismiss History Archive modal to prevent z-index layering conflicts
     const archiveModal = document.getElementById("modal-history-archive");
     if (archiveModal && archiveModal.classList.contains("active")) {
       archiveModal.classList.remove("active");
@@ -2994,7 +3064,7 @@ const CGL_OS = (() => {
     document.getElementById("btn-review-reattempt").onclick = () => reattemptMock(att.sessionId);
     document.getElementById("btn-review-save-fixed").onclick = () => openSaveBlueprintModal("FIXED_PAPER", att.sessionId);
 
-    // THREADED ATTEMPT ITERATION SWITCHER
+    // Threaded Attempt Iteration Switcher
     const rootId = att.parentSessionId || att.sessionId;
     const allAttempts = await getAllRecords("store_attempts");
     const thread = allAttempts.filter(a => a.sessionId === rootId || a.parentSessionId === rootId);
@@ -3017,7 +3087,7 @@ const CGL_OS = (() => {
       switchWrap.style.display = "none";
     }
 
-    // HIGH-FIDELITY SECTIONAL BREAKDOWN
+    // High-Fidelity Sectional Breakdown
     const secGrid = document.getElementById("rev-sectional-breakdown-grid");
     secGrid.innerHTML = "";
     const secScores = {};
@@ -3081,14 +3151,14 @@ const CGL_OS = (() => {
     const tagCounts = {};
     if (att.userResponses) {
       Object.values(att.userResponses).forEach(r => {
-        if (r && r.errorTag && r.errorTag !== "UNCLASSIFIED") {
+        if (r && r.errorTag && r.errorTag !== "UNCLASSIFIED" && r.errorTag !== "VALID_CALCULATED_RISK") {
           tagCounts[r.errorTag] = (tagCounts[r.errorTag] || 0) + 1;
         }
       });
     }
 
     if (Object.keys(tagCounts).length === 0) {
-      tagPills.innerHTML = `<span style="font-size:11px; color:var(--text-muted);">No tagged errors registered for this attempt.</span>`;
+      tagPills.innerHTML = `<span style="font-size:11px; color:var(--text-muted);">Zero active trap penalties logged for this attempt.</span>`;
     } else {
       Object.keys(tagCounts).forEach(tag => {
         const span = document.createElement("span");
@@ -3110,6 +3180,7 @@ const CGL_OS = (() => {
     openMockReview(targetSessionId);
   }
 
+  // User Sovereignty Override Engine (Allows changing or clearing trap classifications)
   async function handleMistakeTagSelect(qId, val) {
     if (val === "__NEW_TAG__") {
       const raw = prompt("Enter new custom mistake tag (e.g., RUSHED_PANIC):");
@@ -3129,13 +3200,93 @@ const CGL_OS = (() => {
     if (!activeReviewAttempt || !activeReviewAttempt.userResponses) return;
     if (activeReviewAttempt.userResponses[qId]) {
       activeReviewAttempt.userResponses[qId].errorTag = tag;
+      if (tag === "VALID_CALCULATED_RISK" || tag === "UNCLASSIFIED") {
+        activeReviewAttempt.userResponses[qId].isPanicSlip = false;
+      }
       await putRecord("store_attempts", activeReviewAttempt);
     }
     renderDashboard();
+    openMockReview(activeReviewAttempt);
   }
 
   /* -------------------------------------------------------------
-   * 13. INTERACTIVE SUBJECT DIAGNOSTIC MODAL
+   * 13. COGNITIVE TRAP CLINIC MODAL & REVERSE LOOKUP
+   * ------------------------------------------------------------- */
+  async function openTrapClinicModal(trapType) {
+    activeClinicTrapType = trapType;
+    document.getElementById("trap-clinic-title").innerText = `Trap Clinic: #${trapType.replace(/_/g, ' ')}`;
+
+    const allAttempts = await getAllRecords("store_attempts");
+    const completed = allAttempts.filter(a => a.completed);
+    activeClinicQuestions = [];
+
+    completed.forEach(att => {
+      if (att.questions && Array.isArray(att.questions) && att.userResponses) {
+        att.questions.forEach(q => {
+          const resp = att.userResponses[q.id];
+          if (resp && resp.errorTag === trapType) {
+            activeClinicQuestions.push({
+              mockTitle: att.title,
+              mockDate: att.timeIST || formatISTDate(att.timestamp),
+              question: q,
+              response: resp
+            });
+          }
+        });
+      }
+    });
+
+    document.getElementById("trap-clinic-summary-badge").innerText = `${activeClinicQuestions.length} Vulnerabilities Registered`;
+
+    const list = document.getElementById("trap-clinic-question-list");
+    list.innerHTML = "";
+
+    if (activeClinicQuestions.length === 0) {
+      list.innerHTML = `<p style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">Zero recorded errors matching #${trapType}. Excellent mastery!</p>`;
+    } else {
+      activeClinicQuestions.forEach((item, idx) => {
+        const div = document.createElement("div");
+        div.className = "card";
+        div.style.padding = "12px";
+        div.style.marginBottom = "8px";
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <span class="badge" style="background:#1f6feb;">${item.question.subject} • ${item.question.chapter}</span>
+            <span style="font-family:var(--font-mono); font-size:11px; color:#f87171;">${item.response.timeSpentSec || 0}s spent</span>
+          </div>
+          <div style="font-size:13px; color:#fff; line-height:1.5; margin:6px 0;">${formatRichText(item.question.questionText)}</div>
+          <div style="font-size:11.5px; color:var(--text-muted); line-height:1.4;">
+            <b>Solution Key:</b> Option ${item.question.correctIndex + 1} | <i>${item.question.explanation || 'No derivation registered.'}</i>
+          </div>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    pushNavLayer("modal-trap-clinic", () => {
+      document.getElementById("modal-trap-clinic").classList.remove("active");
+    });
+    document.getElementById("modal-trap-clinic").classList.add("active");
+  }
+
+  function drillFilteredTrapQuestions() {
+    if (activeClinicQuestions.length === 0) {
+      alert("No trap questions available to drill.");
+      return;
+    }
+    document.getElementById("modal-trap-clinic").classList.remove("active");
+    const uniquePool = [];
+    activeClinicQuestions.forEach(item => {
+      if (!uniquePool.some(q => q.id === item.question.id)) {
+        uniquePool.push(item.question);
+      }
+    });
+
+    compileAndLaunchArena(`Trap Drill: #${activeClinicTrapType}`, uniquePool, Math.max(5, uniquePool.length * 2), false);
+  }
+
+  /* -------------------------------------------------------------
+   * 14. INTERACTIVE SUBJECT DIAGNOSTIC MODAL
    * ------------------------------------------------------------- */
   async function openSubjectDiagnosticModal(subKey) {
     const sub = TAXONOMY[subKey];
@@ -3287,7 +3438,7 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 14. MULTI-TIER AI EXPORTS & HIERARCHICAL MASTER LEDGER
+   * 15. MULTI-TIER AI EXPORTS & HIERARCHICAL MASTER LEDGER
    * ------------------------------------------------------------- */
   function openAiExportModal() {
     if (!activeReviewAttempt) return;
@@ -3512,7 +3663,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   /* -------------------------------------------------------------
-   * 15. ONE-TAP GLOBAL 360° MASTER DOSSIER & SCOPED EXTRACTOR
+   * 16. ONE-TAP GLOBAL 360° MASTER DOSSIER & SCOPED EXTRACTOR
    * ------------------------------------------------------------- */
   async function exportGlobalMasterDossier() {
     await exportDossierInternal("ALL", "ALL", "ALL", "HYBRID_CSV", true);
@@ -3661,7 +3812,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   /* -------------------------------------------------------------
-   * 16. DASHBOARD RENDER ENGINE (THREADED ACCORDIONS & METRICS)
+   * 17. DASHBOARD RENDER ENGINE & DYNAMIC ERI CALCULATION
    * ------------------------------------------------------------- */
   async function renderDashboard() {
     const attempts = await getAllRecords("store_attempts");
@@ -3725,41 +3876,61 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     try { await renderDrilldownSubjectLevel(); } catch (e) { console.error("Drilldown error:", e); }
   }
 
+  // DYNAMIC ERI: Acc 50% + Vel 30% + Exp 20% (Zero Vault Volume Penalties)
   function calculateAndRenderERI(accPercent, avgSpeed, flashcards, completedCount) {
+    const scoreVal = document.getElementById("eri-score-val");
+    const statusTier = document.getElementById("eri-status-tier");
+    const breakdownSub = document.getElementById("eri-breakdown-sub");
+    const circle = document.getElementById("eri-gauge-circle");
+
     if (completedCount === 0) {
-      document.getElementById("eri-score-val").innerText = "--";
-      document.getElementById("eri-status-tier").innerText = "Calibrating";
+      if (scoreVal) scoreVal.innerText = "--";
+      if (statusTier) statusTier.innerText = "Calibrating";
+      if (breakdownSub) breakdownSub.innerText = "Complete your first mock to calibrate readiness";
       return;
     }
 
-    const accComponent = accPercent * 0.40;
-    
+    const accComp = (accPercent * 0.50);
+
     let velScore = 100;
-    if (avgSpeed > 45) velScore = Math.max(0, 100 - (avgSpeed - 45) * 2.5);
-    const velComponent = velScore * 0.30;
+    if (avgSpeed > 45) {
+      velScore = Math.max(20, 100 - (avgSpeed - 45) * 1.2);
+    }
+    const velComp = (velScore * 0.30);
 
-    let bankScore = Math.min(100, flashcards.length * 2.5);
-    const bankComponent = bankScore * 0.30;
+    const mockVolumeBonus = Math.min(100, completedCount * 12.5);
+    const consistencyComp = (mockVolumeBonus * 0.20);
 
-    const eri = Math.min(100, Math.max(0, accComponent + velComponent + bankComponent)).toFixed(1);
-    document.getElementById("eri-score-val").innerText = eri;
+    const totalERI = Math.min(100, Math.max(10, accComp + velComp + consistencyComp)).toFixed(1);
 
-    const circle = document.getElementById("eri-gauge-circle");
-    if (circle) circle.setAttribute("stroke-dasharray", `${eri}, 100`);
+    if (scoreVal) scoreVal.innerText = totalERI;
 
-    const tierBadge = document.getElementById("eri-status-tier");
-    if (tierBadge && circle) {
-      if (eri >= 85) {
-        tierBadge.innerText = "Tier-1 Formidable";
-        tierBadge.style.color = "var(--status-green)";
+    if (breakdownSub) {
+      breakdownSub.innerHTML = `
+        Acc: <b style="color:#fff;">${accComp.toFixed(1)}/50</b> (${accPercent}%) &nbsp;•&nbsp; 
+        Vel: <b style="color:#fff;">${velComp.toFixed(1)}/30</b> (${avgSpeed}s) &nbsp;•&nbsp; 
+        Exp: <b style="color:#fff;">${consistencyComp.toFixed(1)}/20</b> (${completedCount} Mocks)
+      `;
+    }
+
+    if (circle) circle.setAttribute("stroke-dasharray", `${totalERI}, 100`);
+
+    if (statusTier && circle) {
+      if (totalERI >= 80) {
+        statusTier.innerText = "Tier-1 Formidable";
+        statusTier.style.color = "var(--status-green)";
         circle.style.stroke = "var(--status-green-border)";
-      } else if (eri >= 70) {
-        tierBadge.innerText = "Competitive Form";
-        tierBadge.style.color = "var(--accent-cyan)";
+      } else if (totalERI >= 65) {
+        statusTier.innerText = "Competitive Form";
+        statusTier.style.color = "var(--accent-cyan)";
         circle.style.stroke = "var(--accent-cyan)";
+      } else if (totalERI >= 50) {
+        statusTier.innerText = "Developing Pace";
+        statusTier.style.color = "var(--status-amber)";
+        circle.style.stroke = "var(--status-amber)";
       } else {
-        tierBadge.innerText = "Vulnerable";
-        tierBadge.style.color = "var(--status-red)";
+        statusTier.innerText = "Vulnerable";
+        statusTier.style.color = "var(--status-red)";
         circle.style.stroke = "var(--status-red)";
       }
     }
@@ -3828,6 +3999,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     }
   }
 
+  // Interactive Cognitive Trap Distribution Heat Strip
   function renderCognitiveTrapHeatStrip(completed) {
     const bar = document.getElementById("dash-trap-heat-bar");
     const legend = document.getElementById("dash-trap-legend");
@@ -3840,7 +4012,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     completed.forEach(att => {
       if (att.userResponses) {
         Object.values(att.userResponses).forEach(r => {
-          if (r && r.errorTag && r.errorTag !== "UNCLASSIFIED") {
+          if (r && r.errorTag && r.errorTag !== "UNCLASSIFIED" && r.errorTag !== "VALID_CALCULATED_RISK") {
             tagCounts[r.errorTag] = (tagCounts[r.errorTag] || 0) + 1;
             totalTagged++;
           }
@@ -3850,7 +4022,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
 
     if (totalTagged === 0) {
       bar.innerHTML = `<div class="trap-heat-seg" style="width:100%; background:var(--status-green);"></div>`;
-      legend.innerHTML = `<span style="color:var(--status-green);">Zero active cognitive traps logged!</span>`;
+      legend.innerHTML = `<span style="color:var(--status-green); font-size:11px;">Zero active cognitive traps logged!</span>`;
       return;
     }
 
@@ -3861,7 +4033,8 @@ ${JSON.stringify(TAXONOMY, null, 2)}
       CONCEPT_VOID: "#38bdf8",
       RUSHED_PANIC: "#f43f5e",
       TIME_TRAP_Q4: "#e11d48",
-      SECOND_GUESS_BLUNDER: "#a855f7"
+      SECOND_GUESS_BLUNDER: "#a855f7",
+      SPEED_MISREAD: "#fb923c"
     };
 
     Object.keys(tagCounts).forEach(tag => {
@@ -3872,11 +4045,14 @@ ${JSON.stringify(TAXONOMY, null, 2)}
       seg.className = "trap-heat-seg";
       seg.style.width = `${percent}%`;
       seg.style.background = segColor;
-      seg.title = `${tag}: ${tagCounts[tag]} (${percent}%)`;
+      seg.title = `Click to drill #${tag} (${tagCounts[tag]} errors)`;
+      seg.onclick = () => openTrapClinicModal(tag);
       bar.appendChild(seg);
 
       const legItem = document.createElement("span");
-      legItem.innerHTML = `<span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:${segColor}; margin-right:4px;"></span>${tag.replace(/_/g, ' ')} (${percent}%)`;
+      legItem.className = "trap-legend-pill";
+      legItem.innerHTML = `<span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:${segColor};"></span>${tag.replace(/_/g, ' ')} (${percent}%)`;
+      legItem.onclick = () => openTrapClinicModal(tag);
       legend.appendChild(legItem);
     });
   }
@@ -3989,7 +4165,6 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     const container = document.getElementById("archive-list-container");
     container.innerHTML = "";
 
-    // Chronological numerical sort (Latest first)
     let list = completed.slice().sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
     if (filterType !== "ALL") {
@@ -4203,10 +4378,45 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   /* -------------------------------------------------------------
-   * 17. UNIVERSAL ANKI FORGE & VAULT (PATH 2 REFACTOR)
+   * 18. SCALABLE COMPACT FLASHCARD VAULT (TAB 4)
    * ------------------------------------------------------------- */
   async function renderVault() {
+    await renderVaultTagPills();
     await renderFlashcardList();
+  }
+
+  async function renderVaultTagPills() {
+    const container = document.getElementById("vault-tag-scroll-pills");
+    if (!container) return;
+    container.innerHTML = "";
+
+    const flashcards = await getAllRecords("store_flashcards");
+    const allTags = new Set();
+    flashcards.forEach(f => {
+      (f.tags || []).forEach(t => allTags.add(t));
+    });
+
+    const createPill = (label, tagVal) => {
+      const btn = document.createElement("button");
+      btn.className = "anchor-pill" + (vaultActiveTag === tagVal ? " active" : "");
+      btn.innerText = label;
+      btn.onclick = () => {
+        vaultActiveTag = tagVal;
+        renderVaultTagPills();
+        renderFlashcardList();
+      };
+      return btn;
+    };
+
+    container.appendChild(createPill("All Tags", "ALL"));
+    allTags.forEach(tag => {
+      container.appendChild(createPill(`#${tag}`, tag));
+    });
+  }
+
+  function handleVaultSearchInput(val) {
+    vaultSearchQuery = val.trim().toLowerCase();
+    renderFlashcardList();
   }
 
   async function renderFlashcardList() {
@@ -4228,34 +4438,72 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     document.getElementById("vault-count-extra").innerText = extraCount;
 
     const filterSub = document.getElementById("vault-deck-filter-sub") ? document.getElementById("vault-deck-filter-sub").value : "ALL";
-    const filteredCards = flashcards.filter(f => filterSub === "ALL" || f.subject === filterSub);
 
-    if (filteredCards.length === 0) {
-      container.innerHTML = `<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:16px;">Vault is clear. Zero cards logged in this selection.</div>`;
+    let filtered = flashcards.filter(f => {
+      const matchSub = (filterSub === "ALL" || f.subject === filterSub);
+      const matchTag = (vaultActiveTag === "ALL" || (Array.isArray(f.tags) && f.tags.includes(vaultActiveTag)));
+      const matchSearch = (!vaultSearchQuery || 
+        f.front.toLowerCase().includes(vaultSearchQuery) || 
+        f.back.toLowerCase().includes(vaultSearchQuery) || 
+        (f.extra && f.extra.toLowerCase().includes(vaultSearchQuery)) || 
+        f.chapter.toLowerCase().includes(vaultSearchQuery)
+      );
+      return matchSub && matchTag && matchSearch;
+    });
+
+    if (filtered.length === 0) {
+      container.innerHTML = `<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:16px;">Zero cards match active filters or search terms.</div>`;
       return;
     }
 
-    filteredCards.slice(0, 30).forEach(f => {
-      const div = document.createElement("div");
-      div.className = "anki-card-item";
+    filtered.forEach(f => {
+      const tile = document.createElement("div");
+      tile.className = "vault-compact-tile";
+      tile.id = `vault-tile-${f.id}`;
 
-      div.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-          <div>
-            <span class="badge" style="background:#151a24; color:var(--accent-purple-light);">${f.subject}</span>
-            <span class="badge" style="background:#151a24; color:var(--accent-cyan); margin-left:4px;">${f.chapter}</span>
+      tile.innerHTML = `
+        <div class="vault-compact-header" onclick="CGL_OS.toggleVaultCardAccordion('${f.id}')">
+          <div style="overflow:hidden; padding-right:8px;">
+            <div style="display:flex; align-items:center; gap:6px; margin-bottom:2px;">
+              <span class="badge" style="background:#151a24; color:var(--accent-cyan); font-size:10px;">${f.subject} • ${f.chapter}</span>
+              <span class="anki-type-tag">${f.cardType || 'BASIC'}</span>
+            </div>
+            <div style="font-size:12.5px; font-weight:600; color:#fff; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">
+              ${f.front.replace(/\$+/g, '').slice(0, 75)}...
+            </div>
           </div>
-          <span class="anki-type-tag">${f.cardType || (f.extra ? 'BASIC_EXTRA' : 'BASIC')}</span>
+          <span style="font-size:12px; color:var(--text-muted); font-family:var(--font-mono);" id="arrow-tile-${f.id}">▼</span>
         </div>
-        <div style="font-size:13.5px; line-height:1.5; margin:6px 0; color:#fff;">${formatRichText(f.front)}</div>
-        <div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;"><b>Back:</b> ${f.back ? f.back.slice(0, 90) : ''}...</div>
-        ${f.extra ? `<div style="font-size:10px; color:var(--accent-cyan); margin-bottom:6px;"><b>Extra:</b> ${f.extra.slice(0, 70)}...</div>` : ''}
-        <div style="display:flex; justify-content:flex-end; gap:6px;">
-          <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openFlashcardEditorModal(false, '${f.id}')">Edit</button>
+
+        <div class="vault-compact-drawer">
+          <div style="font-size:14px; line-height:1.6; color:#fff; margin-bottom:8px;">
+            <b>Prompt (Front):</b><br>${formatRichText(f.front)}
+          </div>
+          ${f.frontImageUrl ? `<div class="fc-img-box"><img src="${f.frontImageUrl}" alt="Front Image"></div>` : ''}
+          <div style="font-size:13.5px; line-height:1.6; color:var(--accent-cyan); margin-bottom:8px;">
+            <b>Solution (Back):</b><br>${formatRichText(f.back)}
+          </div>
+          ${f.backImageUrl ? `<div class="fc-img-box"><img src="${f.backImageUrl}" alt="Back Proof"></div>` : ''}
+          ${f.extra ? `<div class="callout-box" style="margin-top:6px; font-size:12px;"><b>Extra Derivation:</b><br>${formatRichText(f.extra)}</div>` : ''}
+          
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; border-top:1px solid rgba(255,255,255,0.06); padding-top:8px;">
+            <div style="font-size:10.5px; color:var(--text-muted);">
+              ${(f.tags || []).map(t => `#${t}`).join(' ')}
+            </div>
+            <button class="btn btn-secondary" style="padding:3px 10px; font-size:11px;" onclick="CGL_OS.openFlashcardEditorModal(false, '${f.id}')">Edit Card</button>
+          </div>
         </div>
       `;
-      container.appendChild(div);
+      container.appendChild(tile);
     });
+  }
+
+  function toggleVaultCardAccordion(id) {
+    const tile = document.getElementById(`vault-tile-${id}`);
+    if (!tile) return;
+    const isOpen = tile.classList.toggle("open");
+    const arrow = document.getElementById(`arrow-tile-${id}`);
+    if (arrow) arrow.innerText = isOpen ? "▲" : "▼";
   }
 
   async function launchUntimedQuickCarousel() {
@@ -4527,7 +4775,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   /* -------------------------------------------------------------
-   * 18. QUESTION GUI EDITOR
+   * 19. QUESTION GUI EDITOR
    * ------------------------------------------------------------- */
   let currentQuestionImageBase64 = "";
 
@@ -4620,7 +4868,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   /* -------------------------------------------------------------
-   * 19. HARDENED COMMAND BUS & CURATED PAPER PIPELINE
+   * 20. HARDENED COMMAND BUS & CURATED PAPER PIPELINE
    * ------------------------------------------------------------- */
   async function executeConsoleCommand() {
     const raw = document.getElementById("console-payload").value.trim();
@@ -4646,7 +4894,6 @@ ${JSON.stringify(TAXONOMY, null, 2)}
           orderedMockQuestionIds = []
         } = cmd.payload || {};
 
-        // Atomic write of new sheets and new questions
         await runTx(["store_concepts", "store_questions", "store_saved_mocks"], "readwrite", async (tx) => {
           const stC = tx.objectStore("store_concepts");
           dossiers.forEach(d => stC.put(sanitizeDossier(d)));
@@ -4655,7 +4902,6 @@ ${JSON.stringify(TAXONOMY, null, 2)}
           newQuestions.forEach(q => stQ.put(sanitizeQuestion(q)));
         });
 
-        // Link pre-existing questions to newly added sheets
         if (linkExistingQuestions.length > 0) {
           for (const link of linkExistingQuestions) {
             const oldQ = await getRecord("store_questions", link.questionId);
@@ -4666,7 +4912,6 @@ ${JSON.stringify(TAXONOMY, null, 2)}
           }
         }
 
-        // Resolve all referenced questions in exact specified order
         const allQuestions = await getAllRecords("store_questions");
         const resolvedQuestions = [];
         orderedMockQuestionIds.forEach(targetId => {
@@ -4694,7 +4939,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
         await renderDashboardBlueprints();
 
         if (launchImmediately) {
-          compileAndLaunchArena(title, resolvedQuestions, durationMin);
+          compileAndLaunchArena(title, resolvedQuestions, durationMin, isSectionLocked);
         }
 
       // 2. Curated Paper Generator (Resolve existing IDs + Ingest authoring + Pin preset)
@@ -4749,7 +4994,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
         await renderDashboardBlueprints();
 
         if (launchImmediately) {
-          compileAndLaunchArena(title, combinedPool, durationMin);
+          compileAndLaunchArena(title, combinedPool, durationMin, isSectionLocked);
         }
 
       // 3. Clinical AI Consultation Bundle Execution
@@ -4784,7 +5029,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
                 const stQ = tx.objectStore("store_questions");
                 questions.forEach(q => stQ.put(q));
               });
-              compileAndLaunchArena(act.payload.title || "AI Remedial Test", questions, act.payload.durationMin || 15);
+              compileAndLaunchArena(act.payload.title || "AI Remedial Test", questions, act.payload.durationMin || 15, !!act.payload.isSectionLocked);
             }
           }
         }
@@ -4831,7 +5076,8 @@ ${JSON.stringify(TAXONOMY, null, 2)}
         compileAndLaunchArena(
           cmd.payload.title || "AI Practice Mock",
           questions,
-          cmd.payload.durationMin || 15
+          cmd.payload.durationMin || 15,
+          !!cmd.payload.isSectionLocked
         );
 
       // 6. Prescribe Remedial Blitz
@@ -4860,7 +5106,8 @@ ${JSON.stringify(TAXONOMY, null, 2)}
         compileAndLaunchArena(
           cmd.payload.title || "AI Prescribed Remedial Blitz",
           remedialPool,
-          cmd.payload.durationMin || 10
+          cmd.payload.durationMin || 10,
+          false
         );
 
       // 7. Universal Flashcard Batch Ingestion
@@ -4884,7 +5131,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
         synapseTreeBuilt = false;
         alert(`Ingested ${list.length} questions successfully into bank.`);
 
-      // 9. Batch Compendium Sheet Ingestion (Fixed transaction typo)
+      // 9. Batch Compendium Sheet Ingestion
       } else if (cmd.action === "BATCH_INGEST_COMPENDIUM") {
         const dossiers = (cmd.payload.dossiers || []).map(sanitizeDossier);
         await runTx(["store_concepts"], "readwrite", (tx) => {
@@ -4935,8 +5182,8 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     }
   }
 
-  // MULTI-SECTION AWARE ARENA COMPILER
-  async function compileAndLaunchArena(title, questionsPool, durationMin) {
+  // MULTI-SECTION AWARE ARENA COMPILER (STRICT SECTION LOCKING ENFORCED)
+  async function compileAndLaunchArena(title, questionsPool, durationMin, isSectionLocked = false) {
     clearInterval(examTimerInterval);
     clearInterval(questionTimerInterval);
 
@@ -5009,7 +5256,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
       diurnalSlot: getDiurnalSlot(now),
       title: title || "AI Practice Arena",
       mockType: configuredSections.length > 1 ? "CUSTOM" : "SECTIONAL",
-      isSectionLocked: false,
+      isSectionLocked: !!isSectionLocked, // Strict adherence to input parameter
       sections: configuredSections,
       activeSectionIndex: 0,
       currentQuestionIndex: 0,
@@ -5094,7 +5341,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   /* -------------------------------------------------------------
-   * 20. DIRECT DATABASE STUDIO (MODAL INSPECTOR VIEWER)
+   * 21. DIRECT DATABASE STUDIO (MODAL INSPECTOR VIEWER)
    * ------------------------------------------------------------- */
   async function refreshDbInspector() {
     const storeName = document.getElementById("db-store-select").value;
@@ -5178,7 +5425,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   /* -------------------------------------------------------------
-   * 21. UNIVERSAL TOUCH GESTURES (VIEWPORT & HARDWARE SHIELD)
+   * 22. UNIVERSAL TOUCH GESTURES (VIEWPORT & HARDWARE SHIELD)
    * ------------------------------------------------------------- */
   function initGestureControllers() {
     const attachSwipeHandler = (elementId, onLeftSwipe, onRightSwipe) => {
@@ -5273,7 +5520,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   /* -------------------------------------------------------------
-   * 22. PUBLISHING-GRADE TYPESET PRINT BOOK ENGINE
+   * 23. PUBLISHING-GRADE TYPESET PRINT BOOK ENGINE
    * ------------------------------------------------------------- */
   async function openPrintConfigModal() {
     await updatePrintChapters();
@@ -5318,7 +5565,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     });
   }
 
-  // TYPESET PRINT BOOK COMPILER (COVER + DYNAMIC TOC + SUBJECT BREAKS + APPENDIX)
+  // Typeset Print Book Compiler (Cover + Dynamic TOC + Subject Breaks + Appendix)
   async function generateAndPrintSheet() {
     document.getElementById("modal-print-config").classList.remove("active");
     const pType = document.getElementById("print-type").value;
@@ -5342,7 +5589,6 @@ ${JSON.stringify(TAXONOMY, null, 2)}
         return a.chapter.localeCompare(b.chapter);
       });
 
-      // Automated Dynamic Table of Contents Compilation
       const tocMap = {};
       pool.forEach(item => {
         if (!tocMap[item.subject]) tocMap[item.subject] = {};
@@ -5364,7 +5610,6 @@ ${JSON.stringify(TAXONOMY, null, 2)}
       });
       tocHtml += `</div>`;
 
-      // Page 1: Formal Book Cover & TOC
       let content = `
         <div class="print-book-cover">
           <div class="print-book-title">SSC CGL 2026 Master Preparation Compendium</div>
@@ -5546,7 +5791,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   /* -------------------------------------------------------------
-   * 23. NAVIGATION, TAB SWITCHING & SYSTEM BOOT
+   * 24. NAVIGATION, TAB SWITCHING & SYSTEM BOOT
    * ------------------------------------------------------------- */
   function switchTab(tId, btn) {
     document.querySelectorAll(".view-container").forEach(el => el.classList.remove("active"));
@@ -5662,6 +5907,8 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     switchReviewAttempt,
     handleMistakeTagSelect,
     setMistakeTag,
+    openTrapClinicModal,
+    drillFilteredTrapQuestions,
     openTaxonomyManagerModal,
     addNewSubjectAction,
     promptAddChapterToSubject,
@@ -5692,7 +5939,10 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     factoryResetAll,
     renderDashboard,
     renderVault,
+    renderVaultTagPills,
+    handleVaultSearchInput,
     renderFlashcardList,
+    toggleVaultCardAccordion,
     launchUntimedQuickCarousel,
     renderCurrentVaultCard,
     flipStudyFlashcard,
