@@ -1,41 +1,48 @@
 /* ==========================================================================
-   SSC CGL INTELLIGENCE OS - COMPLETE SYSTEM STYLESHEET (V2.4)
-   Architecture: Linear Pro-Dark Minimalist
-   Scope: Unified Multi-Store Engine, Zero-Flicker Synapse Tree, 
-          Universal Anki Forge, and Typeset Paged-Media Print Spooler
-   Platform: Android WebAPK / Desktop Chrome / PWA Mobile
+   SSC CGL INTELLIGENCE OS - TACTICAL COMMAND CENTER STYLESHEET (V2.5)
+   Architecture: Glassmorphic Obsidian / High-Velocity Tactical Engineering
+   Modules: Universal CGL Typesetter, Interactive Trap Clinic, 
+            Scalable Card Vault, Zero-Flicker Synapse, Typeset Paged Print
    ========================================================================== */
 
-/* === ZONE 1: SYSTEM DESIGN TOKENS === */
+/* === ZONE 1: TACTICAL DESIGN TOKENS === */
 :root {
-  --bg-dark: #06080d;
-  --bg-card: #0d1118;
-  --bg-elevated: #131822;
-  --bg-document: #0a0e16;
+  --bg-dark: #05070b;
+  --bg-canvas: #070a10;
+  --bg-card: rgba(13, 17, 24, 0.78);
+  --bg-elevated: #111724;
+  --bg-elevated-hover: #172033;
+  --bg-document: #080c14;
+  
   --border-color: rgba(255, 255, 255, 0.08);
-  --border-glow: rgba(56, 189, 248, 0.28);
-  --border-focus: rgba(56, 189, 248, 0.55);
+  --border-glow: rgba(56, 189, 248, 0.24);
+  --border-focus: rgba(56, 189, 248, 0.65);
+  --border-accent: rgba(56, 139, 253, 0.35);
   
   --accent-blue: #388bfd;
   --accent-blue-hover: #1f6feb;
   --accent-cyan: #38bdf8;
+  --accent-cyan-glow: rgba(56, 189, 248, 0.18);
   --accent-purple: #8957e5;
   --accent-purple-light: #a371f7;
   
   --status-green: #238636;
   --status-green-border: #2ea043;
+  --status-green-glow: rgba(46, 160, 67, 0.25);
   --status-red: #da3633;
   --status-red-border: #f87171;
+  --status-red-glow: rgba(218, 54, 51, 0.25);
   --status-amber: #d29922;
   --status-amber-border: #e3b341;
   
   --text-main: #f0f6fc;
-  --text-muted: #7d8590;
+  --text-muted: #8b949e;
+  --text-dim: #545d68;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   --bottom-nav-height: 64px;
 }
 
-/* === ZONE 2: BASE RESET & VIEWPORT ROOT === */
+/* === ZONE 2: GLOBAL RESET & VIEWPORT ROOT === */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -45,12 +52,15 @@
 
 body {
   background-color: var(--bg-dark);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.04) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(137, 87, 229, 0.04) 0px, transparent 50%);
   color: var(--text-main);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
   user-select: none;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.012em;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -62,7 +72,7 @@ body {
 
 .view-container {
   display: none;
-  padding: 14px 14px calc(var(--bottom-nav-height) + 28px) 14px;
+  padding: 14px 14px calc(var(--bottom-nav-height) + 30px) 14px;
   max-width: 900px;
   margin: 0 auto;
 }
@@ -70,7 +80,7 @@ body {
   display: block;
 }
 
-/* === ZONE 3: ATOMIC COMPONENTS & TYPOGRAPHY === */
+/* === ZONE 3: TACTICAL UI PRIMITIVES === */
 .badge {
   font-size: 11px;
   padding: 3px 8px;
@@ -96,32 +106,41 @@ body {
 .badge-slot.slot-evening { color: var(--accent-purple-light); border-color: rgba(163, 113, 247, 0.3); }
 .badge-slot.slot-night { color: #f43f5e; border-color: rgba(244, 63, 94, 0.3); }
 
+/* Glassmorphic Layered Card */
 .card {
   background: var(--bg-card);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 14px;
   position: relative;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
 }
 
 .card-title {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.75px;
+  letter-spacing: 1px;
   margin-bottom: 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+.card-title::before {
+  content: "// ";
+  color: var(--accent-cyan);
+  font-family: var(--font-mono);
+  margin-right: 4px;
+}
 
-/* Standard & Specialized Buttons */
+/* Tactical Buttons */
 .btn {
   background: var(--accent-blue);
-  color: white;
+  color: #fff;
   border: none;
   padding: 10px 16px;
   border-radius: 8px;
@@ -133,6 +152,7 @@ body {
   gap: 8px;
   cursor: pointer;
   transition: all 0.15s ease;
+  touch-action: manipulation;
 }
 .btn:active { transform: scale(0.97); }
 .btn-secondary {
@@ -140,30 +160,32 @@ body {
   color: var(--text-main);
   border: 1px solid var(--border-color);
 }
-.btn-secondary:hover { border-color: var(--border-glow); }
+.btn-secondary:hover { border-color: var(--border-glow); background: var(--bg-elevated-hover); }
 .btn-danger { background: var(--status-red); color: white; }
 .btn-amber { background: var(--status-amber); color: #000; font-weight: 700; }
 .btn-cyan {
-  background: rgba(56, 189, 248, 0.14);
+  background: rgba(56, 189, 248, 0.12);
   color: var(--accent-cyan);
-  border: 1px solid rgba(56, 189, 248, 0.4);
+  border: 1px solid rgba(56, 189, 248, 0.35);
 }
-.btn-cyan:hover { background: rgba(56, 189, 248, 0.25); }
+.btn-cyan:hover { background: rgba(56, 189, 248, 0.22); }
 .btn-purple {
   background: rgba(137, 87, 229, 0.15);
   color: var(--accent-purple-light);
   border: 1px solid rgba(137, 87, 229, 0.4);
 }
-.btn-purple:hover { background: rgba(137, 87, 229, 0.3); }
+.btn-purple:hover { background: rgba(137, 87, 229, 0.25); }
 
 /* Form Controls */
 .form-group { margin-bottom: 12px; }
 .form-group label {
   display: block;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 700;
   color: var(--text-muted);
   margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 .form-control {
   width: 100%;
@@ -172,27 +194,28 @@ body {
   border-radius: 8px;
   padding: 10px 12px;
   color: var(--text-main);
-  font-size: 14px;
+  font-size: 13.5px;
+  transition: border-color 0.2s ease;
 }
 .form-control:focus { outline: none; border-color: var(--border-focus); }
 
-/* === ZONE 4: DASHBOARD & TELEMETRY GAUGES === */
+/* === ZONE 4: DASHBOARD HERO, RADAR & ERI GLOW === */
 .hero-banner {
-  background: linear-gradient(135deg, #131926 0%, #090c12 100%);
-  border: 1px solid rgba(56, 139, 253, 0.35);
+  background: linear-gradient(135deg, #0e1524 0%, #070a12 100%);
+  border: 1px solid rgba(56, 189, 248, 0.28);
   border-radius: 14px;
   padding: 18px;
   margin-bottom: 14px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
 }
 .hero-banner::after {
   content: "";
   position: absolute;
-  top: -30px; right: -30px;
-  width: 140px; height: 140px;
-  background: radial-gradient(circle, rgba(56, 189, 248, 0.22) 0%, transparent 70%);
+  top: -40px; right: -40px;
+  width: 160px; height: 160px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 70%);
   border-radius: 50%;
   pointer-events: none !important;
 }
@@ -204,34 +227,52 @@ body {
   align-items: flex-start;
 }
 
+.radar-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+}
+.radar-pulse-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--accent-cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--accent-cyan);
+  animation: radarPulse 1.8s infinite;
+}
+@keyframes radarPulse {
+  0% { transform: scale(0.9); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.4; }
+  100% { transform: scale(0.9); opacity: 1; }
+}
+
+/* Exam Readiness Index (ERI) Breathing Glow Dial */
 .eri-dial-wrap {
   display: flex;
   align-items: center;
-  gap: 14px;
-  background: #0b0f17;
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  border-radius: 12px;
-  padding: 12px 14px;
+  gap: 16px;
+  background: linear-gradient(145deg, #0a0e18 0%, #06080e 100%);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 14px;
+  padding: 14px 16px;
   margin-bottom: 14px;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
 }
 .eri-dial-svg {
-  width: 68px;
-  height: 68px;
+  width: 74px;
+  height: 74px;
   transform: rotate(-90deg);
   flex-shrink: 0;
-}
-
-.trap-heat-bar {
-  display: flex;
-  height: 12px;
-  border-radius: 6px;
-  overflow: hidden;
-  background: var(--bg-elevated);
-  margin: 8px 0;
-}
-.trap-heat-seg {
-  height: 100%;
-  transition: width 0.3s ease;
+  filter: drop-shadow(0 0 8px var(--accent-cyan-glow));
 }
 
 .gauge-wrapper {
@@ -246,7 +287,7 @@ body {
 }
 .gauge-bg {
   fill: none;
-  stroke: var(--bg-elevated);
+  stroke: #121824;
   stroke-width: 6;
 }
 .gauge-fill {
@@ -254,15 +295,15 @@ body {
   stroke: var(--accent-blue);
   stroke-width: 6;
   stroke-linecap: round;
-  transition: stroke-dashoffset 0.6s ease;
+  transition: stroke-dashoffset 0.6s ease, stroke 0.4s ease;
 }
 
 .battery-bar-container {
-  background: var(--bg-elevated);
-  height: 8px;
+  background: #111622;
+  height: 7px;
   border-radius: 4px;
   overflow: hidden;
-  margin-top: 4px;
+  margin-top: 5px;
   position: relative;
 }
 .battery-bar-fill {
@@ -293,13 +334,136 @@ body {
   border-color: var(--accent-blue);
 }
 
-/* === ZONE 5: BOTTOM NAVIGATION & MINI-PLAYER DOCK === */
+/* === ZONE 5: UNIVERSAL SSC CGL QUESTION TYPESETTER === */
+/* Typesets Syllogisms, Assertion-Reason, Matches, Passages, and Puzzle Premises */
+.q-typeset-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.q-passage-container {
+  background: #090e18;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: #d1d5db;
+}
+.q-passage-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--accent-cyan);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.q-assertion-box, .q-reason-box {
+  background: var(--bg-elevated);
+  border-left: 3px solid var(--accent-cyan);
+  border-radius: 0 6px 6px 0;
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.q-reason-box {
+  border-left-color: var(--accent-purple-light);
+}
+
+.q-structured-block {
+  background: #080c14;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+.q-block-header {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.q-itemized-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 14px;
+  margin: 4px 0;
+  line-height: 1.5;
+}
+.q-item-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  flex-shrink: 0;
+}
+
+.q-match-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  margin: 8px 0;
+}
+.q-match-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* === ZONE 6: COGNITIVE TRAP CLINIC & INTERACTIVE BAR === */
+.trap-heat-bar {
+  display: flex;
+  height: 14px;
+  border-radius: 7px;
+  overflow: hidden;
+  background: #111624;
+  margin: 8px 0;
+  border: 1px solid var(--border-color);
+}
+.trap-heat-seg {
+  height: 100%;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+}
+.trap-heat-seg:hover {
+  opacity: 0.85;
+  transform: scaleY(1.15);
+}
+
+.trap-legend-pill {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  padding: 3px 8px;
+  border-radius: 4px;
+  transition: border-color 0.15s ease;
+}
+.trap-legend-pill:hover {
+  border-color: var(--border-glow);
+}
+
+/* === ZONE 7: BOTTOM NAVIGATION & MINI-PLAYER DOCK === */
 #bottom-nav {
   position: fixed;
   bottom: 0; left: 0; right: 0;
   height: var(--bottom-nav-height);
-  background: rgba(6, 8, 13, 0.94);
-  backdrop-filter: blur(14px);
+  background: rgba(5, 7, 11, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-top: 1px solid var(--border-color);
   display: flex;
   justify-content: space-around;
@@ -320,6 +484,7 @@ body {
   width: 25%;
   height: 100%;
   cursor: pointer;
+  touch-action: manipulation;
 }
 .nav-btn.active { color: var(--accent-blue); }
 .nav-btn svg { width: 22px; height: 22px; stroke-width: 2; }
@@ -349,13 +514,14 @@ body {
   animation: pulse 1.5s infinite;
 }
 
-/* === ZONE 6: MODALS, OVERLAYS & Z-INDEX STACKING === */
+/* === ZONE 8: MODALS, CHILD LAYERS & CODE VIEWER === */
 .modal-overlay {
   display: none;
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(0, 0, 0, 0.88);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   z-index: 3500;
   align-items: center;
   justify-content: center;
@@ -363,14 +529,14 @@ body {
 }
 .modal-overlay.active { display: flex; }
 
-/* Elevated Child Modals (Fixes Inspect Opening Behind Archive) */
 .modal-overlay.child-layer {
   z-index: 3650;
-  background: rgba(0, 0, 0, 0.92);
+  background: rgba(0, 0, 0, 0.94);
 }
 
 .modal-window {
   background: var(--bg-card);
+  backdrop-filter: blur(16px);
   border: 1px solid var(--border-color);
   border-radius: 14px;
   padding: 18px;
@@ -378,11 +544,11 @@ body {
   max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.65);
 }
 
-/* Dedicated Scrollable JSON Inspector */
 .json-code-box {
-  background: #06090e;
+  background: #05070c;
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 12px;
@@ -396,7 +562,7 @@ body {
   line-height: 1.5;
 }
 
-/* === ZONE 7: TIMED EXAM ARENA & REVIEW COCKPIT === */
+/* === ZONE 9: TIMED EXAM ARENA & HUD === */
 #exam-arena, #dojo-arena-view, #compendium-fullscreen-view {
   display: none;
   position: fixed;
@@ -406,7 +572,7 @@ body {
   flex-direction: column;
 }
 .arena-header {
-  background: #0d1118;
+  background: #0b0f17;
   border-bottom: 1px solid var(--border-color);
   padding: 10px 14px;
   display: flex;
@@ -416,7 +582,7 @@ body {
   flex-shrink: 0;
 }
 .hud-icon-btn {
-  background: none;
+  background: var(--bg-elevated);
   border: 1px solid var(--border-color);
   color: var(--text-main);
   border-radius: 8px;
@@ -426,6 +592,7 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  touch-action: manipulation;
 }
 .hud-timer {
   font-family: var(--font-mono);
@@ -439,7 +606,7 @@ body {
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
 .sectional-banner {
-  background: #111622;
+  background: #0f1422;
   border-bottom: 1px solid var(--border-color);
   padding: 8px 14px;
   display: flex;
@@ -508,6 +675,7 @@ body {
   gap: 12px;
   cursor: pointer;
   transition: all 0.15s ease;
+  touch-action: manipulation;
 }
 .opt-card.selected {
   border-color: var(--accent-blue);
@@ -530,7 +698,7 @@ body {
   position: fixed;
   bottom: 0; left: 0; right: 0;
   height: 64px;
-  background: #0d1118;
+  background: #0b0f17;
   border-top: 1px solid var(--border-color);
   display: flex;
   align-items: center;
@@ -539,13 +707,13 @@ body {
   z-index: 2100;
 }
 
-/* === ZONE 8: PALETTE DRAWER === */
+/* Question Palette Drawer */
 .palette-drawer-ui {
   position: fixed;
   top: 0; right: -100%; bottom: 0;
   width: 85%;
   max-width: 360px;
-  background: #0d1118;
+  background: #0b0f17;
   border-left: 1px solid var(--border-color);
   z-index: 2500;
   transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -557,7 +725,7 @@ body {
   display: none;
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.78);
+  background: rgba(0, 0, 0, 0.82);
   z-index: 2400;
 }
 .drawer-overlay.active { display: block; }
@@ -591,15 +759,15 @@ body {
 .palette-cell.unanswered { background: var(--bg-elevated); color: var(--text-muted); border-color: var(--border-color); }
 .palette-cell.answered { background: var(--status-green); color: #fff; border-color: var(--status-green-border); }
 .palette-cell.marked { background: var(--accent-purple); color: #fff; border: 2px solid #d2a8ff; }
-.palette-cell.locked-cell { background: #151922; color: #484f58; cursor: not-allowed; border-color: rgba(255,255,255,0.03); }
+.palette-cell.locked-cell { background: #131720; color: #484f58; cursor: not-allowed; border-color: rgba(255,255,255,0.03); }
 .palette-cell.current { border-color: #ffffff; box-shadow: 0 0 10px rgba(255,255,255,0.8); }
 .palette-cell.rev-correct { background: var(--status-green); color: #fff; border-color: var(--status-green-border); }
 .palette-cell.rev-incorrect { background: var(--status-red); color: #fff; border-color: #f87171; }
 .palette-cell.rev-unanswered { background: var(--bg-elevated); color: var(--text-muted); border-color: var(--border-color); }
 
-/* === ZONE 9: LIVING KNOWLEDGE STUDIO === */
+/* === ZONE 10: LIVING KNOWLEDGE STUDIO === */
 .compendium-header {
-  background: #0d1118;
+  background: #0b0f17;
   border-bottom: 1px solid var(--border-color);
   padding: 8px 14px;
   display: flex;
@@ -613,7 +781,7 @@ body {
   align-items: center;
   gap: 6px;
   overflow-x: auto;
-  background: #090d15;
+  background: #070a10;
   padding: 8px 14px;
   border-bottom: 1px solid var(--border-color);
   flex-shrink: 0;
@@ -646,7 +814,6 @@ body {
   line-height: 1.75;
 }
 
-/* Callouts & Document Tables */
 .callout-box {
   border-left: 3px solid var(--accent-cyan);
   background: rgba(56, 189, 248, 0.08);
@@ -680,7 +847,7 @@ body {
   color: var(--accent-cyan);
 }
 
-/* === ZONE 10: SYNAPSE TREE (SYNCHRONOUS ZERO-FLICKER) === */
+/* === ZONE 11: SYNAPSE TREE (SYNCHRONOUS ZERO-FLICKER) === */
 .synapse-tree-container {
   max-height: 72vh;
   overflow-y: auto;
@@ -723,7 +890,6 @@ body {
   border-color: rgba(163, 113, 247, 0.3);
 }
 
-/* Synchronous Branch Container Toggle (Eliminates DOM Flicker) */
 .synapse-branch-container {
   display: none;
   margin-top: 4px;
@@ -732,7 +898,7 @@ body {
   display: block;
 }
 
-/* === ZONE 11: ANKI VAULT & FORGE (PATH 2 REFACTOR) === */
+/* === ZONE 12: SCALABLE COMPACT FLASHCARD VAULT (TAB 4) === */
 .vault-kpi-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -753,15 +919,63 @@ body {
   margin-top: 2px;
 }
 
-.anki-card-item {
+/* Interactive Command Bar */
+.vault-command-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.vault-search-input {
+  width: 100%;
+  background: #090e18;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #fff;
+  font-size: 13px;
+}
+.vault-search-input:focus {
+  outline: none;
+  border-color: var(--border-focus);
+}
+.vault-tag-scroll {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+/* Compact Accordion Vault Tile */
+.vault-compact-tile {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 10px;
-  padding: 12px 14px;
-  margin-bottom: 10px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  overflow: hidden;
   transition: border-color 0.15s ease;
 }
-.anki-card-item:hover { border-color: var(--border-glow); }
+.vault-compact-tile:hover {
+  border-color: var(--border-glow);
+}
+.vault-compact-header {
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  background: var(--bg-elevated);
+}
+.vault-compact-drawer {
+  display: none;
+  padding: 12px 14px;
+  background: #080c14;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+.vault-compact-tile.open .vault-compact-drawer {
+  display: block;
+}
+
 .anki-type-tag {
   font-size: 10px;
   font-weight: 700;
@@ -772,43 +986,6 @@ body {
   border: 1px solid rgba(137, 87, 229, 0.4);
 }
 
-/* Untimed Quick Carousel Canvas */
-.vault-carousel-wrap {
-  margin: 14px 0;
-}
-.vault-card-canvas {
-  background: var(--bg-card);
-  border: 1.5px solid var(--border-color);
-  border-radius: 12px;
-  padding: 20px;
-  min-height: 200px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  cursor: pointer;
-  transition: border-color 0.2s ease;
-}
-.vault-card-canvas:hover { border-color: var(--border-glow); }
-
-.anki-field-box {
-  background: #090e18;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 10px 12px;
-  margin: 6px 0;
-  font-size: 13.5px;
-  line-height: 1.6;
-}
-.anki-field-label {
-  font-size: 10px;
-  font-weight: 800;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 4px;
-  display: block;
-}
-
-/* Flashcard Front & Back Diagram Containers */
 .fc-img-box {
   margin: 10px 0;
   text-align: center;
@@ -821,16 +998,7 @@ body {
   object-fit: contain;
 }
 
-/* Export Configuration Cockpit Panel */
-.anki-export-panel {
-  background: linear-gradient(135deg, #131424 0%, #0a0c16 100%);
-  border: 1px solid rgba(163, 113, 247, 0.35);
-  border-radius: 12px;
-  padding: 14px;
-  margin-bottom: 14px;
-}
-
-/* === ZONE 12: FORENSIC DOSSIER & TICKET CARDS === */
+/* === ZONE 13: ATTEMPT THREADS & SECTIONAL SCORECARDS === */
 .scoped-extractor-panel {
   background: linear-gradient(135deg, #0e1420 0%, #070a10 100%);
   border: 1px solid rgba(56, 189, 248, 0.35);
@@ -851,7 +1019,6 @@ body {
   background: #1e1930;
 }
 
-/* Ticket Cards (Prevents Horizontal Button Overflow) */
 .ticket-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -893,7 +1060,6 @@ body {
   width: 100%;
 }
 
-/* === ZONE 13: ATTEMPT THREADS & SECTIONAL SCORECARDS === */
 .attempt-thread-group {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -923,7 +1089,6 @@ body {
   font-size: 12px;
 }
 
-/* High-Fidelity Section Performance Cards */
 .sec-fidelity-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -953,7 +1118,7 @@ body {
   inset: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
-  background: rgba(6, 8, 13, 0.98) !important;
+  background: rgba(5, 7, 11, 0.98) !important;
   z-index: 9999 !important;
   flex-direction: column !important;
   align-items: center !important;
@@ -992,7 +1157,6 @@ body {
     background: #ffffff !important;
   }
 
-  /* Cover & Table of Contents Header */
   .print-book-cover {
     page-break-after: always;
     break-after: page;
@@ -1037,7 +1201,6 @@ body {
     border-bottom: 1px dotted #ccc;
   }
 
-  /* Subject & Chapter Dividers */
   .print-subject-divider {
     page-break-before: always;
     break-before: page;
@@ -1061,7 +1224,6 @@ body {
     padding-left: 6px;
   }
 
-  /* Question & Formula Blocks (Orphan Protected) */
   .print-question, .print-comp-entry, .callout-box, .document-table {
     page-break-inside: avoid;
     break-inside: avoid;
@@ -1070,14 +1232,12 @@ body {
     padding-bottom: 10px;
   }
 
-  /* Dual Column Paper Mode */
   .print-dual-col {
     column-count: 2;
     column-gap: 20px;
     column-rule: 1px solid #e0e0e0;
   }
 
-  /* Blind Practice Mode Appendix */
   .print-appendix {
     page-break-before: always;
     break-before: page;
