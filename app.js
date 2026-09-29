@@ -1,9 +1,10 @@
 /**
  * SSC CGL Intelligence OS - Core Engine
  * Master Application Controller (Part 1 of 2)
+ * Schema Version: 12 | Architecture: LIFO Stack + SM-2 Engine + Dual-Temporal IST
  */
 
-// Global Reference Anchor
+// Global window anchor registration
 window.CGL_OS = null;
 
 const CGL_OS = (() => {
@@ -12,6 +13,7 @@ const CGL_OS = (() => {
   let db = null;
   let dbInitPromise = null;
 
+  // Active Runtime Execution State
   let activeExam = null;
   let examTimerInterval = null;
   let questionTimerInterval = null;
@@ -74,7 +76,7 @@ const CGL_OS = (() => {
 
   let TAXONOMY = JSON.parse(JSON.stringify(DEFAULT_TAXONOMY));
 
-  // 8 Historical Vault Questions + Foundational Question Bank
+  // Foundational Question Bank
   const SEED_QUESTIONS = [
     {
       id: "q_cgl_ga_polity_014",
@@ -87,7 +89,7 @@ const CGL_OS = (() => {
       imageUrl: "",
       options: ["Article 124", "Article 131", "Article 214", "Article 143"],
       correctIndex: 0,
-      explanation: "Article 124 of the Constitution establishes the Supreme Court of India and governs its composition and appointments.",
+      explanation: "Article 124 of the Constitution establishes the Supreme Court of India and governs its composition, appointment of judges, and operational rules.",
       tags: ["Polity", "SupremeCourt", "RestoredVault"],
       annotation: ""
     },
@@ -147,7 +149,7 @@ const CGL_OS = (() => {
       imageUrl: "",
       options: ["42nd Amendment Act", "44th Amendment Act", "61st Amendment Act", "73rd Amendment Act"],
       correctIndex: 2,
-      explanation: "The 61st Constitutional Amendment Act, 1988 lowered the voting age from 21 to 18.",
+      explanation: "The 61st Constitutional Amendment Act, 1988 lowered the voting age from 21 to 18 by amending Article 326 of the Constitution.",
       tags: ["Polity", "Amendments", "RestoredVault"],
       annotation: ""
     },
@@ -267,7 +269,7 @@ const CGL_OS = (() => {
       imageUrl: "",
       options: ["Insolvent", "Mercenary", "Stoic", "Ascetic"],
       correctIndex: 0,
-      explanation: "**Insolvent** means unable to pay one's debts. Mercenary is someone working merely for money.",
+      explanation: "**Insolvent** means unable to pay one's debts. Mercenary is someone working merely for money; Stoic is indifferent to pleasure or pain; Ascetic lives a life of strict self-discipline.",
       tags: ["OWS", "Vocabulary"],
       annotation: ""
     },
@@ -282,7 +284,7 @@ const CGL_OS = (() => {
       imageUrl: "",
       options: ["Article 32", "Article 131", "Article 226", "Article 143"],
       correctIndex: 2,
-      explanation: "Article 226 empowers High Courts to issue writs. Article 32 gives writ powers strictly to the Supreme Court.",
+      explanation: "Article 226 empowers High Courts to issue writs. Article 32 gives writ powers strictly to the Supreme Court for Fundamental Rights.",
       tags: ["Polity", "Writs"],
       annotation: ""
     },
@@ -395,8 +397,108 @@ const CGL_OS = (() => {
     }
   ];
 
+  // Pre-Seeded Foundational SM-2 Flashcards
+  const SEED_FLASHCARDS = [
+    {
+      id: "fc_qa_geo_001",
+      subject: "QA",
+      chapter: "QA_GEOMETRY",
+      front: "In $\\triangle ABC$ with incenter $I$, what is the formula for $\\angle BIC$ in terms of vertex angle $\\angle A$?",
+      back: "$$\\angle BIC = 90^\\circ + \\frac{\\angle A}{2}$$",
+      interval: 1,
+      repetition: 0,
+      easeFactor: 2.5,
+      nextReviewDate: Date.now() - 1000,
+      lastAttempted: Date.now(),
+      tags: ["Formula", "Incenter", "Geometry"]
+    },
+    {
+      id: "fc_qa_geo_002",
+      subject: "QA",
+      chapter: "QA_GEOMETRY",
+      front: "What is the length formula for a Direct Common Tangent ($DCT$) between two circles of radii $r_1, r_2$ and center distance $d$?",
+      back: "$$DCT = \\sqrt{d^2 - (r_1 - r_2)^2}$$",
+      interval: 1,
+      repetition: 0,
+      easeFactor: 2.5,
+      nextReviewDate: Date.now() - 1000,
+      lastAttempted: Date.now(),
+      tags: ["Formula", "Circles", "Geometry"]
+    },
+    {
+      id: "fc_ga_pol_001",
+      subject: "GA",
+      chapter: "GA_POLITY",
+      front: "Which Article establishes and constitutes the Supreme Court of India?",
+      back: "**Article 124** of the Constitution of India.",
+      interval: 1,
+      repetition: 0,
+      easeFactor: 2.5,
+      nextReviewDate: Date.now() - 1000,
+      lastAttempted: Date.now(),
+      tags: ["Polity", "Articles", "Judiciary"]
+    },
+    {
+      id: "fc_eng_ows_001",
+      subject: "ENG",
+      chapter: "ENG_OWS",
+      front: "One-Word Substitution: *'A person who is unable to pay their debts.'*",
+      back: "**Insolvent** (or Bankrupt).",
+      interval: 1,
+      repetition: 0,
+      easeFactor: 2.5,
+      nextReviewDate: Date.now() - 1000,
+      lastAttempted: Date.now(),
+      tags: ["Vocabulary", "OWS"]
+    }
+  ];
+
   /* -------------------------------------------------------------
-   * 1. FORMATTING & COMPRESSION UTILITIES
+   * 1. DUAL-TEMPORAL & INDIAN STANDARD TIME (IST) UTILITIES
+   * ------------------------------------------------------------- */
+  function formatISTDate(epochMs = Date.now()) {
+    try {
+      const d = new Date(epochMs);
+      return new Intl.DateTimeFormat("en-IN", {
+        timeZone: "Asia/Kolkata",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+      }).format(d) + " IST";
+    } catch(e) {
+      return new Date(epochMs).toISOString();
+    }
+  }
+
+  function getDiurnalSlot(epochMs = Date.now()) {
+    try {
+      const d = new Date(epochMs);
+      const hours = parseInt(new Intl.DateTimeFormat("en-IN", {
+        timeZone: "Asia/Kolkata",
+        hour: "numeric",
+        hour12: false
+      }).format(d), 10);
+      if (hours >= 4 && hours < 8) return "EARLY_MORNING";
+      if (hours >= 8 && hours < 12) return "MORNING";
+      if (hours >= 12 && hours < 17) return "AFTERNOON";
+      if (hours >= 17 && hours < 21) return "EVENING";
+      return "NIGHT";
+    } catch(e) {
+      return "UNKNOWN";
+    }
+  }
+
+  function calcGapDays(timeRecent, timePrior) {
+    if (!timePrior || timePrior === 0) return 0;
+    return parseFloat((Math.abs(timeRecent - timePrior) / (1000 * 60 * 60 * 24)).toFixed(1));
+  }
+
+  /* -------------------------------------------------------------
+   * 2. FORMATTING & COMPRESSION UTILITIES
    * ------------------------------------------------------------- */
   function formatRichText(str) {
     if (!str) return "";
@@ -458,7 +560,7 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 2. LIFO NAVIGATION STACK & ANDROID BACK-GESTURE CONTROLLER
+   * 3. LIFO NAVIGATION STACK & ANDROID BACK-GESTURE CONTROLLER
    * ------------------------------------------------------------- */
   const navStack = [];
 
@@ -489,7 +591,7 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 3. INDEXEDDB PERSISTENCE ENGINE (SCHEMA V12)
+   * 4. INDEXEDDB PERSISTENCE ENGINE (SCHEMA V12)
    * ------------------------------------------------------------- */
   function getDB() {
     if (db) return Promise.resolve(db);
@@ -499,7 +601,7 @@ const CGL_OS = (() => {
       const req = indexedDB.open(DB_NAME, DB_VERSION);
 
       req.onblocked = () => {
-        console.warn("Database upgrade blocked by open connection.");
+        console.warn("Database upgrade blocked by active connection.");
       };
 
       req.onupgradeneeded = (e) => {
@@ -507,11 +609,11 @@ const CGL_OS = (() => {
         const stores = [
           { name: "store_questions", key: "id" },
           { name: "store_attempts", key: "sessionId" },
-          { name: "store_vault", key: "questionId" },
-          { name: "store_vault_sprints", key: "sessionId" },
+          { name: "store_flashcards", key: "id" },
           { name: "store_concepts", key: "id" },
           { name: "store_notes", key: "id" },
           { name: "store_saved_mocks", key: "id" },
+          { name: "store_ai_consultations", key: "id" },
           { name: "store_active_session", key: "id" },
           { name: "store_config", key: "key" }
         ];
@@ -530,7 +632,7 @@ const CGL_OS = (() => {
         try {
           await seedData(db);
         } catch (err) {
-          console.warn("Non-fatal seeding warning:", err);
+          console.warn("Non-fatal database initialization note:", err);
         }
         resolve(db);
       };
@@ -547,7 +649,6 @@ const CGL_OS = (() => {
   async function seedData(database) {
     const d = database || await getDB();
 
-    // Verify if questions are already seeded to prevent redundant writes
     const existingCount = await new Promise((res) => {
       try {
         const tx = d.transaction(["store_questions"], "readonly");
@@ -563,34 +664,6 @@ const CGL_OS = (() => {
       SEED_QUESTIONS.forEach(q => stQ.put(q));
       await new Promise(r => txQ.oncomplete = r);
 
-      const historicalVaultKeys = [
-        { questionId: "q_cgl_ga_polity_014", chapter: "GA_POLITY", subject: "GA", errorTag: "CONCEPT_VOID" },
-        { questionId: "q_cgl_qa_geom_011", chapter: "QA_GEOMETRY", subject: "QA", errorTag: "CALCULATION_SLIP" },
-        { questionId: "q_cgl_qa_tw_010", chapter: "QA_TIME_WORK", subject: "QA", errorTag: "READING_TRAP" },
-        { questionId: "q_cgl_reas_analogy_012", chapter: "REAS_ANALOGY", subject: "REAS", errorTag: "FORMULA_AMNESIA" },
-        { questionId: "q_ga_polity_001", chapter: "GA_POLITY", subject: "GA", errorTag: "CONCEPT_VOID" },
-        { questionId: "q_qa_geom_002", chapter: "QA_GEOMETRY", subject: "QA", errorTag: "FORMULA_AMNESIA" },
-        { questionId: "q_qa_pl_001", chapter: "QA_PROFIT_LOSS", subject: "QA", errorTag: "CALCULATION_SLIP" },
-        { questionId: "q_reas_analogy_001", chapter: "REAS_ANALOGY", subject: "REAS", errorTag: "READING_TRAP" }
-      ];
-
-      const txV = d.transaction(["store_vault"], "readwrite");
-      const stV = txV.objectStore("store_vault");
-      historicalVaultKeys.forEach(item => {
-        stV.put({
-          questionId: item.questionId,
-          chapter: item.chapter,
-          subject: item.subject,
-          errorTag: item.errorTag,
-          interval: 1,
-          repetition: 0,
-          easeFactor: 2.5,
-          nextReviewDate: Date.now() - 1000,
-          lastAttempted: 1790430483803
-        });
-      });
-      await new Promise(r => txV.oncomplete = r);
-
       const txC = d.transaction(["store_concepts"], "readwrite");
       const stC = txC.objectStore("store_concepts");
       SEED_TOPIC_DOSSIERS.forEach(t => stC.put(t));
@@ -600,9 +673,13 @@ const CGL_OS = (() => {
       const stB = txB.objectStore("store_saved_mocks");
       SEED_SAVED_MOCKS.forEach(b => stB.put(b));
       await new Promise(r => txB.oncomplete = r);
+
+      const txF = d.transaction(["store_flashcards"], "readwrite");
+      const stF = txF.objectStore("store_flashcards");
+      SEED_FLASHCARDS.forEach(f => stF.put(f));
+      await new Promise(r => txF.oncomplete = r);
     }
 
-    // Load Taxonomy & Custom Mistakes Safely
     const savedMistakeConfig = await getRecord("store_config", "custom_mistake_tags");
     if (savedMistakeConfig && Array.isArray(savedMistakeConfig.value)) {
       customMistakeTags = [...new Set([...customMistakeTags, ...savedMistakeConfig.value])];
@@ -610,7 +687,6 @@ const CGL_OS = (() => {
 
     const savedTaxonomyConfig = await getRecord("store_config", "system_taxonomy");
     if (savedTaxonomyConfig && savedTaxonomyConfig.value && typeof savedTaxonomyConfig.value === "object") {
-      // Non-destructive merge: Guarantee built-in default chapters are never lost
       TAXONOMY = { ...DEFAULT_TAXONOMY, ...savedTaxonomyConfig.value };
       Object.keys(DEFAULT_TAXONOMY).forEach(sub => {
         if (TAXONOMY[sub] && Array.isArray(TAXONOMY[sub].chapters)) {
@@ -690,7 +766,7 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 4. BACKUP, DISASTER RECOVERY & SCHEMA SANITIZERS
+   * 5. BACKUP, DISASTER RECOVERY & SCHEMA SANITIZERS
    * ------------------------------------------------------------- */
   async function exportFullBackup() {
     const envelope = {
@@ -698,16 +774,17 @@ const CGL_OS = (() => {
         magic_header: "CGL_INTELLIGENCE_OS_BACKUP",
         engine_version: DB_VERSION,
         exported_at: Date.now(),
+        exported_ist: formatISTDate(Date.now()),
         exported_date: new Date().toISOString()
       },
       stores: {
         store_questions: await getAllRecords("store_questions"),
         store_attempts: await getAllRecords("store_attempts"),
-        store_vault: await getAllRecords("store_vault"),
-        store_vault_sprints: await getAllRecords("store_vault_sprints"),
+        store_flashcards: await getAllRecords("store_flashcards"),
         store_concepts: await getAllRecords("store_concepts"),
         store_notes: await getAllRecords("store_notes"),
         store_saved_mocks: await getAllRecords("store_saved_mocks"),
+        store_ai_consultations: await getAllRecords("store_ai_consultations"),
         store_config: await getAllRecords("store_config")
       }
     };
@@ -744,8 +821,9 @@ const CGL_OS = (() => {
           <b>Backup File Validated:</b><br>
           • Questions: ${pendingHydrationData.store_questions.length}<br>
           • Attempts & Scores: ${pendingHydrationData.store_attempts.length}<br>
-          • Active SM-2 Error Vault Traps: ${pendingHydrationData.store_vault.length}<br>
+          • Active SM-2 Flashcards: ${pendingHydrationData.store_flashcards.length}<br>
           • Living Document Sheets: ${pendingHydrationData.store_concepts.length}<br>
+          • Clinical AI Consultations: ${pendingHydrationData.store_ai_consultations.length}<br>
           • Saved Blueprints & Papers: ${pendingHydrationData.store_saved_mocks.length}
         `;
         document.getElementById("btn-execute-restore").disabled = false;
@@ -764,20 +842,20 @@ const CGL_OS = (() => {
     } else {
       stores.store_questions = raw.questions || raw.store_questions || [];
       stores.store_attempts = raw.attempts || raw.store_attempts || [];
-      stores.store_vault = raw.vault || raw.store_vault || [];
-      stores.store_vault_sprints = raw.sprints || raw.store_vault_sprints || [];
-      stores.store_concepts = raw.concepts || raw.formulas || raw.vocab || raw.store_concepts || [];
+      stores.store_flashcards = raw.flashcards || raw.store_flashcards || raw.vault || [];
+      stores.store_concepts = raw.concepts || raw.formulas || raw.store_concepts || [];
       stores.store_notes = raw.notes || raw.store_notes || [];
       stores.store_saved_mocks = raw.savedMocks || raw.store_saved_mocks || [];
+      stores.store_ai_consultations = raw.consultations || raw.store_ai_consultations || [];
       stores.store_config = raw.config || raw.store_config || [];
     }
 
     stores.store_questions = (stores.store_questions || []).map(sanitizeQuestion);
     stores.store_concepts = (stores.store_concepts || []).map(sanitizeDossier);
-    stores.store_vault = (stores.store_vault || []).map(sanitizeVaultEntry);
+    stores.store_flashcards = (stores.store_flashcards || []).map(sanitizeFlashcard);
     stores.store_attempts = (stores.store_attempts || []).map(sanitizeAttempt);
     stores.store_saved_mocks = (stores.store_saved_mocks || []).map(sanitizeSavedMock);
-    stores.store_vault_sprints = stores.store_vault_sprints || [];
+    stores.store_ai_consultations = stores.store_ai_consultations || [];
     stores.store_notes = stores.store_notes || [];
     stores.store_config = stores.store_config || [];
 
@@ -815,25 +893,30 @@ const CGL_OS = (() => {
     };
   }
 
-  function sanitizeVaultEntry(v, idx) {
+  function sanitizeFlashcard(f, idx) {
     return {
-      questionId: v.questionId || `q_vault_err_${idx}`,
-      chapter: v.chapter || "QA_GENERAL",
-      subject: v.subject || "QA",
-      errorTag: v.errorTag || "UNCLASSIFIED",
-      interval: typeof v.interval === "number" ? v.interval : 1,
-      repetition: typeof v.repetition === "number" ? v.repetition : 0,
-      easeFactor: typeof v.easeFactor === "number" ? v.easeFactor : 2.5,
-      nextReviewDate: typeof v.nextReviewDate === "number" ? v.nextReviewDate : Date.now(),
-      lastAttempted: v.lastAttempted || Date.now()
+      id: f.id || `fc_restored_${Date.now()}_${idx}`,
+      subject: f.subject || "QA",
+      chapter: f.chapter || "QA_GENERAL",
+      front: f.front || f.questionText || "Untitled Prompt",
+      back: f.back || f.explanation || "Untitled Answer",
+      interval: typeof f.interval === "number" ? f.interval : 1,
+      repetition: typeof f.repetition === "number" ? f.repetition : 0,
+      easeFactor: typeof f.easeFactor === "number" ? f.easeFactor : 2.5,
+      nextReviewDate: typeof f.nextReviewDate === "number" ? f.nextReviewDate : Date.now(),
+      lastAttempted: f.lastAttempted || Date.now(),
+      tags: Array.isArray(f.tags) ? f.tags : ["Restored"]
     };
   }
 
   function sanitizeAttempt(a, idx) {
+    const epoch = a.timestamp || Date.now();
     return {
-      sessionId: a.sessionId || `mock_${Date.now()}_${idx}`,
+      sessionId: a.sessionId || `mock_${epoch}_${idx}`,
       title: a.title || "SSC CGL Practice Mock",
-      timestamp: a.timestamp || Date.now(),
+      timestamp: epoch,
+      timeIST: a.timeIST || formatISTDate(epoch),
+      diurnalSlot: a.diurnalSlot || getDiurnalSlot(epoch),
       mockType: a.mockType || "CUSTOM",
       signatureTag: a.signatureTag || "",
       finalScore: typeof a.finalScore === "number" ? a.finalScore : 0,
@@ -843,7 +926,6 @@ const CGL_OS = (() => {
       penaltyDrag: typeof a.penaltyDrag === "number" ? a.penaltyDrag : 0,
       switchDelta: typeof a.switchDelta === "number" ? a.switchDelta : 0,
       completed: a.completed !== undefined ? a.completed : true,
-      isVaultSprint: !!a.isVaultSprint,
       isSectionLocked: !!a.isSectionLocked,
       questions: Array.isArray(a.questions) ? a.questions.map(sanitizeQuestion) : [],
       userResponses: (a.userResponses && typeof a.userResponses === "object") ? a.userResponses : {},
@@ -869,9 +951,9 @@ const CGL_OS = (() => {
 
     try {
       const storeKeys = [
-        "store_questions", "store_attempts", "store_vault", 
-        "store_vault_sprints", "store_concepts", "store_notes", 
-        "store_saved_mocks", "store_config"
+        "store_questions", "store_attempts", "store_flashcards", 
+        "store_concepts", "store_notes", "store_saved_mocks", 
+        "store_ai_consultations", "store_config"
       ];
 
       if (mode === "WIPE_REPLACE") {
@@ -890,7 +972,7 @@ const CGL_OS = (() => {
         }
       }
 
-      alert("Disaster Recovery Complete! All database tables and mock records restored.");
+      alert("Disaster Recovery Complete! All tables and consultations restored safely.");
       document.getElementById("modal-backup-restore").classList.remove("active");
       await syncAllTaxonomyDropdowns();
       await renderDashboard();
@@ -902,7 +984,7 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 5. DYNAMIC TAXONOMY & DROP-DOWN SYNCHRONIZER
+   * 6. DYNAMIC TAXONOMY & SELECTOR SYNCHRONIZER
    * ------------------------------------------------------------- */
   async function syncAllTaxonomyDropdowns() {
     const saved = await getRecord("store_config", "system_taxonomy");
@@ -951,6 +1033,9 @@ const CGL_OS = (() => {
     populateSelect("print-subject", true);
     populateSelect("concept-edit-subject", false);
     populateSelect("edit-q-subject", false);
+    populateSelect("edit-fc-subject", false);
+    populateSelect("sm2-deck-filter-sub", true);
+    populateSelect("scoped-export-subject", true);
   }
 
   function openTaxonomyManagerModal() {
@@ -1068,8 +1153,16 @@ const CGL_OS = (() => {
       chapInput.value = TAXONOMY[subKey].chapters[0];
     }
   }
+
+  function syncFlashcardChapterDropdown(subKey) {
+    const chapInput = document.getElementById("edit-fc-chapter");
+    if (chapInput && TAXONOMY[subKey] && TAXONOMY[subKey].chapters.length > 0) {
+      chapInput.value = TAXONOMY[subKey].chapters[0];
+    }
+  }
+
   /* -------------------------------------------------------------
-   * 6. RESPONSIVE SYNAPSE TREE ENGINE (DOM-BASED HIERARCHY)
+   * 7. RESPONSIVE SYNAPSE TREE ENGINE (DOM-BASED HIERARCHY)
    * ------------------------------------------------------------- */
   async function openSynapseGraphModal() {
     pushNavLayer("modal-synapse-tree", () => {
@@ -1086,7 +1179,7 @@ const CGL_OS = (() => {
 
     const allQuestions = await getAllRecords("store_questions");
     const allConcepts = await getAllRecords("store_concepts");
-    const allVault = await getAllRecords("store_vault");
+    const allFlashcards = await getAllRecords("store_flashcards");
 
     Object.keys(TAXONOMY).forEach(subKey => {
       const sub = TAXONOMY[subKey];
@@ -1111,13 +1204,15 @@ const CGL_OS = (() => {
       if (isSubExpanded) {
         const qChaps = allQuestions.filter(q => q.subject === subKey).map(q => q.chapter);
         const cChaps = allConcepts.filter(c => c.subject === subKey).map(c => c.chapter);
-        const mergedChaps = [...new Set([...sub.chapters, ...qChaps, ...cChaps])];
+        const fChaps = allFlashcards.filter(f => f.subject === subKey).map(f => f.chapter);
+        const mergedChaps = [...new Set([...sub.chapters, ...qChaps, ...cChaps, ...fChaps])];
 
         mergedChaps.forEach(chap => {
           const chapNodeId = `chap_${chap}`;
           const isChapExpanded = synapseExpandedNodes.has(chapNodeId);
-          const chapVaultCount = allVault.filter(v => v.chapter === chap).length;
+          const chapCards = allFlashcards.filter(f => f.chapter === chap);
           const chapSheets = allConcepts.filter(c => c.subject === subKey && c.chapter === chap);
+          const chapQs = allQuestions.filter(q => q.chapter === chap);
 
           const chapNodeWrap = document.createElement("div");
           chapNodeWrap.className = "tree-node-item";
@@ -1128,7 +1223,8 @@ const CGL_OS = (() => {
             <div style="display:flex; align-items:center; gap:8px;">
               <span style="font-family:var(--font-mono); color:var(--text-muted); font-size:11px;">${isChapExpanded ? "▼" : "▶"}</span>
               <span style="font-family:var(--font-mono); font-weight:700; color:#fff; font-size:12px;">${chap}</span>
-              ${chapVaultCount > 0 ? `<span class="badge" style="background:#da3633;">${chapVaultCount} Traps</span>` : ''}
+              ${chapCards.length > 0 ? `<span class="badge" style="background:#8957e5;">${chapCards.length} Cards</span>` : ''}
+              <span class="badge" style="background:#151a24; color:var(--text-muted);">${chapQs.length} Qs</span>
             </div>
             <div style="display:flex; gap:6px;">
               <button class="btn btn-secondary" style="padding:2px 8px; font-size:10px; color:var(--accent-cyan);" onclick="event.stopPropagation(); CGL_OS.launchSynapseChapterBlitz('${subKey}', '${chap}')">⚡ 5-Q Blitz</button>
@@ -1138,12 +1234,12 @@ const CGL_OS = (() => {
           chapNodeWrap.appendChild(chapRow);
 
           if (isChapExpanded) {
-            if (chapSheets.length === 0) {
+            if (chapSheets.length === 0 && chapCards.length === 0) {
               const emptyRow = document.createElement("div");
               emptyRow.style.fontSize = "11px";
               emptyRow.style.color = "var(--text-muted)";
               emptyRow.style.padding = "6px 12px";
-              emptyRow.innerText = "No topic sheets logged in this chapter yet.";
+              emptyRow.innerText = "No sheets or cards logged in this chapter yet.";
               chapNodeWrap.appendChild(emptyRow);
             }
 
@@ -1199,7 +1295,7 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 7. BI-DIRECTIONAL CONCEPT ROUTER & LIVING STUDIO
+   * 8. BI-DIRECTIONAL CONCEPT ROUTER & LIVING STUDIO
    * ------------------------------------------------------------- */
   async function openCompendiumToSheet(conceptId, targetSub, targetChap) {
     const openModals = document.querySelectorAll(".modal-overlay.active");
@@ -1450,7 +1546,7 @@ const CGL_OS = (() => {
       <div style="border-bottom:1px solid var(--border-color); padding-bottom:10px; margin-bottom:14px;">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <span class="badge" style="background:#1f6feb;">${sheet.chapter}</span>
-          <span style="font-size:11px; color:var(--text-muted);">${new Date(sheet.timestamp || Date.now()).toLocaleDateString()}</span>
+          <span style="font-size:11px; color:var(--text-muted);">${formatISTDate(sheet.timestamp || Date.now())}</span>
         </div>
         <h1 style="font-size:22px; font-weight:800; color:#fff; margin-top:8px;">${sheet.title}</h1>
         ${sheet.subtitle ? `<div style="font-size:13px; color:var(--accent-cyan); font-family:var(--font-mono); margin-top:2px;">${sheet.subtitle}</div>` : ''}
@@ -1633,7 +1729,7 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 8. MULTI-SUBJECT CUSTOM MOCK BUILDER & SAVED PRESETS
+   * 9. MULTI-SUBJECT CUSTOM MOCK BUILDER & SAVED PRESETS
    * ------------------------------------------------------------- */
   let customSequenceRows = [];
 
@@ -1827,13 +1923,15 @@ const CGL_OS = (() => {
         ? JSON.parse(JSON.stringify(preset.sections)).map(s => ({ ...s, locked: false }))
         : [{ id: "SEC_1", name: "Paper Arena", durationSec: 900, locked: false }];
 
+      const now = Date.now();
       activeExam = {
-        sessionId: "fixed_mock_" + Date.now(),
-        timestamp: Date.now(),
+        sessionId: "fixed_mock_" + now,
+        timestamp: now,
+        timeIST: formatISTDate(now),
+        diurnalSlot: getDiurnalSlot(now),
         title: preset.title,
         mockType: "CUSTOM",
         signatureTag: "FIXED_PAPER",
-        isVaultSprint: false,
         isSectionLocked: !!preset.isSectionLocked,
         sections: parsedSections,
         activeSectionIndex: 0,
@@ -1866,7 +1964,8 @@ const CGL_OS = (() => {
       hideMiniPlayer();
 
       pushNavLayer("exam-arena", () => {
-        document.getElementById("exam-arena").style.display = "none";
+        const pauseBtn = document.getElementById("btn-arena-pause");
+        if (pauseBtn) pauseBtn.click();
       });
       document.getElementById("exam-arena").style.display = "flex";
       renderActiveExamQuestion();
@@ -1932,14 +2031,16 @@ const CGL_OS = (() => {
 
     const isStandardTier1 = preset === "TIER1_FULL";
     const isSingleSectional = customSequenceRows.length === 1;
+    const now = Date.now();
 
     activeExam = {
-      sessionId: "mock_" + Date.now(),
-      timestamp: Date.now(),
+      sessionId: "mock_" + now,
+      timestamp: now,
+      timeIST: formatISTDate(now),
+      diurnalSlot: getDiurnalSlot(now),
       title: isStandardTier1 ? "SSC CGL Tier 1 Full Mock" : (isSingleSectional ? `${customSequenceRows[0].subject} Sectional Mock` : `Custom Routine (${signatureTags.join('➔')})`),
       mockType: isStandardTier1 ? "TIER_1" : (isSingleSectional ? "SECTIONAL" : "CUSTOM"),
       signatureTag: `CUSTOM_${signatureTags.join('_')}`,
-      isVaultSprint: false,
       isSectionLocked: isLock,
       sections: sections,
       activeSectionIndex: 0,
@@ -1968,15 +2069,15 @@ const CGL_OS = (() => {
     hideMiniPlayer();
 
     pushNavLayer("exam-arena", () => {
-      document.getElementById("exam-arena").style.display = "none";
+      const pauseBtn = document.getElementById("btn-arena-pause");
+      if (pauseBtn) pauseBtn.click();
     });
     document.getElementById("exam-arena").style.display = "flex";
     renderActiveExamQuestion();
     startExamTimers();
   }
-
   /* -------------------------------------------------------------
-   * 9. TIMED EXAM ARENA & STAGE 2 FULL-SCREEN REVIEW
+   * 10. TIMED EXAM ARENA & STAGE 2 FULL-SCREEN REVIEW
    * ------------------------------------------------------------- */
   function startExamTimers() {
     clearInterval(examTimerInterval);
@@ -2131,10 +2232,10 @@ const CGL_OS = (() => {
     if (!isRev) {
       if (resp.status === "marked") {
         revBtn.style.color = "#fff";
-        revBtn.style.background = "var(--status-purple)";
+        revBtn.style.background = "var(--accent-purple)";
         revBtn.innerText = "Unmark Review";
       } else {
-        revBtn.style.color = "var(--status-purple)";
+        revBtn.style.color = "var(--accent-purple)";
         revBtn.style.background = "var(--bg-elevated)";
         revBtn.innerText = "Mark Review";
       }
@@ -2149,6 +2250,7 @@ const CGL_OS = (() => {
       imgBox.innerHTML = "";
     }
 
+    // Bi-Directional Concept Bridge Button in Review Mode
     if (isRev) {
       conceptBridgeBox.style.display = "block";
       const bridgeBtn = document.getElementById("btn-jump-to-concept");
@@ -2163,6 +2265,7 @@ const CGL_OS = (() => {
       conceptBridgeBox.style.display = "none";
     }
 
+    // Review Mode Telemetry Banner
     if (isRev) {
       const isAtt = resp.selectedOption !== null && resp.selectedOption !== undefined;
       const isCor = isAtt && resp.selectedOption === q.correctIndex;
@@ -2180,34 +2283,31 @@ const CGL_OS = (() => {
               <b>Hesitation Trail:</b> ${resp.decisionTrail.map(d => `Opt ${d.opt} (${d.atSec}s)`).join(' ➔ ')}
             </div>
           ` : ''}
-          ${resp.isPanicSlip ? `<div style="margin-top:4px; color:var(--status-red); font-size:11px; font-weight:700;">⚠️ Detected as Panic Slip (<12s solve in final minutes).</div>` : ''}
+          ${resp.isPanicSlip ? `<div style="margin-top:4px; color:var(--status-red); font-size:11px; font-weight:700;">⚠️ Detected as Panic Slip (&lt;12s solve in final minutes).</div>` : ''}
         </div>
       `;
 
+      // Solution & Mistake Tag Dropdown
       solutionBlock.style.display = "block";
-      getAllRecords("store_vault").then(vaultRecords => {
-        const existingVault = vaultRecords.find(v => v.questionId === q.id);
-        const currentTag = existingVault ? existingVault.errorTag : "UNCLASSIFIED";
+      const currentTag = resp.errorTag || "UNCLASSIFIED";
 
-        let optionsHtml = `<option value="UNCLASSIFIED" ${currentTag==='UNCLASSIFIED'?'selected':''}>Tag Mistake Type...</option>`;
-        customMistakeTags.forEach(t => {
-          optionsHtml += `<option value="${t}" ${currentTag===t?'selected':''}>${t.replace(/_/g, ' ')}</option>`;
-        });
-        optionsHtml += `<option value="__NEW_TAG__">+ Create New Tag...</option>`;
-
-        solutionBlock.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <span style="font-weight:700; color:var(--accent-cyan); font-size:13px;">Method & Detailed Solution</span>
-            ${!isCor && isAtt ? `
-              <select onchange="CGL_OS.handleMistakeTagSelect('${q.id}', this.value)" style="background:#151a24; color:#fff; border:1px solid #da3633; font-size:11px; padding:3px 6px; border-radius:4px;">
-                ${optionsHtml}
-              </select>
-            ` : ''}
-          </div>
-          <div style="font-size:13.5px; line-height:1.6;">${formatRichText(q.explanation || 'No method registered.')}</div>
-        `;
+      let optionsHtml = `<option value="UNCLASSIFIED" ${currentTag==='UNCLASSIFIED'?'selected':''}>Tag Mistake Type...</option>`;
+      customMistakeTags.forEach(t => {
+        optionsHtml += `<option value="${t}" ${currentTag===t?'selected':''}>${t.replace(/_/g, ' ')}</option>`;
       });
+      optionsHtml += `<option value="__NEW_TAG__">+ Create New Tag...</option>`;
 
+      solutionBlock.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <span style="font-weight:700; color:var(--accent-cyan); font-size:13px;">Method & Detailed Solution</span>
+          ${!isCor && isAtt ? `
+            <select onchange="CGL_OS.handleMistakeTagSelect('${q.id}', this.value)" style="background:#151a24; color:#fff; border:1px solid #da3633; font-size:11px; padding:3px 6px; border-radius:4px;">
+              ${optionsHtml}
+            </select>
+          ` : ''}
+        </div>
+        <div style="font-size:13.5px; line-height:1.6;">${formatRichText(q.explanation || 'No method registered.')}</div>
+      `;
     } else {
       telemBanner.style.display = "none";
       solutionBlock.style.display = "none";
@@ -2317,9 +2417,10 @@ const CGL_OS = (() => {
   function toggleExamPalette(forceOpen = null) {
     const drawer = document.getElementById("exam-palette-drawer");
     const overlay = document.getElementById("exam-drawer-overlay");
-    const open = forceOpen !== null ? forceOpen : !drawer.classList.contains("open");
+    const isOpen = drawer.classList.contains("open");
+    const shouldOpen = forceOpen !== null ? forceOpen : !isOpen;
 
-    if (open) {
+    if (shouldOpen) {
       renderExamPaletteGrid();
       drawer.classList.add("open");
       overlay.classList.add("active");
@@ -2328,9 +2429,6 @@ const CGL_OS = (() => {
       overlay.classList.remove("active");
     }
   }
-
-  document.getElementById("btn-toggle-exam-palette").addEventListener("click", () => toggleExamPalette());
-  document.getElementById("exam-drawer-overlay").addEventListener("click", () => toggleExamPalette(false));
 
   function renderExamPaletteGrid(filterSectionIndex = null) {
     const grid = document.getElementById("exam-palette-grid");
@@ -2496,7 +2594,8 @@ const CGL_OS = (() => {
     hideMiniPlayer();
     activeExam.isPaused = false;
     pushNavLayer("exam-arena", () => {
-      document.getElementById("exam-arena").style.display = "none";
+      const pauseBtn = document.getElementById("btn-arena-pause");
+      if (pauseBtn) pauseBtn.click();
     });
     document.getElementById("exam-arena").style.display = "flex";
     renderActiveExamQuestion();
@@ -2532,7 +2631,6 @@ const CGL_OS = (() => {
           if (resp.initialOption !== null && resp.initialOption !== q.correctIndex) {
             switchDelta++;
           }
-          await registerVaultSuccess(q.id, resp.timeSpentSec);
         } else {
           totalMarks -= 0.5;
           penaltyDrag += 0.5;
@@ -2542,14 +2640,16 @@ const CGL_OS = (() => {
             switchDelta--;
           }
 
-          await registerVaultMistake(q.id, q.subject, q.chapter, "UNCLASSIFIED");
-
           if (resp.timeSpentSec > 90) traps++;
         }
       }
     }
 
+    const now = Date.now();
     activeExam.completed = true;
+    activeExam.timestamp = now;
+    activeExam.timeIST = formatISTDate(now);
+    activeExam.diurnalSlot = getDiurnalSlot(now);
     activeExam.finalScore = totalMarks;
     activeExam.correctCount = correct;
     activeExam.incorrectCount = incorrect;
@@ -2560,19 +2660,7 @@ const CGL_OS = (() => {
     await deleteRecordFromStore("store_active_session", "current_session");
     hideMiniPlayer();
 
-    if (activeExam.isVaultSprint) {
-      await putRecord("store_vault_sprints", {
-        sessionId: activeExam.sessionId,
-        timestamp: activeExam.timestamp,
-        totalQuestions: activeExam.questions.length,
-        correctCount: correct,
-        incorrectCount: incorrect,
-        accuracy: activeExam.questions.length > 0 ? Math.round((correct / activeExam.questions.length) * 100) : 0
-      });
-      renderVaultSprintHistory();
-    } else {
-      await putRecord("store_attempts", activeExam);
-    }
+    await putRecord("store_attempts", activeExam);
 
     document.getElementById("exam-arena").style.display = "none";
     renderDashboard();
@@ -2593,13 +2681,15 @@ const CGL_OS = (() => {
       ? JSON.parse(JSON.stringify(target.sections)).map(s => ({ ...s, locked: false })) 
       : [{ id: "SEC_1", name: "Section 1", durationSec: 900, locked: false }];
 
+    const now = Date.now();
     activeExam = {
-      sessionId: "mock_re_" + Date.now(),
-      timestamp: Date.now(),
+      sessionId: "mock_re_" + now,
+      timestamp: now,
+      timeIST: formatISTDate(now),
+      diurnalSlot: getDiurnalSlot(now),
       title: `Re-attempt: ${target.title}`,
       mockType: target.mockType || "CUSTOM",
       signatureTag: target.signatureTag || "",
-      isVaultSprint: false,
       isSectionLocked: !!target.isSectionLocked,
       sections: parsedSections,
       activeSectionIndex: 0,
@@ -2632,7 +2722,8 @@ const CGL_OS = (() => {
     hideMiniPlayer();
 
     pushNavLayer("exam-arena", () => {
-      document.getElementById("exam-arena").style.display = "none";
+      const pauseBtn = document.getElementById("btn-arena-pause");
+      if (pauseBtn) pauseBtn.click();
     });
     document.getElementById("exam-arena").style.display = "flex";
     renderActiveExamQuestion();
@@ -2669,7 +2760,7 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 10. UNTIMED DOJO ARENA ENGINE
+   * 11. UNTIMED DOJO ARENA ENGINE
    * ------------------------------------------------------------- */
   async function updateDojoChapters() {
     const sub = document.getElementById("dojo-nav-subject").value;
@@ -2933,7 +3024,7 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 11. STAGE 1 COCKPIT & MISTAKE TAGGING
+   * 12. STAGE 1 COCKPIT & MISTAKE TAGGING
    * ------------------------------------------------------------- */
   async function openMockReview(attemptOrId) {
     let att = typeof attemptOrId === "string" 
@@ -2944,7 +3035,7 @@ const CGL_OS = (() => {
     activeReviewAttempt = att;
 
     document.getElementById("review-modal-title").innerText = att.title || "SSC CGL Mock Analysis";
-    document.getElementById("review-modal-date").innerText = new Date(att.timestamp || Date.now()).toLocaleString();
+    document.getElementById("review-modal-date").innerText = att.timeIST || formatISTDate(att.timestamp);
     document.getElementById("rev-score").innerText = (att.finalScore || 0).toFixed(2);
 
     const totalAtt = (att.correctCount || 0) + (att.incorrectCount || 0);
@@ -2997,14 +3088,14 @@ const CGL_OS = (() => {
 
     const tagPills = document.getElementById("rev-mistake-tags-pills");
     tagPills.innerHTML = "";
-    const vaultRecords = await getAllRecords("store_vault");
     const tagCounts = {};
-    att.questions.forEach(q => {
-      const v = vaultRecords.find(item => item.questionId === q.id);
-      if (v && v.errorTag) {
-        tagCounts[v.errorTag] = (tagCounts[v.errorTag] || 0) + 1;
-      }
-    });
+    if (att.userResponses) {
+      Object.values(att.userResponses).forEach(r => {
+        if (r && r.errorTag && r.errorTag !== "UNCLASSIFIED") {
+          tagCounts[r.errorTag] = (tagCounts[r.errorTag] || 0) + 1;
+        }
+      });
+    }
 
     if (Object.keys(tagCounts).length === 0) {
       tagPills.innerHTML = `<span style="font-size:11px; color:var(--text-muted);">No tagged errors registered for this attempt.</span>`;
@@ -3039,27 +3130,16 @@ const CGL_OS = (() => {
   }
 
   async function setMistakeTag(qId, tag) {
-    const vault = await getAllRecords("store_vault");
-    const rec = vault.find(v => v.questionId === qId);
-    if (rec) {
-      rec.errorTag = tag;
-      await putRecord("store_vault", rec);
-    } else {
-      await putRecord("store_vault", {
-        questionId: qId,
-        errorTag: tag,
-        interval: 1,
-        repetition: 0,
-        easeFactor: 2.5,
-        nextReviewDate: Date.now(),
-        lastAttempted: Date.now()
-      });
+    if (!activeReviewAttempt || !activeReviewAttempt.userResponses) return;
+    if (activeReviewAttempt.userResponses[qId]) {
+      activeReviewAttempt.userResponses[qId].errorTag = tag;
+      await putRecord("store_attempts", activeReviewAttempt);
     }
-    renderVault();
+    renderDashboard();
   }
 
   /* -------------------------------------------------------------
-   * 12. INTERACTIVE SUBJECT DIAGNOSTIC MODAL
+   * 13. INTERACTIVE SUBJECT DIAGNOSTIC MODAL
    * ------------------------------------------------------------- */
   async function openSubjectDiagnosticModal(subKey) {
     const sub = TAXONOMY[subKey];
@@ -3069,8 +3149,7 @@ const CGL_OS = (() => {
     document.getElementById("diag-subject-sub").innerText = `Complete Syllabus & Chapter Analysis`;
 
     const attempts = await getAllRecords("store_attempts");
-    const completed = attempts.filter(a => a.completed && !a.isVaultSprint);
-    const allQuestions = await getAllRecords("store_questions");
+    const completed = attempts.filter(a => a.completed);
 
     let subAtt = 0, subCor = 0;
     completed.forEach(c => {
@@ -3157,13 +3236,15 @@ const CGL_OS = (() => {
     }
 
     const selectedQs = pool.slice(0, count);
+    const now = Date.now();
 
     activeExam = {
-      sessionId: "blitz_" + Date.now(),
-      timestamp: Date.now(),
+      sessionId: "blitz_" + now,
+      timestamp: now,
+      timeIST: formatISTDate(now),
+      diurnalSlot: getDiurnalSlot(now),
       title: `${chap === 'ALL' ? sub : chap} Blitz Drill`,
       mockType: "CUSTOM",
-      isVaultSprint: false,
       isSectionLocked: false,
       sections: [{
         id: "SEC_" + (chap === 'ALL' ? sub : chap),
@@ -3198,7 +3279,8 @@ const CGL_OS = (() => {
     hideMiniPlayer();
 
     pushNavLayer("exam-arena", () => {
-      document.getElementById("exam-arena").style.display = "none";
+      const pauseBtn = document.getElementById("btn-arena-pause");
+      if (pauseBtn) pauseBtn.click();
     });
     document.getElementById("exam-arena").style.display = "flex";
     renderActiveExamQuestion();
@@ -3206,7 +3288,7 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 13. MULTI-TIER AI EXPORTS & GEM LEDGER
+   * 14. MULTI-TIER AI EXPORTS & MASTER LEDGER
    * ------------------------------------------------------------- */
   function openAiExportModal() {
     if (!activeReviewAttempt) return;
@@ -3224,6 +3306,8 @@ const CGL_OS = (() => {
       payload = JSON.stringify({
         action: "FEEDBACK_AUDIT",
         mockTitle: att.title,
+        timestampIST: att.timeIST,
+        diurnalSlot: att.diurnalSlot,
         score: att.finalScore,
         penalty: att.penaltyDrag,
         traps: att.q4Traps,
@@ -3240,7 +3324,7 @@ const CGL_OS = (() => {
       }, null, 2);
     } else if (mode === "DEEP_AUDIT") {
       payload = JSON.stringify({
-        meta: { title: att.title, timestamp: att.timestamp, finalScore: att.finalScore },
+        meta: { title: att.title, timestampIST: att.timeIST, diurnalSlot: att.diurnalSlot, finalScore: att.finalScore },
         questions: att.questions.map(q => {
           const r = att.userResponses && att.userResponses[q.id] ? att.userResponses[q.id] : {};
           return {
@@ -3259,12 +3343,12 @@ const CGL_OS = (() => {
       }, null, 2);
     } else if (mode === "LONGITUDINAL") {
       const allAtt = await getAllRecords("store_attempts");
-      const vault = await getAllRecords("store_vault");
+      const flashcards = await getAllRecords("store_flashcards");
       payload = `# SSC CGL Strategic Telemetry Audit\n` +
+        `• Generated at: ${formatISTDate(Date.now())}\n` +
         `• Completed Standard Mocks: ${allAtt.length}\n` +
-        `• Active Leitner Vault Traps: ${vault.length}\n` +
-        `• Active Traps Inventory:\n` +
-        vault.map(v => `- [${v.chapter}] Tag: ${v.errorTag} | Interval: ${v.interval}d`).join('\n');
+        `• Active SM-2 Flashcards: ${flashcards.length}\n` +
+        `• Flashcard Pipeline: Due: ${flashcards.filter(f => f.nextReviewDate <= Date.now()).length} | Mastered: ${flashcards.filter(f => f.repetition >= 3).length}\n`;
     }
 
     document.getElementById("ai-export-preview").value = payload;
@@ -3306,7 +3390,7 @@ const CGL_OS = (() => {
 
   async function downloadLedgerMarkdown() {
     const allQs = await getAllRecords("store_questions");
-    let txt = `# SSC CGL MASTER QUESTION BANK REFERENCE LEDGER\nGenerated on: ${new Date().toISOString()}\nTotal Questions: ${allQs.length}\n\n`;
+    let txt = `# SSC CGL MASTER QUESTION BANK REFERENCE LEDGER\nGenerated on: ${formatISTDate(Date.now())}\nTotal Questions: ${allQs.length}\n\n`;
 
     allQs.forEach((q, idx) => {
       txt += `--- [RECORD ${idx + 1}] ---\n`;
@@ -3330,63 +3414,52 @@ const CGL_OS = (() => {
     document.getElementById("modal-ledger-export").classList.remove("active");
   }
 
-  async function exportCleanMarkdownVault() {
-    const vault = await getAllRecords("store_vault");
-    const questions = await getAllRecords("store_questions");
-    let md = `# SSC CGL Error Vault Export\n\n`;
+  async function exportCleanMarkdownFlashcards() {
+    const flashcards = await getAllRecords("store_flashcards");
+    let md = `# SSC CGL Flashcard Deck Export\nGenerated on: ${formatISTDate(Date.now())}\nTotal Cards: ${flashcards.length}\n\n`;
 
-    vault.forEach(v => {
-      const q = questions.find(item => item.id === v.questionId);
-      if (q) {
-        md += `### ${q.id} - ${q.chapter}\n`;
-        md += `**Error Tag:** #${v.errorTag || 'UNCLASSIFIED'} | **Repetitions:** ${v.repetition} | **Interval:** ${v.interval}d\n\n`;
-        md += `> ${q.questionText}\n\n`;
-        md += `**Solution:**\n${q.explanation}\n\n---\n\n`;
-      }
+    flashcards.forEach(f => {
+      md += `### [${f.subject} • ${f.chapter}] ${f.id}\n`;
+      md += `**Prompt (Front):**\n${f.front}\n\n`;
+      md += `**Answer (Back):**\n${f.back}\n\n`;
+      md += `*Interval: ${f.interval}d | Reps: ${f.repetition} | EF: ${f.easeFactor}*\n\n---\n\n`;
     });
 
     const blob = new Blob([md], { type: "text/plain;charset=utf-8" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `CGL_Vault_${Date.now()}.md`;
+    a.download = `CGL_Flashcards_${Date.now()}.md`;
     a.click();
   }
 
   async function copyLiveSystemManifestToClipboard() {
     const questions = await getAllRecords("store_questions");
     const attempts = await getAllRecords("store_attempts");
-    const vault = await getAllRecords("store_vault");
+    const flashcards = await getAllRecords("store_flashcards");
     const concepts = await getAllRecords("store_concepts");
-    const savedMocks = await getAllRecords("store_saved_mocks");
-
-    const qSubjectCounts = {};
-    Object.keys(TAXONOMY).forEach(k => qSubjectCounts[k] = 0);
-    questions.forEach(q => {
-      if (qSubjectCounts[q.subject] !== undefined) qSubjectCounts[q.subject]++;
-    });
+    const consultations = await getAllRecords("store_ai_consultations");
 
     const manifest = `# SSC CGL Intelligence OS - Live Runtime Introspection Manifest
-Generated at: ${new Date().toISOString()}
-Target Candidate: Ankit (SSC CGL 2026 Tier 1 & Tier 2)
+Generated at: ${formatISTDate(Date.now())}
+Target Candidate: Ankit (SSC CGL 2026 Tier 1 & Tier 2 Master Preparation)
 
-## 1. Live Database Telemetry Metrics
-- Total Master Questions: ${questions.length} (${Object.keys(qSubjectCounts).map(k => `${k}: ${qSubjectCounts[k]}`).join(', ')})
-- Standard Mocks Completed: ${attempts.filter(a => a.completed && !a.isVaultSprint).length}
-- Active SM-2 Vault Traps: ${vault.length}
-- Living Document Topic Sheets: ${concepts.length}
-- Saved Blueprints & Fixed Papers: ${savedMocks.length}
+## 1. Live Telemetry Metrics
+- Master Question Pool: ${questions.length}
+- Completed Mocks: ${attempts.filter(a => a.completed).length}
+- Active SM-2 Flashcards: ${flashcards.length} (Due Today: ${flashcards.filter(f => f.nextReviewDate <= Date.now()).length})
+- Living Knowledge Sheets: ${concepts.length}
+- Clinical Consultations Logged: ${consultations.length}
 
 ## 2. Active System Taxonomy & Chapters
 ${JSON.stringify(TAXONOMY, null, 2)}
 
-## 3. Bi-Directional Bridge Keys (Concept IDs in Question Bank)
-${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.chapter, title: c.title })), null, 2)}
-
-## 4. Supported JSON Action Contracts
+## 3. Supported JSON Action Contracts
+- EXECUTE_AI_CONSULTATION_BUNDLE
 - INGEST_AND_LAUNCH_MOCK
 - AI_PRESCRIBE_REMEDY
-- BATCH_INGEST_QUESTIONS
+- BATCH_INGEST_FLASHCARDS
 - BATCH_INGEST_COMPENDIUM
+- REQUEST_HISTORICAL_DUMP
 - SAVE_MOCK_PRESET
 - MODIFY_TAXONOMY
 - RAW_DB_OPERATION
@@ -3396,12 +3469,164 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
   }
 
   /* -------------------------------------------------------------
-   * 14. DASHBOARD RENDER ENGINE (FIXED NEGLECT & ERI DIAL)
+   * 15. SCOPED FORENSIC DOSSIER EXTRACTOR (UI FILTER PANEL)
+   * ------------------------------------------------------------- */
+  async function exportScopedForensicDossier() {
+    const sub = document.getElementById("scoped-export-subject").value;
+    const timeframe = document.getElementById("scoped-export-timeframe").value;
+    const filter = document.getElementById("scoped-export-filter").value;
+    const encoding = document.getElementById("scoped-export-encoding").value;
+
+    const allAttempts = await getAllRecords("store_attempts");
+    const allQuestions = await getAllRecords("store_questions");
+    const allFlashcards = await getAllRecords("store_flashcards");
+    const consultations = await getAllRecords("store_ai_consultations");
+
+    const now = Date.now();
+    let cutoff = 0;
+    if (timeframe === "7D") cutoff = now - (7 * 24 * 60 * 60 * 1000);
+    else if (timeframe === "15D") cutoff = now - (15 * 24 * 60 * 60 * 1000);
+    else if (timeframe === "30D") cutoff = now - (30 * 24 * 60 * 60 * 1000);
+
+    const filteredAttempts = allAttempts.filter(a => a.completed && a.timestamp >= cutoff);
+
+    // Build Chronological Question Exposures & Spacing History
+    const exposureMap = {};
+    allAttempts.filter(a => a.completed).sort((a, b) => a.timestamp - b.timestamp).forEach(att => {
+      if (att.questions && Array.isArray(att.questions) && att.userResponses) {
+        att.questions.forEach(q => {
+          if (sub === "ALL" || q.subject === sub) {
+            const resp = att.userResponses[q.id];
+            if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
+              if (!exposureMap[q.id]) {
+                exposureMap[q.id] = {
+                  totalExposures: 0,
+                  firstSeenIST: att.timeIST,
+                  lastSeenIST: att.timeIST,
+                  spacingHistory: []
+                };
+              }
+              const hist = exposureMap[q.id];
+              const priorEpoch = hist.spacingHistory.length > 0 ? hist.spacingHistory[hist.spacingHistory.length - 1].epochMs : 0;
+              hist.totalExposures++;
+              hist.lastSeenIST = att.timeIST;
+              hist.spacingHistory.push({
+                attemptNum: hist.totalExposures,
+                epochMs: att.timestamp,
+                dateIST: att.timeIST,
+                timeSpentSec: resp.timeSpentSec || 0,
+                outcome: resp.selectedOption === q.correctIndex ? 1 : 0,
+                gapDays: calcGapDays(att.timestamp, priorEpoch)
+              });
+            }
+          }
+        });
+      }
+    });
+
+    // Compile Telemetry Slice
+    const telemetryRows = [];
+    const decisionTrails = {};
+
+    filteredAttempts.forEach(att => {
+      if (att.questions && Array.isArray(att.questions) && att.userResponses) {
+        att.questions.forEach(q => {
+          if (sub === "ALL" || q.subject === sub) {
+            const resp = att.userResponses[q.id];
+            if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
+              const isCor = resp.selectedOption === q.correctIndex ? 1 : 0;
+              const isTrap = (resp.timeSpentSec > 90 && isCor === 0) || (resp.isPanicSlip) || (resp.switches > 0 && isCor === 0);
+
+              if (filter === "ALL" || (filter === "TRAPS_ONLY" && isTrap) || (filter === "PANIC_ONLY" && resp.isPanicSlip)) {
+                telemetryRows.push({
+                  mockId: att.sessionId,
+                  mockIST: att.timeIST,
+                  slot: att.diurnalSlot,
+                  qId: q.id,
+                  subject: q.subject,
+                  chapter: q.chapter,
+                  sel: resp.selectedOption,
+                  cor: q.correctIndex,
+                  t: resp.timeSpentSec || 0,
+                  sw: resp.switches || 0,
+                  panic: resp.isPanicSlip ? 1 : 0,
+                  tag: resp.errorTag || "UNCLASSIFIED"
+                });
+
+                if (resp.decisionTrail && resp.decisionTrail.length > 0) {
+                  decisionTrails[`${att.sessionId}_${q.id}`] = resp.decisionTrail;
+                }
+              }
+            }
+          }
+        });
+      }
+    });
+
+    // Filter Relevant Flashcards
+    const scopedFlashcards = allFlashcards.filter(f => sub === "ALL" || f.subject === sub);
+
+    let telemetryPayload;
+    if (encoding === "HYBRID_CSV") {
+      let csv = "mockId,mockIST,slot,qId,subject,chapter,sel,cor,t,sw,panic,tag\n";
+      telemetryRows.forEach(r => {
+        csv += `${r.mockId},${r.mockIST},${r.slot},${r.qId},${r.subject},${r.chapter},${r.sel},${r.cor},${r.t},${r.sw},${r.panic},${r.tag}\n`;
+      });
+      telemetryPayload = csv;
+    } else {
+      telemetryPayload = telemetryRows;
+    }
+
+    const dossierEnvelope = {
+      __os_manifest: {
+        engine: "SSC_CGL_INTELLIGENCE_OS",
+        version: DB_VERSION,
+        exportedAtEpoch: now,
+        exportedAtIST: formatISTDate(now),
+        diurnalSlot: getDiurnalSlot(now),
+        exportScope: `${sub}_${timeframe}_${filter}`,
+        encoding: encoding,
+        decoderInstructions: "CSV rows correspond to individual question attempts. Columns: mockId,mockIST,slot,qId,subject,chapter,sel,cor,t,sw,panic,tag. Check decisionTrails for chronological hesitation path.",
+        supportedActionContracts: [
+          "EXECUTE_AI_CONSULTATION_BUNDLE",
+          "INGEST_AND_LAUNCH_MOCK",
+          "AI_PRESCRIBE_REMEDY",
+          "BATCH_INGEST_FLASHCARDS",
+          "BATCH_INGEST_COMPENDIUM",
+          "REQUEST_HISTORICAL_DUMP"
+        ]
+      },
+      cumulativeClinicalNarrative: consultations.length > 0 ? consultations[consultations.length - 1].cumulativeNarrative || "Baseline initialized." : "No prior consultations logged.",
+      recentConsultationLogs: consultations.slice(-3),
+      candidateProfile: {
+        target: "SSC CGL 2026 Tier 1 & Tier 2 Master Preparation",
+        scopedAttemptsEvaluated: filteredAttempts.length,
+        scopedTelemetryCount: telemetryRows.length,
+        flashcardQueue: {
+          totalCards: scopedFlashcards.length,
+          dueToday: scopedFlashcards.filter(f => f.nextReviewDate <= now).length,
+          mastered: scopedFlashcards.filter(f => f.repetition >= 3).length
+        }
+      },
+      questionExposuresAndSpacing: exposureMap,
+      telemetryData: telemetryPayload,
+      decisionTrails: decisionTrails
+    };
+
+    const blob = new Blob([JSON.stringify(dossierEnvelope, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `cgl_forensic_dossier_${sub}_${timeframe}_${now}.json`;
+    a.click();
+  }
+
+  /* -------------------------------------------------------------
+   * 16. DASHBOARD RENDER ENGINE
    * ------------------------------------------------------------- */
   async function renderDashboard() {
     const attempts = await getAllRecords("store_attempts");
-    const completed = attempts.filter(a => a.completed && !a.isVaultSprint);
-    const vaultRecords = await getAllRecords("store_vault");
+    const completed = attempts.filter(a => a.completed);
+    const flashcards = await getAllRecords("store_flashcards");
 
     document.getElementById("kpi-total-mocks").innerText = completed.length;
 
@@ -3450,9 +3675,9 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
       else speedEl.innerHTML = `<span style="color:var(--status-red);">⚠️ Drag Alert (>60s / Q)</span>`;
     }
 
-    calculateAndRenderERI(accPercent, avgSpeed, vaultRecords.length, completed.length);
+    calculateAndRenderERI(accPercent, avgSpeed, flashcards, completed.length);
     checkAndRenderNeglectIndex(completed);
-    renderCognitiveTrapHeatStrip(vaultRecords);
+    renderCognitiveTrapHeatStrip(completed);
 
     try { renderDashboardSubjectBatteries(completed); } catch(e) { console.error("Batteries error:", e); }
     try { renderRecentHistory(completed); } catch(e) { console.error("Recent history error:", e); }
@@ -3460,7 +3685,7 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
     try { await renderDrilldownSubjectLevel(); } catch(e) { console.error("Drilldown error:", e); }
   }
 
-  function calculateAndRenderERI(accPercent, avgSpeed, activeVaultTraps, completedCount) {
+  function calculateAndRenderERI(accPercent, avgSpeed, flashcards, completedCount) {
     if (completedCount === 0) {
       document.getElementById("eri-score-val").innerText = "--";
       document.getElementById("eri-status-tier").innerText = "Calibrating";
@@ -3473,10 +3698,14 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
     if (avgSpeed > 45) velScore = Math.max(0, 100 - (avgSpeed - 45) * 2.5);
     const velComponent = velScore * 0.30;
 
-    const vaultClearScore = Math.max(0, 100 - (activeVaultTraps * 5));
-    const vaultComponent = vaultClearScore * 0.30;
+    let retentionScore = 100;
+    if (flashcards.length > 0) {
+      const dueCount = flashcards.filter(f => f.nextReviewDate <= Date.now()).length;
+      retentionScore = Math.max(0, 100 - (dueCount * 3));
+    }
+    const retentionComponent = retentionScore * 0.30;
 
-    const eri = Math.min(100, Math.max(0, accComponent + velComponent + vaultComponent)).toFixed(1);
+    const eri = Math.min(100, Math.max(0, accComponent + velComponent + retentionComponent)).toFixed(1);
     document.getElementById("eri-score-val").innerText = eri;
 
     const circle = document.getElementById("eri-gauge-circle");
@@ -3563,13 +3792,27 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
     }
   }
 
-  function renderCognitiveTrapHeatStrip(vaultRecords) {
+  function renderCognitiveTrapHeatStrip(completed) {
     const bar = document.getElementById("dash-trap-heat-bar");
     const legend = document.getElementById("dash-trap-legend");
     bar.innerHTML = "";
     legend.innerHTML = "";
 
-    if (vaultRecords.length === 0) {
+    const tagCounts = {};
+    let totalTagged = 0;
+
+    completed.forEach(att => {
+      if (att.userResponses) {
+        Object.values(att.userResponses).forEach(r => {
+          if (r && r.errorTag && r.errorTag !== "UNCLASSIFIED") {
+            tagCounts[r.errorTag] = (tagCounts[r.errorTag] || 0) + 1;
+            totalTagged++;
+          }
+        });
+      }
+    });
+
+    if (totalTagged === 0) {
       bar.innerHTML = `<div class="trap-heat-seg" style="width:100%; background:var(--status-green);"></div>`;
       legend.innerHTML = `<span style="color:var(--status-green);">Zero active cognitive traps logged!</span>`;
       return;
@@ -3580,61 +3823,23 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
       READING_TRAP: "#d29922",
       FORMULA_AMNESIA: "#8957e5",
       CONCEPT_VOID: "#38bdf8",
-      RUSHED_PANIC: "#f43f5e",
-      UNCLASSIFIED: "#484f58"
+      RUSHED_PANIC: "#f43f5e"
     };
 
-    const counts = {};
-    vaultRecords.forEach(v => {
-      const t = v.errorTag || "UNCLASSIFIED";
-      counts[t] = (counts[t] || 0) + 1;
-    });
-
-    Object.keys(counts).forEach(tag => {
-      const percent = Math.round((counts[tag] / vaultRecords.length) * 100);
+    Object.keys(tagCounts).forEach(tag => {
+      const percent = Math.round((tagCounts[tag] / totalTagged) * 100);
       const segColor = colors[tag] || "#388bfd";
 
       const seg = document.createElement("div");
       seg.className = "trap-heat-seg";
       seg.style.width = `${percent}%`;
       seg.style.background = segColor;
-      seg.style.cursor = "pointer";
-      seg.title = `${tag}: ${counts[tag]} (${percent}%)`;
-      seg.onclick = () => filterVaultByMistakeTag(tag);
+      seg.title = `${tag}: ${tagCounts[tag]} (${percent}%)`;
       bar.appendChild(seg);
 
       const legItem = document.createElement("span");
-      legItem.style.cursor = "pointer";
       legItem.innerHTML = `<span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:${segColor}; margin-right:4px;"></span>${tag.replace(/_/g, ' ')} (${percent}%)`;
-      legItem.onclick = () => filterVaultByMistakeTag(tag);
       legend.appendChild(legItem);
-    });
-  }
-
-  async function filterVaultByMistakeTag(tag) {
-    switchTab("tab-vault", document.getElementById("nav-btn-tab-vault"));
-    const vault = await getAllRecords("store_vault");
-    const filtered = vault.filter(v => v.errorTag === tag);
-    const container = document.getElementById("vault-list-container");
-    container.innerHTML = `<div style="font-size:12px; font-weight:700; color:var(--accent-cyan); margin-bottom:8px;">Filtered by: #${tag} (${filtered.length} Traps)</div>`;
-
-    const allQs = await getAllRecords("store_questions");
-    filtered.forEach(v => {
-      const q = allQs.find(item => item.id === v.questionId);
-      if (q) {
-        const div = document.createElement("div");
-        div.className = "card";
-        div.style.borderColor = "#da3633";
-        div.style.marginBottom = "8px";
-        div.innerHTML = `
-          <div style="font-size:13px; line-height:1.5;">${formatRichText(q.questionText)}</div>
-          <div style="margin-top:6px; display:flex; justify-content:space-between; align-items:center;">
-            <span class="badge" style="background:#da3633;">${v.errorTag}</span>
-            <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.applyManualSM2Grade('${v.questionId}', 3)">Good (+5d)</button>
-          </div>
-        `;
-        container.appendChild(div);
-      }
     });
   }
 
@@ -3703,8 +3908,11 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
       card.innerHTML = `
         <div class="ticket-header">
           <div>
-            <b style="font-size:14px; color:#fff;">${att.title || 'SSC CGL Mock'}</b>
-            <div style="font-size:11px; color:var(--text-muted);">${new Date(att.timestamp || Date.now()).toLocaleDateString()}</div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <b style="font-size:14px; color:#fff;">${att.title || 'SSC CGL Mock'}</b>
+              <span class="badge-slot slot-${(att.diurnalSlot || 'morning').toLowerCase()}">${att.diurnalSlot || 'DAY'}</span>
+            </div>
+            <div style="font-size:11px; color:var(--text-muted);">${att.timeIST || formatISTDate(att.timestamp)}</div>
           </div>
           <div style="text-align:right;">
             <span style="font-size:16px; font-weight:800; color:var(--accent-cyan);">${(att.finalScore || 0).toFixed(2)} pts</span>
@@ -3734,7 +3942,7 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
 
   async function renderArchiveList(filterType) {
     const attempts = await getAllRecords("store_attempts");
-    const completed = attempts.filter(a => a.completed && !a.isVaultSprint);
+    const completed = attempts.filter(a => a.completed);
     const container = document.getElementById("archive-list-container");
     container.innerHTML = "";
 
@@ -3757,9 +3965,10 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
           <div>
             <div style="display:flex; align-items:center; gap:6px;">
               <b style="font-size:14px;">${att.title}</b>
+              <span class="badge-slot slot-${(att.diurnalSlot || 'morning').toLowerCase()}">${att.diurnalSlot || 'DAY'}</span>
               ${att.signatureTag ? `<span class="badge" style="background:#1f6feb; font-size:9px;">${att.signatureTag}</span>` : ''}
             </div>
-            <div style="font-size:11px; color:var(--text-muted);">${new Date(att.timestamp).toLocaleString()}</div>
+            <div style="font-size:11px; color:var(--text-muted);">${att.timeIST || formatISTDate(att.timestamp)}</div>
           </div>
           <div style="text-align:right;">
             <span style="font-size:14px; font-weight:800; color:var(--accent-cyan);">${(att.finalScore || 0).toFixed(2)} pts</span><br>
@@ -3783,7 +3992,7 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
     list.innerHTML = "";
 
     const attempts = await getAllRecords("store_attempts");
-    const completed = attempts.filter(a => a.completed && !a.isVaultSprint);
+    const completed = attempts.filter(a => a.completed);
 
     Object.keys(TAXONOMY).forEach(subKey => {
       const sub = TAXONOMY[subKey];
@@ -3835,7 +4044,7 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
     list.innerHTML = "";
 
     const attempts = await getAllRecords("store_attempts");
-    const completed = attempts.filter(a => a.completed && !a.isVaultSprint);
+    const completed = attempts.filter(a => a.completed);
     const allQuestions = await getAllRecords("store_questions");
 
     sub.chapters.forEach(chap => {
@@ -3894,27 +4103,6 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
     const nc = attCount > 0 ? Math.max(0, (1 - (attCount / 50))).toFixed(2) : "1.00";
     document.getElementById("insp-nc").innerText = nc;
 
-    const vault = await getAllRecords("store_vault");
-    const allQs = await getAllRecords("store_questions");
-    const vList = document.getElementById("insp-vulnerability-list");
-    vList.innerHTML = "";
-
-    const chapterVault = vault.filter(v => allQs.some(q => q.id === v.questionId && q.chapter === chap));
-    if (chapterVault.length === 0) {
-      vList.innerHTML = `<span style="color:var(--status-green);">Zero active errors logged in this chapter!</span>`;
-    } else {
-      chapterVault.forEach(v => {
-        const q = allQs.find(item => item.id === v.questionId);
-        if (q) {
-          const item = document.createElement("div");
-          item.style.padding = "4px 0";
-          item.style.borderBottom = "1px solid var(--border-color)";
-          item.innerHTML = `• ${q.questionText.slice(0, 75)}... <span style="color:var(--status-red);">[${v.errorTag}]</span>`;
-          vList.appendChild(item);
-        }
-      });
-    }
-
     document.getElementById("btn-launch-chapter-blitz").onclick = () => {
       document.getElementById("modal-chapter-inspector").classList.remove("active");
       launchConfiguredMockDirect(subKey, chap, 5, 5);
@@ -3925,9 +4113,14 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
   }
 
   /* -------------------------------------------------------------
-   * 15. AUTOMATED ANKI SM-2 SPACED REPETITION ENGINE
+   * 17. ANKI SM-2 FLASHCARD ENGINE (`store_flashcards`)
    * ------------------------------------------------------------- */
+  let activeStudyDeck = [];
+  let activeStudyIndex = 0;
+  let activeStudyFlipped = false;
+
   function calculateSM2(card, quality) {
+    // Quality: 1 (Again), 2 (Hard), 3 (Good), 4 (Easy)
     let { interval = 1, repetition = 0, easeFactor = 2.5 } = card;
 
     if (quality < 3) {
@@ -3946,10 +4139,11 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
       repetition++;
     }
 
-    const qFactor = quality + 1;
+    const qFactor = quality + 1; // Map to 2..5 range for standard SM-2 equation
     easeFactor = Math.max(1.3, easeFactor + (0.1 - (5 - qFactor) * (0.08 + (5 - qFactor) * 0.02)));
 
-    const nextReviewDate = Date.now() + (interval * 24 * 60 * 60 * 1000);
+    const now = Date.now();
+    const nextReviewDate = now + (interval * 24 * 60 * 60 * 1000);
 
     return {
       ...card,
@@ -3957,56 +4151,17 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
       repetition,
       easeFactor: parseFloat(easeFactor.toFixed(2)),
       nextReviewDate,
-      lastAttempted: Date.now()
+      lastAttempted: now
     };
   }
 
-  async function registerVaultMistake(qId, subject, chapter, errorTag = "UNCLASSIFIED") {
-    const existing = await getRecord("store_vault", qId);
-    if (existing) {
-      const updated = calculateSM2(existing, 1);
-      updated.errorTag = errorTag !== "UNCLASSIFIED" ? errorTag : existing.errorTag;
-      await putRecord("store_vault", updated);
-    } else {
-      const newCard = {
-        questionId: qId,
-        subject: subject || "QA",
-        chapter: chapter || "QA_GENERAL",
-        errorTag: errorTag,
-        interval: 1,
-        repetition: 0,
-        easeFactor: 2.5,
-        nextReviewDate: Date.now(),
-        lastAttempted: Date.now()
-      };
-      await putRecord("store_vault", newCard);
-    }
-  }
-
-  async function registerVaultSuccess(qId, timeSpentSec = 30) {
-    const card = await getRecord("store_vault", qId);
-    if (!card) return;
-
-    let quality = 3;
-    if (timeSpentSec < 20) quality = 4;
-    else if (timeSpentSec > 60) quality = 2;
-
-    const updated = calculateSM2(card, quality);
-    await putRecord("store_vault", updated);
-  }
-
-  async function applyManualSM2Grade(qId, quality) {
-    const card = await getRecord("store_vault", qId);
-    if (!card) return;
-    const updated = calculateSM2(card, quality);
-    await putRecord("store_vault", updated);
-    renderVault();
-  }
-
   async function renderVault() {
-    const vault = await getAllRecords("store_vault");
-    const questions = await getAllRecords("store_questions");
-    const container = document.getElementById("vault-list-container");
+    await renderFlashcardList();
+  }
+
+  async function renderFlashcardList() {
+    const flashcards = await getAllRecords("store_flashcards");
+    const container = document.getElementById("flashcard-list-container");
     if (!container) return;
     container.innerHTML = "";
 
@@ -4015,180 +4170,208 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
     let learningCount = 0;
     let masteredCount = 0;
 
-    const cardsWithQ = [];
-    for (const v of vault) {
-      const q = questions.find(item => item.id === v.questionId);
-      if (q) {
-        if (v.nextReviewDate === undefined) {
-          v.interval = v.leitnerBox ? (v.leitnerBox === 1 ? 1 : (v.leitnerBox === 2 ? 4 : 14)) : 1;
-          v.repetition = v.leitnerBox || 0;
-          v.easeFactor = 2.5;
-          v.nextReviewDate = now - 1000;
-          await putRecord("store_vault", v);
-        }
+    flashcards.forEach(f => {
+      if (f.nextReviewDate <= now) dueCount++;
+      if (f.repetition >= 3 && f.interval >= 14) masteredCount++;
+      else learningCount++;
+    });
 
-        const isDue = v.nextReviewDate <= now;
-        if (isDue) dueCount++;
-        if (v.repetition >= 3 && v.interval >= 14) masteredCount++;
-        else learningCount++;
+    document.getElementById("sm2-due-badge").innerText = `${dueCount} Due`;
+    document.getElementById("sm2-btn-count").innerText = dueCount;
+    document.getElementById("sm2-count-due").innerText = dueCount;
+    document.getElementById("sm2-count-learning").innerText = learningCount;
+    document.getElementById("sm2-count-mastered").innerText = masteredCount;
 
-        cardsWithQ.push({ v, q, isDue });
-      } else {
-        await deleteRecordFromStore("store_vault", v.questionId);
-      }
-    }
+    const filterSub = document.getElementById("sm2-deck-filter-sub") ? document.getElementById("sm2-deck-filter-sub").value : "ALL";
+    const filteredCards = flashcards.filter(f => filterSub === "ALL" || f.subject === filterSub);
 
-    const badge = document.getElementById("vault-due-badge");
-    if (badge) badge.innerText = `${dueCount} Due`;
-    const btnCount = document.getElementById("vault-btn-count");
-    if (btnCount) btnCount.innerText = dueCount;
-    const dueEl = document.getElementById("sm2-count-due");
-    if (dueEl) dueEl.innerText = dueCount;
-    const learnEl = document.getElementById("sm2-count-learning");
-    if (learnEl) learnEl.innerText = learningCount;
-    const mastEl = document.getElementById("sm2-count-mastered");
-    if (mastEl) mastEl.innerText = masteredCount;
-
-    if (cardsWithQ.length === 0) {
-      container.innerHTML = `<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:16px;">Error Vault is clear. Zero mistakes registered!</div>`;
+    if (filteredCards.length === 0) {
+      container.innerHTML = `<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:16px;">Deck is clear. Zero cards in this selection.</div>`;
       return;
     }
 
-    cardsWithQ.sort((a, b) => a.v.nextReviewDate - b.v.nextReviewDate);
+    filteredCards.sort((a, b) => a.nextReviewDate - b.nextReviewDate);
 
-    cardsWithQ.forEach(({ v, q, isDue }) => {
+    filteredCards.slice(0, 30).forEach(f => {
+      const isDue = f.nextReviewDate <= now;
+      const daysUntil = Math.ceil((f.nextReviewDate - now) / (24 * 60 * 60 * 1000));
+      const dueStatusText = isDue 
+        ? `<b style="color:var(--status-red);">⚡ DUE NOW</b>` 
+        : `<span style="color:var(--text-muted);">Due in ${daysUntil}d (Int: ${f.interval}d)</span>`;
+
       const div = document.createElement("div");
       div.className = "card";
       div.style.borderColor = isDue ? "var(--status-red)" : "var(--border-color)";
       div.style.marginBottom = "8px";
 
-      const daysUntil = Math.ceil((v.nextReviewDate - now) / (24 * 60 * 60 * 1000));
-      const dueStatusText = isDue 
-        ? `<b style="color:var(--status-red);">⚡ DUE NOW</b>` 
-        : `<span style="color:var(--text-muted);">Due in ${daysUntil}d (Int: ${v.interval}d)</span>`;
-
       div.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
           <div>
-            <span class="badge" style="background:#5a1e1e; color:#f87171;">${v.errorTag || 'UNCLASSIFIED'}</span>
-            <span class="badge" style="background:#151a24; color:var(--accent-cyan); margin-left:4px;">${q.chapter}</span>
+            <span class="badge" style="background:#151a24; color:var(--accent-purple-light);">${f.subject}</span>
+            <span class="badge" style="background:#151a24; color:var(--accent-cyan); margin-left:4px;">${f.chapter}</span>
           </div>
           <div style="font-size:10px; font-family:var(--font-mono);">${dueStatusText}</div>
         </div>
-        <div style="font-size:13px; line-height:1.5; margin:6px 0;">${formatRichText(q.questionText)}</div>
-        <div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;"><b>Correct:</b> Option ${q.correctIndex + 1} • EF: ${v.easeFactor} • Reps: ${v.repetition}</div>
-
-        <div class="sm2-grade-bar">
-          <button class="btn btn-sm2-again" onclick="CGL_OS.applyManualSM2Grade('${v.questionId}', 1)">Again (1d)</button>
-          <button class="btn btn-sm2-hard" onclick="CGL_OS.applyManualSM2Grade('${v.questionId}', 2)">Hard</button>
-          <button class="btn btn-sm2-good" onclick="CGL_OS.applyManualSM2Grade('${v.questionId}', 3)">Good</button>
-          <button class="btn btn-sm2-easy" onclick="CGL_OS.applyManualSM2Grade('${v.questionId}', 4)">Easy</button>
+        <div style="font-size:13.5px; line-height:1.5; margin:6px 0; color:#fff;">${formatRichText(f.front)}</div>
+        <div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">EF: ${f.easeFactor} • Reps: ${f.repetition} • Last: ${formatISTDate(f.lastAttempted)}</div>
+        <div style="display:flex; justify-content:flex-end; gap:6px;">
+          <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openFlashcardEditorModal(false, '${f.id}')">Edit</button>
         </div>
       `;
       container.appendChild(div);
     });
-
-    renderVaultSprintHistory();
   }
 
-  async function launchVaultDueSprint() {
-    const vault = await getAllRecords("store_vault");
-    const questions = await getAllRecords("store_questions");
+  async function launchFlashcardDueSprint() {
+    const flashcards = await getAllRecords("store_flashcards");
     const now = Date.now();
+    const filterSub = document.getElementById("sm2-deck-filter-sub") ? document.getElementById("sm2-deck-filter-sub").value : "ALL";
 
-    const dueVaultItems = vault.filter(v => (v.nextReviewDate || 0) <= now);
-    let targetQs = questions.filter(q => dueVaultItems.some(v => v.questionId === q.id));
-
-    if (targetQs.length === 0) {
-      targetQs = questions.filter(q => vault.some(v => v.questionId === q.id));
+    let dueCards = flashcards.filter(f => (filterSub === "ALL" || f.subject === filterSub) && f.nextReviewDate <= now);
+    if (dueCards.length === 0) {
+      dueCards = flashcards.filter(f => filterSub === "ALL" || f.subject === filterSub);
     }
 
-    if (targetQs.length === 0) {
-      alert("Error Vault is 100% clear. Zero questions to review!");
+    if (dueCards.length === 0) {
+      alert("Flashcard deck is completely empty! Add cards or import an AI consultation payload.");
       return;
     }
 
-    activeExam = {
-      sessionId: "vault_sprint_" + Date.now(),
-      timestamp: Date.now(),
-      title: `SM-2 Spaced Recall (${targetQs.length} Due Qs)`,
-      isVaultSprint: true,
-      isSectionLocked: false,
-      sections: [{
-        id: "SEC_SM2",
-        name: "Due Spaced Review",
-        durationSec: targetQs.length * 60,
-        questions: targetQs,
-        locked: false
-      }],
-      activeSectionIndex: 0,
-      currentQuestionIndex: 0,
-      questions: targetQs.map((q, idx) => ({ ...q, sectionIndex: 0, sectionName: "Spaced Review", localNumber: idx + 1, globalNumber: idx + 1 })),
-      sectionRemainingSec: targetQs.length * 60,
-      currentQTimeSpentSec: 0,
-      userResponses: {},
-      isPaused: false,
-      isReviewMode: false
+    activeStudyDeck = dueCards;
+    activeStudyIndex = 0;
+    activeStudyFlipped = false;
+
+    pushNavLayer("modal-flashcard-study", () => {
+      document.getElementById("modal-flashcard-study").classList.remove("active");
+    });
+    document.getElementById("modal-flashcard-study").classList.add("active");
+    renderCurrentStudyFlashcard();
+  }
+
+  function renderCurrentStudyFlashcard() {
+    const card = activeStudyDeck[activeStudyIndex];
+    if (!card) return;
+
+    activeStudyFlipped = false;
+    document.getElementById("fc-study-progress").innerText = `Card ${activeStudyIndex + 1} of ${activeStudyDeck.length}`;
+    document.getElementById("fc-card-chapter").innerText = `${card.subject} • ${card.chapter}`;
+    document.getElementById("fc-card-interval-tag").innerText = `Int: ${card.interval}d | Reps: ${card.repetition}`;
+    document.getElementById("fc-card-body").innerHTML = formatRichText(card.front);
+    document.getElementById("fc-card-cue").innerText = "Tap card to flip answer";
+    document.getElementById("fc-study-actions").style.display = "none";
+  }
+
+  function flipStudyFlashcard() {
+    if (activeStudyFlipped) return;
+    const card = activeStudyDeck[activeStudyIndex];
+    if (!card) return;
+
+    activeStudyFlipped = true;
+    document.getElementById("fc-card-body").innerHTML = `
+      <div style="color:var(--text-muted); font-size:12px; margin-bottom:8px;">${formatRichText(card.front)}</div>
+      <hr style="border:0; border-top:1px solid var(--border-color); margin:8px 0;">
+      <div style="font-weight:700; color:#fff;">${formatRichText(card.back)}</div>
+    `;
+    document.getElementById("fc-card-cue").innerText = "Select recall rating below:";
+    document.getElementById("fc-study-actions").style.display = "block";
+  }
+
+  async function gradeStudyFlashcard(quality) {
+    const card = activeStudyDeck[activeStudyIndex];
+    if (!card) return;
+
+    const updated = calculateSM2(card, quality);
+    await putRecord("store_flashcards", updated);
+
+    activeStudyIndex++;
+    if (activeStudyIndex < activeStudyDeck.length) {
+      renderCurrentStudyFlashcard();
+    } else {
+      alert("Daily Spaced Recall Sprint Complete! All due cards reviewed.");
+      document.getElementById("modal-flashcard-study").classList.remove("active");
+      renderVault();
+    }
+  }
+
+  async function openFlashcardEditorModal(isNew = true, cardId = null) {
+    if (isNew) {
+      document.getElementById("flashcard-editor-title").innerText = "Add New Flashcard";
+      document.getElementById("edit-fc-id").value = "fc_" + Date.now();
+      document.getElementById("edit-fc-subject").value = "QA";
+      document.getElementById("edit-fc-chapter").value = "QA_GEOMETRY";
+      document.getElementById("edit-fc-front").value = "";
+      document.getElementById("edit-fc-back").value = "";
+      document.getElementById("edit-fc-tags").value = "";
+      document.getElementById("btn-delete-fc").style.display = "none";
+    } else {
+      const card = await getRecord("store_flashcards", cardId);
+      if (!card) return;
+      document.getElementById("flashcard-editor-title").innerText = "Edit Flashcard";
+      document.getElementById("edit-fc-id").value = card.id;
+      document.getElementById("edit-fc-subject").value = card.subject;
+      document.getElementById("edit-fc-chapter").value = card.chapter;
+      document.getElementById("edit-fc-front").value = card.front;
+      document.getElementById("edit-fc-back").value = card.back;
+      document.getElementById("edit-fc-tags").value = Array.isArray(card.tags) ? card.tags.join(', ') : "";
+      document.getElementById("btn-delete-fc").style.display = "block";
+    }
+
+    pushHistoryState("modal-flashcard-editor");
+    document.getElementById("modal-flashcard-editor").classList.add("active");
+  }
+
+  async function saveFlashcardEditor() {
+    const id = document.getElementById("edit-fc-id").value;
+    const subject = document.getElementById("edit-fc-subject").value;
+    const chapter = document.getElementById("edit-fc-chapter").value.trim().toUpperCase();
+    const front = document.getElementById("edit-fc-front").value.trim();
+    const back = document.getElementById("edit-fc-back").value.trim();
+    const tagsRaw = document.getElementById("edit-fc-tags").value.trim();
+
+    if (!front || !back || !chapter) {
+      alert("Front Prompt, Back Answer, and Chapter are required.");
+      return;
+    }
+
+    const existing = await getRecord("store_flashcards", id);
+    const cardObj = {
+      id: id,
+      subject: subject,
+      chapter: chapter,
+      front: front,
+      back: back,
+      interval: existing ? existing.interval : 1,
+      repetition: existing ? existing.repetition : 0,
+      easeFactor: existing ? existing.easeFactor : 2.5,
+      nextReviewDate: existing ? existing.nextReviewDate : Date.now(),
+      lastAttempted: Date.now(),
+      tags: tagsRaw ? tagsRaw.split(',').map(t => t.trim()) : ["Manual"]
     };
 
-    activeExam.questions.forEach(q => {
-      activeExam.userResponses[q.id] = {
-        selectedOption: null,
-        initialOption: null,
-        status: "unanswered",
-        switches: 0,
-        decisionTrail: [],
-        timeSpentSec: 0,
-        struck: []
-      };
-    });
-
-    await putRecord("store_active_session", { id: "current_session", session: activeExam });
-    hideMiniPlayer();
-
-    pushNavLayer("exam-arena", () => {
-      document.getElementById("exam-arena").style.display = "none";
-    });
-
-    document.getElementById("exam-arena").style.display = "flex";
-    renderActiveExamQuestion();
-    startExamTimers();
+    await putRecord("store_flashcards", cardObj);
+    document.getElementById("modal-flashcard-editor").classList.remove("active");
+    renderVault();
   }
 
-  async function renderVaultSprintHistory() {
-    const sprints = await getAllRecords("store_vault_sprints");
-    const list = document.getElementById("vault-sprint-history-list");
-    document.getElementById("vault-sprint-count-badge").innerText = `${sprints.length} Sprints`;
-    list.innerHTML = "";
-
-    if (sprints.length === 0) {
-      list.innerHTML = `<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">No sprints recorded yet.</p>`;
-      return;
+  async function deleteCurrentEditingFlashcard() {
+    const id = document.getElementById("edit-fc-id").value;
+    if (confirm("Permanently delete this flashcard?")) {
+      await deleteRecordFromStore("store_flashcards", id);
+      document.getElementById("modal-flashcard-editor").classList.remove("active");
+      renderVault();
     }
+  }
 
-    sprints.slice().reverse().forEach(s => {
-      const div = document.createElement("div");
-      div.style.padding = "6px 8px";
-      div.style.borderBottom = "1px solid var(--border-color)";
-      div.style.fontSize = "12px";
-      div.style.display = "flex";
-      div.style.justifyContent = "space-between";
-      div.innerHTML = `
-        <div>
-          <b>Trap Sprint (${s.totalQuestions} Qs)</b><br>
-          <span style="font-size:10px; color:var(--text-muted);">${new Date(s.timestamp).toLocaleString()}</span>
-        </div>
-        <div style="text-align:right;">
-          <span style="color:var(--status-green); font-weight:700;">Acc: ${s.accuracy}%</span><br>
-          <span style="font-size:10px; color:var(--text-muted);">${s.correctCount} Cor / ${s.incorrectCount} Inc</span>
-        </div>
-      `;
-      list.appendChild(div);
-    });
+  async function wipeFlashcardStore() {
+    if (confirm("Permanently wipe all flashcards from the SM-2 engine?")) {
+      await clearStore("store_flashcards");
+      alert("Flashcard deck wiped.");
+      renderVault();
+    }
   }
 
   /* -------------------------------------------------------------
-   * 16. QUESTION GUI EDITOR
+   * 18. QUESTION GUI EDITOR
    * ------------------------------------------------------------- */
   let currentQuestionImageBase64 = "";
 
@@ -4279,7 +4462,7 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
   }
 
   /* -------------------------------------------------------------
-   * 17. HARDENED COMMAND BUS & AI DISPATCHER
+   * 19. HARDENED COMMAND BUS & AI DISPATCHER
    * ------------------------------------------------------------- */
   async function executeConsoleCommand() {
     const raw = document.getElementById("console-payload").value.trim();
@@ -4295,7 +4478,66 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
       const database = await getDB();
       if (!database) throw new Error("IndexedDB instance unavailable.");
 
-      if (cmd.action === "INGEST_AND_LAUNCH_MOCK") {
+      if (cmd.action === "EXECUTE_AI_CONSULTATION_BUNDLE") {
+        const { consultationDossier, actions = [] } = cmd.payload || {};
+        if (consultationDossier) {
+          const now = Date.now();
+          consultationDossier.id = consultationDossier.consultationId || `consult_${now}`;
+          consultationDossier.timestamp = now;
+          consultationDossier.timeIST = formatISTDate(now);
+          await putRecord("store_ai_consultations", consultationDossier);
+        }
+
+        for (const act of actions) {
+          if (act.action === "BATCH_INGEST_FLASHCARDS") {
+            const cards = (act.payload.cards || []).map(sanitizeFlashcard);
+            const txF = database.transaction(["store_flashcards"], "readwrite");
+            const stF = txF.objectStore("store_flashcards");
+            cards.forEach(c => stF.put(c));
+            await new Promise(r => txF.oncomplete = r);
+          } else if (act.action === "BATCH_INGEST_COMPENDIUM") {
+            const dossiers = (act.payload.dossiers || []).map(sanitizeDossier);
+            const txC = database.transaction(["store_concepts"], "readwrite");
+            const stC = txC.objectStore("store_concepts");
+            dossiers.forEach(d => stC.put(d));
+            await new Promise(r => txC.oncomplete = r);
+          } else if (act.action === "INGEST_AND_LAUNCH_MOCK") {
+            const questions = (act.payload.questions || []).map(sanitizeQuestion);
+            if (questions.length > 0) {
+              const txQ = database.transaction(["store_questions"], "readwrite");
+              const stQ = txQ.objectStore("store_questions");
+              questions.forEach(q => stQ.put(q));
+              await new Promise(r => txQ.oncomplete = r);
+              compileAndLaunchArena(act.payload.title || "AI Remedial Test", questions, act.payload.durationMin || 15);
+            }
+          }
+        }
+        alert("AI Consultation Bundle Executed Successfully! Clinical record saved.");
+
+      } else if (cmd.action === "REQUEST_HISTORICAL_DUMP") {
+        const { targetSubject, timeframeDays = 30 } = cmd.payload || {};
+        const cutoff = Date.now() - (timeframeDays * 24 * 60 * 60 * 1000);
+        const allAttempts = await getAllRecords("store_attempts");
+        const dump = allAttempts.filter(a => a.completed && a.timestamp >= cutoff).map(a => ({
+          sessionId: a.sessionId,
+          timeIST: a.timeIST,
+          diurnalSlot: a.diurnalSlot,
+          score: a.finalScore,
+          questions: a.questions.filter(q => !targetSubject || q.subject === targetSubject).map(q => ({
+            id: q.id,
+            chapter: q.chapter,
+            resp: a.userResponses[q.id]
+          }))
+        }));
+
+        document.getElementById("console-payload").value = JSON.stringify({
+          action: "HISTORICAL_DUMP_RESPONSE",
+          payload: { targetSubject, timeframeDays, dump }
+        }, null, 2);
+        alert(`Historical dump compiled (${dump.length} attempts)! Payload placed in console.`);
+        return;
+
+      } else if (cmd.action === "INGEST_AND_LAUNCH_MOCK") {
         const questions = (cmd.payload.questions || []).map(sanitizeQuestion);
         if (questions.length === 0) {
           alert("No questions found in payload to launch mock.");
@@ -4340,6 +4582,15 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
           remedialPool,
           cmd.payload.durationMin || 10
         );
+
+      } else if (cmd.action === "BATCH_INGEST_FLASHCARDS") {
+        const cards = (cmd.payload.cards || []).map(sanitizeFlashcard);
+        const txF = database.transaction(["store_flashcards"], "readwrite");
+        const stF = txF.objectStore("store_flashcards");
+        cards.forEach(c => stF.put(c));
+        await new Promise(r => txF.oncomplete = r);
+        alert(`Ingested ${cards.length} flashcards into SM-2 engine.`);
+        renderVault();
 
       } else if (cmd.action === "BATCH_INGEST_QUESTIONS") {
         const list = (cmd.payload.questions || []).map(sanitizeQuestion);
@@ -4398,12 +4649,14 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
     clearInterval(examTimerInterval);
     clearInterval(questionTimerInterval);
 
+    const now = Date.now();
     activeExam = {
-      sessionId: "ai_mock_" + Date.now(),
-      timestamp: Date.now(),
+      sessionId: "ai_mock_" + now,
+      timestamp: now,
+      timeIST: formatISTDate(now),
+      diurnalSlot: getDiurnalSlot(now),
       title: title,
       mockType: "CUSTOM",
-      isVaultSprint: false,
       isSectionLocked: false,
       sections: [{
         id: "SEC_AI",
@@ -4444,7 +4697,8 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
     hideMiniPlayer();
 
     pushNavLayer("exam-arena", () => {
-      document.getElementById("exam-arena").style.display = "none";
+      const pauseBtn = document.getElementById("btn-arena-pause");
+      if (pauseBtn) pauseBtn.click();
     });
     document.getElementById("exam-arena").style.display = "flex";
     renderActiveExamQuestion();
@@ -4493,6 +4747,8 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
       openEditQuestionModal(rec);
     } else if (sName === "store_concepts") {
       openCompendiumToSheet(rec.id, rec.subject, rec.chapter);
+    } else if (sName === "store_flashcards") {
+      openFlashcardEditorModal(false, rec.id);
     } else {
       alert(`Record Details (${key}):\n` + JSON.stringify(rec, null, 2));
     }
@@ -4507,21 +4763,12 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
     }
   }
 
-  async function wipeErrorVault() {
-    if (confirm("Permanently clear active Error Vault traps?")) {
-      await clearStore("store_vault");
-      alert("Error Vault cleared.");
-      renderVault();
-      refreshDbInspector();
-    }
-  }
-
   async function factoryResetAll() {
     if (confirm("WARNING: Complete factory reset will wipe all data and re-seed defaults!")) {
       const storeKeys = [
-        "store_questions", "store_attempts", "store_vault", 
-        "store_vault_sprints", "store_concepts", "store_notes", 
-        "store_saved_mocks", "store_active_session", "store_config"
+        "store_questions", "store_attempts", "store_flashcards", 
+        "store_concepts", "store_notes", "store_saved_mocks", 
+        "store_ai_consultations", "store_active_session", "store_config"
       ];
       for (const sName of storeKeys) {
         await clearStore(sName);
@@ -4535,7 +4782,7 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
   }
 
   /* -------------------------------------------------------------
-   * 18. UNIVERSAL TOUCH GESTURES (VIEWPORT & HARDWARE SHIELD)
+   * 20. UNIVERSAL TOUCH GESTURES (VIEWPORT & HARDWARE SHIELD)
    * ------------------------------------------------------------- */
   function initGestureControllers() {
     const attachSwipeHandler = (elementId, onLeftSwipe, onRightSwipe) => {
@@ -4583,7 +4830,7 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
       }
 
       const target = e.target;
-      if (target.closest("textarea") || target.closest(".sticky-anchor-bar") || target.closest(".palette-scroll-body") || target.closest("#dash-blueprints-pills") || target.closest(".synapse-tree-container")) {
+      if (target.closest("textarea") || target.closest(".palette-scroll-body") || target.closest("#dash-blueprints-pills") || target.closest(".synapse-tree-container")) {
         return;
       }
 
@@ -4630,7 +4877,7 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
   }
 
   /* -------------------------------------------------------------
-   * 19. SELECTIVE PRINT ENGINE
+   * 21. SELECTIVE PRINT ENGINE
    * ------------------------------------------------------------- */
   async function openPrintConfigModal() {
     await updatePrintChapters();
@@ -4646,7 +4893,7 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
     attempts.forEach(a => {
       const opt = document.createElement("option");
       opt.value = a.sessionId;
-      opt.innerText = `${a.title} (${new Date(a.timestamp).toLocaleDateString()})`;
+      opt.innerText = `${a.title} (${a.timeIST || formatISTDate(a.timestamp)})`;
       select.appendChild(opt);
     });
   }
@@ -4708,7 +4955,7 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
       const targetMock = attempts.find(a => a.sessionId === mockId);
       if (!targetMock) return;
 
-      root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">${targetMock.title} - Score: ${targetMock.finalScore.toFixed(2)} (${new Date(targetMock.timestamp).toLocaleDateString()})</h2>`;
+      root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">${targetMock.title} - Score: ${targetMock.finalScore.toFixed(2)} (${targetMock.timeIST || formatISTDate(targetMock.timestamp)})</h2>`;
       targetMock.questions.forEach((q, idx) => {
         const resp = targetMock.userResponses && targetMock.userResponses[q.id] ? targetMock.userResponses[q.id] : {};
         const item = document.createElement("div");
@@ -4737,20 +4984,17 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
         `;
         root.appendChild(item);
       });
-    } else if (pType === "VAULT") {
-      const vault = await getAllRecords("store_vault");
-      const allQs = await getAllRecords("store_questions");
-      root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL Error Vault Revision Sheet</h2>`;
-      vault.forEach((v, idx) => {
-        const q = allQs.find(item => item.id === v.questionId);
-        if (!q) return;
+    } else if (pType === "FLASHCARDS") {
+      const flashcards = await getAllRecords("store_flashcards");
+      let pool = sub === "ALL" ? flashcards : flashcards.filter(f => f.subject === sub);
+      root.innerHTML = `<h2 style="font-size:16px; margin-bottom:12px; column-span:all;">SSC CGL SM-2 Flashcard Revision Sheet</h2>`;
+      pool.forEach((f, idx) => {
         const item = document.createElement("div");
         item.className = "print-question";
-        let img = q.imageUrl ? `<br><img src="${q.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
         item.innerHTML = `
-          <strong>Q${idx + 1}. [Interval: ${v.interval}d - ${v.errorTag}]</strong> ${formatRichText(q.questionText)}${img}<br>
-          ${q.options.map((opt, i) => `(${i + 1})${formatRichText(opt)} &nbsp;`).join(' ')}
-          <div style="font-size:10px; margin-top:4px;"><b>Correct: Option ${q.correctIndex + 1}</b> | ${q.explanation || ''}</div>
+          <strong>Card ${idx + 1}. [${f.subject} • ${f.chapter}]</strong><br>
+          <b>Prompt:</b> ${formatRichText(f.front)}<br>
+          <div style="font-size:11px; margin-top:4px;"><b>Answer:</b> ${formatRichText(f.back)}</div>
         `;
         root.appendChild(item);
       });
@@ -4760,7 +5004,7 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
   }
 
   /* -------------------------------------------------------------
-   * 20. NAVIGATION, TAB SWITCHING & SYSTEM BOOT
+   * 22. NAVIGATION, TAB SWITCHING & SYSTEM BOOT
    * ------------------------------------------------------------- */
   function switchTab(tId, btn) {
     document.querySelectorAll(".view-container").forEach(el => el.classList.remove("active"));
@@ -4797,7 +5041,7 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
         updateMiniPlayerDock();
       }
     } catch (e) {
-      console.error("Bootstrapping execution notice:", e);
+      console.error("Application bootstrap notice:", e);
     }
   }
 
@@ -4847,6 +5091,7 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
     toggleDojoMethod,
     autoSaveDojoAnnotation,
     toggleDojoPalette,
+    toggleExamPalette,
     openCompendiumStudio,
     closeCompendiumStudio,
     handleCompStudioSubjectChange,
@@ -4874,19 +5119,20 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
     openMockReview,
     handleMistakeTagSelect,
     setMistakeTag,
-    filterVaultByMistakeTag,
     openTaxonomyManagerModal,
     addNewSubjectAction,
     promptAddChapterToSubject,
     deleteChapterFromSubject,
     deleteSubjectAction,
     syncEditorChapterDropdown,
+    syncFlashcardChapterDropdown,
     openAiExportModal,
     updateAiExportPreview,
     copyAiExportToClipboard,
     openMasterLedgerExportModal,
     downloadLedgerJson,
     downloadLedgerMarkdown,
+    exportCleanMarkdownFlashcards,
     openBackupRestoreModal,
     handleBackupFileSelect,
     executeHydrationRestore,
@@ -4898,18 +5144,23 @@ ${JSON.stringify(concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.c
     refreshDbInspector,
     editDbRecordModal,
     wipeTestAttempts,
-    wipeErrorVault,
+    wipeFlashcardStore,
     factoryResetAll,
     renderDashboard,
     renderVault,
-    launchVaultDueSprint,
-    applyManualSM2Grade,
+    renderFlashcardList,
+    launchFlashcardDueSprint,
+    flipStudyFlashcard,
+    gradeStudyFlashcard,
+    openFlashcardEditorModal,
+    saveFlashcardEditor,
+    deleteCurrentEditingFlashcard,
+    exportScopedForensicDossier,
     exportFullBackup,
-    exportCleanMarkdownVault,
     pushNavLayer,
     popNavLayer
   };
 })();
 
-// Re-bind to global scope explicitly
+// Re-bind to global window object
 window.CGL_OS = CGL_OS;
