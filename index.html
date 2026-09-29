@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#06080d">
+  <meta name="theme-color" content="#05070b">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>SSC CGL Intelligence OS</title>
@@ -12,8 +12,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 
-  <!-- External Stylesheet with WebAPK Cache-Busting Parameter -->
-  <link rel="stylesheet" href="style.css?v=2.4">
+  <!-- External Stylesheet with Tactical WebAPK Cache-Busting Parameter -->
+  <link rel="stylesheet" href="style.css?v=2.5">
 </head>
 <body>
 
@@ -31,7 +31,7 @@
         <div id="mini-player-time" style="font-family:var(--font-mono); font-size:13px; font-weight:800; color:#fff;">15:00</div>
         <div id="mini-player-ans" style="font-size:10px; color:var(--text-muted);">0 Ans</div>
       </div>
-      <button class="btn" style="padding:6px 14px; font-size:12px; box-shadow:0 0 10px rgba(56, 139, 253, 0.6);" onclick="CGL_OS.resumeFromMiniPlayer()">Resume</button>
+      <button class="btn" style="padding:6px 14px; font-size:12px; box-shadow:0 0 12px rgba(56, 139, 253, 0.6);" onclick="CGL_OS.resumeFromMiniPlayer()">Resume</button>
     </div>
   </div>
 
@@ -97,7 +97,7 @@
         <div class="q-image-container" id="arena-image-container" style="display:none;"></div>
         <div id="arena-options-container"></div>
 
-        <!-- B i-Directional Concept Bridge Button in Review -->
+        <!-- Bi-Directional Concept Bridge Button in Review -->
         <div id="arena-concept-bridge-box" style="display:none; margin:12px 0;">
           <button class="btn btn-cyan" style="width:100%; padding:10px; font-size:13px;" id="btn-jump-to-concept">
             📖 Jump to Underlying Theorem Sheet
@@ -105,7 +105,7 @@
         </div>
 
         <!-- Solution & Mistake Tag Editor in Review Mode -->
-        <div id="arena-review-solution-block" style="display:none; margin-top:14px; background:#0d1118; border:1px solid var(--border-color); border-radius:10px; padding:14px;"></div>
+        <div id="arena-review-solution-block" style="display:none; margin-top:14px; background:#0b0f17; border:1px solid var(--border-color); border-radius:10px; padding:14px;"></div>
       </div>
 
       <div class="arena-footer">
@@ -164,7 +164,7 @@
         </button>
         <div style="text-align:center;">
           <div style="font-size:14px; font-weight:800; color:var(--accent-cyan);" id="dojo-arena-title">Dojo Practice</div>
-          <div style="font-size:10px; color:var(--text-muted);">Untimed Active Recall Mode</div>
+          <div style="font-size:10px; color:var(--text-muted);">Untimed Active Recall & Method Clinic</div>
         </div>
         <div style="display:flex; gap:6px;">
           <button class="hud-icon-btn" onclick="CGL_OS.openOmniResearchForDojoQuestion()" title="Omni Deep Dive">🌐</button>
@@ -207,7 +207,7 @@
 
         <div class="form-group" style="margin-top:14px;">
           <label>Personal Solving Cue / Annotation (Auto-Saves to Device)</label>
-          <textarea id="dojo-arena-annotation" class="form-control" style="height:60px;" placeholder="Personal note, shortcut, or formula reminder..." oninput="CGL_OS.autoSaveDojoAnnotation(this.value)"></textarea>
+          <textarea id="dojo-arena-annotation" class="form-control" style="height:60px;" placeholder="Personal shortcut, trap caveat, or formula reminder..." oninput="CGL_OS.autoSaveDojoAnnotation(this.value)"></textarea>
         </div>
       </div>
 
@@ -312,11 +312,14 @@
       <div class="hero-banner">
         <div class="hero-content">
           <div>
-            <span class="badge" style="background:#238636; margin-bottom:6px;">SSC CGL 2026 CANDIDATE</span>
-            <h2 style="font-size:20px; font-weight:800; color:#fff;">Welcome back, Ankit</h2>
-            <p style="font-size:12px; color:var(--accent-cyan); margin-top:2px;">Target: Tier 1 & Tier 2 Master Preparation</p>
+            <div class="radar-badge">
+              <div class="radar-pulse-dot"></div>
+              <span>LIVE HUD • TARGET: SSC CGL 2026</span>
+            </div>
+            <h2 style="font-size:20px; font-weight:800; color:#fff; margin-top:2px;">Welcome back, Ankit</h2>
+            <p style="font-size:12px; color:var(--accent-cyan); margin-top:2px;">Command Center • Tier-1 & Tier-2 Master Preparation</p>
           </div>
-          <button class="btn" id="btn-dash-launch-mock" onclick="CGL_OS.openCustomMockModal()" style="padding:10px 16px; font-size:13px; box-shadow:0 0 14px rgba(56,139,253,0.5); z-index:5;">
+          <button class="btn" id="btn-dash-launch-mock" onclick="CGL_OS.openCustomMockModal()" style="padding:10px 16px; font-size:13px; box-shadow:0 0 16px rgba(56,139,253,0.5); z-index:5;">
             Launch Mock
           </button>
         </div>
@@ -334,7 +337,7 @@
             <span class="badge" style="background:#151a24; color:var(--accent-cyan);" id="eri-status-tier">Calibrating</span>
           </div>
           <div style="font-size:24px; font-weight:800; color:#fff; margin:2px 0;" id="eri-score-val">0.0</div>
-          <div style="font-size:10px; color:var(--text-muted);" id="eri-breakdown-sub">Accuracy 40% • Velocity 30% • Bank Mastery 30%</div>
+          <div style="font-size:10.5px; color:var(--text-muted);" id="eri-breakdown-sub">Acc: 0.0/50 • Vel: 0.0/30 • Exp: 0.0/20</div>
         </div>
       </div>
 
@@ -355,11 +358,11 @@
         <div id="dash-blueprints-pills" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;"></div>
       </div>
 
-      <!-- Cognitive Trap Distribution Matrix Strip (Auto-Classifying) -->
+      <!-- Cognitive Trap Distribution Matrix Strip (Interactive Clinic Trigger) -->
       <div class="card" style="padding:12px; margin-bottom:14px;">
         <div class="card-title" style="margin-bottom:4px;">
           <span>Cognitive Trap Distribution</span>
-          <span style="font-size:10px; color:var(--accent-cyan);">Tap Segment to Filter Traps</span>
+          <span style="font-size:10px; color:var(--accent-cyan);">Tap Segment to Launch Clinic</span>
         </div>
         <div class="trap-heat-bar" id="dash-trap-heat-bar"></div>
         <div id="dash-trap-legend" style="display:flex; flex-wrap:wrap; gap:8px; font-size:10px; color:var(--text-muted); margin-top:6px;"></div>
@@ -391,7 +394,7 @@
           <div style="font-size:22px; font-weight:800;" id="kpi-total-mocks">0</div>
         </div>
 
-        <div class="card" style="margin-bottom:0; padding:12px; cursor:pointer;" onclick="alert('Quadrant-IV Time Trap: Occurs when you spend >90 seconds on a question and still get it incorrect. Identifying Q-IV traps prevents catastrophic mark bleed.')" title="Tap for info on Q-IV Traps">
+        <div class="card" style="margin-bottom:0; padding:12px; cursor:pointer;" onclick="CGL_OS.openTrapClinicModal('TIME_TRAP_Q4')" title="Tap to Inspect Quadrant-IV Traps">
           <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; display:flex; justify-content:space-between;">
             <span>Q-IV Traps Hit</span>
             <span style="color:var(--accent-cyan); font-weight:bold;">ⓘ</span>
@@ -617,7 +620,7 @@
     </div>
 
 
-    <!-- ==================== 8. TAB 4: FLASHCARD VAULT & ANKI FORGE (PATH 2 REFACTOR) ==================== -->
+    <!-- ==================== 8. TAB 4: FLASHCARD VAULT & ANKI FORGE ==================== -->
     <div id="tab-vault" class="view-container">
       <div class="card" style="border-color: rgba(163, 113, 247, 0.4); background: linear-gradient(135deg, #121021 0%, #090c12 100%);">
         <div class="card-title" style="color: #a371f7;">
@@ -658,6 +661,12 @@
           </button>
         </div>
 
+        <!-- Interactive Vault Command Bar (Scalable Search & Filtering) -->
+        <div class="vault-command-bar">
+          <input type="text" id="vault-search-input" class="vault-search-input" placeholder="Search prompts, formulas, articles, tags (e.g. Incenter, Article 124, Gauntlet)..." oninput="CGL_OS.handleVaultSearchInput(this.value)">
+          <div class="vault-tag-scroll" id="vault-tag-scroll-pills"></div>
+        </div>
+
         <!-- Filter Deck Bar -->
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:6px;">
           <select id="vault-deck-filter-sub" class="form-control" style="padding:4px 8px; font-size:11px; width:auto;" onchange="CGL_OS.renderFlashcardList()">
@@ -686,7 +695,33 @@
   </div> <!-- /#app-viewport-root -->
 
 
-  <!-- ==================== 9. STAGE 1: ANALYTICAL COCKPIT MODAL ==================== -->
+  <!-- ==================== 9. COGNITIVE TRAP FORENSIC CLINIC MODAL ==================== -->
+  <div class="modal-overlay child-layer" id="modal-trap-clinic">
+    <div class="modal-window" style="max-width:680px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+        <div>
+          <h3 style="font-size:16px; font-weight:800; color:var(--status-red);" id="trap-clinic-title">Cognitive Trap Clinic</h3>
+          <span style="font-size:11px; color:var(--text-muted);" id="trap-clinic-sub">Historical Mistake Biopsy & Direct Drill</span>
+        </div>
+        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-trap-clinic').classList.remove('active')">✕ Close</button>
+      </div>
+
+      <div style="background:#15121c; border:1px solid rgba(218, 54, 51, 0.4); border-radius:8px; padding:10px 14px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <b style="color:#f87171; font-size:13px;" id="trap-clinic-summary-badge">0 Mistakes Registered</b>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Filter applied across all historical exam sessions.</div>
+        </div>
+        <button class="btn btn-danger" style="padding:6px 12px; font-size:11px; font-weight:700;" id="btn-trap-clinic-drill" onclick="CGL_OS.drillFilteredTrapQuestions()">
+          ⚡ Drill These Traps in Dojo
+        </button>
+      </div>
+
+      <div id="trap-clinic-question-list" style="max-height:55vh; overflow-y:auto;"></div>
+    </div>
+  </div>
+
+
+  <!-- ==================== 10. STAGE 1: ANALYTICAL COCKPIT MODAL ==================== -->
   <div class="modal-overlay child-layer" id="modal-mock-review">
     <div class="modal-window" style="max-width:700px; max-height:92vh;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -764,7 +799,7 @@
   </div>
 
 
-  <!-- ==================== 10. OMNI-RESEARCH CONTEXT DRAWER MODAL ==================== -->
+  <!-- ==================== 11. OMNI-RESEARCH CONTEXT DRAWER MODAL ==================== -->
   <div class="modal-overlay" id="modal-omni-research">
     <div class="modal-window" style="max-width:540px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -809,7 +844,7 @@
   </div>
 
 
-  <!-- ==================== 11. INTERACTIVE SUBJECT DIAGNOSTIC MODAL ==================== -->
+  <!-- ==================== 12. INTERACTIVE SUBJECT DIAGNOSTIC MODAL ==================== -->
   <div class="modal-overlay" id="modal-subject-diagnostic">
     <div class="modal-window" style="max-width:560px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -844,7 +879,7 @@
   </div>
 
 
-  <!-- ==================== 12. COMPENDIUM OMNI-SEARCH MODAL ==================== -->
+  <!-- ==================== 13. COMPENDIUM OMNI-SEARCH MODAL ==================== -->
   <div class="modal-overlay" id="modal-comp-omni-search">
     <div class="modal-window" style="max-width:640px; max-height:85vh; display:flex; flex-direction:column;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -861,7 +896,7 @@
   </div>
 
 
-  <!-- ==================== 13. DYNAMIC TAXONOMY & SUBJECT MANAGER ==================== -->
+  <!-- ==================== 14. DYNAMIC TAXONOMY & SUBJECT MANAGER ==================== -->
   <div class="modal-overlay" id="modal-taxonomy-manager">
     <div class="modal-window" style="max-width:540px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -889,7 +924,7 @@
   </div>
 
 
-  <!-- ==================== 14. MULTI-TIER AI EXPORT COCKPIT ==================== -->
+  <!-- ==================== 15. MULTI-TIER AI EXPORT COCKPIT ==================== -->
   <div class="modal-overlay" id="modal-ai-export">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -918,7 +953,7 @@
   </div>
 
 
-  <!-- ==================== 15. MASTER LEDGER EXPORT MODAL ==================== -->
+  <!-- ==================== 16. MASTER LEDGER EXPORT MODAL ==================== -->
   <div class="modal-overlay" id="modal-ledger-export">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -945,7 +980,7 @@
   </div>
 
 
-  <!-- ==================== 16. MOCK HISTORY ARCHIVE MODAL (TICKET CARD FIX) ==================== -->
+  <!-- ==================== 17. MOCK HISTORY ARCHIVE MODAL ==================== -->
   <div class="modal-overlay" id="modal-history-archive">
     <div class="modal-window" style="max-width:680px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -965,7 +1000,7 @@
   </div>
 
 
-  <!-- ==================== 17. CHAPTER DEEP DIVE INSPECTOR ==================== -->
+  <!-- ==================== 18. CHAPTER DEEP DIVE INSPECTOR ==================== -->
   <div class="modal-overlay" id="modal-chapter-inspector">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1001,7 +1036,7 @@
   </div>
 
 
-  <!-- ==================== 18. PUBLISHING-GRADE TYPESET PRINT BOOK CONFIG ==================== -->
+  <!-- ==================== 19. PUBLISHING-GRADE TYPESET PRINT BOOK CONFIG ==================== -->
   <div class="modal-overlay" id="modal-print-config">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1050,7 +1085,7 @@
   </div>
 
 
-  <!-- ==================== 19. MULTI-SUBJECT CUSTOM MOCK BUILDER ==================== -->
+  <!-- ==================== 20. MULTI-SUBJECT CUSTOM MOCK BUILDER ==================== -->
   <div class="modal-overlay" id="modal-mock-builder">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1092,7 +1127,7 @@
   </div>
 
 
-  <!-- ==================== 20. SAVE BLUEPRINT / FIXED PAPER MODAL ==================== -->
+  <!-- ==================== 21. SAVE BLUEPRINT / FIXED PAPER MODAL ==================== -->
   <div class="modal-overlay" id="modal-save-blueprint">
     <div class="modal-window" style="max-width:440px;">
       <h3 style="font-size:16px; font-weight:800; margin-bottom:10px;" id="save-preset-modal-title">Save Mock Blueprint</h3>
@@ -1108,7 +1143,7 @@
   </div>
 
 
-  <!-- ==================== 21. TOPIC DOSSIER EDITOR ==================== -->
+  <!-- ==================== 22. TOPIC DOSSIER EDITOR ==================== -->
   <div class="modal-overlay" id="modal-concept-editor">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1162,7 +1197,7 @@
   </div>
 
 
-  <!-- ==================== 22. GUI QUESTION EDITOR ==================== -->
+  <!-- ==================== 23. GUI QUESTION EDITOR ==================== -->
   <div class="modal-overlay" id="modal-question-editor">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1238,7 +1273,7 @@
   </div>
 
 
-  <!-- ==================== 23. ANKI UNIVERSAL CARD EDITOR (FRONT / BACK / EXTRA / CLOZE) ==================== -->
+  <!-- ==================== 24. ANKI UNIVERSAL CARD EDITOR (FRONT / BACK / EXTRA / CLOZE) ==================== -->
   <div class="modal-overlay" id="modal-flashcard-editor">
     <div class="modal-window" style="max-width:540px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1309,7 +1344,7 @@
   </div>
 
 
-  <!-- ==================== 24. UNTIMED QUICK CAROUSEL BROWSE MODAL ==================== -->
+  <!-- ==================== 25. UNTIMED QUICK CAROUSEL BROWSE MODAL ==================== -->
   <div class="modal-overlay" id="modal-flashcard-study">
     <div class="modal-window" style="max-width:560px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1351,7 +1386,7 @@
   </div>
 
 
-  <!-- ==================== 25. NATIVE ANKI EXPORT COCKPIT MODAL ==================== -->
+  <!-- ==================== 26. NATIVE ANKI EXPORT COCKPIT MODAL ==================== -->
   <div class="modal-overlay" id="modal-anki-export">
     <div class="modal-window" style="max-width:560px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1406,7 +1441,7 @@
   </div>
 
 
-  <!-- ==================== 26. DATABASE STUDIO INSPECTOR MODAL ==================== -->
+  <!-- ==================== 27. DATABASE STUDIO INSPECTOR MODAL ==================== -->
   <div class="modal-overlay child-layer" id="modal-db-inspector-viewer">
     <div class="modal-window" style="max-width:640px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1427,7 +1462,7 @@
   </div>
 
 
-  <!-- ==================== 27. DISASTER RECOVERY RESTORE MODAL ==================== -->
+  <!-- ==================== 28. DISASTER RECOVERY RESTORE MODAL ==================== -->
   <div class="modal-overlay" id="modal-backup-restore">
     <div class="modal-window" style="max-width:480px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1461,7 +1496,7 @@
   </div>
 
 
-  <!-- ==================== 28. HARDENED PAUSE OVERLAY SHIELD ==================== -->
+  <!-- ==================== 29. HARDENED PAUSE OVERLAY SHIELD ==================== -->
   <div id="pause-shield">
     <h2 style="font-size:22px; font-weight:800; margin-bottom:8px; color:#fff;">TEST PAUSED</h2>
     <p style="font-size:13px; color:var(--text-muted); max-width:280px; margin-bottom:20px;">
@@ -1475,7 +1510,7 @@
   </div>
 
 
-  <!-- ==================== 29. BOTTOM NAVIGATION ==================== -->
+  <!-- ==================== 30. BOTTOM NAVIGATION ==================== -->
   <nav id="bottom-nav">
     <button class="nav-btn active" id="nav-btn-tab-dashboard" onclick="CGL_OS.switchTab('tab-dashboard', this)">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
@@ -1495,10 +1530,10 @@
     </button>
   </nav>
 
-  <!-- ==================== 30. PUBLISHING-GRADE TYPESET PRINT ROOT ==================== -->
+  <!-- ==================== 31. PUBLISHING-GRADE TYPESET PRINT ROOT ==================== -->
   <div id="print-sheet-root" style="display:none;" class="print-page"></div>
 
-  <!-- Master JavaScript Controller with WebAPK Cache-Busting Parameter -->
-  <script src="app.js?v=2.4"></script>
+  <!-- Master JavaScript Controller with Tactical WebAPK Cache-Busting Parameter -->
+  <script src="app.js?v=2.5"></script>
 </body>
 </html>
