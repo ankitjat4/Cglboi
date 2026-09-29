@@ -1,7 +1,7 @@
 /**
  * SSC CGL Intelligence OS - Core Engine
  * Master Application Controller (Part 1 of 2)
- * Schema Version: 15 | Tactical Command Center & Universal CGL Typesetter
+ * Schema Version: 15 | Multi-Concept Knowledge Engine & Tactical Architecture
  */
 
 // Global window anchor registration
@@ -99,7 +99,7 @@ const CGL_OS = (() => {
 
   let TAXONOMY = JSON.parse(JSON.stringify(DEFAULT_TAXONOMY));
 
-  // Foundational Question Bank
+  // Foundational Question Bank with Multi-Concept Array Binding
   const SEED_QUESTIONS = [
     {
       id: "q_cgl_ga_polity_014",
@@ -108,6 +108,7 @@ const CGL_OS = (() => {
       subtopic: "Judiciary",
       method: "Constitutional Articles",
       conceptId: "top_ga_polity_judiciary",
+      conceptIds: ["top_ga_polity_judiciary"],
       questionText: "Which Article of the Constitution of India provides for the establishment and constitution of the Supreme Court of India?",
       imageUrl: "",
       options: ["Article 124", "Article 131", "Article 214", "Article 143"],
@@ -123,6 +124,7 @@ const CGL_OS = (() => {
       subtopic: "Circles",
       method: "Cyclic Quadrilateral Angles",
       conceptId: "top_qa_geo_circles",
+      conceptIds: ["top_qa_geo_circles", "top_qa_geo_triangles"],
       questionText: "In a cyclic quadrilateral $ABCD$, opposite angles $\\angle A$ and $\\angle C$ satisfy $\\angle A = (2x + 10)^\\circ$ and $\\angle C = (3x + 20)^\\circ$. What is the measure of $\\angle A$?",
       imageUrl: "",
       options: ["$60^\\circ$", "$70^\\circ$", "$80^\\circ$", "$75^\\circ$"],
@@ -138,6 +140,7 @@ const CGL_OS = (() => {
       subtopic: "Pipes & Cisterns",
       method: "Combined Rate of Flow",
       conceptId: "",
+      conceptIds: [],
       questionText: "Pipe $A$ fills a tank in $12\\text{ hours}$ and Pipe $B$ fills it in $18\\text{ hours}$. If both are opened simultaneously, in how many hours will the tank be full?",
       imageUrl: "",
       options: ["$7.2\\text{ hours}$", "$7.5\\text{ hours}$", "$8.0\\text{ hours}$", "$6.8\\text{ hours}$"],
@@ -153,6 +156,7 @@ const CGL_OS = (() => {
       subtopic: "Number Analogy",
       method: "n(n + 1) Product Form",
       conceptId: "",
+      conceptIds: [],
       questionText: "Select the related number: **$14 : 210 :: 18 : \\underline{\\quad ? \\quad}$**",
       imageUrl: "",
       options: ["$324$", "$342$", "$360$", "$306$"],
@@ -168,6 +172,7 @@ const CGL_OS = (() => {
       subtopic: "Triangles & Incenters",
       method: "Internal Angle Bisector Angle",
       conceptId: "top_qa_geo_triangles",
+      conceptIds: ["top_qa_geo_triangles"],
       questionText: "In $\\triangle ABC$, the bisectors of $\\angle B$ and $\\angle C$ intersect at point $I$ inside the triangle. If $\\angle BAC = 68^\\circ$, find the measure of $\\angle BIC$.",
       imageUrl: "",
       options: ["$124^\\circ$", "$136^\\circ$", "$112^\\circ$", "$146^\\circ$"],
@@ -239,7 +244,7 @@ const CGL_OS = (() => {
     }
   ];
 
-  // Pre-Seeded Universal Anki Cards (Archetypes: Basic, Basic+Extra, Cloze)
+  // Pre-Seeded Flashcards
   const SEED_FLASHCARDS = [
     {
       id: "fc_qa_geo_001",
@@ -347,7 +352,7 @@ const CGL_OS = (() => {
     out = out.replace(/^>\s*\[!formula\]\s*(.*)$/gm, '<div class="callout-box formula"><b>⚡ Formula:</b> $1</div>');
     out = out.replace(/^>\s*\[!tip\]\s*(.*)$/gm, '<div class="callout-box"><b>💡 Tip:</b> $1</div>');
 
-    // Headers
+    // Headers & Bold
     out = out.replace(/^### (.*$)/gim, '<h3 style="font-size:15px; font-weight:700; color:var(--accent-cyan); margin:10px 0 4px 0;">$1</h3>');
     out = out.replace(/^## (.*$)/gim, '<h2 style="font-size:17px; font-weight:800; color:#fff; margin:12px 0 6px 0;">$1</h2>');
     out = out.replace(/^# (.*$)/gim, '<h1 style="font-size:19px; font-weight:800; color:#fff; margin:14px 0 8px 0;">$1</h1>');
@@ -396,7 +401,7 @@ const CGL_OS = (() => {
       return `<table class="document-table"><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table>`;
     });
 
-    // KaTeX Inline & Display Math Parsing
+    // KaTeX Math Rendering
     if (window.katex) {
       out = out.replace(/\$\$([\s\S]*?)\$\$/g, (m, f) => {
         try { return katex.renderToString(f, { displayMode: true, throwOnError: false }); } catch (e) { return m; }
@@ -445,7 +450,7 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 3. LIFO NAVIGATION STACK & ANDROID BACK-GESTURE CONTROLLER
+   * 3. LIFO NAVIGATION STACK & ANDROID GESTURE CONTROLLER
    * ------------------------------------------------------------- */
   const navStack = [];
 
@@ -510,7 +515,7 @@ const CGL_OS = (() => {
           }
         });
 
-        // Migration from legacy store_vault to universal store_flashcards
+        // Migration from legacy store_vault to store_flashcards
         if (d.objectStoreNames.contains("store_vault") && d.objectStoreNames.contains("store_flashcards")) {
           try {
             const tx = e.target.transaction;
@@ -562,7 +567,7 @@ const CGL_OS = (() => {
     return dbInitPromise;
   }
 
-  // Unified Transaction Harness (Eliminates variable typos and dangling transaction drops)
+  // Unified Transaction Harness
   async function runTx(storeNames, mode, callback) {
     const database = await getDB();
     return new Promise((resolve, reject) => {
@@ -688,7 +693,7 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 5. BACKUP, DISASTER RECOVERY & SCHEMA SANITIZERS
+   * 5. BACKUP, RECOVERY & CANONICAL MULTI-CONCEPT SANITIZERS
    * ------------------------------------------------------------- */
   async function exportFullBackup() {
     const envelope = {
@@ -787,14 +792,23 @@ const CGL_OS = (() => {
     return stores;
   }
 
+  // CANONICAL MULTI-CONCEPT SANITIZER (1 Question -> N Concept Sheets)
   function sanitizeQuestion(q, idx) {
+    let conceptIds = [];
+    if (Array.isArray(q.conceptIds)) {
+      conceptIds = q.conceptIds.map(s => String(s).trim()).filter(Boolean);
+    } else if (q.conceptId && typeof q.conceptId === "string" && q.conceptId.trim().length > 0) {
+      conceptIds = [q.conceptId.trim()];
+    }
+
     return {
       id: q.id || `q_restored_${Date.now()}_${idx}`,
       subject: q.subject || "QA",
       chapter: q.chapter || "QA_GENERAL",
       subtopic: q.subtopic || "",
       method: q.method || "",
-      conceptId: q.conceptId || "",
+      conceptId: conceptIds[0] || "", // Backward-compatible single string
+      conceptIds: conceptIds,         // Canonical multi-link array
       questionText: q.questionText || "",
       imageUrl: q.imageUrl || "",
       options: Array.isArray(q.options) && q.options.length === 4 ? q.options : ["Option 1", "Option 2", "Option 3", "Option 4"],
@@ -1135,7 +1149,6 @@ const CGL_OS = (() => {
       subRow.onclick = () => toggleSynapseBranch(subBranchId, `arrow-sub-${subKey}`);
       subNodeWrap.appendChild(subRow);
 
-      // Synchronous branch container (initially open)
       const subBranchWrap = document.createElement("div");
       subBranchWrap.className = "synapse-branch-container open";
       subBranchWrap.id = subBranchId;
@@ -1170,7 +1183,6 @@ const CGL_OS = (() => {
         chapRow.onclick = () => toggleSynapseBranch(chapBranchId, `arrow-chap-${chap}`);
         chapNodeWrap.appendChild(chapRow);
 
-        // Child Branch Container (initially collapsed)
         const chapBranchWrap = document.createElement("div");
         chapBranchWrap.className = "synapse-branch-container";
         chapBranchWrap.id = chapBranchId;
@@ -1235,7 +1247,7 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 8. BI-DIRECTIONAL CONCEPT ROUTER & LIVING STUDIO
+   * 8. BI-DIRECTIONAL CONCEPT ROUTER & LIVING KNOWLEDGE STUDIO
    * ------------------------------------------------------------- */
   async function openCompendiumToSheet(conceptId, targetSub, targetChap) {
     const openModals = document.querySelectorAll(".modal-overlay.active");
@@ -1305,7 +1317,8 @@ const CGL_OS = (() => {
   function jumpToConceptFromDojo() {
     if (!dojoExam) return;
     const q = dojoExam.questions[dojoExam.currentIndex];
-    openCompendiumToSheet(q.conceptId, q.subject, q.chapter);
+    const targetCId = (q.conceptIds && q.conceptIds.length > 0) ? q.conceptIds[0] : q.conceptId;
+    openCompendiumToSheet(targetCId, q.subject, q.chapter);
   }
 
   function openOmniResearchForCurrentQuestion() {
@@ -1344,10 +1357,11 @@ const CGL_OS = (() => {
     document.getElementById("modal-omni-research").classList.add("active");
   }
 
+  // Multi-Concept Drill Launcher
   async function launchDirectSheetDrill(conceptId, subject, chapter) {
     document.getElementById("modal-synapse-tree").classList.remove("active");
     const allQs = await getAllRecords("store_questions");
-    let linked = allQs.filter(q => q.conceptId === conceptId);
+    let linked = allQs.filter(q => (q.conceptIds && q.conceptIds.includes(conceptId)) || q.conceptId === conceptId);
 
     if (linked.length === 0) {
       linked = allQs.filter(q => q.chapter === chapter);
@@ -1366,7 +1380,11 @@ const CGL_OS = (() => {
 
     closeCompendiumStudio();
     const allQs = await getAllRecords("store_questions");
-    let linked = allQs.filter(q => q.conceptId === sheet.id || (q.chapter === sheet.chapter && q.subtopic === sheet.title));
+    let linked = allQs.filter(q => 
+      (q.conceptIds && q.conceptIds.includes(sheet.id)) ||
+      q.conceptId === sheet.id ||
+      (q.chapter === sheet.chapter && q.subtopic === sheet.title)
+    );
 
     if (linked.length === 0) {
       linked = allQs.filter(q => q.chapter === sheet.chapter);
@@ -1461,6 +1479,7 @@ const CGL_OS = (() => {
     await renderActiveCompSheet();
   }
 
+  // Multi-Concept Associative Counter
   async function renderActiveCompSheet() {
     const sheet = currentCompSheets[activeCompSheetIndex];
     if (!sheet) return;
@@ -1473,7 +1492,11 @@ const CGL_OS = (() => {
     document.getElementById("comp-studio-header-sub").innerText = `${sheet.chapter} • Sheet ${activeCompSheetIndex + 1} of ${currentCompSheets.length}`;
 
     const allQs = await getAllRecords("store_questions");
-    const linkedCount = allQs.filter(q => q.conceptId === sheet.id || (q.chapter === sheet.chapter && q.subtopic === sheet.title)).length;
+    const linkedCount = allQs.filter(q => 
+      (q.conceptIds && q.conceptIds.includes(sheet.id)) ||
+      q.conceptId === sheet.id ||
+      (q.chapter === sheet.chapter && q.subtopic === sheet.title)
+    ).length;
     document.getElementById("comp-linked-q-count").innerText = `${linkedCount} Associated Questions Linked`;
 
     let imgHtml = "";
@@ -1847,9 +1870,6 @@ const CGL_OS = (() => {
     blueprints.forEach(bp => {
       const pill = document.createElement("button");
       pill.className = "anchor-pill";
-      pill.style.display = "inline-flex";
-      pill.style.alignItems = "center";
-      pill.style.gap = "6px";
       const icon = bp.type === "FIXED_PAPER" ? "📌" : "⚡";
       pill.innerHTML = `<span>${icon} ${bp.title}</span><span style="opacity:0.6; font-size:9px;" onclick="event.stopPropagation(); CGL_OS.deleteSavedPreset('${bp.id}')">✕</span>`;
       pill.addEventListener("click", () => launchSavedPreset(bp.id));
@@ -2206,21 +2226,38 @@ const CGL_OS = (() => {
       imgBox.innerHTML = "";
     }
 
+    // Multi-Concept Dynamic Bridges in Review Mode
     if (isRev) {
       conceptBridgeBox.style.display = "block";
-      const bridgeBtn = document.getElementById("btn-jump-to-concept");
-      if (q.conceptId && q.conceptId.trim().length > 0) {
-        bridgeBtn.innerText = "📖 Jump to Underlying Theorem Sheet";
-        bridgeBtn.onclick = () => jumpToConceptFromReview(q.conceptId);
+      const pillsWrap = document.getElementById("arena-concept-pills-wrap");
+      pillsWrap.innerHTML = "";
+
+      const linkedIds = (q.conceptIds && q.conceptIds.length > 0)
+        ? q.conceptIds
+        : (q.conceptId ? [q.conceptId] : []);
+
+      if (linkedIds.length === 0) {
+        const btn = document.createElement("button");
+        btn.className = "btn btn-cyan";
+        btn.style.cssText = "padding:6px 12px; font-size:12px; font-weight:700;";
+        btn.innerText = `📖 Browse Sheets for ${q.chapter}`;
+        btn.onclick = () => openCompendiumToSheet(null, q.subject, q.chapter);
+        pillsWrap.appendChild(btn);
       } else {
-        bridgeBtn.innerText = `📖 Browse Living Sheets for ${q.chapter}`;
-        bridgeBtn.onclick = () => openCompendiumToSheet(null, q.subject, q.chapter);
+        linkedIds.forEach(cId => {
+          const btn = document.createElement("button");
+          btn.className = "btn btn-cyan";
+          btn.style.cssText = "padding:6px 12px; font-size:12px; font-weight:700;";
+          btn.innerText = `📖 Sheet: ${cId.replace(/^top_/, '').replace(/_/g, ' ')}`;
+          btn.onclick = () => openCompendiumToSheet(cId, q.subject, q.chapter);
+          pillsWrap.appendChild(btn);
+        });
       }
     } else {
       conceptBridgeBox.style.display = "none";
     }
 
-    // Telemetry Banner in Review Mode
+    // Telemetry & Hesitation Trail Banner in Review Mode
     if (isRev) {
       const isAtt = resp.selectedOption !== null && resp.selectedOption !== undefined;
       const isCor = isAtt && resp.selectedOption === q.correctIndex;
@@ -2493,7 +2530,7 @@ const CGL_OS = (() => {
     });
   }
 
-  // Zero-Ghost Touch Bindings for HUD Action Icons
+  // Zero-Ghost Touch Bindings for Arena Pause
   const pauseBtnEl = document.getElementById("btn-arena-pause");
   if (pauseBtnEl) {
     pauseBtnEl.addEventListener("pointerdown", async (e) => {
@@ -2601,7 +2638,6 @@ const CGL_OS = (() => {
       if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
         const isCorrect = resp.selectedOption === q.correctIndex;
         
-        // Gate: Fast solve is ONLY a panic slip if it resulted in an INCORRECT answer under time pressure
         if (!isCorrect && resp.timeSpentSec <= 8 && activeExam.sectionRemainingSec < 90) {
           resp.isPanicSlip = true;
         } else {
@@ -2628,7 +2664,6 @@ const CGL_OS = (() => {
 
           if (resp.timeSpentSec > 90) traps++;
 
-          // Auto-classification for errors
           if (!resp.errorTag || resp.errorTag === "UNCLASSIFIED") {
             if (resp.isPanicSlip) {
               resp.errorTag = "PANIC_SLIP";
@@ -2769,7 +2804,7 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 11. UNTIMED DOJO ARENA ENGINE
+   * 11. UNTIMED DOJO ARENA ENGINE (MULTI-CONCEPT EQUIPPED)
    * ------------------------------------------------------------- */
   async function updateDojoChapters() {
     const sub = document.getElementById("dojo-nav-subject").value;
@@ -2892,6 +2927,33 @@ const CGL_OS = (() => {
       imgBox.innerHTML = "";
     }
 
+    // Dynamic Multi-Concept Pills in Dojo Sectional Banner
+    const dojoPillsWrap = document.getElementById("dojo-concept-pills-wrap");
+    if (dojoPillsWrap) {
+      dojoPillsWrap.innerHTML = "";
+      const linkedIds = (q.conceptIds && q.conceptIds.length > 0)
+        ? q.conceptIds
+        : (q.conceptId ? [q.conceptId] : []);
+
+      linkedIds.forEach(cId => {
+        const btn = document.createElement("button");
+        btn.className = "btn btn-secondary";
+        btn.style.cssText = "padding:2px 8px; font-size:11px; color:var(--accent-cyan);";
+        btn.innerText = `📖 ${cId.replace(/^top_/, '').replace(/_/g, ' ')}`;
+        btn.onclick = () => openCompendiumToSheet(cId, q.subject, q.chapter);
+        dojoPillsWrap.appendChild(btn);
+      });
+
+      if (linkedIds.length === 0) {
+        const btn = document.createElement("button");
+        btn.className = "btn btn-secondary";
+        btn.style.cssText = "padding:2px 8px; font-size:11px;";
+        btn.innerText = "📖 Sheet";
+        btn.onclick = () => openCompendiumToSheet(null, q.subject, q.chapter);
+        dojoPillsWrap.appendChild(btn);
+      }
+    }
+
     const theoryBanner = document.getElementById("dojo-theory-banner");
     if (dojoExam.formulaBrief) {
       theoryBanner.style.display = "block";
@@ -2933,11 +2995,11 @@ const CGL_OS = (() => {
 
         fb.style.display = "block";
         if (idx === q.correctIndex) {
-          fb.style.background = "rgba(35, 134, 54, 0.22)";
+          fb.style.background = "rgba(16, 185, 129, 0.22)";
           fb.style.color = "var(--status-green)";
           fb.innerText = "✓ Correct Answer!";
         } else {
-          fb.style.background = "rgba(218, 54, 51, 0.22)";
+          fb.style.background = "rgba(244, 63, 94, 0.22)";
           fb.style.color = "var(--status-red)";
           fb.innerText = `✗ Incorrect. Correct is Option ${q.correctIndex + 1}.`;
         }
@@ -3180,7 +3242,6 @@ const CGL_OS = (() => {
     openMockReview(targetSessionId);
   }
 
-  // User Sovereignty Override Engine (Allows changing or clearing trap classifications)
   async function handleMistakeTagSelect(qId, val) {
     if (val === "__NEW_TAG__") {
       const raw = prompt("Enter new custom mistake tag (e.g., RUSHED_PANIC):");
@@ -3488,6 +3549,7 @@ const CGL_OS = (() => {
             id: q.id,
             chapter: q.chapter,
             conceptId: q.conceptId || "",
+            conceptIds: q.conceptIds || (q.conceptId ? [q.conceptId] : []),
             text: q.questionText,
             options: q.options,
             userOption: r.selectedOption !== undefined ? r.selectedOption : null,
@@ -3582,7 +3644,7 @@ const CGL_OS = (() => {
         txt += `--- CHAPTER: ${curChapter} ---\n\n`;
       }
 
-      txt += `[RECORD ${idx + 1}] ID: ${q.id} | TOPIC: ${q.subtopic || 'General'} | METHOD: ${q.method || 'General'} | CONCEPT_REF: ${q.conceptId || 'None'}\n`;
+      txt += `[RECORD ${idx + 1}] ID: ${q.id} | TOPIC: ${q.subtopic || 'General'} | METHOD: ${q.method || 'General'} | CONCEPTS: ${(q.conceptIds || [q.conceptId]).filter(Boolean).join(', ') || 'None'}\n`;
       txt += `QUESTION: ${q.questionText}\n`;
       q.options.forEach((opt, oIdx) => {
         txt += `  (${oIdx + 1}) ${opt}\n`;
@@ -3876,7 +3938,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     try { await renderDrilldownSubjectLevel(); } catch (e) { console.error("Drilldown error:", e); }
   }
 
-  // DYNAMIC ERI: Acc 50% + Vel 30% + Exp 20% (Zero Vault Volume Penalties)
+  // DYNAMIC ERI: Acc 50% + Vel 30% + Exp 20%
   function calculateAndRenderERI(accPercent, avgSpeed, flashcards, completedCount) {
     const scoreVal = document.getElementById("eri-score-val");
     const statusTier = document.getElementById("eri-status-tier");
@@ -3999,7 +4061,6 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     }
   }
 
-  // Interactive Cognitive Trap Distribution Heat Strip
   function renderCognitiveTrapHeatStrip(completed) {
     const bar = document.getElementById("dash-trap-heat-bar");
     const legend = document.getElementById("dash-trap-legend");
@@ -4142,6 +4203,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
         </div>
 
         <div class="ticket-actions-bar">
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.exportMockByIdJson('${att.sessionId}')">📥 Export Mock</button>
           <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.openSaveBlueprintModal('FIXED_PAPER', '${att.sessionId}')">📌 Freeze Paper</button>
           <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--status-green);" onclick="CGL_OS.reattemptMock('${att.sessionId}')">🔁 Re-attempt</button>
           <button class="btn btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openMockReview('${att.sessionId}')">Inspect Solutions</button>
@@ -4218,6 +4280,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
           </div>
           <div style="display:flex; align-items:center; gap:8px;">
             <span style="font-weight:700; color:var(--accent-cyan);">${(iter.finalScore || 0).toFixed(1)} pts</span>
+            <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.exportMockByIdJson('${iter.sessionId}')">📥 Export</button>
             <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openMockReview('${iter.sessionId}')">Inspect</button>
           </div>
         `;
@@ -4239,6 +4302,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
       footerBar.className = "ticket-actions-bar";
       footerBar.style.padding = "8px 12px";
       footerBar.innerHTML = `
+        <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.exportMockByIdJson('${latest.sessionId}')">📥 Export Mock (.json)</button>
         <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.openSaveBlueprintModal('FIXED_PAPER', '${latest.sessionId}')">📌 Freeze Paper</button>
         <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--status-green);" onclick="CGL_OS.reattemptMock('${latest.sessionId}')">🔁 Re-attempt</button>
         <button class="btn btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openMockReview('${latest.sessionId}')">Inspect Latest</button>
@@ -4595,7 +4659,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     document.getElementById("modal-anki-export").classList.add("active");
   }
 
-  // NATIVE ANKI EXPORTER ENGINE (MathJax Translation + Inline Base64 Data URIs)
+  // NATIVE ANKI EXPORTER ENGINE
   async function generateAndDownloadAnkiTsv() {
     const sub = document.getElementById("anki-export-subject").value;
     const fieldMapping = document.getElementById("anki-export-fields").value;
@@ -4775,7 +4839,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   /* -------------------------------------------------------------
-   * 19. QUESTION GUI EDITOR
+   * 19. QUESTION GUI EDITOR (MULTI-CONCEPT EQUIPPED)
    * ------------------------------------------------------------- */
   let currentQuestionImageBase64 = "";
 
@@ -4788,7 +4852,12 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     document.getElementById("edit-q-chapter").value = isNew ? "QA_GEOMETRY" : qData.chapter;
     document.getElementById("edit-q-subtopic").value = isNew ? "" : (qData.subtopic || "");
     document.getElementById("edit-q-method").value = isNew ? "" : (qData.method || "");
-    document.getElementById("edit-q-concept-id").value = isNew ? "" : (qData.conceptId || "");
+
+    const cIds = (qData && qData.conceptIds && qData.conceptIds.length > 0)
+      ? qData.conceptIds.join(", ")
+      : (qData && qData.conceptId ? qData.conceptId : "");
+    document.getElementById("edit-q-concept-ids").value = isNew ? "" : cIds;
+
     document.getElementById("edit-q-text").value = isNew ? "" : qData.questionText;
     document.getElementById("edit-q-img-url").value = isNew ? "" : (qData.imageUrl || "");
     document.getElementById("edit-q-img-file").value = "";
@@ -4821,13 +4890,17 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     const id = document.getElementById("edit-q-id").value;
     const urlInput = document.getElementById("edit-q-img-url").value.trim();
 
+    const rawConceptIds = document.getElementById("edit-q-concept-ids").value.trim();
+    const parsedConceptIds = rawConceptIds.split(",").map(s => s.trim()).filter(Boolean);
+
     const qObj = {
       id: id,
       subject: document.getElementById("edit-q-subject").value,
       chapter: document.getElementById("edit-q-chapter").value.trim().toUpperCase(),
       subtopic: document.getElementById("edit-q-subtopic").value.trim(),
       method: document.getElementById("edit-q-method").value.trim(),
-      conceptId: document.getElementById("edit-q-concept-id").value.trim(),
+      conceptId: parsedConceptIds[0] || "",
+      conceptIds: parsedConceptIds,
       questionText: document.getElementById("edit-q-text").value.trim(),
       imageUrl: currentQuestionImageBase64 || urlInput,
       options: [
@@ -4902,11 +4975,17 @@ ${JSON.stringify(TAXONOMY, null, 2)}
           newQuestions.forEach(q => stQ.put(sanitizeQuestion(q)));
         });
 
+        // Link pre-existing questions to newly added sheets (Supports single or multiple IDs)
         if (linkExistingQuestions.length > 0) {
           for (const link of linkExistingQuestions) {
             const oldQ = await getRecord("store_questions", link.questionId);
             if (oldQ) {
-              oldQ.conceptId = link.assignConceptId;
+              const newCIds = Array.isArray(link.assignConceptIds)
+                ? link.assignConceptIds
+                : (link.assignConceptId ? [link.assignConceptId] : []);
+              
+              oldQ.conceptIds = [...new Set([...(oldQ.conceptIds || []), ...newCIds])];
+              oldQ.conceptId = oldQ.conceptIds[0] || "";
               await putRecord("store_questions", oldQ);
             }
           }
@@ -5256,7 +5335,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
       diurnalSlot: getDiurnalSlot(now),
       title: title || "AI Practice Arena",
       mockType: configuredSections.length > 1 ? "CUSTOM" : "SECTIONAL",
-      isSectionLocked: !!isSectionLocked, // Strict adherence to input parameter
+      isSectionLocked: !!isSectionLocked,
       sections: configuredSections,
       activeSectionIndex: 0,
       currentQuestionIndex: 0,
@@ -5320,6 +5399,8 @@ ${JSON.stringify(TAXONOMY, null, 2)}
               chapter: "QA_TIME_WORK",
               subtopic: "Pipes & Cisterns",
               method: "Alternating Work",
+              conceptId: "top_geo_tangents_advanced",
+              conceptIds: ["top_geo_tangents_advanced"],
               questionText: "Pipe $A$ fills in $10\\text{ h}$, $B$ in $12\\text{ h}$, and $C$ empties in $15\\text{ h}$. Opened alternately for $1\\text{ h}$ ($A \\to B \\to C$). In how many hours will the tank be full?",
               options: ["$24\\text{ h } 10\\text{ m}$", "$25\\text{ h } 15\\text{ m}$", "$23\\text{ h } 40\\text{ m}$", "$26\\text{ h }$"],
               correctIndex: 0,
@@ -5327,7 +5408,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
             }
           ],
           linkExistingQuestions: [
-            { questionId: "q_cgl_qa_geom_011", assignConceptId: "top_geo_tangents_advanced" }
+            { questionId: "q_cgl_qa_geom_011", assignConceptIds: ["top_geo_tangents_advanced"] }
           ],
           orderedMockQuestionIds: [
             "q_sample_pipe_cycle_01",
@@ -5425,7 +5506,236 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   /* -------------------------------------------------------------
-   * 22. UNIVERSAL TOUCH GESTURES (VIEWPORT & HARDWARE SHIELD)
+   * 22. UNIVERSAL MODULAR DATA EXTRACTION MATRIX
+   * ------------------------------------------------------------- */
+  
+  // 1. Export Current Active Review Mock Session
+  function exportCurrentReviewMockJson() {
+    if (!activeReviewAttempt) {
+      alert("No active mock review loaded.");
+      return;
+    }
+    exportSpecificMockJson(activeReviewAttempt);
+  }
+
+  // 2. Export Any Mock Session by ID
+  async function exportMockByIdJson(sessionId) {
+    const attempts = await getAllRecords("store_attempts");
+    const target = attempts.find(a => a.sessionId === sessionId);
+    if (!target) {
+      alert(`Mock session ${sessionId} not found.`);
+      return;
+    }
+    exportSpecificMockJson(target);
+  }
+
+  function exportSpecificMockJson(mockObj) {
+    const payload = {
+      cgl_os_mock_export: {
+        engine: "SSC_CGL_INTELLIGENCE_OS",
+        schemaVersion: DB_VERSION,
+        exportedAtEpoch: Date.now(),
+        exportedAtIST: formatISTDate(Date.now()),
+        sessionId: mockObj.sessionId,
+        title: mockObj.title,
+        attemptNumber: mockObj.attemptNumber || 1,
+        finalScore: mockObj.finalScore,
+        accuracyPercent: mockObj.correctCount + mockObj.incorrectCount > 0 
+          ? Math.round((mockObj.correctCount / (mockObj.correctCount + mockObj.incorrectCount)) * 100) 
+          : 0
+      },
+      attemptData: mockObj
+    };
+
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `cgl_mock_${mockObj.sessionId}_${Date.now()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+  }
+
+  // 3. Dedicated Knowledge Compendium Sheets JSON Exporter
+  async function exportKnowledgeBankJson() {
+    const concepts = await getAllRecords("store_concepts");
+    const now = Date.now();
+    const payload = {
+      cgl_os_knowledge_export: {
+        engine: "SSC_CGL_INTELLIGENCE_OS",
+        schemaVersion: DB_VERSION,
+        exportedAtEpoch: now,
+        exportedAtIST: formatISTDate(now),
+        totalSheets: concepts.length
+      },
+      concepts: concepts
+    };
+
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `cgl_knowledge_compendium_${now}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+  }
+
+  // 4. Dedicated Card Vault JSON Exporter
+  async function exportFlashcardVaultJson() {
+    const cards = await getAllRecords("store_flashcards");
+    const now = Date.now();
+    const payload = {
+      cgl_os_vault_export: {
+        engine: "SSC_CGL_INTELLIGENCE_OS",
+        schemaVersion: DB_VERSION,
+        exportedAtEpoch: now,
+        exportedAtIST: formatISTDate(now),
+        totalCards: cards.length
+      },
+      cards: cards
+    };
+
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `cgl_flashcard_vault_${now}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+  }
+
+  // 5. Direct Selected Store Table JSON Exporter (Database Studio)
+  async function exportCurrentSelectedStoreJson() {
+    const storeName = document.getElementById("db-store-select").value;
+    const records = await getAllRecords(storeName);
+    const now = Date.now();
+
+    const payload = {
+      cgl_os_table_dump: {
+        engine: "SSC_CGL_INTELLIGENCE_OS",
+        storeName: storeName,
+        schemaVersion: DB_VERSION,
+        exportedAtEpoch: now,
+        exportedAtIST: formatISTDate(now),
+        recordCount: records.length
+      },
+      records: records
+    };
+
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `cgl_dump_${storeName}_${now}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+  }
+
+  // 6. Complete 360° AI Master Diagnostic Handoff Package
+  async function exportUnifiedAiHandoffPackage() {
+    const now = Date.now();
+    const allAttempts = await getAllRecords("store_attempts");
+    const allQuestions = await getAllRecords("store_questions");
+    const allConcepts = await getAllRecords("store_concepts");
+    const allFlashcards = await getAllRecords("store_flashcards");
+    const consultations = await getAllRecords("store_ai_consultations");
+    const completedAttempts = allAttempts.filter(a => a.completed);
+
+    const telemetryRows = [];
+    const decisionTrails = {};
+    const exposureMap = {};
+
+    completedAttempts.sort((a, b) => a.timestamp - b.timestamp).forEach(att => {
+      if (att.questions && Array.isArray(att.questions) && att.userResponses) {
+        att.questions.forEach(q => {
+          const resp = att.userResponses[q.id];
+          if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
+            if (!exposureMap[q.id]) {
+              exposureMap[q.id] = {
+                totalExposures: 0,
+                firstSeenIST: att.timeIST || formatISTDate(att.timestamp),
+                lastSeenIST: att.timeIST || formatISTDate(att.timestamp),
+                history: []
+              };
+            }
+            exposureMap[q.id].totalExposures++;
+            exposureMap[q.id].lastSeenIST = att.timeIST || formatISTDate(att.timestamp);
+            exposureMap[q.id].history.push({
+              mockId: att.sessionId,
+              dateIST: att.timeIST || formatISTDate(att.timestamp),
+              t: resp.timeSpentSec || 0,
+              correct: resp.selectedOption === q.correctIndex ? 1 : 0
+            });
+
+            telemetryRows.push({
+              mockId: att.sessionId,
+              mockIST: att.timeIST || formatISTDate(att.timestamp),
+              slot: att.diurnalSlot || getDiurnalSlot(att.timestamp),
+              qId: q.id,
+              subject: q.subject,
+              chapter: q.chapter,
+              sel: resp.selectedOption,
+              cor: q.correctIndex,
+              t: resp.timeSpentSec || 0,
+              sw: resp.switches || 0,
+              panic: resp.isPanicSlip ? 1 : 0,
+              tag: resp.errorTag || "UNCLASSIFIED"
+            });
+
+            if (resp.decisionTrail && resp.decisionTrail.length > 0) {
+              decisionTrails[`${att.sessionId}_${q.id}`] = resp.decisionTrail;
+            }
+          }
+        });
+      }
+    });
+
+    const masterPackage = {
+      cgl_os_master_handoff: {
+        engine: "SSC_CGL_INTELLIGENCE_OS",
+        schemaVersion: DB_VERSION,
+        generatedAtEpoch: now,
+        generatedAtIST: formatISTDate(now),
+        candidate: "Ankit Kumar",
+        targetExam: "SSC CGL 2026 Tier 1 & Tier 2 Master Preparation"
+      },
+      runtimeManifest: {
+        masterQuestionCount: allQuestions.length,
+        completedMocksCount: completedAttempts.length,
+        cardVaultCount: allFlashcards.length,
+        livingSheetsCount: allConcepts.length,
+        consultationsCount: consultations.length,
+        taxonomy: TAXONOMY
+      },
+      performanceTelemetry: {
+        totalEvaluatedAttempts: completedAttempts.length,
+        totalResponseLogs: telemetryRows.length,
+        telemetryRows: telemetryRows,
+        decisionTrails: decisionTrails,
+        questionExposureMap: exposureMap
+      },
+      knowledgeCompendium: allConcepts,
+      masterQuestionBank: sortQuestionsHierarchical(allQuestions),
+      flashcardVault: allFlashcards,
+      recentConsultations: consultations.slice(-5)
+    };
+
+    const blob = new Blob([JSON.stringify(masterPackage, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `cgl_ai_master_handoff_package_${now}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+  }
+
+  /* -------------------------------------------------------------
+   * 23. UNIVERSAL TOUCH GESTURES (VIEWPORT & HARDWARE SHIELD)
    * ------------------------------------------------------------- */
   function initGestureControllers() {
     const attachSwipeHandler = (elementId, onLeftSwipe, onRightSwipe) => {
@@ -5520,7 +5830,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   /* -------------------------------------------------------------
-   * 23. PUBLISHING-GRADE TYPESET PRINT BOOK ENGINE
+   * 24. PUBLISHING-GRADE TYPESET PRINT BOOK ENGINE
    * ------------------------------------------------------------- */
   async function openPrintConfigModal() {
     await updatePrintChapters();
@@ -5565,7 +5875,6 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     });
   }
 
-  // Typeset Print Book Compiler (Cover + Dynamic TOC + Subject Breaks + Appendix)
   async function generateAndPrintSheet() {
     document.getElementById("modal-print-config").classList.remove("active");
     const pType = document.getElementById("print-type").value;
@@ -5752,7 +6061,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
       content += `</div>`;
       root.innerHTML = content;
 
-    // 4. Flashcard Vault Revision Sheet
+    // 4. Flashcard Vault Summary Sheet
     } else if (pType === "FLASHCARDS") {
       const flashcards = await getAllRecords("store_flashcards");
       let pool = sub === "ALL" ? flashcards : flashcards.filter(f => f.subject === sub);
@@ -5791,7 +6100,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   /* -------------------------------------------------------------
-   * 24. NAVIGATION, TAB SWITCHING & SYSTEM BOOT
+   * 25. NAVIGATION, TAB SWITCHING & SYSTEM BOOT
    * ------------------------------------------------------------- */
   function switchTab(tId, btn) {
     document.querySelectorAll(".view-container").forEach(el => el.classList.remove("active"));
@@ -5957,6 +6266,12 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     exportGlobalMasterDossier,
     exportScopedForensicDossier,
     exportFullBackup,
+    exportCurrentReviewMockJson,
+    exportMockByIdJson,
+    exportKnowledgeBankJson,
+    exportFlashcardVaultJson,
+    exportCurrentSelectedStoreJson,
+    exportUnifiedAiHandoffPackage,
     pushNavLayer,
     popNavLayer
   };
@@ -5964,3 +6279,4 @@ ${JSON.stringify(TAXONOMY, null, 2)}
 
 // Re-bind to global window object
 window.CGL_OS = CGL_OS;
+ 
