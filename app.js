@@ -1,7 +1,7 @@
 /**
  * SSC CGL Intelligence OS - Core Engine
  * Master Application Controller (Part 1 of 2)
- * Schema Version: 12 | Architecture: LIFO Stack + SM-2 Engine + Dual-Temporal IST
+ * Schema Version: 13 | Dual-Temporal IST + Clone-Safe Persistence + Dynamic Sections
  */
 
 // Global window anchor registration
@@ -9,7 +9,7 @@ window.CGL_OS = null;
 
 const CGL_OS = (() => {
   const DB_NAME = "cgl_os_db";
-  const DB_VERSION = 12;
+  const DB_VERSION = 13;
   let db = null;
   let dbInitPromise = null;
 
@@ -27,6 +27,10 @@ const CGL_OS = (() => {
   let currentCompSheets = [];
   let currentConceptImageBase64 = "";
 
+  // Two-Sided Image Flashcard Editor State
+  let currentFcFrontImgBase64 = "";
+  let currentFcBackImgBase64 = "";
+
   // Responsive Synapse DOM Tree State
   let synapseExpandedNodes = new Set(["root", "sub_QA", "sub_REAS", "sub_ENG", "sub_GA"]);
 
@@ -34,7 +38,15 @@ const CGL_OS = (() => {
   let pendingHydrationData = null;
 
   // Custom Mistake Tags State
-  let customMistakeTags = ["CALCULATION_SLIP", "READING_TRAP", "FORMULA_AMNESIA", "CONCEPT_VOID", "RUSHED_PANIC"];
+  let customMistakeTags = [
+    "CALCULATION_SLIP",
+    "READING_TRAP",
+    "FORMULA_AMNESIA",
+    "CONCEPT_VOID",
+    "RUSHED_PANIC",
+    "TIME_TRAP_Q4",
+    "SECOND_GUESS_BLUNDER"
+  ];
 
   // Default Invariable Taxonomy Baseline
   const DEFAULT_TAXONOMY = {
@@ -90,7 +102,7 @@ const CGL_OS = (() => {
       options: ["Article 124", "Article 131", "Article 214", "Article 143"],
       correctIndex: 0,
       explanation: "Article 124 of the Constitution establishes the Supreme Court of India and governs its composition, appointment of judges, and operational rules.",
-      tags: ["Polity", "SupremeCourt", "RestoredVault"],
+      tags: ["Polity", "SupremeCourt"],
       annotation: ""
     },
     {
@@ -100,12 +112,12 @@ const CGL_OS = (() => {
       subtopic: "Circles",
       method: "Cyclic Quadrilateral Angles",
       conceptId: "top_qa_geo_circles",
-      questionText: "In a cyclic quadrilateral $ABCD$, the opposite angles $\\angle A$ and $\\angle C$ satisfy $\\angle A = (2x + 10)^\\circ$ and $\\angle C = (3x + 20)^\\circ$. What is the measure of $\\angle A$?",
+      questionText: "In a cyclic quadrilateral $ABCD$, opposite angles $\\angle A$ and $\\angle C$ satisfy $\\angle A = (2x + 10)^\\circ$ and $\\angle C = (3x + 20)^\\circ$. What is the measure of $\\angle A$?",
       imageUrl: "",
       options: ["$60^\\circ$", "$70^\\circ$", "$80^\\circ$", "$75^\\circ$"],
       correctIndex: 1,
-      explanation: "Opposite angles of a cyclic quadrilateral sum to $180^\\circ$. $(2x + 10) + (3x + 20) = 180 \\implies 5x + 30 = 180 \\implies 5x = 150 \\implies x = 30^\\circ$. Therefore, $\\angle A = 2(30) + 10 = 70^\\circ$.",
-      tags: ["Geometry", "CyclicQuadrilateral", "RestoredVault"],
+      explanation: "Opposite angles sum to $180^\\circ$: $(2x + 10) + (3x + 20) = 180 \\implies 5x + 30 = 180 \\implies 5x = 150 \\implies x = 30^\\circ$. Therefore, $\\angle A = 2(30) + 10 = 70^\\circ$.",
+      tags: ["Geometry", "CyclicQuadrilateral"],
       annotation: ""
     },
     {
@@ -115,12 +127,12 @@ const CGL_OS = (() => {
       subtopic: "Pipes & Cisterns",
       method: "Combined Rate of Flow",
       conceptId: "",
-      questionText: "Pipe $A$ can fill a tank in $12\\text{ hours}$ and Pipe $B$ can fill it in $18\\text{ hours}$. If both pipes are opened simultaneously, in how many hours will the tank be full?",
+      questionText: "Pipe $A$ fills a tank in $12\\text{ hours}$ and Pipe $B$ fills it in $18\\text{ hours}$. If both are opened simultaneously, in how many hours will the tank be full?",
       imageUrl: "",
       options: ["$7.2\\text{ hours}$", "$7.5\\text{ hours}$", "$8.0\\text{ hours}$", "$6.8\\text{ hours}$"],
       correctIndex: 0,
-      explanation: "Combined rate $= \\frac{1}{12} + \\frac{1}{18} = \\frac{3 + 2}{36} = \\frac{5}{36}\\text{ tank/hour}$. Total time $= \\frac{36}{5} = 7.2\\text{ hours}$.",
-      tags: ["TimeAndWork", "Pipes", "RestoredVault"],
+      explanation: "Combined rate $= \\frac{1}{12} + \\frac{1}{18} = \\frac{5}{36}\\text{ tank/hour}$. Total time $= \\frac{36}{5} = 7.2\\text{ hours}$.",
+      tags: ["TimeAndWork", "Pipes"],
       annotation: ""
     },
     {
@@ -130,27 +142,12 @@ const CGL_OS = (() => {
       subtopic: "Number Analogy",
       method: "n(n + 1) Product Form",
       conceptId: "",
-      questionText: "Select the option that is related to the third number in the same way as the second number is related to the first number: **$14 : 210 :: 18 : \\underline{\\quad ? \\quad}$**",
+      questionText: "Select the related number: **$14 : 210 :: 18 : \\underline{\\quad ? \\quad}$**",
       imageUrl: "",
       options: ["$324$", "$342$", "$360$", "$306$"],
       correctIndex: 1,
       explanation: "Pattern: $n : n(n + 1)$. Here, $14 \\times 15 = 210$. Similarly, $18 \\times 19 = 342$.",
-      tags: ["Reasoning", "Analogy", "RestoredVault"],
-      annotation: ""
-    },
-    {
-      id: "q_ga_polity_001",
-      subject: "GA",
-      chapter: "GA_POLITY",
-      subtopic: "Constitutional Amendments",
-      method: "Electoral Reform Provisions",
-      conceptId: "top_ga_polity_judiciary",
-      questionText: "Which Constitutional Amendment Act reduced the voting age for elections to the Lok Sabha and State Legislative Assemblies from 21 to 18 years?",
-      imageUrl: "",
-      options: ["42nd Amendment Act", "44th Amendment Act", "61st Amendment Act", "73rd Amendment Act"],
-      correctIndex: 2,
-      explanation: "The 61st Constitutional Amendment Act, 1988 lowered the voting age from 21 to 18 by amending Article 326 of the Constitution.",
-      tags: ["Polity", "Amendments", "RestoredVault"],
+      tags: ["Reasoning", "Analogy"],
       annotation: ""
     },
     {
@@ -160,152 +157,17 @@ const CGL_OS = (() => {
       subtopic: "Triangles & Incenters",
       method: "Internal Angle Bisector Angle",
       conceptId: "top_qa_geo_triangles",
-      questionText: "In $\\triangle ABC$, the bisectors of $\\angle B$ and $\\angle C$ intersect at point $I$ inside the triangle. If $\\angle BAC = 68^\\circ$, then find the measure of $\\angle BIC$.",
+      questionText: "In $\\triangle ABC$, the bisectors of $\\angle B$ and $\\angle C$ intersect at point $I$ inside the triangle. If $\\angle BAC = 68^\\circ$, find the measure of $\\angle BIC$.",
       imageUrl: "",
       options: ["$124^\\circ$", "$136^\\circ$", "$112^\\circ$", "$146^\\circ$"],
       correctIndex: 0,
       explanation: "Incenter formula: $\\angle BIC = 90^\\circ + \\frac{\\angle A}{2} = 90^\\circ + 34^\\circ = 124^\\circ$.",
-      tags: ["Geometry", "Incenter", "RestoredVault"],
-      annotation: ""
-    },
-    {
-      id: "q_qa_pl_001",
-      subject: "QA",
-      chapter: "QA_PROFIT_LOSS",
-      subtopic: "Dishonest Dealer",
-      method: "Weight Discrepancy Gain",
-      conceptId: "",
-      questionText: "A dishonest dealer professes to sell his goods at cost price but uses a weight of $920\\text{ g}$ for a $1\\text{ kg}$ weight. What is his actual gain percentage?",
-      imageUrl: "",
-      options: ["$8.00\\%$", "$8.69\\%$", "$9.20\\%$", "$7.85\\%$"],
-      correctIndex: 1,
-      explanation: "Gain $\\% = \\frac{\\text{Error}}{\\text{True Value} - \\text{Error}} \\times 100 = \\frac{80}{920} \\times 100 = 8.69\\%$.",
-      tags: ["ProfitLoss", "DishonestDealer", "RestoredVault"],
-      annotation: ""
-    },
-    {
-      id: "q_reas_analogy_001",
-      subject: "REAS",
-      chapter: "REAS_ANALOGY",
-      subtopic: "Number Operations",
-      method: "Linear Scaling 5n + 2",
-      conceptId: "",
-      questionText: "Select the pair that follows the identical numerical pattern: **$6 : 32 :: 2 : 12 :: 9 : \\underline{\\quad ? \\quad}$**",
-      imageUrl: "",
-      options: ["$45$", "$47$", "$49$", "$51$"],
-      correctIndex: 1,
-      explanation: "Logic: $n \\times 5 + 2 = 6 \\times 5 + 2 = 32$; $2 \\times 5 + 2 = 12$; $9 \\times 5 + 2 = 47$.",
-      tags: ["Reasoning", "Analogy", "RestoredVault"],
-      annotation: ""
-    },
-    {
-      id: "q_qa_geo_001",
-      subject: "QA",
-      chapter: "QA_GEOMETRY",
-      subtopic: "Triangles",
-      method: "Angle Bisector Theorem",
-      conceptId: "top_qa_geo_triangles",
-      questionText: "In a $\\triangle ABC$, the bisector of $\\angle A$ intersects $BC$ at $D$. If $AB = 12\\text{ cm}$, $AC = 15\\text{ cm}$, and $BC = 18\\text{ cm}$, find the length of $BD$.",
-      imageUrl: "",
-      options: ["$6\\text{ cm}$", "$8\\text{ cm}$", "$10\\text{ cm}$", "$7.5\\text{ cm}$"],
-      correctIndex: 1,
-      explanation: "By Angle Bisector Theorem: $\\frac{BD}{DC} = \\frac{AB}{AC} = \\frac{12}{15} = \\frac{4}{5}$. Since $BC = 18\\text{ cm}$, $BD = \\frac{4}{9} \\times 18 = 8\\text{ cm}$.",
-      tags: ["AngleBisector", "Geometry"],
-      annotation: ""
-    },
-    {
-      id: "q_qa_alg_002",
-      subject: "QA",
-      chapter: "QA_ALGEBRA",
-      subtopic: "Symmetric Expressions",
-      method: "k^3 - 3k Expansion",
-      conceptId: "top_qa_alg_identities",
-      questionText: "If $x + \\frac{1}{x} = 5$, find the numerical value of $x^3 + \\frac{1}{x^3}$.",
-      imageUrl: "",
-      options: ["$110$", "$125$", "$140$", "$115$"],
-      correctIndex: 0,
-      explanation: "$x^3 + \\frac{1}{x^3} = \\left(x + \\frac{1}{x}\\right)^3 - 3\\left(x + \\frac{1}{x}\\right) = 5^3 - 3(5) = 125 - 15 = 110$.",
-      tags: ["Algebra", "Identities"],
-      annotation: ""
-    },
-    {
-      id: "q_qa_perc_001",
-      subject: "QA",
-      chapter: "QA_PERCENTAGE",
-      subtopic: "Successive Changes",
-      method: "Formula vs Ratio Approach",
-      conceptId: "",
-      questionText: "The length of a rectangle is increased by $20\\%$ and its breadth is decreased by $10\\%$. Find the net percentage change in its area.",
-      imageUrl: "",
-      options: ["$8\\%\\text{ increase}$", "$10\\%\\text{ increase}$", "$8\\%\\text{ decrease}$", "$12\\%\\text{ increase}$"],
-      correctIndex: 0,
-      explanation: "Net change $= a + b + \\frac{ab}{100} = 20 - 10 - \\frac{200}{100} = +8\\%$.",
-      tags: ["Percentage", "Successive"],
-      annotation: ""
-    },
-    {
-      id: "q_reas_cod_001",
-      subject: "REAS",
-      chapter: "REAS_CODING",
-      subtopic: "Letter to Number",
-      method: "Forward Alphabet Rank",
-      conceptId: "",
-      questionText: "In a certain code language, **\"STRIKE\"** is coded as **\"19-20-18-9-11-5\"**. How will **\"CHAMP\"** be coded?",
-      imageUrl: "",
-      options: ["3-8-1-13-16", "3-8-2-14-16", "3-9-1-13-15", "4-8-1-12-16"],
-      correctIndex: 0,
-      explanation: "Each letter is represented directly by its forward alphabet rank ($C=3, H=8, A=1, M=13, P=16$).",
-      tags: ["CodingDecoding", "Alphabet"],
-      annotation: ""
-    },
-    {
-      id: "q_eng_ows_001",
-      subject: "ENG",
-      chapter: "ENG_OWS",
-      subtopic: "Personal Traits",
-      method: "Financial Vocabulary",
-      conceptId: "",
-      questionText: "Select the option that can be used as a one-word substitute for: **\"A person who is unable to pay their debts.\"**",
-      imageUrl: "",
-      options: ["Insolvent", "Mercenary", "Stoic", "Ascetic"],
-      correctIndex: 0,
-      explanation: "**Insolvent** means unable to pay one's debts. Mercenary is someone working merely for money; Stoic is indifferent to pleasure or pain; Ascetic lives a life of strict self-discipline.",
-      tags: ["OWS", "Vocabulary"],
-      annotation: ""
-    },
-    {
-      id: "q_ga_pol_001",
-      subject: "GA",
-      chapter: "GA_POLITY",
-      subtopic: "Judiciary",
-      method: "Constitutional Articles",
-      conceptId: "top_ga_polity_judiciary",
-      questionText: "Which Article of the Constitution of India empowers High Courts to issue writs for the enforcement of Fundamental Rights?",
-      imageUrl: "",
-      options: ["Article 32", "Article 131", "Article 226", "Article 143"],
-      correctIndex: 2,
-      explanation: "Article 226 empowers High Courts to issue writs. Article 32 gives writ powers strictly to the Supreme Court for Fundamental Rights.",
-      tags: ["Polity", "Writs"],
-      annotation: ""
-    },
-    {
-      id: "q_ga_ca_001",
-      subject: "GA",
-      chapter: "GA_CA_ANNUAL",
-      subtopic: "Summits & Treaties",
-      method: "International Conventions",
-      conceptId: "top_ga_ca_annual_sample",
-      questionText: "Which country hosted the official plenary session of the 2026 World Economic Forum Annual Meeting in Davos?",
-      imageUrl: "",
-      options: ["Switzerland", "Germany", "France", "Austria"],
-      correctIndex: 0,
-      explanation: "The World Economic Forum Annual Meeting is held annually in Davos-Klosters, Switzerland.",
-      tags: ["CurrentAffairs", "Summits"],
+      tags: ["Geometry", "Incenter"],
       annotation: ""
     }
   ];
 
-  // Pre-Seeded Living Document Topic Dossiers
+  // Pre-Seeded Topic Dossiers
   const SEED_TOPIC_DOSSIERS = [
     {
       id: "top_qa_geo_triangles",
@@ -313,7 +175,7 @@ const CGL_OS = (() => {
       chapter: "QA_GEOMETRY",
       title: "Triangles & Incenters",
       subtitle: "Incenters, Circumcenters & Angle Bisectors",
-      content: "### Internal Angle Bisector Theorem\nIf $AD$ bisects $\\angle A$ and meets $BC$ at $D$, then:\n$$\\frac{BD}{DC} = \\frac{AB}{AC}$$\n\n> [!formula] Incenter Angle Rule\n> The angle formed at the incenter $I$ is always obtuse:\n> $$\\angle BIC = 90^\\circ + \\frac{\\angle A}{2}$$\n\n### Right-Angled Triangle Inradius\nFor legs $P, B$ and hypotenuse $H$:\n$$r = \\frac{P + B - H}{2}$$\n\n> [!trap] Critical TCS Deduction\n> Always verify whether the question asks for the inradius $r$ or circumradius $R = \\frac{H}{2}$.",
+      content: "### Internal Angle Bisector Theorem\nIf $AD$ bisects $\\angle A$ and meets $BC$ at $D$:\n$$\\frac{BD}{DC} = \\frac{AB}{AC}$$\n\n> [!formula] Incenter Angle Rule\n> The angle formed at the incenter $I$:\n> $$\\angle BIC = 90^\\circ + \\frac{\\angle A}{2}$$\n\n### Right-Angled Triangle Inradius\nFor legs $P, B$ and hypotenuse $H$:\n$$r = \\frac{P + B - H}{2}$$\n\n> [!trap] Critical TCS Deduction\n> Verify whether the question asks for inradius $r$ or circumradius $R = \\frac{H}{2}$.",
       imageUrl: "",
       timestamp: Date.now()
     },
@@ -323,27 +185,7 @@ const CGL_OS = (() => {
       chapter: "QA_GEOMETRY",
       title: "Circles & Tangents",
       subtitle: "Secants, Power of Point & Tangent Lengths",
-      content: "### Tangent-Secant Theorem (Power of a Point)\nFrom an external point $P$, if $PT$ is tangent and $PAB$ is secant:\n$$PT^2 = PA \\cdot PB$$\n\n### Direct & Transverse Common Tangents\nFor two circles of radii $r_1, r_2$ with distance between centers $d$:\n• **Direct Common Tangent (DCT):**\n$$DCT = \\sqrt{d^2 - (r_1 - r_2)^2}$$\n• **Transverse Common Tangent (TCT):**\n$$TCT = \\sqrt{d^2 - (r_1 + r_2)^2}$$\n\n> [!trap] External Touching Circles\n> If circles touch externally ($d = r_1 + r_2$), then $DCT = 2\\sqrt{r_1 r_2}$.\n\n### Common Tangents Inventory\n| Circle Position | Distance $d$ | No. of Common Tangents |\n| :--- | :--- | :--- |\n| Completely Separate | $d > r_1 + r_2$ | 4 (2 Direct, 2 Transverse) |\n| Touching Externally | $d = r_1 + r_2$ | 3 (2 Direct, 1 Common) |\n| Intersecting at 2 pts | $|r_1-r_2| < d < r_1+r_2$ | 2 (Direct Only) |\n| Touching Internally | $d = |r_1 - r_2|$ | 1 |\n| One inside other | $d < |r_1 - r_2|$ | 0 |",
-      imageUrl: "",
-      timestamp: Date.now()
-    },
-    {
-      id: "top_qa_geo_polygons",
-      subject: "QA",
-      chapter: "QA_GEOMETRY",
-      title: "Polygons & Diagonals",
-      subtitle: "Interior Angles, Exterior Angles & Combinatorics",
-      content: "### Core Regular Polygon Equations\n• Sum of interior angles: $S = (n - 2) \\times 180^\\circ$\n• Each interior angle: $\\theta_i = \\frac{(n - 2) \\times 180^\\circ}{n}$\n• Sum of exterior angles: Always $360^\\circ$\n• Total diagonals: $D = \\frac{n(n - 3)}{2}$\n\n> [!tip] Quick Diagonal Shortcut\n> If a polygon has 54 diagonals: $\\frac{n(n - 3)}{2} = 54 \\implies n(n - 3) = 108 = 12 \\times 9 \\implies n = 12$.",
-      imageUrl: "",
-      timestamp: Date.now()
-    },
-    {
-      id: "top_qa_alg_identities",
-      subject: "QA",
-      chapter: "QA_ALGEBRA",
-      title: "Symmetric Inverse Power Identities",
-      subtitle: "Doubling, Cubing & Conditional Nullity",
-      content: "### The $x + 1/x = k$ Reduction Ladder\n• $x^2 + \\frac{1}{x^2} = k^2 - 2$\n• $x^3 + \\frac{1}{x^3} = k^3 - 3k$\n• $x^4 + \\frac{1}{x^4} = (k^2 - 2)^2 - 2$\n• $x^5 + \\frac{1}{x^5} = \\left(x^2 + \\frac{1}{x^2}\\right)\\left(x^3 + \\frac{1}{x^3}\\right) - \\left(x + \\frac{1}{x}\\right)$\n\n> [!formula] Conditional Nullity Identity\n> If $a + b + c = 0$, then:\n> $$a^3 + b^3 + c^3 = 3abc$$",
+      content: "### Tangent-Secant Theorem (Power of a Point)\nFrom external point $P$, if $PT$ is tangent and $PAB$ is secant:\n$$PT^2 = PA \\cdot PB$$\n\n### Common Tangent Lengths\nFor radii $r_1, r_2$ and center distance $d$:\n• **Direct Common Tangent (DCT):**\n$$DCT = \\sqrt{d^2 - (r_1 - r_2)^2}$$\n• **Transverse Common Tangent (TCT):**\n$$TCT = \\sqrt{d^2 - (r_1 + r_2)^2}$$\n\n> [!trap] External Touching Circles\n> If $d = r_1 + r_2$, then $DCT = 2\\sqrt{r_1 r_2}$. Transverse tangent is 0.",
       imageUrl: "",
       timestamp: Date.now()
     },
@@ -353,17 +195,7 @@ const CGL_OS = (() => {
       chapter: "GA_POLITY",
       title: "Supreme Court & Writ Jurisdiction",
       subtitle: "Articles 32, 124, 131, 226",
-      content: "### Constitutional Architecture\n• **Article 124:** Establishment and constitution of the Supreme Court of India.\n• **Article 131:** Original jurisdiction of the Supreme Court (Federal disputes between Union & States).\n• **Article 143:** Advisory jurisdiction of the Supreme Court on Presidential references.\n\n### The High Court Writ Advantage\n• **Article 32:** Supreme Court issues writs strictly for enforcement of Fundamental Rights.\n• **Article 226:** High Courts can issue writs for Fundamental Rights *and* for 'any other legal right'.",
-      imageUrl: "",
-      timestamp: Date.now()
-    },
-    {
-      id: "top_ga_ca_annual_sample",
-      subject: "GA",
-      chapter: "GA_CA_ANNUAL",
-      title: "Major Global Summits & Frameworks",
-      subtitle: "2026 Multilateral Engagements",
-      content: "### Multilateral Venues & Mandates\n• **World Economic Forum (WEF):** Annual meeting held in Davos-Klosters, Switzerland.\n• **G20 Troika Context:** Macroeconomic alignments, debt sustainability frameworks, and multilateral bank capital reforms.\n\n> [!tip] Annual CA Static Strategy\n> Memorize summit host countries, main adopted themes, and newly added member states.",
+      content: "### Constitutional Architecture\n• **Article 124:** Establishment and constitution of the Supreme Court of India.\n• **Article 131:** Original jurisdiction of the Supreme Court (Federal disputes).\n• **Article 143:** Advisory jurisdiction on Presidential references.\n• **Article 226:** High Courts writ jurisdiction for Fundamental Rights and other legal rights.",
       imageUrl: "",
       timestamp: Date.now()
     }
@@ -385,26 +217,27 @@ const CGL_OS = (() => {
       questions: null
     },
     {
-      id: "bp_qa_reas_speed_blitz",
+      id: "bp_qa_speed_blitz",
       type: "DYNAMIC_BLUEPRINT",
-      title: "Speed Blitz (QA + REAS)",
+      title: "QA Speed Blitz (25 Qs - 15 Mins)",
       isSectionLocked: false,
       sections: [
-        { id: 1, subject: "QA", count: 25, durationMin: 18 },
-        { id: 2, subject: "REAS", count: 25, durationMin: 12 }
+        { id: 1, subject: "QA", count: 25, durationMin: 15 }
       ],
       questions: null
     }
   ];
 
-  // Pre-Seeded Foundational SM-2 Flashcards
+  // Pre-Seeded SM-2 Flashcards with Two-Sided Image Support
   const SEED_FLASHCARDS = [
     {
       id: "fc_qa_geo_001",
       subject: "QA",
       chapter: "QA_GEOMETRY",
       front: "In $\\triangle ABC$ with incenter $I$, what is the formula for $\\angle BIC$ in terms of vertex angle $\\angle A$?",
+      frontImageUrl: "",
       back: "$$\\angle BIC = 90^\\circ + \\frac{\\angle A}{2}$$",
+      backImageUrl: "",
       interval: 1,
       repetition: 0,
       easeFactor: 2.5,
@@ -416,8 +249,10 @@ const CGL_OS = (() => {
       id: "fc_qa_geo_002",
       subject: "QA",
       chapter: "QA_GEOMETRY",
-      front: "What is the length formula for a Direct Common Tangent ($DCT$) between two circles of radii $r_1, r_2$ and center distance $d$?",
+      front: "What is the length formula for a Direct Common Tangent ($DCT$) between two circles of radii $r_1, r_2$ and center separation $d$?",
+      frontImageUrl: "",
       back: "$$DCT = \\sqrt{d^2 - (r_1 - r_2)^2}$$",
+      backImageUrl: "",
       interval: 1,
       repetition: 0,
       easeFactor: 2.5,
@@ -430,7 +265,9 @@ const CGL_OS = (() => {
       subject: "GA",
       chapter: "GA_POLITY",
       front: "Which Article establishes and constitutes the Supreme Court of India?",
+      frontImageUrl: "",
       back: "**Article 124** of the Constitution of India.",
+      backImageUrl: "",
       interval: 1,
       repetition: 0,
       easeFactor: 2.5,
@@ -443,7 +280,9 @@ const CGL_OS = (() => {
       subject: "ENG",
       chapter: "ENG_OWS",
       front: "One-Word Substitution: *'A person who is unable to pay their debts.'*",
+      frontImageUrl: "",
       back: "**Insolvent** (or Bankrupt).",
+      backImageUrl: "",
       interval: 1,
       repetition: 0,
       easeFactor: 2.5,
@@ -469,7 +308,7 @@ const CGL_OS = (() => {
         second: "2-digit",
         hour12: false
       }).format(d) + " IST";
-    } catch(e) {
+    } catch (e) {
       return new Date(epochMs).toISOString();
     }
   }
@@ -487,8 +326,8 @@ const CGL_OS = (() => {
       if (hours >= 12 && hours < 17) return "AFTERNOON";
       if (hours >= 17 && hours < 21) return "EVENING";
       return "NIGHT";
-    } catch(e) {
-      return "UNKNOWN";
+    } catch (e) {
+      return "DAY";
     }
   }
 
@@ -524,10 +363,10 @@ const CGL_OS = (() => {
 
     if (window.katex) {
       out = out.replace(/\$\$([\s\S]*?)\$\$/g, (m, f) => {
-        try { return katex.renderToString(f, { displayMode: true, throwOnError: false }); } catch(e) { return m; }
+        try { return katex.renderToString(f, { displayMode: true, throwOnError: false }); } catch (e) { return m; }
       });
       out = out.replace(/\$([^\$\n]+?)\$/g, (m, f) => {
-        try { return katex.renderToString(f, { displayMode: false, throwOnError: false }); } catch(e) { return m; }
+        try { return katex.renderToString(f, { displayMode: false, throwOnError: false }); } catch (e) { return m; }
       });
     }
     return out.replace(/\n/g, "<br>");
@@ -591,7 +430,7 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 4. INDEXEDDB PERSISTENCE ENGINE (SCHEMA V12)
+   * 4. INDEXEDDB PERSISTENCE ENGINE (SCHEMA V13 UPGRADE)
    * ------------------------------------------------------------- */
   function getDB() {
     if (db) return Promise.resolve(db);
@@ -601,7 +440,7 @@ const CGL_OS = (() => {
       const req = indexedDB.open(DB_NAME, DB_VERSION);
 
       req.onblocked = () => {
-        console.warn("Database upgrade blocked by active connection.");
+        console.warn("Database upgrade temporarily blocked by an open connection.");
       };
 
       req.onupgradeneeded = (e) => {
@@ -617,11 +456,44 @@ const CGL_OS = (() => {
           { name: "store_active_session", key: "id" },
           { name: "store_config", key: "key" }
         ];
+
         stores.forEach(s => {
           if (!d.objectStoreNames.contains(s.name)) {
             d.createObjectStore(s.name, { keyPath: s.key });
           }
         });
+
+        // Safe auto-migration from deprecated store_vault if present
+        if (d.objectStoreNames.contains("store_vault") && d.objectStoreNames.contains("store_flashcards")) {
+          try {
+            const tx = e.target.transaction;
+            const vaultStore = tx.objectStore("store_vault");
+            const flashcardStore = tx.objectStore("store_flashcards");
+            const getAllReq = vaultStore.getAll();
+            getAllReq.onsuccess = () => {
+              const records = getAllReq.result || [];
+              records.forEach(v => {
+                flashcardStore.put({
+                  id: `fc_migrated_${v.questionId}`,
+                  subject: v.subject || "QA",
+                  chapter: v.chapter || "QA_GENERAL",
+                  front: `Vault Migrated Trap (${v.errorTag || 'UNCLASSIFIED'})`,
+                  frontImageUrl: "",
+                  back: `Question Reference ID: ${v.questionId}`,
+                  backImageUrl: "",
+                  interval: v.interval || 1,
+                  repetition: v.repetition || 0,
+                  easeFactor: v.easeFactor || 2.5,
+                  nextReviewDate: v.nextReviewDate || Date.now(),
+                  lastAttempted: v.lastAttempted || Date.now(),
+                  tags: ["MigratedVault", v.errorTag || "UNCLASSIFIED"]
+                });
+              });
+            };
+          } catch (migErr) {
+            console.warn("Migration notice:", migErr);
+          }
+        }
       };
 
       req.onsuccess = async (e) => {
@@ -632,7 +504,7 @@ const CGL_OS = (() => {
         try {
           await seedData(db);
         } catch (err) {
-          console.warn("Non-fatal database initialization note:", err);
+          console.warn("Bootstrap notice:", err);
         }
         resolve(db);
       };
@@ -710,7 +582,7 @@ const CGL_OS = (() => {
         req.onsuccess = () => res(req.result || []);
         req.onerror = () => res([]);
       });
-    } catch(e) { return []; }
+    } catch (e) { return []; }
   }
 
   async function getRecord(sName, key) {
@@ -723,20 +595,31 @@ const CGL_OS = (() => {
         req.onsuccess = () => res(req.result || null);
         req.onerror = () => res(null);
       });
-    } catch(e) { return null; }
+    } catch (e) { return null; }
   }
 
+  // Clone-Safe Persistence Engine (Eliminates DataCloneError Drops)
   async function putRecord(sName, record) {
     try {
       const d = await getDB();
-      if (!d.objectStoreNames.contains(sName)) return false;
+      if (!d.objectStoreNames.contains(sName)) {
+        console.error(`Store ${sName} not found in database.`);
+        return false;
+      }
+      const cleanRecord = JSON.parse(JSON.stringify(record));
       return new Promise(res => {
         const tx = d.transaction([sName], "readwrite");
-        const req = tx.objectStore(sName).put(record);
+        const req = tx.objectStore(sName).put(cleanRecord);
         req.onsuccess = () => res(true);
-        req.onerror = () => res(false);
+        req.onerror = (err) => {
+          console.error(`Failed write to ${sName}:`, err);
+          res(false);
+        };
       });
-    } catch(e) { return false; }
+    } catch (e) {
+      console.error(`Exception writing to ${sName}:`, e);
+      return false;
+    }
   }
 
   async function deleteRecordFromStore(sName, key) {
@@ -749,7 +632,7 @@ const CGL_OS = (() => {
         req.onsuccess = () => res(true);
         req.onerror = () => res(false);
       });
-    } catch(e) { return false; }
+    } catch (e) { return false; }
   }
 
   async function clearStore(sName) {
@@ -762,7 +645,7 @@ const CGL_OS = (() => {
         req.onsuccess = () => res(true);
         req.onerror = () => res(false);
       });
-    } catch(e) { return false; }
+    } catch (e) { return false; }
   }
 
   /* -------------------------------------------------------------
@@ -827,7 +710,7 @@ const CGL_OS = (() => {
           • Saved Blueprints & Papers: ${pendingHydrationData.store_saved_mocks.length}
         `;
         document.getElementById("btn-execute-restore").disabled = false;
-      } catch(err) {
+      } catch (err) {
         alert("Corrupted Backup File: " + err.message);
         document.getElementById("btn-execute-restore").disabled = true;
       }
@@ -899,7 +782,9 @@ const CGL_OS = (() => {
       subject: f.subject || "QA",
       chapter: f.chapter || "QA_GENERAL",
       front: f.front || f.questionText || "Untitled Prompt",
+      frontImageUrl: f.frontImageUrl || "",
       back: f.back || f.explanation || "Untitled Answer",
+      backImageUrl: f.backImageUrl || "",
       interval: typeof f.interval === "number" ? f.interval : 1,
       repetition: typeof f.repetition === "number" ? f.repetition : 0,
       easeFactor: typeof f.easeFactor === "number" ? f.easeFactor : 2.5,
@@ -913,6 +798,8 @@ const CGL_OS = (() => {
     const epoch = a.timestamp || Date.now();
     return {
       sessionId: a.sessionId || `mock_${epoch}_${idx}`,
+      parentSessionId: a.parentSessionId || null,
+      attemptNumber: typeof a.attemptNumber === "number" ? a.attemptNumber : 1,
       title: a.title || "SSC CGL Practice Mock",
       timestamp: epoch,
       timeIST: a.timeIST || formatISTDate(epoch),
@@ -972,13 +859,13 @@ const CGL_OS = (() => {
         }
       }
 
-      alert("Disaster Recovery Complete! All tables and consultations restored safely.");
+      alert("Disaster Recovery Complete! All records restored safely.");
       document.getElementById("modal-backup-restore").classList.remove("active");
       await syncAllTaxonomyDropdowns();
       await renderDashboard();
       await updateDojoChapters();
       await renderVault();
-    } catch(err) {
+    } catch (err) {
       alert("Hydration Error: " + err.message);
     }
   }
@@ -1926,6 +1813,8 @@ const CGL_OS = (() => {
       const now = Date.now();
       activeExam = {
         sessionId: "fixed_mock_" + now,
+        parentSessionId: null,
+        attemptNumber: 1,
         timestamp: now,
         timeIST: formatISTDate(now),
         diurnalSlot: getDiurnalSlot(now),
@@ -1963,6 +1852,7 @@ const CGL_OS = (() => {
       await putRecord("store_active_session", { id: "current_session", session: activeExam });
       hideMiniPlayer();
 
+      if (document.activeElement) document.activeElement.blur();
       pushNavLayer("exam-arena", () => {
         const pauseBtn = document.getElementById("btn-arena-pause");
         if (pauseBtn) pauseBtn.click();
@@ -2035,6 +1925,8 @@ const CGL_OS = (() => {
 
     activeExam = {
       sessionId: "mock_" + now,
+      parentSessionId: null,
+      attemptNumber: 1,
       timestamp: now,
       timeIST: formatISTDate(now),
       diurnalSlot: getDiurnalSlot(now),
@@ -2068,6 +1960,7 @@ const CGL_OS = (() => {
     await putRecord("store_active_session", { id: "current_session", session: activeExam });
     hideMiniPlayer();
 
+    if (document.activeElement) document.activeElement.blur();
     pushNavLayer("exam-arena", () => {
       const pauseBtn = document.getElementById("btn-arena-pause");
       if (pauseBtn) pauseBtn.click();
@@ -2202,6 +2095,14 @@ const CGL_OS = (() => {
         <span>⚪ Unattempted</span>
       `;
       panicFlag.style.display = resp.isPanicSlip ? "inline-block" : "none";
+
+      // CLOCK SYNC FIX: Synchronize live timers with the question's recorded dwell time
+      const spent = resp.timeSpentSec || 0;
+      const mSpent = Math.floor(spent / 60);
+      const sSpent = spent % 60;
+      document.getElementById("arena-q-timer").innerText = `${String(mSpent).padStart(2, '0')}:${String(sSpent).padStart(2, '0')}`;
+      document.getElementById("hud-pacing-status").innerText = `${spent}s on Q`;
+
     } else {
       pauseBtn.style.display = "inline-flex";
       exitRevBtn.style.display = "none";
@@ -2284,6 +2185,7 @@ const CGL_OS = (() => {
             </div>
           ` : ''}
           ${resp.isPanicSlip ? `<div style="margin-top:4px; color:var(--status-red); font-size:11px; font-weight:700;">⚠️ Detected as Panic Slip (&lt;12s solve in final minutes).</div>` : ''}
+          ${resp.errorTag && resp.errorTag !== 'UNCLASSIFIED' ? `<div style="margin-top:4px; color:#f87171; font-size:11px;"><b>Trap Classification:</b> #${resp.errorTag}</div>` : ''}
         </div>
       `;
 
@@ -2609,6 +2511,7 @@ const CGL_OS = (() => {
     }
   });
 
+  // SUBMISSION ENGINE WITH COGNITIVE TRAP AUTO-CLASSIFICATION & CLONE-SAFE WRITES
   async function submitExamSession() {
     clearInterval(examTimerInterval);
     clearInterval(questionTimerInterval);
@@ -2641,6 +2544,19 @@ const CGL_OS = (() => {
           }
 
           if (resp.timeSpentSec > 90) traps++;
+
+          // COGNITIVE TRAP AUTO-CLASSIFICATION
+          if (!resp.errorTag || resp.errorTag === "UNCLASSIFIED") {
+            if (resp.isPanicSlip) {
+              resp.errorTag = "PANIC_SLIP";
+            } else if (resp.switches > 0 && resp.initialOption === q.correctIndex) {
+              resp.errorTag = "SECOND_GUESS_BLUNDER";
+            } else if (resp.timeSpentSec > 90) {
+              resp.errorTag = "TIME_TRAP_Q4";
+            } else {
+              resp.errorTag = "CONCEPT_VOID";
+            }
+          }
         }
       }
     }
@@ -2660,13 +2576,19 @@ const CGL_OS = (() => {
     await deleteRecordFromStore("store_active_session", "current_session");
     hideMiniPlayer();
 
-    await putRecord("store_attempts", activeExam);
+    // Clone-Safe Write
+    const isSaved = await putRecord("store_attempts", activeExam);
+    if (!isSaved) {
+      console.warn("Retrying attempt persistence with sanitized payload...");
+      await putRecord("store_attempts", sanitizeAttempt(activeExam, 0));
+    }
 
     document.getElementById("exam-arena").style.display = "none";
-    renderDashboard();
+    await renderDashboard();
     openMockReview(activeExam);
   }
 
+  // THREADED REATTEMPT CONTROLLER
   async function reattemptMock(sessionId) {
     const attempts = await getAllRecords("store_attempts");
     const target = attempts.find(a => a.sessionId === sessionId);
@@ -2677,6 +2599,11 @@ const CGL_OS = (() => {
     const modalArchive = document.getElementById("modal-history-archive");
     if (modalArchive) modalArchive.classList.remove("active");
 
+    // Count existing attempts in thread
+    const rootId = target.parentSessionId || target.sessionId;
+    const threadAttempts = attempts.filter(a => a.sessionId === rootId || a.parentSessionId === rootId);
+    const nextAttemptNumber = threadAttempts.length + 1;
+
     const parsedSections = target.sections && target.sections.length > 0 
       ? JSON.parse(JSON.stringify(target.sections)).map(s => ({ ...s, locked: false })) 
       : [{ id: "SEC_1", name: "Section 1", durationSec: 900, locked: false }];
@@ -2684,10 +2611,12 @@ const CGL_OS = (() => {
     const now = Date.now();
     activeExam = {
       sessionId: "mock_re_" + now,
+      parentSessionId: rootId,
+      attemptNumber: nextAttemptNumber,
       timestamp: now,
       timeIST: formatISTDate(now),
       diurnalSlot: getDiurnalSlot(now),
-      title: `Re-attempt: ${target.title}`,
+      title: `${target.title.replace(/^Re-attempt:\s*/i, '')}`,
       mockType: target.mockType || "CUSTOM",
       signatureTag: target.signatureTag || "",
       isSectionLocked: !!target.isSectionLocked,
@@ -2721,6 +2650,7 @@ const CGL_OS = (() => {
     await putRecord("store_active_session", { id: "current_session", session: activeExam });
     hideMiniPlayer();
 
+    if (document.activeElement) document.activeElement.blur();
     pushNavLayer("exam-arena", () => {
       const pauseBtn = document.getElementById("btn-arena-pause");
       if (pauseBtn) pauseBtn.click();
@@ -3024,7 +2954,7 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 12. STAGE 1 COCKPIT & MISTAKE TAGGING
+   * 12. STAGE 1 COCKPIT & HIGH-FIDELITY SECTIONAL BREAKDOWN
    * ------------------------------------------------------------- */
   async function openMockReview(attemptOrId) {
     let att = typeof attemptOrId === "string" 
@@ -3034,7 +2964,13 @@ const CGL_OS = (() => {
     if (!att) return;
     activeReviewAttempt = att;
 
-    document.getElementById("review-modal-title").innerText = att.title || "SSC CGL Mock Analysis";
+    // Auto-dismiss History Archive modal to prevent z-index layering conflicts
+    const archiveModal = document.getElementById("modal-history-archive");
+    if (archiveModal && archiveModal.classList.contains("active")) {
+      archiveModal.classList.remove("active");
+    }
+
+    document.getElementById("review-modal-title").innerText = `${att.title}${att.attemptNumber > 1 ? ` (Attempt ${att.attemptNumber})` : ''}`;
     document.getElementById("review-modal-date").innerText = att.timeIST || formatISTDate(att.timestamp);
     document.getElementById("rev-score").innerText = (att.finalScore || 0).toFixed(2);
 
@@ -3050,14 +2986,43 @@ const CGL_OS = (() => {
     document.getElementById("btn-review-reattempt").onclick = () => reattemptMock(att.sessionId);
     document.getElementById("btn-review-save-fixed").onclick = () => openSaveBlueprintModal("FIXED_PAPER", att.sessionId);
 
+    // THREADED ATTEMPT ITERATION SWITCHER
+    const rootId = att.parentSessionId || att.sessionId;
+    const allAttempts = await getAllRecords("store_attempts");
+    const thread = allAttempts.filter(a => a.sessionId === rootId || a.parentSessionId === rootId);
+
+    const switchWrap = document.getElementById("rev-attempt-switcher-wrap");
+    const switchSelect = document.getElementById("rev-attempt-select");
+
+    if (thread.length > 1) {
+      switchWrap.style.display = "flex";
+      switchSelect.innerHTML = "";
+      thread.sort((a, b) => (a.attemptNumber || 1) - (b.attemptNumber || 1));
+      thread.forEach(iter => {
+        const opt = document.createElement("option");
+        opt.value = iter.sessionId;
+        opt.innerText = `Attempt ${iter.attemptNumber || 1}: ${(iter.finalScore || 0).toFixed(1)} pts (${iter.timeIST ? iter.timeIST.split(',')[0] : 'Past'})`;
+        if (iter.sessionId === att.sessionId) opt.selected = true;
+        switchSelect.appendChild(opt);
+      });
+    } else {
+      switchWrap.style.display = "none";
+    }
+
+    // HIGH-FIDELITY SECTIONAL BREAKDOWN
     const secGrid = document.getElementById("rev-sectional-breakdown-grid");
     secGrid.innerHTML = "";
     const secScores = {};
+
     if (att.questions && Array.isArray(att.questions) && att.userResponses) {
       att.questions.forEach(q => {
         const secName = q.subject || "GEN";
-        if (!secScores[secName]) secScores[secName] = { score: 0, cor: 0, inc: 0, att: 0 };
+        if (!secScores[secName]) {
+          secScores[secName] = { score: 0, cor: 0, inc: 0, unans: 0, att: 0, penalty: 0, totalTimeSec: 0 };
+        }
         const resp = att.userResponses[q.id];
+        secScores[secName].totalTimeSec += (resp ? (resp.timeSpentSec || 0) : 0);
+
         if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
           secScores[secName].att++;
           if (resp.selectedOption === q.correctIndex) {
@@ -3065,25 +3030,42 @@ const CGL_OS = (() => {
             secScores[secName].cor++;
           } else {
             secScores[secName].score -= 0.5;
+            secScores[secName].penalty += 0.5;
             secScores[secName].inc++;
           }
+        } else {
+          secScores[secName].unans++;
         }
       });
     }
 
     Object.keys(secScores).forEach(sKey => {
       const s = secScores[sKey];
-      const div = document.createElement("div");
-      div.style.background = "var(--bg-elevated)";
-      div.style.padding = "6px 8px";
-      div.style.borderRadius = "6px";
-      div.style.border = "1px solid var(--border-color)";
-      div.innerHTML = `
-        <div style="font-weight:700; font-size:11px; color:var(--accent-cyan);">${sKey}</div>
-        <div style="font-size:13px; font-weight:800;">${s.score.toFixed(1)} pts</div>
-        <div style="font-size:10px; color:var(--text-muted);">${s.att > 0 ? Math.round((s.cor / s.att) * 100) : 0}% Acc</div>
+      const mDwell = Math.floor(s.totalTimeSec / 60);
+      const sDwell = s.totalTimeSec % 60;
+      const acc = s.att > 0 ? Math.round((s.cor / s.att) * 100) : 0;
+
+      const card = document.createElement("div");
+      card.className = "sec-fidelity-card";
+      card.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:4px; margin-bottom:6px;">
+          <b style="color:var(--accent-cyan); font-size:12px;">${TAXONOMY[sKey] ? TAXONOMY[sKey].name.split(' ')[0] : sKey}</b>
+          <span style="font-weight:800; font-size:13px; color:#fff;">${s.score.toFixed(1)} pts</span>
+        </div>
+        <div class="sec-fidelity-metric-row">
+          <span>Accuracy:</span> <b style="color:${acc >= 80 ? 'var(--status-green)' : (acc >= 60 ? 'var(--status-amber)' : 'var(--status-red)')};">${acc}%</b>
+        </div>
+        <div class="sec-fidelity-metric-row">
+          <span>Split (🟢/🔴/⚪):</span> <b>${s.cor} / ${s.inc} / ${s.unans}</b>
+        </div>
+        <div class="sec-fidelity-metric-row">
+          <span>Penalty Drag:</span> <b style="color:#f87171;">-${s.penalty.toFixed(1)}</b>
+        </div>
+        <div class="sec-fidelity-metric-row">
+          <span>Section Dwell:</span> <b style="font-family:var(--font-mono);">${String(mDwell).padStart(2, '0')}:${String(sDwell).padStart(2, '0')}</b>
+        </div>
       `;
-      secGrid.appendChild(div);
+      secGrid.appendChild(card);
     });
 
     const tagPills = document.getElementById("rev-mistake-tags-pills");
@@ -3110,8 +3092,14 @@ const CGL_OS = (() => {
       });
     }
 
-    pushHistoryState("modal-mock-review");
+    pushNavLayer("modal-mock-review", () => {
+      document.getElementById("modal-mock-review").classList.remove("active");
+    });
     document.getElementById("modal-mock-review").classList.add("active");
+  }
+
+  function switchReviewAttempt(targetSessionId) {
+    openMockReview(targetSessionId);
   }
 
   async function handleMistakeTagSelect(qId, val) {
@@ -3240,6 +3228,8 @@ const CGL_OS = (() => {
 
     activeExam = {
       sessionId: "blitz_" + now,
+      parentSessionId: null,
+      attemptNumber: 1,
       timestamp: now,
       timeIST: formatISTDate(now),
       diurnalSlot: getDiurnalSlot(now),
@@ -3278,6 +3268,7 @@ const CGL_OS = (() => {
     await putRecord("store_active_session", { id: "current_session", session: activeExam });
     hideMiniPlayer();
 
+    if (document.activeElement) document.activeElement.blur();
     pushNavLayer("exam-arena", () => {
       const pauseBtn = document.getElementById("btn-arena-pause");
       if (pauseBtn) pauseBtn.click();
@@ -3288,7 +3279,7 @@ const CGL_OS = (() => {
   }
 
   /* -------------------------------------------------------------
-   * 14. MULTI-TIER AI EXPORTS & MASTER LEDGER
+   * 14. MULTI-TIER AI EXPORTS & HIERARCHICAL MASTER LEDGER
    * ------------------------------------------------------------- */
   function openAiExportModal() {
     if (!activeReviewAttempt) return;
@@ -3306,6 +3297,7 @@ const CGL_OS = (() => {
       payload = JSON.stringify({
         action: "FEEDBACK_AUDIT",
         mockTitle: att.title,
+        attemptNumber: att.attemptNumber || 1,
         timestampIST: att.timeIST,
         diurnalSlot: att.diurnalSlot,
         score: att.finalScore,
@@ -3324,7 +3316,13 @@ const CGL_OS = (() => {
       }, null, 2);
     } else if (mode === "DEEP_AUDIT") {
       payload = JSON.stringify({
-        meta: { title: att.title, timestampIST: att.timeIST, diurnalSlot: att.diurnalSlot, finalScore: att.finalScore },
+        meta: { 
+          title: att.title, 
+          attemptNumber: att.attemptNumber || 1,
+          timestampIST: att.timeIST, 
+          diurnalSlot: att.diurnalSlot, 
+          finalScore: att.finalScore 
+        },
         questions: att.questions.map(q => {
           const r = att.userResponses && att.userResponses[q.id] ? att.userResponses[q.id] : {};
           return {
@@ -3366,10 +3364,25 @@ const CGL_OS = (() => {
     document.getElementById("modal-ledger-export").classList.add("active");
   }
 
+  // HIERARCHICAL SORTING HELPER: Subject -> Chapter -> Subtopic -> ID
+  function sortQuestionsHierarchical(questions) {
+    const subOrder = ["QA", "REAS", "ENG", "GA"];
+    return questions.slice().sort((a, b) => {
+      const sA = subOrder.indexOf(a.subject) !== -1 ? subOrder.indexOf(a.subject) : 99;
+      const sB = subOrder.indexOf(b.subject) !== -1 ? subOrder.indexOf(b.subject) : 99;
+      if (sA !== sB) return sA - sB;
+      if (a.chapter !== b.chapter) return a.chapter.localeCompare(b.chapter);
+      if ((a.subtopic || "") !== (b.subtopic || "")) return (a.subtopic || "").localeCompare(b.subtopic || "");
+      return a.id.localeCompare(b.id);
+    });
+  }
+
   async function downloadLedgerJson() {
     const includeImages = document.getElementById("ledger-include-images").checked;
     const allQs = await getAllRecords("store_questions");
-    const sanitized = allQs.map(q => {
+    const sorted = sortQuestionsHierarchical(allQs);
+
+    const sanitized = sorted.map(q => {
       if (!includeImages) {
         const copy = { ...q };
         if (copy.imageUrl && copy.imageUrl.startsWith("data:image")) {
@@ -3390,20 +3403,32 @@ const CGL_OS = (() => {
 
   async function downloadLedgerMarkdown() {
     const allQs = await getAllRecords("store_questions");
-    let txt = `# SSC CGL MASTER QUESTION BANK REFERENCE LEDGER\nGenerated on: ${formatISTDate(Date.now())}\nTotal Questions: ${allQs.length}\n\n`;
+    const sorted = sortQuestionsHierarchical(allQs);
 
-    allQs.forEach((q, idx) => {
-      txt += `--- [RECORD ${idx + 1}] ---\n`;
-      txt += `ID: ${q.id}\n`;
-      txt += `SUBJECT: ${q.subject} | CHAPTER: ${q.chapter} | CONCEPT_REF: ${q.conceptId || 'None'}\n`;
+    let txt = `# SSC CGL MASTER QUESTION BANK REFERENCE LEDGER\nGenerated on: ${formatISTDate(Date.now())}\nTotal Questions: ${sorted.length}\n\n`;
+
+    let curSubject = "";
+    let curChapter = "";
+
+    sorted.forEach((q, idx) => {
+      if (q.subject !== curSubject) {
+        curSubject = q.subject;
+        txt += `\n=======================================================\n`;
+        txt += `=== SUBJECT: ${TAXONOMY[curSubject] ? TAXONOMY[curSubject].name : curSubject} (${curSubject}) ===\n`;
+        txt += `=======================================================\n\n`;
+      }
+      if (q.chapter !== curChapter) {
+        curChapter = q.chapter;
+        txt += `--- CHAPTER: ${curChapter} ---\n\n`;
+      }
+
+      txt += `[RECORD ${idx + 1}] ID: ${q.id} | TOPIC: ${q.subtopic || 'General'} | METHOD: ${q.method || 'General'} | CONCEPT_REF: ${q.conceptId || 'None'}\n`;
       txt += `QUESTION: ${q.questionText}\n`;
       q.options.forEach((opt, oIdx) => {
-        txt += `OPTION ${oIdx + 1}: ${opt}\n`;
+        txt += `  (${oIdx + 1}) ${opt}\n`;
       });
       txt += `CORRECT OPTION: ${q.correctIndex + 1}\n`;
-      txt += `EXPLANATION: ${q.explanation || 'None'}\n`;
-      if (q.annotation) txt += `USER ANNOTATION: ${q.annotation}\n`;
-      txt += `\n`;
+      txt += `EXPLANATION: ${q.explanation || 'None'}\n\n`;
     });
 
     const blob = new Blob([txt], { type: "text/plain;charset=utf-8" });
@@ -3469,14 +3494,21 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   /* -------------------------------------------------------------
-   * 15. SCOPED FORENSIC DOSSIER EXTRACTOR (UI FILTER PANEL)
+   * 15. ONE-TAP GLOBAL 360° MASTER DOSSIER & SCOPED EXTRACTOR
    * ------------------------------------------------------------- */
+  async function exportGlobalMasterDossier() {
+    await exportDossierInternal("ALL", "ALL", "ALL", "HYBRID_CSV", true);
+  }
+
   async function exportScopedForensicDossier() {
     const sub = document.getElementById("scoped-export-subject").value;
     const timeframe = document.getElementById("scoped-export-timeframe").value;
     const filter = document.getElementById("scoped-export-filter").value;
     const encoding = document.getElementById("scoped-export-encoding").value;
+    await exportDossierInternal(sub, timeframe, filter, encoding, false);
+  }
 
+  async function exportDossierInternal(sub, timeframe, filter, encoding, isGlobalMaster = false) {
     const allAttempts = await getAllRecords("store_attempts");
     const allQuestions = await getAllRecords("store_questions");
     const allFlashcards = await getAllRecords("store_flashcards");
@@ -3490,7 +3522,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
 
     const filteredAttempts = allAttempts.filter(a => a.completed && a.timestamp >= cutoff);
 
-    // Build Chronological Question Exposures & Spacing History
+    // Build Chronological Question Exposures & Spacing History with Defensive IST Fallbacks
     const exposureMap = {};
     allAttempts.filter(a => a.completed).sort((a, b) => a.timestamp - b.timestamp).forEach(att => {
       if (att.questions && Array.isArray(att.questions) && att.userResponses) {
@@ -3501,19 +3533,19 @@ ${JSON.stringify(TAXONOMY, null, 2)}
               if (!exposureMap[q.id]) {
                 exposureMap[q.id] = {
                   totalExposures: 0,
-                  firstSeenIST: att.timeIST,
-                  lastSeenIST: att.timeIST,
+                  firstSeenIST: att.timeIST || formatISTDate(att.timestamp),
+                  lastSeenIST: att.timeIST || formatISTDate(att.timestamp),
                   spacingHistory: []
                 };
               }
               const hist = exposureMap[q.id];
               const priorEpoch = hist.spacingHistory.length > 0 ? hist.spacingHistory[hist.spacingHistory.length - 1].epochMs : 0;
               hist.totalExposures++;
-              hist.lastSeenIST = att.timeIST;
+              hist.lastSeenIST = att.timeIST || formatISTDate(att.timestamp);
               hist.spacingHistory.push({
                 attemptNum: hist.totalExposures,
                 epochMs: att.timestamp,
-                dateIST: att.timeIST,
+                dateIST: att.timeIST || formatISTDate(att.timestamp),
                 timeSpentSec: resp.timeSpentSec || 0,
                 outcome: resp.selectedOption === q.correctIndex ? 1 : 0,
                 gapDays: calcGapDays(att.timestamp, priorEpoch)
@@ -3540,8 +3572,8 @@ ${JSON.stringify(TAXONOMY, null, 2)}
               if (filter === "ALL" || (filter === "TRAPS_ONLY" && isTrap) || (filter === "PANIC_ONLY" && resp.isPanicSlip)) {
                 telemetryRows.push({
                   mockId: att.sessionId,
-                  mockIST: att.timeIST,
-                  slot: att.diurnalSlot,
+                  mockIST: att.timeIST || formatISTDate(att.timestamp),
+                  slot: att.diurnalSlot || getDiurnalSlot(att.timestamp),
                   qId: q.id,
                   subject: q.subject,
                   chapter: q.chapter,
@@ -3563,7 +3595,6 @@ ${JSON.stringify(TAXONOMY, null, 2)}
       }
     });
 
-    // Filter Relevant Flashcards
     const scopedFlashcards = allFlashcards.filter(f => sub === "ALL" || f.subject === sub);
 
     let telemetryPayload;
@@ -3584,7 +3615,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
         exportedAtEpoch: now,
         exportedAtIST: formatISTDate(now),
         diurnalSlot: getDiurnalSlot(now),
-        exportScope: `${sub}_${timeframe}_${filter}`,
+        exportScope: isGlobalMaster ? "GLOBAL_360_MASTER_DOSSIER" : `${sub}_${timeframe}_${filter}`,
         encoding: encoding,
         decoderInstructions: "CSV rows correspond to individual question attempts. Columns: mockId,mockIST,slot,qId,subject,chapter,sel,cor,t,sw,panic,tag. Check decisionTrails for chronological hesitation path.",
         supportedActionContracts: [
@@ -3597,7 +3628,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
         ]
       },
       cumulativeClinicalNarrative: consultations.length > 0 ? consultations[consultations.length - 1].cumulativeNarrative || "Baseline initialized." : "No prior consultations logged.",
-      recentConsultationLogs: consultations.slice(-3),
+      recentConsultationLogs: consultations.slice(-5),
       candidateProfile: {
         target: "SSC CGL 2026 Tier 1 & Tier 2 Master Preparation",
         scopedAttemptsEvaluated: filteredAttempts.length,
@@ -3616,12 +3647,14 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     const blob = new Blob([JSON.stringify(dossierEnvelope, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `cgl_forensic_dossier_${sub}_${timeframe}_${now}.json`;
+    a.download = isGlobalMaster 
+      ? `cgl_master_forensic_dossier_360_${now}.json`
+      : `cgl_forensic_dossier_${sub}_${timeframe}_${now}.json`;
     a.click();
   }
 
   /* -------------------------------------------------------------
-   * 16. DASHBOARD RENDER ENGINE
+   * 16. DASHBOARD RENDER ENGINE (THREADED ACCORDIONS & METRICS)
    * ------------------------------------------------------------- */
   async function renderDashboard() {
     const attempts = await getAllRecords("store_attempts");
@@ -3679,10 +3712,10 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     checkAndRenderNeglectIndex(completed);
     renderCognitiveTrapHeatStrip(completed);
 
-    try { renderDashboardSubjectBatteries(completed); } catch(e) { console.error("Batteries error:", e); }
-    try { renderRecentHistory(completed); } catch(e) { console.error("Recent history error:", e); }
-    try { await renderDashboardBlueprints(); } catch(e) { console.error("Blueprints error:", e); }
-    try { await renderDrilldownSubjectLevel(); } catch(e) { console.error("Drilldown error:", e); }
+    try { renderDashboardSubjectBatteries(completed); } catch (e) { console.error("Batteries error:", e); }
+    try { renderRecentHistory(completed); } catch (e) { console.error("Recent history error:", e); }
+    try { await renderDashboardBlueprints(); } catch (e) { console.error("Blueprints error:", e); }
+    try { await renderDrilldownSubjectLevel(); } catch (e) { console.error("Drilldown error:", e); }
   }
 
   function calculateAndRenderERI(accPercent, avgSpeed, flashcards, completedCount) {
@@ -3823,7 +3856,9 @@ ${JSON.stringify(TAXONOMY, null, 2)}
       READING_TRAP: "#d29922",
       FORMULA_AMNESIA: "#8957e5",
       CONCEPT_VOID: "#38bdf8",
-      RUSHED_PANIC: "#f43f5e"
+      RUSHED_PANIC: "#f43f5e",
+      TIME_TRAP_Q4: "#e11d48",
+      SECOND_GUESS_BLUNDER: "#a855f7"
     };
 
     Object.keys(tagCounts).forEach(tag => {
@@ -3881,6 +3916,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     });
   }
 
+  // RECENT HISTORY RENDERER: Numerically sorted with Ticket-Card layout
   function renderRecentHistory(completed) {
     const container = document.getElementById("mock-history-container");
     if (completed.length === 0) {
@@ -3889,7 +3925,9 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     }
 
     container.innerHTML = "";
-    completed.slice(-3).reverse().forEach(att => {
+    const sorted = completed.slice().sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+    sorted.slice(0, 3).forEach(att => {
       const secScores = {};
       if (att.questions && Array.isArray(att.questions) && att.userResponses) {
         att.questions.forEach(q => {
@@ -3910,9 +3948,10 @@ ${JSON.stringify(TAXONOMY, null, 2)}
           <div>
             <div style="display:flex; align-items:center; gap:6px;">
               <b style="font-size:14px; color:#fff;">${att.title || 'SSC CGL Mock'}</b>
+              ${att.attemptNumber > 1 ? `<span class="badge" style="background:#8957e5; font-size:9px;">Attempt ${att.attemptNumber}</span>` : ''}
               <span class="badge-slot slot-${(att.diurnalSlot || 'morning').toLowerCase()}">${att.diurnalSlot || 'DAY'}</span>
             </div>
-            <div style="font-size:11px; color:var(--text-muted);">${att.timeIST || formatISTDate(att.timestamp)}</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">${att.timeIST || formatISTDate(att.timestamp)}</div>
           </div>
           <div style="text-align:right;">
             <span style="font-size:16px; font-weight:800; color:var(--accent-cyan);">${(att.finalScore || 0).toFixed(2)} pts</span>
@@ -3924,9 +3963,9 @@ ${JSON.stringify(TAXONOMY, null, 2)}
           <span class="ticket-sec-pill" style="color:var(--status-red);">Traps: ${att.q4Traps || 0}</span>
         </div>
 
-        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:10px;">
+        <div class="ticket-actions-bar">
           <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.openSaveBlueprintModal('FIXED_PAPER', '${att.sessionId}')">📌 Freeze Paper</button>
-          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.reattemptMock('${att.sessionId}')">🔁 Re-attempt</button>
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--status-green);" onclick="CGL_OS.reattemptMock('${att.sessionId}')">🔁 Re-attempt</button>
           <button class="btn btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openMockReview('${att.sessionId}')">Inspect Solutions</button>
         </div>
       `;
@@ -3935,18 +3974,23 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   function openHistoryArchiveModal() {
-    pushHistoryState("modal-history-archive");
+    pushNavLayer("modal-history-archive", () => {
+      document.getElementById("modal-history-archive").classList.remove("active");
+    });
     document.getElementById("modal-history-archive").classList.add("active");
     renderArchiveList("ALL");
   }
 
+  // MASTER HISTORY ARCHIVE: Chronologically Sorted with Threaded Accordions & Clean Buttons
   async function renderArchiveList(filterType) {
     const attempts = await getAllRecords("store_attempts");
     const completed = attempts.filter(a => a.completed);
     const container = document.getElementById("archive-list-container");
     container.innerHTML = "";
 
-    let list = completed.slice().reverse();
+    // Chronological numerical sort (Latest first)
+    let list = completed.slice().sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
     if (filterType !== "ALL") {
       list = list.filter(a => a.mockType === filterType);
     }
@@ -3956,30 +4000,77 @@ ${JSON.stringify(TAXONOMY, null, 2)}
       return;
     }
 
+    // Group into threads
+    const threads = {};
     list.forEach(att => {
+      const rootId = att.parentSessionId || att.sessionId;
+      if (!threads[rootId]) threads[rootId] = [];
+      threads[rootId].push(att);
+    });
+
+    Object.keys(threads).forEach(rootId => {
+      const threadAttempts = threads[rootId].sort((a, b) => (a.attemptNumber || 1) - (b.attemptNumber || 1));
+      const latest = threadAttempts[threadAttempts.length - 1];
+
       const div = document.createElement("div");
-      div.className = "card";
-      div.style.marginBottom = "8px";
-      div.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <div style="display:flex; align-items:center; gap:6px;">
-              <b style="font-size:14px;">${att.title}</b>
-              <span class="badge-slot slot-${(att.diurnalSlot || 'morning').toLowerCase()}">${att.diurnalSlot || 'DAY'}</span>
-              ${att.signatureTag ? `<span class="badge" style="background:#1f6feb; font-size:9px;">${att.signatureTag}</span>` : ''}
-            </div>
-            <div style="font-size:11px; color:var(--text-muted);">${att.timeIST || formatISTDate(att.timestamp)}</div>
+      div.className = "attempt-thread-group";
+
+      const header = document.createElement("div");
+      header.className = "attempt-thread-header";
+      header.innerHTML = `
+        <div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <b style="font-size:13.5px; color:#fff;">${latest.title}</b>
+            ${threadAttempts.length > 1 ? `<span class="badge" style="background:#8957e5; font-size:10px;">${threadAttempts.length} Attempts</span>` : ''}
+            <span class="badge-slot slot-${(latest.diurnalSlot || 'morning').toLowerCase()}">${latest.diurnalSlot || 'DAY'}</span>
           </div>
-          <div style="text-align:right;">
-            <span style="font-size:14px; font-weight:800; color:var(--accent-cyan);">${(att.finalScore || 0).toFixed(2)} pts</span><br>
-            <div style="display:flex; gap:4px; margin-top:4px;">
-              <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px; color:var(--accent-cyan);" onclick="CGL_OS.openSaveBlueprintModal('FIXED_PAPER', '${att.sessionId}')" title="Freeze Paper">📌</button>
-              <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px;" onclick="CGL_OS.reattemptMock('${att.sessionId}')" title="Re-attempt">🔁</button>
-              <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openMockReview('${att.sessionId}')">Inspect</button>
-            </div>
-          </div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Latest: ${latest.timeIST || formatISTDate(latest.timestamp)}</div>
+        </div>
+        <div style="text-align:right;">
+          <span style="font-size:15px; font-weight:800; color:var(--accent-cyan);">${(latest.finalScore || 0).toFixed(2)} pts</span>
         </div>
       `;
+
+      const subList = document.createElement("div");
+      subList.style.display = threadAttempts.length > 1 ? "none" : "block";
+
+      threadAttempts.forEach(iter => {
+        const row = document.createElement("div");
+        row.className = "attempt-sub-row";
+        row.innerHTML = `
+          <div>
+            <b>Attempt ${iter.attemptNumber || 1}</b> • <span style="color:var(--text-muted);">${iter.timeIST ? iter.timeIST.split(',')[1] : ''}</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-weight:700; color:var(--accent-cyan);">${(iter.finalScore || 0).toFixed(1)} pts</span>
+            <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openMockReview('${iter.sessionId}')">Inspect</button>
+          </div>
+        `;
+        subList.appendChild(row);
+      });
+
+      if (threadAttempts.length > 1) {
+        header.onclick = () => {
+          const isOpen = subList.style.display === "block";
+          subList.style.display = isOpen ? "none" : "block";
+          header.classList.toggle("open", !isOpen);
+        };
+      }
+
+      div.appendChild(header);
+      div.appendChild(subList);
+
+      // Dedicated Action Bar to prevent button overflow
+      const footerBar = document.createElement("div");
+      footerBar.className = "ticket-actions-bar";
+      footerBar.style.padding = "8px 12px";
+      footerBar.innerHTML = `
+        <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.openSaveBlueprintModal('FIXED_PAPER', '${latest.sessionId}')">📌 Freeze Paper</button>
+        <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--status-green);" onclick="CGL_OS.reattemptMock('${latest.sessionId}')">🔁 Re-attempt</button>
+        <button class="btn btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openMockReview('${latest.sessionId}')">Inspect Latest</button>
+      `;
+      div.appendChild(footerBar);
+
       container.appendChild(div);
     });
   }
@@ -4113,14 +4204,13 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   /* -------------------------------------------------------------
-   * 17. ANKI SM-2 FLASHCARD ENGINE (`store_flashcards`)
+   * 17. ANKI SM-2 FLASHCARD ENGINE WITH TWO-SIDED IMAGES
    * ------------------------------------------------------------- */
   let activeStudyDeck = [];
   let activeStudyIndex = 0;
   let activeStudyFlipped = false;
 
   function calculateSM2(card, quality) {
-    // Quality: 1 (Again), 2 (Hard), 3 (Good), 4 (Easy)
     let { interval = 1, repetition = 0, easeFactor = 2.5 } = card;
 
     if (quality < 3) {
@@ -4139,7 +4229,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
       repetition++;
     }
 
-    const qFactor = quality + 1; // Map to 2..5 range for standard SM-2 equation
+    const qFactor = quality + 1;
     easeFactor = Math.max(1.3, easeFactor + (0.1 - (5 - qFactor) * (0.08 + (5 - qFactor) * 0.02)));
 
     const now = Date.now();
@@ -4257,6 +4347,20 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     document.getElementById("fc-card-chapter").innerText = `${card.subject} • ${card.chapter}`;
     document.getElementById("fc-card-interval-tag").innerText = `Int: ${card.interval}d | Reps: ${card.repetition}`;
     document.getElementById("fc-card-body").innerHTML = formatRichText(card.front);
+
+    const fBox = document.getElementById("fc-card-front-img-box");
+    if (card.frontImageUrl && card.frontImageUrl.trim().length > 0) {
+      fBox.style.display = "block";
+      fBox.innerHTML = `<img src="${card.frontImageUrl}" alt="Front Diagram">`;
+    } else {
+      fBox.style.display = "none";
+      fBox.innerHTML = "";
+    }
+
+    const bBox = document.getElementById("fc-card-back-img-box");
+    bBox.style.display = "none";
+    bBox.innerHTML = "";
+
     document.getElementById("fc-card-cue").innerText = "Tap card to flip answer";
     document.getElementById("fc-study-actions").style.display = "none";
   }
@@ -4267,6 +4371,16 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     if (!card) return;
 
     activeStudyFlipped = true;
+
+    const bBox = document.getElementById("fc-card-back-img-box");
+    if (card.backImageUrl && card.backImageUrl.trim().length > 0) {
+      bBox.style.display = "block";
+      bBox.innerHTML = `<img src="${card.backImageUrl}" alt="Back Visual Proof">`;
+    } else {
+      bBox.style.display = "none";
+      bBox.innerHTML = "";
+    }
+
     document.getElementById("fc-card-body").innerHTML = `
       <div style="color:var(--text-muted); font-size:12px; margin-bottom:8px;">${formatRichText(card.front)}</div>
       <hr style="border:0; border-top:1px solid var(--border-color); margin:8px 0;">
@@ -4294,13 +4408,20 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   async function openFlashcardEditorModal(isNew = true, cardId = null) {
+    currentFcFrontImgBase64 = "";
+    currentFcBackImgBase64 = "";
+
     if (isNew) {
       document.getElementById("flashcard-editor-title").innerText = "Add New Flashcard";
       document.getElementById("edit-fc-id").value = "fc_" + Date.now();
       document.getElementById("edit-fc-subject").value = "QA";
       document.getElementById("edit-fc-chapter").value = "QA_GEOMETRY";
       document.getElementById("edit-fc-front").value = "";
+      document.getElementById("edit-fc-front-img-url").value = "";
+      document.getElementById("edit-fc-front-img-file").value = "";
       document.getElementById("edit-fc-back").value = "";
+      document.getElementById("edit-fc-back-img-url").value = "";
+      document.getElementById("edit-fc-back-img-file").value = "";
       document.getElementById("edit-fc-tags").value = "";
       document.getElementById("btn-delete-fc").style.display = "none";
     } else {
@@ -4311,7 +4432,11 @@ ${JSON.stringify(TAXONOMY, null, 2)}
       document.getElementById("edit-fc-subject").value = card.subject;
       document.getElementById("edit-fc-chapter").value = card.chapter;
       document.getElementById("edit-fc-front").value = card.front;
+      document.getElementById("edit-fc-front-img-url").value = card.frontImageUrl || "";
+      document.getElementById("edit-fc-front-img-file").value = "";
       document.getElementById("edit-fc-back").value = card.back;
+      document.getElementById("edit-fc-back-img-url").value = card.backImageUrl || "";
+      document.getElementById("edit-fc-back-img-file").value = "";
       document.getElementById("edit-fc-tags").value = Array.isArray(card.tags) ? card.tags.join(', ') : "";
       document.getElementById("btn-delete-fc").style.display = "block";
     }
@@ -4320,12 +4445,26 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     document.getElementById("modal-flashcard-editor").classList.add("active");
   }
 
+  async function handleFlashcardFrontImageUpload(input) {
+    if (input.files && input.files[0]) {
+      currentFcFrontImgBase64 = await compressImageFile(input.files[0]);
+    }
+  }
+
+  async function handleFlashcardBackImageUpload(input) {
+    if (input.files && input.files[0]) {
+      currentFcBackImgBase64 = await compressImageFile(input.files[0]);
+    }
+  }
+
   async function saveFlashcardEditor() {
     const id = document.getElementById("edit-fc-id").value;
     const subject = document.getElementById("edit-fc-subject").value;
     const chapter = document.getElementById("edit-fc-chapter").value.trim().toUpperCase();
     const front = document.getElementById("edit-fc-front").value.trim();
     const back = document.getElementById("edit-fc-back").value.trim();
+    const frontUrl = document.getElementById("edit-fc-front-img-url").value.trim();
+    const backUrl = document.getElementById("edit-fc-back-img-url").value.trim();
     const tagsRaw = document.getElementById("edit-fc-tags").value.trim();
 
     if (!front || !back || !chapter) {
@@ -4339,7 +4478,9 @@ ${JSON.stringify(TAXONOMY, null, 2)}
       subject: subject,
       chapter: chapter,
       front: front,
+      frontImageUrl: currentFcFrontImgBase64 || frontUrl || (existing ? existing.frontImageUrl : ""),
       back: back,
+      backImageUrl: currentFcBackImgBase64 || backUrl || (existing ? existing.backImageUrl : ""),
       interval: existing ? existing.interval : 1,
       repetition: existing ? existing.repetition : 0,
       easeFactor: existing ? existing.easeFactor : 2.5,
@@ -4462,7 +4603,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   /* -------------------------------------------------------------
-   * 19. HARDENED COMMAND BUS & AI DISPATCHER
+   * 19. HARDENED COMMAND BUS & MULTI-SECTION ARENA ENGINE
    * ------------------------------------------------------------- */
   async function executeConsoleCommand() {
     const raw = document.getElementById("console-payload").value.trim();
@@ -4495,6 +4636,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
             const stF = txF.objectStore("store_flashcards");
             cards.forEach(c => stF.put(c));
             await new Promise(r => txF.oncomplete = r);
+            renderVault();
           } else if (act.action === "BATCH_INGEST_COMPENDIUM") {
             const dossiers = (act.payload.dossiers || []).map(sanitizeDossier);
             const txC = database.transaction(["store_concepts"], "readwrite");
@@ -4520,8 +4662,8 @@ ${JSON.stringify(TAXONOMY, null, 2)}
         const allAttempts = await getAllRecords("store_attempts");
         const dump = allAttempts.filter(a => a.completed && a.timestamp >= cutoff).map(a => ({
           sessionId: a.sessionId,
-          timeIST: a.timeIST,
-          diurnalSlot: a.diurnalSlot,
+          timeIST: a.timeIST || formatISTDate(a.timestamp),
+          diurnalSlot: a.diurnalSlot || getDiurnalSlot(a.timestamp),
           score: a.finalScore,
           questions: a.questions.filter(q => !targetSubject || q.subject === targetSubject).map(q => ({
             id: q.id,
@@ -4550,7 +4692,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
         await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
 
         compileAndLaunchArena(
-          cmd.payload.title || "AI Custom Practice Mock",
+          cmd.payload.title || "AI Practice Mock",
           questions,
           cmd.payload.durationMin || 15
         );
@@ -4602,9 +4744,9 @@ ${JSON.stringify(TAXONOMY, null, 2)}
 
       } else if (cmd.action === "BATCH_INGEST_COMPENDIUM") {
         const dossiers = (cmd.payload.dossiers || []).map(sanitizeDossier);
-        const tx = database.transaction(["store_concepts"], "readwrite");
-        const st = tx.objectStore("store_concepts");
-        dossiers.forEach(d => st.put(d));
+        const txC = database.transaction(["store_concepts"], "readwrite");
+        const stC = txC.objectStore("store_concepts");
+        dossiers.forEach(d => stC.put(d));
         await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = rej; });
         alert(`Ingested ${dossiers.length} topic dossiers successfully.`);
 
@@ -4640,41 +4782,92 @@ ${JSON.stringify(TAXONOMY, null, 2)}
 
       refreshDbInspector();
       renderDashboard();
-    } catch(err) {
+    } catch (err) {
       alert("Command Execution Error: " + err.message);
     }
   }
 
+  // MULTI-SECTION AWARE ARENA LAUNCHER (Eliminates Single-Section Flattening)
   async function compileAndLaunchArena(title, questionsPool, durationMin) {
     clearInterval(examTimerInterval);
     clearInterval(questionTimerInterval);
 
+    // Detect if questions contain multiple distinct sections or subject partitions
+    const rawSections = {};
+    questionsPool.forEach((q) => {
+      const sKey = (q.sectionIndex !== undefined && q.sectionName) 
+        ? `${q.sectionIndex}_${q.sectionName}` 
+        : `sub_${q.subject || 'GEN'}`;
+      if (!rawSections[sKey]) {
+        rawSections[sKey] = {
+          name: q.sectionName || (TAXONOMY[q.subject] ? TAXONOMY[q.subject].name : q.subject || "Section"),
+          questions: []
+        };
+      }
+      rawSections[sKey].questions.push(q);
+    });
+
+    const secKeys = Object.keys(rawSections);
+    let configuredSections = [];
+    let flattenedQuestions = [];
+    let globalCounter = 1;
+
+    if (secKeys.length > 1) {
+      const secDuration = Math.round((durationMin * 60) / secKeys.length);
+      secKeys.forEach((sKey, sIdx) => {
+        const secData = rawSections[sKey];
+        const secObj = {
+          id: `SEC_${sIdx + 1}`,
+          name: secData.name,
+          durationSec: secDuration,
+          questionCount: secData.questions.length,
+          locked: false
+        };
+        configuredSections.push(secObj);
+
+        secData.questions.forEach((q, lIdx) => {
+          flattenedQuestions.push({
+            ...q,
+            sectionIndex: sIdx,
+            sectionName: secData.name,
+            localNumber: lIdx + 1,
+            globalNumber: globalCounter++
+          });
+        });
+      });
+    } else {
+      configuredSections = [{
+        id: "SEC_1",
+        name: title || "Diagnostic Arena",
+        durationSec: durationMin * 60,
+        questionCount: questionsPool.length,
+        locked: false
+      }];
+      flattenedQuestions = questionsPool.map((q, idx) => ({
+        ...q,
+        sectionIndex: 0,
+        sectionName: title || "Diagnostic Arena",
+        localNumber: idx + 1,
+        globalNumber: idx + 1
+      }));
+    }
+
     const now = Date.now();
     activeExam = {
       sessionId: "ai_mock_" + now,
+      parentSessionId: null,
+      attemptNumber: 1,
       timestamp: now,
       timeIST: formatISTDate(now),
       diurnalSlot: getDiurnalSlot(now),
-      title: title,
-      mockType: "CUSTOM",
+      title: title || "AI Practice Arena",
+      mockType: configuredSections.length > 1 ? "CUSTOM" : "SECTIONAL",
       isSectionLocked: false,
-      sections: [{
-        id: "SEC_AI",
-        name: "AI Test Session",
-        durationSec: durationMin * 60,
-        questions: questionsPool,
-        locked: false
-      }],
+      sections: configuredSections,
       activeSectionIndex: 0,
       currentQuestionIndex: 0,
-      questions: questionsPool.map((q, idx) => ({ 
-        ...q, 
-        sectionIndex: 0, 
-        sectionName: "AI Test Session", 
-        localNumber: idx + 1, 
-        globalNumber: idx + 1 
-      })),
-      sectionRemainingSec: durationMin * 60,
+      questions: flattenedQuestions,
+      sectionRemainingSec: configuredSections[0].durationSec,
       currentQTimeSpentSec: 0,
       userResponses: {},
       isPaused: false,
@@ -4695,6 +4888,9 @@ ${JSON.stringify(TAXONOMY, null, 2)}
 
     await putRecord("store_active_session", { id: "current_session", session: activeExam });
     hideMiniPlayer();
+
+    // Release focus from background textareas on mobile
+    if (document.activeElement) document.activeElement.blur();
 
     pushNavLayer("exam-arena", () => {
       const pauseBtn = document.getElementById("btn-arena-pause");
@@ -4720,6 +4916,9 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     }
   }
 
+  /* -------------------------------------------------------------
+   * 20. DIRECT DATABASE STUDIO (MODAL-BASED FULL INSPECTOR)
+   * ------------------------------------------------------------- */
   async function refreshDbInspector() {
     const storeName = document.getElementById("db-store-select").value;
     const records = await getAllRecords(storeName);
@@ -4731,18 +4930,24 @@ ${JSON.stringify(TAXONOMY, null, 2)}
       const row = document.createElement("div");
       row.style.display = "flex";
       row.style.justifyContent = "space-between";
+      row.style.alignItems = "center";
       row.style.padding = "6px 0";
       row.style.borderBottom = "1px solid var(--border-color)";
       row.innerHTML = `
-        <span style="font-family:var(--font-mono);">${key}</span>
+        <span style="font-family:var(--font-mono); font-size:11.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:70%;">${key}</span>
         <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.editDbRecordModal('${storeName}', '${key}')">Inspect</button>
       `;
       list.appendChild(row);
     });
   }
 
+  // DEDICATED JSON INSPECTOR MODAL (ELIMINATES ALERT TRUNCATION)
+  let activeInspectedJsonString = "";
+
   async function editDbRecordModal(sName, key) {
     const rec = await getRecord(sName, key);
+    if (!rec) return;
+
     if (sName === "store_questions") {
       openEditQuestionModal(rec);
     } else if (sName === "store_concepts") {
@@ -4750,8 +4955,22 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     } else if (sName === "store_flashcards") {
       openFlashcardEditorModal(false, rec.id);
     } else {
-      alert(`Record Details (${key}):\n` + JSON.stringify(rec, null, 2));
+      activeInspectedJsonString = JSON.stringify(rec, null, 2);
+      document.getElementById("db-inspect-modal-title").innerText = `${sName} Record`;
+      document.getElementById("db-inspect-modal-key").innerText = `KEY: ${key}`;
+      document.getElementById("db-inspect-code-content").innerText = activeInspectedJsonString;
+
+      pushNavLayer("modal-db-inspector-viewer", () => {
+        document.getElementById("modal-db-inspector-viewer").classList.remove("active");
+      });
+      document.getElementById("modal-db-inspector-viewer").classList.add("active");
     }
+  }
+
+  function copyInspectedJsonToClipboard() {
+    if (!activeInspectedJsonString) return;
+    navigator.clipboard.writeText(activeInspectedJsonString);
+    alert("Record JSON copied to clipboard!");
   }
 
   async function wipeTestAttempts() {
@@ -4782,7 +5001,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   /* -------------------------------------------------------------
-   * 20. UNIVERSAL TOUCH GESTURES (VIEWPORT & HARDWARE SHIELD)
+   * 21. UNIVERSAL TOUCH GESTURES (VIEWPORT & HARDWARE SHIELD)
    * ------------------------------------------------------------- */
   function initGestureControllers() {
     const attachSwipeHandler = (elementId, onLeftSwipe, onRightSwipe) => {
@@ -4877,7 +5096,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   /* -------------------------------------------------------------
-   * 21. SELECTIVE PRINT ENGINE
+   * 22. SELECTIVE PRINT ENGINE
    * ------------------------------------------------------------- */
   async function openPrintConfigModal() {
     await updatePrintChapters();
@@ -4991,10 +5210,12 @@ ${JSON.stringify(TAXONOMY, null, 2)}
       pool.forEach((f, idx) => {
         const item = document.createElement("div");
         item.className = "print-question";
+        let fImg = f.frontImageUrl ? `<br><img src="${f.frontImageUrl}" style="max-height:100px; max-width:100%;">` : '';
+        let bImg = f.backImageUrl ? `<br><img src="${f.backImageUrl}" style="max-height:100px; max-width:100%;">` : '';
         item.innerHTML = `
           <strong>Card ${idx + 1}. [${f.subject} • ${f.chapter}]</strong><br>
-          <b>Prompt:</b> ${formatRichText(f.front)}<br>
-          <div style="font-size:11px; margin-top:4px;"><b>Answer:</b> ${formatRichText(f.back)}</div>
+          <b>Prompt:</b> ${formatRichText(f.front)}${fImg}<br>
+          <div style="font-size:11px; margin-top:4px;"><b>Answer:</b> ${formatRichText(f.back)}${bImg}</div>
         `;
         root.appendChild(item);
       });
@@ -5004,7 +5225,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   /* -------------------------------------------------------------
-   * 22. NAVIGATION, TAB SWITCHING & SYSTEM BOOT
+   * 23. NAVIGATION, TAB SWITCHING & SYSTEM BOOT
    * ------------------------------------------------------------- */
   function switchTab(tId, btn) {
     document.querySelectorAll(".view-container").forEach(el => el.classList.remove("active"));
@@ -5117,6 +5338,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     saveQuestionEditor,
     deleteCurrentEditingQuestion,
     openMockReview,
+    switchReviewAttempt,
     handleMistakeTagSelect,
     setMistakeTag,
     openTaxonomyManagerModal,
@@ -5143,6 +5365,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     loadSamplePayload,
     refreshDbInspector,
     editDbRecordModal,
+    copyInspectedJsonToClipboard,
     wipeTestAttempts,
     wipeFlashcardStore,
     factoryResetAll,
@@ -5153,8 +5376,11 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     flipStudyFlashcard,
     gradeStudyFlashcard,
     openFlashcardEditorModal,
+    handleFlashcardFrontImageUpload,
+    handleFlashcardBackImageUpload,
     saveFlashcardEditor,
     deleteCurrentEditingFlashcard,
+    exportGlobalMasterDossier,
     exportScopedForensicDossier,
     exportFullBackup,
     pushNavLayer,
