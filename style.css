@@ -1,7 +1,9 @@
 /* ==========================================================================
-   SSC CGL INTELLIGENCE OS - COMPLETE SYSTEM STYLESHEET (V2.3)
+   SSC CGL INTELLIGENCE OS - COMPLETE SYSTEM STYLESHEET (V2.4)
    Architecture: Linear Pro-Dark Minimalist
-   Platform: Android WebAPK / Desktop / PWA Mobile
+   Scope: Unified Multi-Store Engine, Zero-Flicker Synapse Tree, 
+          Universal Anki Forge, and Typeset Paged-Media Print Spooler
+   Platform: Android WebAPK / Desktop Chrome / PWA Mobile
    ========================================================================== */
 
 /* === ZONE 1: SYSTEM DESIGN TOKENS === */
@@ -116,7 +118,7 @@ body {
   align-items: center;
 }
 
-/* Buttons */
+/* Standard & Specialized Buttons */
 .btn {
   background: var(--accent-blue);
   color: white;
@@ -147,6 +149,12 @@ body {
   border: 1px solid rgba(56, 189, 248, 0.4);
 }
 .btn-cyan:hover { background: rgba(56, 189, 248, 0.25); }
+.btn-purple {
+  background: rgba(137, 87, 229, 0.15);
+  color: var(--accent-purple-light);
+  border: 1px solid rgba(137, 87, 229, 0.4);
+}
+.btn-purple:hover { background: rgba(137, 87, 229, 0.3); }
 
 /* Form Controls */
 .form-group { margin-bottom: 12px; }
@@ -372,7 +380,7 @@ body {
   overflow-y: auto;
 }
 
-/* Dedicated Scrollable JSON Inspector (Fixes Alert Truncation) */
+/* Dedicated Scrollable JSON Inspector */
 .json-code-box {
   background: #06090e;
   border: 1px solid var(--border-color);
@@ -672,7 +680,7 @@ body {
   color: var(--accent-cyan);
 }
 
-/* === ZONE 10: SYNAPSE KNOWLEDGE GRAPH DOM TREE === */
+/* === ZONE 10: SYNAPSE TREE (SYNCHRONOUS ZERO-FLICKER) === */
 .synapse-tree-container {
   max-height: 72vh;
   overflow-y: auto;
@@ -715,49 +723,89 @@ body {
   border-color: rgba(163, 113, 247, 0.3);
 }
 
-/* === ZONE 11: ANKI SM-2 FLASHCARD ENGINE === */
-.sm2-kpi-grid {
+/* Synchronous Branch Container Toggle (Eliminates DOM Flicker) */
+.synapse-branch-container {
+  display: none;
+  margin-top: 4px;
+}
+.synapse-branch-container.open {
+  display: block;
+}
+
+/* === ZONE 11: ANKI VAULT & FORGE (PATH 2 REFACTOR) === */
+.vault-kpi-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   margin-bottom: 12px;
   text-align: center;
 }
-.sm2-kpi-tile {
+.vault-kpi-tile {
   background: var(--bg-elevated);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 10px 6px;
 }
-.sm2-kpi-val {
+.vault-kpi-val {
   font-size: 20px;
   font-weight: 800;
   font-family: var(--font-mono);
   margin-top: 2px;
 }
 
-.flashcard-stage-container {
-  perspective: 1000px;
+.anki-card-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  transition: border-color 0.15s ease;
+}
+.anki-card-item:hover { border-color: var(--border-glow); }
+.anki-type-tag {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(137, 87, 229, 0.2);
+  color: var(--accent-purple-light);
+  border: 1px solid rgba(137, 87, 229, 0.4);
+}
+
+/* Untimed Quick Carousel Canvas */
+.vault-carousel-wrap {
   margin: 14px 0;
 }
-.flashcard-card-view {
+.vault-card-canvas {
   background: var(--bg-card);
   border: 1.5px solid var(--border-color);
   border-radius: 12px;
   padding: 20px;
-  min-height: 180px;
+  min-height: 200px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   cursor: pointer;
   transition: border-color 0.2s ease;
 }
-.flashcard-card-view:hover { border-color: var(--border-glow); }
-.flashcard-content-area {
-  font-size: 16px;
+.vault-card-canvas:hover { border-color: var(--border-glow); }
+
+.anki-field-box {
+  background: #090e18;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin: 6px 0;
+  font-size: 13.5px;
   line-height: 1.6;
-  text-align: center;
-  margin: auto 0;
+}
+.anki-field-label {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  display: block;
 }
 
 /* Flashcard Front & Back Diagram Containers */
@@ -773,42 +821,16 @@ body {
   object-fit: contain;
 }
 
-.sm2-grade-bar {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-  margin-top: 10px;
-}
-.btn-sm2-again {
-  background: #5a1e1e;
-  color: #f87171;
-  border: 1px solid #da3633;
-  padding: 8px 4px;
-  font-size: 11px;
-}
-.btn-sm2-hard {
-  background: #4d3800;
-  color: #fbbf24;
-  border: 1px solid #d29922;
-  padding: 8px 4px;
-  font-size: 11px;
-}
-.btn-sm2-good {
-  background: #143d24;
-  color: #4ade80;
-  border: 1px solid #238636;
-  padding: 8px 4px;
-  font-size: 11px;
-}
-.btn-sm2-easy {
-  background: #1e3a5f;
-  color: #38bdf8;
-  border: 1px solid #1f6feb;
-  padding: 8px 4px;
-  font-size: 11px;
+/* Export Configuration Cockpit Panel */
+.anki-export-panel {
+  background: linear-gradient(135deg, #131424 0%, #0a0c16 100%);
+  border: 1px solid rgba(163, 113, 247, 0.35);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 14px;
 }
 
-/* === ZONE 12: SCOPED FORENSIC EXTRACTOR & CONSOLE === */
+/* === ZONE 12: FORENSIC DOSSIER & TICKET CARDS === */
 .scoped-extractor-panel {
   background: linear-gradient(135deg, #0e1420 0%, #070a10 100%);
   border: 1px solid rgba(56, 189, 248, 0.35);
@@ -829,7 +851,7 @@ body {
   background: #1e1930;
 }
 
-/* Ticket Cards (Eliminates Button Overflow on Mobile) */
+/* Ticket Cards (Prevents Horizontal Button Overflow) */
 .ticket-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -871,7 +893,7 @@ body {
   width: 100%;
 }
 
-/* === ZONE 13: ATTEMPT THREAD ACCORDIONS & HIGH-FIDELITY REVIEW === */
+/* === ZONE 13: ATTEMPT THREADS & SECTIONAL SCORECARDS === */
 .attempt-thread-group {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -889,12 +911,8 @@ body {
   border-bottom: 1px solid transparent;
   transition: background 0.15s ease;
 }
-.attempt-thread-header:hover {
-  background: #19202e;
-}
-.attempt-thread-header.open {
-  border-bottom-color: var(--border-color);
-}
+.attempt-thread-header:hover { background: #19202e; }
+.attempt-thread-header.open { border-bottom-color: var(--border-color); }
 .attempt-sub-row {
   padding: 10px 14px;
   border-top: 1px solid rgba(255, 255, 255, 0.04);
@@ -944,27 +962,127 @@ body {
   text-align: center !important;
 }
 
-/* === ZONE 15: PRINT SPOOLER MEDIA QUERIES === */
+/* === ZONE 15: PUBLISHING-GRADE PAGED-MEDIA PRINT ENGINE === */
+@page {
+  size: A4;
+  margin: 16mm 14mm 18mm 14mm;
+  @bottom-right {
+    content: "Page " counter(page);
+    font-size: 9pt;
+    font-family: Arial, sans-serif;
+    color: #555;
+  }
+}
+
 @media print {
   body {
-    background: white !important;
-    color: black !important;
+    background: #ffffff !important;
+    color: #111111 !important;
+    font-size: 10.5pt;
+    line-height: 1.45;
   }
+  
   #bottom-nav, #exam-arena, #dojo-arena-view, #compendium-fullscreen-view,
-  .btn, .card, .modal-overlay, #pause-shield, #mini-player-dock {
+  .btn, .card, .modal-overlay, #pause-shield, #mini-player-dock, #app-viewport-root {
     display: none !important;
   }
+
   .print-page {
     display: block !important;
-    column-count: 2;
-    column-gap: 20px;
-    font-size: 11px;
-    padding: 20px;
+    background: #ffffff !important;
   }
-  .print-question {
+
+  /* Cover & Table of Contents Header */
+  .print-book-cover {
+    page-break-after: always;
+    break-after: page;
+    padding-top: 40px;
+    border-bottom: 2px solid #111;
+    margin-bottom: 20px;
+  }
+  .print-book-title {
+    font-size: 24pt;
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .print-book-meta {
+    font-size: 10pt;
+    color: #444;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 12px;
+  }
+  
+  .print-toc-container {
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 16px;
+    background: #fafafa;
+  }
+  .print-toc-heading {
+    font-size: 13pt;
+    font-weight: 800;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .print-toc-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9.5pt;
+    padding: 3px 0;
+    border-bottom: 1px dotted #ccc;
+  }
+
+  /* Subject & Chapter Dividers */
+  .print-subject-divider {
+    page-break-before: always;
+    break-before: page;
+    border-bottom: 2pt solid #000;
+    margin-top: 10px;
+    margin-bottom: 16px;
+    padding-bottom: 4px;
+  }
+  .print-subject-title {
+    font-size: 16pt;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+  .print-chapter-title {
+    font-size: 12pt;
+    font-weight: 800;
+    color: #222;
+    margin-top: 12px;
+    margin-bottom: 8px;
+    border-left: 3pt solid #1f6feb;
+    padding-left: 6px;
+  }
+
+  /* Question & Formula Blocks (Orphan Protected) */
+  .print-question, .print-comp-entry, .callout-box, .document-table {
+    page-break-inside: avoid;
     break-inside: avoid;
     margin-bottom: 14px;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+  }
+
+  /* Dual Column Paper Mode */
+  .print-dual-col {
+    column-count: 2;
+    column-gap: 20px;
+    column-rule: 1px solid #e0e0e0;
+  }
+
+  /* Blind Practice Mode Appendix */
+  .print-appendix {
+    page-break-before: always;
+    break-before: page;
+    border-top: 2pt solid #000;
+    padding-top: 16px;
+    margin-top: 24px;
   }
 }
