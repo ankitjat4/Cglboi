@@ -401,15 +401,23 @@ const CGL_OS = (() => {
       return `<table class="document-table"><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table>`;
     });
 
-    // KaTeX Math Rendering
-    if (window.katex) {
-      out = out.replace(/\$\$([\s\S]*?)\$\$/g, (m, f) => {
-        try { return katex.renderToString(f, { displayMode: true, throwOnError: false }); } catch (e) { return m; }
-      });
-      out = out.replace(/\$([^\$\n]+?)\$/g, (m, f) => {
-        try { return katex.renderToString(f, { displayMode: false, throwOnError: false }); } catch (e) { return m; }
-      });
+   // KaTeX Math Rendering with Radical Fallback & Font Safeguard
+   if (window.katex) {
+      const renderMathWithFallback = (formula, isBlock) => {
+          try {
+             const rendered = katex.renderToString(formula, { displayMode: isBlock, throwOnError: false });
+             // If WebAPK fails to resolve KaTeX font glyphs, ensure the radical symbol never collapses:
+             return rendered.replace(/<span class="sqrt-sign"[^>]*>.*?<\/span>/g, '<span style="font-family:serif;font-size:1.15em;padding-right:1px;">√</span>');
+          } catch (e) {
+      // Direct text fallback if KaTeX parser throws
+      return formula.replace(/\\sqrt\{([^}]+)\}/g, '√($1)');
     }
+  };
+
+  out = out.replace(/\$\$([\s\S]*?)\$\$/g, (m, f) => renderMathWithFallback(f, true));
+  out = out.replace(/\$([^\$\n]+?)\$/g, (m, f) => renderMathWithFallback(f, false));
+}
+
 
     return out.replace(/\n/g, "<br>");
   }
