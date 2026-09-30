@@ -1133,3 +1133,22 @@ body {
   .print-dual-col { column-count: 2; column-gap: 20px; }
   .print-appendix { page-break-before: always; break-before: page; }
 }
+/* Force KaTeX radical SVG to display in Android WebView */
+.katex .sqrt .vlist-t,
+.katex .sqrt .vlist-t2 {
+  display: inline-table !important;
+  overflow: visible !important;
+}
+
+.katex .sqrt svg {
+  display: inline-block !important;
+  position: static !important;
+  min-width: 0.6em !important;
+  min-height: 1.1em !important;
+  overflow: visible !important;
+}
+
+.katex .sqrt svg path {
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
