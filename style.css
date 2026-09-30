@@ -1152,3 +1152,34 @@ body {
   fill: currentColor !important;
   stroke: currentColor !important;
 }
+/* === ZONE 19: KATEX MATH ENGINE SHIELD & RADICAL FIX === */
+.katex,
+.katex * {
+  box-sizing: content-box !important;
+}
+
+.katex {
+  font-size: 1.08em;
+  text-rendering: auto;
+}
+
+/* Constrain KaTeX radical SVGs to prevent the 400em empty gap blowout */
+.katex .sqrt {
+  display: inline-flex !important;
+  align-items: baseline;
+}
+
+.katex .sqrt > .sqrt-sign {
+  position: relative !important;
+  top: 0 !important;
+}
+
+.katex .sqrt > .sqrt-sign svg {
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+/* Ensure the radical overline renders clearly on high-DPI mobile screens */
+.katex .sqrt-line {
+  border-top: 1.5px solid currentColor !important;
+}
