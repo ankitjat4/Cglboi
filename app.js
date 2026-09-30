@@ -401,26 +401,57 @@ const CGL_OS = (() => {
       return `<table class="document-table"><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table>`;
     });
 
-   // KaTeX Math Rendering with Radical Fallback & Font Safeguard
-   if (window.katex) {
-      const renderMathWithFallback = (formula, isBlock) => {
+    // KaTeX Math Rendering with Direct Unicode Radical Pre-Processor
+    const sanitizeRadicals = (str) => {
+      // Replaces \sqrt{expr} or \sqrt[n]{expr} with a guaranteed-visible Unicode radical & overline
+      let res = str;
+      // Handle nested or simple \sqrt{content}
+      while (res.includes("\\sqrt")) {
+        let next = res.replace(/\\sqrt(?:\[(.*?)\])?\{([^{}]+)\}/g, (match, root, content) => {
+          const prefix = root ? `<sup>${root}</sup>√` : '√';
+          return `<span style="font-family:sans-serif,serif; display:inline-block; white-space:nowrap;"><span style="font-size:1.1em; padding-right:1px;">${prefix}</span><span style="border-top:1.5px solid currentColor; padding-top:1px; display:inline-block;">${content}</span></span>`;
+        });
+        if (next === res) {
+          // Fallback for unbraced single characters like \sqrt2 or broken syntax
+          res = res.replace(/\\sqrt\s*([0-9a-zA-Z])/g, '<span style="font-family:sans-serif,serif; font-size:1.1em;">√</span>$1');
+          break;
+        }
+        res = next;
+      }
+      return res;
+    };
+
+    if (window.katex) {
+      out = out.replace(/\$\$([\s\S]*?)\$\$/g, (m, f) => {
+        try { 
+          return katex.renderToString(f, { displayMode: true, throwOnError: false }); 
+        } catch (e) { 
+          return sanitizeRadicals(f); 
+        }
+      });
+      out = out.replace(/\$([^\$\n]+?)\$/g, (m, f) => {
+        // If formula contains square roots, bypass KaTeX's failing SVG radical generator directly
+        if (f.includes("\\sqrt")) {
+          // Render any non-sqrt parts with KaTeX, but render the root with our rock-solid HTML/Unicode engine
           try {
-             const rendered = katex.renderToString(formula, { displayMode: isBlock, throwOnError: false });
-             // If WebAPK fails to resolve KaTeX font glyphs, ensure the radical symbol never collapses:
-             return rendered.replace(/<span class="sqrt-sign"[^>]*>.*?<\/span>/g, '<span style="font-family:serif;font-size:1.15em;padding-right:1px;">√</span>');
-          } catch (e) {
-      // Direct text fallback if KaTeX parser throws
-      return formula.replace(/\\sqrt\{([^}]+)\}/g, '√($1)');
+            // Test if KaTeX works; if in Android WebAPK, replace \sqrt with clean unicode span
+            return sanitizeRadicals(f.replace(/\\sqrt\{([^}]+)\}/g, '§SQRT§$1§ENDSQRT§'))
+              .replace(/§SQRT§(.*?)§ENDSQRT§/g, (match, inner) => {
+                let renderedInner = inner;
+                try { renderedInner = katex.renderToString(inner, { displayMode: false, throwOnError: false }); } catch(err) {}
+                return `<span style="font-family:sans-serif,serif; display:inline-block; white-space:nowrap;"><span style="font-size:1.15em; font-weight:bold; padding-right:1px;">√</span><span style="border-top:1.5px solid currentColor; padding-top:1px; display:inline-block;">${renderedInner}</span></span>`;
+              });
+          } catch(e) {
+            return sanitizeRadicals(f);
+          }
+        }
+        try { return katex.renderToString(f, { displayMode: false, throwOnError: false }); } catch (e) { return m; }
+      });
+    } else {
+      // In case KaTeX script fails to load offline entirely
+      out = out.replace(/\$([^\$\n]+?)\$/g, (m, f) => sanitizeRadicals(f));
+      out = out.replace(/\$\$([\s\S]*?)\$\$/g, (m, f) => sanitizeRadicals(f));
     }
-  };
-
-  out = out.replace(/\$\$([\s\S]*?)\$\$/g, (m, f) => renderMathWithFallback(f, true));
-  out = out.replace(/\$([^\$\n]+?)\$/g, (m, f) => renderMathWithFallback(f, false));
-}
-
-
-    return out.replace(/\n/g, "<br>");
-  }
 
   // Translates KaTeX delimiters ($...$) to Anki-Native MathJax (\(...\) and \[...\])
   function convertKatexToAnkiMathJax(str) {
