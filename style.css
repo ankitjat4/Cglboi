@@ -1133,16 +1133,3 @@ body {
   .print-dual-col { column-count: 2; column-gap: 20px; }
   .print-appendix { page-break-before: always; break-before: page; }
 }
-/* Fix KaTeX square root surd rendering in Android WebView */
-.katex .sqrt {
-  display: inline-block !important;
-  overflow: visible !important;
-}
-.katex .sqrt .sqrt-sign {
-  overflow: visible !important;
-  font-family: serif, sans-serif !important;
-}
-.katex .sqrt > .root-box {
-  border-top: 1.5px solid currentColor !important;
-  padding-top: 1px !important;
-}
