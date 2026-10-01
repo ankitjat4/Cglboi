@@ -343,77 +343,94 @@ const CGL_OS = (() => {
   /* -------------------------------------------------------------
    * 2. UNIVERSAL SSC CGL TYPESETTER & FORMATTING ENGINE
    * ------------------------------------------------------------- */
-  function formatRichText(str) {
-    if (!str) return "";
-    let out = String(str);
+function formatRichText(str) {
+  if (!str) return "";
+  let out = String(str);
 
-    // Callout Blocks
-    out = out.replace(/^>\s*\[!trap\]\s*(.*)$/gm, '<div class="callout-box trap"><b>⚠️ Trapping Point:</b> $1</div>');
-    out = out.replace(/^>\s*\[!formula\]\s*(.*)$/gm, '<div class="callout-box formula"><b>⚡ Formula:</b> $1</div>');
-    out = out.replace(/^>\s*\[!tip\]\s*(.*)$/gm, '<div class="callout-box"><b>💡 Tip:</b> $1</div>');
+  // 1. Isolate LaTeX into tokens to protect from markdown/newline parsing
+  const mathTokens = [];
+  out = out.replace(/\$\$([\s\S]*?)\$\$/g, (match, formula) => {
+    mathTokens.push({ display: true, formula });
+    return `___CGL_MATH_${mathTokens.length - 1}___`;
+  });
+  out = out.replace(/\$([^\$\n]+?)\$/g, (match, formula) => {
+    mathTokens.push({ display: false, formula });
+    return `___CGL_MATH_${mathTokens.length - 1}___`;
+  });
 
-    // Headers & Bold
-    out = out.replace(/^### (.*$)/gim, '<h3 style="font-size:15px; font-weight:700; color:var(--accent-cyan); margin:10px 0 4px 0;">$1</h3>');
-    out = out.replace(/^## (.*$)/gim, '<h2 style="font-size:17px; font-weight:800; color:#fff; margin:12px 0 6px 0;">$1</h2>');
-    out = out.replace(/^# (.*$)/gim, '<h1 style="font-size:19px; font-weight:800; color:#fff; margin:14px 0 8px 0;">$1</h1>');
-    out = out.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+  // 2. Callout Blocks
+  out = out.replace(/^>\s*\[!trap\]\s*(.*)$/gm, '<div class="callout-box trap"><b>⚠️ Trapping Point:</b> $1</div>');
+  out = out.replace(/^>\s*\[!formula\]\s*(.*)$/gm, '<div class="callout-box formula"><b>⚡ Formula:</b> $1</div>');
+  out = out.replace(/^>\s*\[!tip\]\s*(.*)$/gm, '<div class="callout-box"><b>💡 Tip:</b> $1</div>');
 
-    // Archetype 1: Reading Passages & Cloze Context Box
-    out = out.replace(/(?:Passage|Directions?\s*\([^)]+\)|Read the following passage[^:]*:)\s*([\s\S]+?)(?=(?:Q\.\s*|Question\s*\d*:|Statement|Statements|Conclusion|\n\n[A-Z]|$))/i, (match, body) => {
-      return `<div class="q-passage-container"><span class="q-passage-tag">Passage / Reading Context</span>${body.trim()}</div>`;
-    });
+  // 3. Headers & Typography
+  out = out.replace(/^### (.*$)/gim, '<h3 style="font-size:15px; font-weight:700; color:var(--accent-cyan); margin:10px 0 4px 0;">$1</h3>');
+  out = out.replace(/^## (.*$)/gim, '<h2 style="font-size:17px; font-weight:800; color:#fff; margin:12px 0 6px 0;">$1</h2>');
+  out = out.replace(/^# (.*$)/gim, '<h1 style="font-size:19px; font-weight:800; color:#fff; margin:14px 0 8px 0;">$1</h1>');
+  out = out.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 
-    // Archetype 2: Assertion & Reason Blocks
-    out = out.replace(/(?:Assertion\s*\(?A\)?|Assertion\s*:)\s*([^\n]+)/gi, '<div class="q-assertion-box"><b>[A] Assertion:</b> $1</div>');
-    out = out.replace(/(?:Reason\s*\(?R\)?|Reason\s*:)\s*([^\n]+)/gi, '<div class="q-reason-box"><b>[R] Reason:</b> $1</div>');
+  // 4. Passages, Assertions, Syllogisms
+  out = out.replace(/(?:Passage|Directions?\s*\([^)]+\)|Read the following passage[^:]*:)\s*([\s\S]+?)(?=(?:Q\.\s*|Question\s*\d*:|Statement|Statements|Conclusion|\n\n[A-Z]|$))/i, (match, body) => {
+    return `<div class="q-passage-container"><span class="q-passage-tag">Passage / Reading Context</span>${body.trim()}</div>`;
+  });
+  out = out.replace(/(?:Assertion\s*\(?A\)?|Assertion\s*:)\s*([^\n]+)/gi, '<div class="q-assertion-box"><b>[A] Assertion:</b> $1</div>');
+  out = out.replace(/(?:Reason\s*\(?R\)?|Reason\s*:)\s*([^\n]+)/gi, '<div class="q-reason-box"><b>[R] Reason:</b> $1</div>');
 
-    // Archetype 3: Syllogisms & Statements / Conclusions
-    out = out.replace(/(?:Statements?\s*:)\s*([\s\S]+?)(?=(?:Conclusions?\s*:|Conclusions?|$))/i, (match, body) => {
-      const items = body.split(/(?:\(\d+\)|\(\w+\)|\d+\.|\n•|\n-)/).map(s => s.trim()).filter(Boolean);
-      const rows = items.map((item, idx) => `
-        <div class="q-itemized-row">
-          <span class="q-item-num">(${idx + 1})</span>
-          <span>${item}</span>
-        </div>
-      `).join('');
-      return `<div class="q-structured-block"><div class="q-block-header"><span>📋 Statements:</span></div>${rows}</div>`;
-    });
+  out = out.replace(/(?:Statements?\s*:)\s*([\s\S]+?)(?=(?:Conclusions?\s*:|Conclusions?|$))/i, (match, body) => {
+    const items = body.split(/(?:\(\d+\)|\(\w+\)|\d+\.|\n•|\n-)/).map(s => s.trim()).filter(Boolean);
+    const rows = items.map((item, idx) => `
+      <div class="q-itemized-row">
+        <span class="q-item-num">(${idx + 1})</span>
+        <span>${item}</span>
+      </div>
+    `).join('');
+    return `<div class="q-structured-block"><div class="q-block-header"><span>📋 Statements:</span></div>${rows}</div>`;
+  });
 
-    out = out.replace(/(?:Conclusions?\s*:)\s*([\s\S]+?)(?=(?:\n\n[A-Z]|Options?|$))/i, (match, body) => {
-      const roman = ["I", "II", "III", "IV", "V", "VI"];
-      const items = body.split(/(?:\(\d+\)|\(\w+\)|\[\w+\]|\d+\.|\n•|\n-)/).map(s => s.trim()).filter(Boolean);
-      const rows = items.map((item, idx) => `
-        <div class="q-itemized-row">
-          <span class="q-item-num">[${roman[idx] || (idx + 1)}]</span>
-          <span>${item}</span>
-        </div>
-      `).join('');
-      return `<div class="q-structured-block" style="margin-top:6px;"><div class="q-block-header"><span style="color:var(--accent-purple-light);">🎯 Conclusions:</span></div>${rows}</div>`;
-    });
+  out = out.replace(/(?:Conclusions?\s*:)\s*([\s\S]+?)(?=(?:\n\n[A-Z]|Options?|$))/i, (match, body) => {
+    const roman = ["I", "II", "III", "IV", "V", "VI"];
+    const items = body.split(/(?:\(\d+\)|\(\w+\)|\[\w+\]|\d+\.|\n•|\n-)/).map(s => s.trim()).filter(Boolean);
+    const rows = items.map((item, idx) => `
+      <div class="q-itemized-row">
+        <span class="q-item-num">[${roman[idx] || (idx + 1)}]</span>
+        <span>${item}</span>
+      </div>
+    `).join('');
+    return `<div class="q-structured-block" style="margin-top:6px;"><div class="q-block-header"><span style="color:var(--accent-purple-light);">🎯 Conclusions:</span></div>${rows}</div>`;
+  });
 
-    // Markdown Table Conversion
-    out = out.replace(/(\|[^\n]+\|\r?\n)((?:\|:?[-]+:?)+\|)(\r?\n(?:\|[^\n]+\|\r?\n?)+)/g, (match, headerLine, alignLine, bodyLines) => {
-      const headers = headerLine.trim().split('|').filter(c => c.trim().length > 0).map(c => `<th>${c.trim()}</th>`).join('');
-      const rows = bodyLines.trim().split('\n').map(row => {
-        const cells = row.trim().split('|').filter(c => c.trim().length > 0).map(c => `<td>${c.trim()}</td>`).join('');
-        return `<tr>${cells}</tr>`;
-      }).join('');
-      return `<table class="document-table"><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table>`;
-    });
+  // 5. Markdown Tables
+  out = out.replace(/(\|[^\n]+\|\r?\n)((?:\|:?[-]+:?)+\|)(\r?\n(?:\|[^\n]+\|\r?\n?)+)/g, (match, headerLine, alignLine, bodyLines) => {
+    const headers = headerLine.trim().split('|').filter(c => c.trim().length > 0).map(c => `<th>${c.trim()}</th>`).join('');
+    const rows = bodyLines.trim().split('\n').map(row => {
+      const cells = row.trim().split('|').filter(c => c.trim().length > 0).map(c => `<td>${c.trim()}</td>`).join('');
+      return `<tr>${cells}</tr>`;
+    }).join('');
+    return `<table class="document-table"><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table>`;
+  });
 
-    // KaTeX Math Rendering
+  // 6. Natural line breaks for plain text only
+  out = out.replace(/\n/g, "<br>");
+
+  // 7. Render and re-inject untouched KaTeX HTML
+  out = out.replace(/___CGL_MATH_(\d+)___/g, (match, index) => {
+    const item = mathTokens[Number(index)];
+    if (!item) return "";
     if (window.katex) {
-      out = out.replace(/\$\$([\s\S]*?)\$\$/g, (m, f) => {
-        try { return katex.renderToString(f, { displayMode: true, throwOnError: false }); } catch (e) { return m; }
-      });
-      out = out.replace(/\$([^\$\n]+?)\$/g, (m, f) => {
-        try { return katex.renderToString(f, { displayMode: false, throwOnError: false }); } catch (e) { return m; }
-      });
+      try {
+        return katex.renderToString(item.formula, {
+          displayMode: item.display,
+          throwOnError: false
+        });
+      } catch (err) {
+        return item.display ? `$$${item.formula}$$` : `$${item.formula}$`;
+      }
     }
+    return item.display ? `$$${item.formula}$$` : `$${item.formula}$`;
+  });
 
-    return out.replace(/\n/g, "<br>");
-  }
-
+  return out;
+}
   // Translates KaTeX delimiters ($...$) to Anki-Native MathJax (\(...\) and \[...\])
   function convertKatexToAnkiMathJax(str) {
     if (!str) return "";
