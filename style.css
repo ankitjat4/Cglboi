@@ -1152,34 +1152,117 @@ body {
   fill: currentColor !important;
   stroke: currentColor !important;
 }
-/* === ZONE 19: KATEX MATH ENGINE SHIELD & RADICAL FIX === */
+/* ==========================================================================
+   ZONE 19: KATEX NATIVE ENGINE & RADICAL SHIELD
+   ========================================================================== */
+.katex {
+  font: normal 1.15em KaTeX_Main, "Times New Roman", serif;
+  line-height: 1.2;
+  text-indent: 0;
+  text-rendering: auto;
+  border-color: currentColor;
+}
+
+/* 1. Shield KaTeX internal geometry from global * { box-sizing: border-box } */
 .katex,
 .katex * {
   box-sizing: content-box !important;
 }
 
-.katex {
-  font-size: 1.08em;
-  text-rendering: auto;
+.katex .katex-html {
+  display: inline-block;
 }
 
-/* Constrain KaTeX radical SVGs to prevent the 400em empty gap blowout */
-.katex .sqrt {
-  display: inline-flex !important;
-  align-items: baseline;
+/* 2. Hide MathML accessibly to prevent double-rendering and ghost gaps */
+.katex .katex-mathml {
+  position: absolute;
+  clip: rect(1px, 1px, 1px, 1px);
+  padding: 0;
+  border: 0;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
 }
 
-.katex .sqrt > .sqrt-sign {
+.katex .base {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+  width: min-content;
+}
+
+.katex .strut {
+  display: inline-block;
+}
+
+/* 3. Essential vertical-list alignment engine */
+.katex .vlist-t {
+  display: inline-table !important;
+  table-layout: fixed !important;
+  border-collapse: collapse !important;
+}
+
+.katex .vlist-r {
+  display: table-row !important;
+}
+
+.katex .vlist {
+  display: table-cell !important;
+  vertical-align: bottom !important;
   position: relative !important;
-  top: 0 !important;
+  height: 100% !important;
 }
 
-.katex .sqrt > .sqrt-sign svg {
+.katex .vlist > span {
+  display: block !important;
+  height: 0 !important;
+  position: relative !important;
+}
+
+.katex .vlist > span > .pstrut {
+  overflow: hidden !important;
+  width: 0 !important;
+  height: 3em !important;
+}
+
+.katex .vlist-s {
+  display: table-cell !important;
+  vertical-align: bottom !important;
+  font-size: 1px !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  line-height: 0 !important;
+}
+
+/* 4. Square root radical clip & color enforcement */
+.katex .sqrt {
+  display: inline-block !important;
+}
+
+.katex .sqrt > .vlist-t {
+  text-align: left !important;
+}
+
+/* Constrain the 400em tail so it clips to the radicand width */
+.katex .hide-tail {
+  width: 400em !important;
+  position: absolute !important;
+  left: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Force the SVG checkmark to match your light text color (#f8fafc) */
+.katex .sqrt svg {
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  display: block !important;
   fill: currentColor !important;
   stroke: currentColor !important;
 }
 
-/* Ensure the radical overline renders clearly on high-DPI mobile screens */
-.katex .sqrt-line {
-  border-top: 1.5px solid currentColor !important;
+/* Fraction dividing bar */
+.katex .mfrac .frac-line {
+  display: block !important;
+  border-bottom: 0.04em solid currentColor !important;
 }
