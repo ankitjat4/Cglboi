@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SSC CGL INTELLIGENCE OS - TACTICAL COMMAND CENTER (V3.3)
+   SSC CGL INTELLIGENCE OS - TACTICAL COMMAND CENTER (V4.0)
    Architecture: High-Precision Cyber-Obsidian / Glassmorphic Telemetry HUD
    ========================================================================== */
 
@@ -394,7 +394,6 @@ body {
     0 8px 24px rgba(0, 0, 0, 0.55);
 }
 
-/* OVERFLOW FIX: Eliminates rectangular edge clipping on circular stroke ends */
 .eri-dial-svg {
   width: 76px;
   height: 76px;
@@ -556,7 +555,6 @@ body {
   flex-shrink: 0;
 }
 
-/* Multi-Concept Theorem Pill Container */
 #arena-concept-pills-wrap,
 #dojo-concept-pills-wrap {
   display: flex;
@@ -1133,37 +1131,8 @@ body {
   .print-dual-col { column-count: 2; column-gap: 20px; }
   .print-appendix { page-break-before: always; break-before: page; }
 }
-/* Force KaTeX radical SVG to display in Android WebView */
-.katex .sqrt .vlist-t,
-.katex .sqrt .vlist-t2 {
-  display: inline-table !important;
-  overflow: visible !important;
-}
 
-.katex .sqrt svg {
-  display: inline-block !important;
-  position: static !important;
-  min-width: 0.6em !important;
-  min-height: 1.1em !important;
-  overflow: visible !important;
-}
-
-.katex .sqrt svg path {
-  fill: currentColor !important;
-  stroke: currentColor !important;
-}
-/* ==========================================================================
-   ZONE 19: KATEX NATIVE ENGINE & RADICAL SHIELD
-   ========================================================================== */
-.katex {
-  font: normal 1.15em KaTeX_Main, "Times New Roman", serif;
-  line-height: 1.2;
-  text-indent: 0;
-  text-rendering: auto;
-  border-color: currentColor;
-}
-
-/* 1. Shield KaTeX internal geometry from global * { box-sizing: border-box } */
+/* === ZONE 19: KATEX ISOLATION SHIELD === */
 .katex,
 .katex * {
   box-sizing: content-box !important;
@@ -1173,7 +1142,6 @@ body {
   display: inline-block;
 }
 
-/* 2. Hide MathML to prevent duplicate symbols and ghost height gaps */
 .katex .katex-mathml {
   position: absolute;
   clip: rect(1px, 1px, 1px, 1px);
@@ -1182,90 +1150,4 @@ body {
   height: 1px;
   width: 1px;
   overflow: hidden;
-}
-
-.katex .base {
-  position: relative;
-  display: inline-block;
-  white-space: nowrap;
-  width: min-content;
-}
-
-.katex .strut {
-  display: inline-block;
-}
-
-/* 3. Alignment engine for vlist tables */
-.katex .vlist-t {
-  display: inline-table !important;
-  table-layout: fixed !important;
-  border-collapse: collapse !important;
-}
-
-.katex .vlist-r {
-  display: table-row !important;
-}
-
-.katex .vlist {
-  display: table-cell !important;
-  vertical-align: bottom !important;
-  position: relative !important;
-  height: 100% !important;
-}
-
-.katex .vlist > span {
-  display: block !important;
-  height: 0 !important;
-  position: relative !important;
-}
-
-.katex .vlist > span > .pstrut {
-  overflow: hidden !important;
-  width: 0 !important;
-  height: 3em !important;
-}
-
-.katex .vlist-s {
-  display: table-cell !important;
-  vertical-align: bottom !important;
-  font-size: 1px !important;
-  width: 0 !important;
-  min-width: 0 !important;
-  line-height: 0 !important;
-}
-
-/* 4. Native SVG Radical Assembly (Single Authority) */
-.katex .sqrt {
-  display: inline-block !important;
-}
-
-.katex .sqrt > .vlist-t {
-  text-align: left !important;
-}
-
-.katex .sqrt svg {
-  position: absolute !important;
-  left: 0 !important;
-  top: 0 !important;
-  display: block !important;
-  fill: currentColor !important;
-  stroke: currentColor !important;
-  overflow: visible !important;
-}
-
-.katex .sqrt svg path {
-  fill: currentColor !important;
-  stroke: currentColor !important;
-}
-
-.katex .hide-tail {
-  width: 400em !important;
-  position: absolute !important;
-  left: 0 !important;
-  overflow: hidden !important;
-}
-
-.katex .mfrac .frac-line {
-  display: block !important;
-  border-bottom: 0.04em solid currentColor !important;
 }
