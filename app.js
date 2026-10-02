@@ -166,7 +166,7 @@ const CGL_OS = (() => {
    * SECTION 4: CONSTANTS, DB CONFIG & RUNTIME EXECUTION STATE
    * ========================================================================== */
   const DB_NAME = "cgl_os_db";
-  const DB_VERSION = 15;
+  const DB_VERSION = 16;
   let db = null;
   let dbInitPromise = null;
 
