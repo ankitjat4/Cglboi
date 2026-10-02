@@ -317,7 +317,8 @@
         <span style="color:var(--text-muted);">
           Matching: <b id="practice-filtered-count" style="color:#fff;">0</b> questions
         </span>
-        <div style="display:flex; gap:8px;">
+        <div style="display:flex; gap:6px; align-items:center;">
+          <button class="btn btn-cyan" style="padding:3px 10px; font-size:11px; font-weight:800;" onclick="CGL_OS.launchSeeQuestions()">👁️ See Questions</button>
           <button class="btn btn-secondary" style="padding:3px 8px; font-size:10.5px;" onclick="CGL_OS.selectAllVisiblePractice(true)">Select Page</button>
           <button class="btn btn-secondary" style="padding:3px 8px; font-size:10.5px;" onclick="CGL_OS.selectAllVisiblePractice(false)">Clear Selection</button>
         </div>
@@ -339,6 +340,9 @@
           <span class="badge" style="background:#1f6feb; font-size:11px;" id="practice-selected-count">0 Selected</span>
         </div>
         <div style="display:flex; gap:8px;">
+          <button class="btn btn-cyan" style="padding:6px 14px; font-size:12px; font-weight:800;" onclick="CGL_OS.launchSeeQuestions()">
+            👁️ See Questions
+          </button>
           <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="CGL_OS.buildMockFromPracticeSelection()">
             📦 Build Mock
           </button>
