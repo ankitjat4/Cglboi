@@ -35,270 +35,12 @@
     </div>
   </div>
 
-  <!-- APPLICATION VIEWPORT ROOT -->
+  <!-- ==================== APPLICATION VIEWPORT ROOT ==================== -->
   <div id="app-viewport-root">
 
-    <!-- ==================== 1. TIMED EXAM & REVIEW ARENA (UNMODIFIED EXPERIENCE) ==================== -->
-    <div id="exam-arena">
-      <div class="arena-header">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <button class="hud-icon-btn" id="btn-arena-pause" title="Pause / Minimize">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          </button>
-          <button class="btn btn-amber" id="btn-arena-early-lock" style="padding:4px 10px; font-size:11px; display:none;" onclick="CGL_OS.requestEndSectionEarly()">
-            🔒 Lock Section Early
-          </button>
-          <button class="btn btn-secondary" id="btn-arena-exit-review" style="padding:4px 10px; font-size:11px; display:none;" onclick="CGL_OS.exitReviewArena()">
-            ✕ Exit Review
-          </button>
-        </div>
-
-        <div style="text-align:center;">
-          <div id="hud-countdown" class="hud-timer">15:00</div>
-          <div style="font-size:10px; color:var(--text-muted);" id="hud-test-title">SSC CGL Mock</div>
-        </div>
-
-        <div style="display:flex; gap:6px;">
-          <button class="hud-icon-btn" id="btn-arena-research" style="display:none;" onclick="CGL_OS.openOmniResearchForCurrentQuestion()" title="Omni Deep Dive / Wikipedia / Math Plot">
-            🌐
-          </button>
-          <button class="hud-icon-btn" id="btn-toggle-exam-palette" onclick="CGL_OS.toggleExamPalette()" title="Open Question Palette">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
-          </button>
-        </div>
-      </div>
-
-      <div class="sectional-banner">
-        <div style="display:flex; align-items:center; gap:6px;">
-          <span class="badge" style="background:#1f6feb;" id="hud-section-badge">SECTION: QUANT</span>
-          <span style="font-size:11px; color:var(--accent-cyan);" id="hud-section-qinfo">Q1 of 25</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:6px;">
-          <span id="hud-panic-flag" class="badge" style="background:#da3633; display:none;">⚡ PANIC SLIP</span>
-          <span id="hud-pacing-status" style="font-family:var(--font-mono); color:var(--text-muted);">0s spent</span>
-        </div>
-      </div>
-
-      <div id="arena-lock-toast" style="display:none; background:#d29922; color:#000; font-size:12px; font-weight:700; padding:6px 14px; text-align:center;"></div>
-
-      <div class="arena-body" id="arena-body">
-        <div class="question-header">
-          <div class="q-number-pill" id="arena-q-num">Q1</div>
-          <div class="q-clock-pill">
-            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-            <span id="arena-q-timer">00:00</span>
-          </div>
-        </div>
-
-        <!-- Telemetry & Decision Trail in Review Mode -->
-        <div id="arena-review-telemetry-banner" style="display:none; margin-bottom:12px;"></div>
-
-        <div class="q-text-canvas" id="arena-q-text"></div>
-        <div class="q-image-container" id="arena-image-container" style="display:none;"></div>
-        <div id="arena-options-container"></div>
-
-        <!-- Multi-Concept Bridge Container -->
-        <div id="arena-concept-bridge-box" style="display:none; margin:14px 0; background:rgba(56, 189, 248, 0.05); border:1px solid rgba(56, 189, 248, 0.2); border-radius:10px; padding:12px;">
-          <div style="font-size:10.5px; font-weight:800; color:var(--accent-cyan); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:8px;">// Associated Concept Sheets</div>
-          <div id="arena-concept-pills-wrap"></div>
-        </div>
-
-        <!-- Solution & Mistake Tag Override in Review Mode -->
-        <div id="arena-review-solution-block" style="display:none; margin-top:14px; background:#0b0f17; border:1px solid var(--border-color); border-radius:10px; padding:14px;"></div>
-      </div>
-
-      <div class="arena-footer">
-        <button class="btn btn-secondary" style="padding:8px 14px;" id="btn-q-prev">Previous</button>
-        <button class="btn btn-secondary" style="padding:8px 12px; font-size:12px; color:var(--accent-purple);" id="btn-q-review">Mark Review</button>
-        <button class="btn" style="padding:8px 18px;" id="btn-q-save-next">Save & Next</button>
-      </div>
-    </div>
-
-    <!-- EXAM PALETTE DRAWER -->
-    <div class="drawer-overlay" id="exam-drawer-overlay" onclick="CGL_OS.toggleExamPalette(false)"></div>
-    <div class="palette-drawer-ui" id="exam-palette-drawer">
-      <div style="padding:14px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
-        <h3 style="font-size:14px; font-weight:700;" id="palette-drawer-title">Question Palette</h3>
-        <span class="badge" style="background:#1f6feb;" id="exam-drawer-sec-badge">PART - A</span>
-      </div>
-      
-      <div id="exam-palette-section-tabs" style="display:flex; overflow-x:auto; padding:8px 12px; background:#07090e; border-bottom:1px solid var(--border-color); gap:6px;"></div>
-
-      <div id="palette-legend-bar" style="padding:10px 14px; background:#07090e; font-size:12px; display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color);">
-        <span>🟢 Ans: <b id="exam-count-ans">0</b></span>
-        <span>🟣 Marked: <b id="exam-count-marked">0</b></span>
-        <span>⚪ Unans: <b id="exam-count-unans">0</b></span>
-      </div>
-      <div class="palette-scroll-body">
-        <div class="palette-grid" id="exam-palette-grid"></div>
-      </div>
-      <div id="palette-footer-actions" style="padding:14px; border-top:1px solid var(--border-color); display:flex; flex-direction:column; gap:8px;">
-        <button class="btn btn-amber" id="btn-drawer-early-lock" style="width:100%; font-size:13px; padding:10px; display:none;" onclick="CGL_OS.requestEndSectionEarly()">
-          🔒 Lock & Advance Current Section
-        </button>
-        <button class="btn btn-danger" style="width:100%; font-size:14px; padding:12px;" id="btn-submit-exam">Submit Full Test</button>
-      </div>
-    </div>
-
-    <!-- SECTION LOCK CONFIRMATION MODAL -->
-    <div class="modal-overlay" id="modal-section-lock-confirm">
-      <div class="modal-window" style="max-width:400px; text-align:center;">
-        <h3 style="font-size:18px; font-weight:800; color:var(--status-amber); margin-bottom:8px;">Lock Section Early?</h3>
-        <p style="font-size:13px; color:var(--text-muted); line-height:1.5; margin-bottom:14px;" id="lock-confirm-msg">
-          You have time remaining in this section. Once submitted, this section will be permanently locked and cannot be revisited.
-        </p>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-          <button class="btn btn-secondary" onclick="document.getElementById('modal-section-lock-confirm').classList.remove('active')">Cancel</button>
-          <button class="btn btn-amber" onclick="CGL_OS.confirmEndSectionEarly()">Lock & Proceed</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ==================== 2. UNTIMED DOJO ARENA VIEW (PRESERVED CLINIC) ==================== -->
-    <div id="dojo-arena-view">
-      <div class="arena-header">
-        <button class="hud-icon-btn" onclick="CGL_OS.exitDojoArena()">
-          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-        </button>
-        <div style="text-align:center;">
-          <div style="font-size:14px; font-weight:800; color:var(--accent-cyan);" id="dojo-arena-title">Dojo Practice</div>
-          <div style="font-size:10px; color:var(--text-muted);">Untimed Active Recall & Method Clinic</div>
-        </div>
-        <div style="display:flex; gap:6px;">
-          <button class="hud-icon-btn" onclick="CGL_OS.openOmniResearchForDojoQuestion()" title="Omni Deep Dive">🌐</button>
-          <button class="hud-icon-btn" onclick="CGL_OS.toggleDojoPalette(true)">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
-          </button>
-        </div>
-      </div>
-
-      <div class="sectional-banner" style="flex-wrap:wrap; gap:6px;">
-        <div style="display:flex; gap:6px; align-items:center;">
-          <span class="badge" style="background:#238636;" id="dojo-arena-chap-badge">QA_PERCENTAGE</span>
-          <span class="badge" style="background:#151a24; color:#38bdf8;" id="dojo-arena-method-badge">General</span>
-        </div>
-        <div id="dojo-concept-pills-wrap"></div>
-        <div>
-          <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openEditCurrentDojoQuestion()">Edit Q</button>
-        </div>
-      </div>
-
-      <div id="dojo-theory-banner" style="display:none; background:#111622; padding:10px 14px; border-bottom:1px solid var(--border-color); font-size:12px; line-height:1.5;"></div>
-
-      <div class="arena-body" id="dojo-arena-body">
-        <div class="question-header">
-          <div class="q-number-pill" id="dojo-arena-qnum">1</div>
-          <span style="font-size:12px; color:var(--text-muted);" id="dojo-arena-total-tag">Question 1 of 10</span>
-        </div>
-
-        <div class="q-text-canvas" id="dojo-arena-qtext"></div>
-        <div class="q-image-container" id="dojo-image-container" style="display:none;"></div>
-        <div id="dojo-arena-options"></div>
-
-        <div id="dojo-arena-feedback" style="display:none; padding:10px; border-radius:8px; margin:12px 0; font-size:13px; font-weight:700;"></div>
-
-        <button class="btn btn-secondary" style="width:100%; margin-top:10px; font-size:13px;" onclick="CGL_OS.toggleDojoMethod()">
-          Reveal Method & Solution
-        </button>
-
-        <div id="dojo-arena-method-box" style="display:none; margin-top:12px; padding:12px; background:#151a24; border-left:3px solid var(--accent-blue); border-radius:4px; font-size:13px; line-height:1.6;"></div>
-
-        <div class="form-group" style="margin-top:14px;">
-          <label>Personal Solving Cue / Annotation (Auto-Saves to Device)</label>
-          <textarea id="dojo-arena-annotation" class="form-control" style="height:60px;" placeholder="Personal shortcut, trap caveat, or formula reminder..." oninput="CGL_OS.autoSaveDojoAnnotation(this.value)"></textarea>
-        </div>
-      </div>
-
-      <div class="arena-footer">
-        <button class="btn btn-secondary" style="padding:8px 14px;" onclick="CGL_OS.navDojoArena(-1)">Previous</button>
-        <button class="btn btn-secondary" style="padding:8px 14px;" onclick="CGL_OS.toggleDojoPalette(true)">Palette</button>
-        <button class="btn" style="padding:8px 18px;" onclick="CGL_OS.navDojoArena(1)">Next Question</button>
-      </div>
-    </div>
-
-    <!-- DOJO PALETTE DRAWER -->
-    <div class="drawer-overlay" id="dojo-drawer-overlay" onclick="CGL_OS.toggleDojoPalette(false)"></div>
-    <div class="palette-drawer-ui" id="dojo-palette-drawer">
-      <div style="padding:14px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
-        <h3 style="font-size:14px; font-weight:700;">Dojo Bank Navigator</h3>
-        <span class="badge" style="background:#238636;" id="dojo-palette-count-badge">0 Qs</span>
-      </div>
-      <div class="palette-scroll-body" id="dojo-palette-scroll-body"></div>
-    </div>
-
-    <!-- ==================== 3. FULL-SCREEN LIVING COMPENDIUM STUDIO (GESTURE-SAFE) ==================== -->
-    <div id="compendium-fullscreen-view">
-      <div class="compendium-header" style="background:#090e18; border-bottom:1px solid var(--border-color); padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <button class="hud-icon-btn" onclick="CGL_OS.closeCompendiumStudio()" title="Close Compendium">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-          </button>
-          <div>
-            <div style="font-size:14px; font-weight:800; color:#38bdf8;" id="comp-studio-header-title">Living Knowledge Studio</div>
-            <div style="font-size:10px; color:var(--text-muted);" id="comp-studio-header-sub">Structured A4 Engineering Sheets</div>
-          </div>
-        </div>
-        <div style="display:flex; gap:6px;">
-          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.openOmniSearchModal()" title="Global Omni-Search">🔍 Search</button>
-          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.openConceptEditorModal(false)" title="Edit Current Sheet">✎ Edit</button>
-          <button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.deleteCurrentCompendiumSheet()" title="Delete Current Sheet">🗑</button>
-        </div>
-      </div>
-
-      <!-- Selector & Sheet Control Bar -->
-      <div style="display:grid; grid-template-columns: 95px 1fr auto; gap:6px; padding:8px 14px; background:#070a10; border-bottom:1px solid var(--border-color); align-items:center; flex-shrink:0;">
-        <select id="comp-studio-subject-select" class="form-control" style="padding:6px; font-size:12px; font-weight:700;" onchange="CGL_OS.handleCompStudioSubjectChange(this.value)"></select>
-        <div style="display:flex; gap:4px; align-items:center; overflow:hidden;">
-          <select id="comp-studio-chapter-select" class="form-control" style="padding:6px; font-size:12px;" onchange="CGL_OS.handleCompStudioChapterChange(this.value)"></select>
-          <button class="btn btn-secondary" style="padding:6px 8px; font-size:11px;" onclick="CGL_OS.promptCreateNewChapter()" title="Add New Chapter Tag">+</button>
-        </div>
-        <button class="btn" style="padding:6px 10px; font-size:11px; white-space:nowrap;" onclick="CGL_OS.openConceptEditorModal(true)">+ New Sheet</button>
-      </div>
-
-      <!-- Sticky Sheets Tab Bar -->
-      <div class="comp-tabs-bar" id="comp-studio-sheet-tabs"></div>
-
-      <!-- Bi-Directional Bridge: Questions Associated with this Sheet -->
-      <div id="comp-linked-questions-bar" style="background:#090e18; border-bottom:1px solid var(--border-color); padding:6px 14px; display:flex; justify-content:space-between; align-items:center; font-size:11px; flex-shrink:0;">
-        <span style="color:var(--accent-cyan); font-weight:700;" id="comp-linked-q-count">0 Associated Questions Linked</span>
-        <button class="btn btn-secondary" style="padding:3px 8px; font-size:11px;" id="btn-drill-sheet-questions" onclick="CGL_OS.launchCurrentSheetQuestionsDrill()">⚡ Drill Sheet Qs</button>
-      </div>
-
-      <!-- Living Document Canvas Body (Vertical Reading Only; Gesture-Safe) -->
-      <div class="comp-document-canvas" id="comp-studio-canvas">
-        <div id="comp-studio-doc-content"></div>
-
-        <div style="margin-top:28px; border-top:1px solid var(--border-color); padding-top:14px;">
-          <label style="font-size:11px; font-weight:700; color:var(--text-muted); display:flex; justify-content:space-between;">
-            <span>Sheet Revision Cue / Personal Scratchpad (Auto-Saves)</span>
-            <span id="comp-scratchpad-status" style="color:var(--status-green); font-size:10px; display:none;">Saved</span>
-          </label>
-          <textarea id="comp-studio-scratchpad" class="form-control" style="height:70px; margin-top:6px;" placeholder="Personal formula reminder, exam trap caveats..." oninput="CGL_OS.autoSaveCompScratchpad(this.value)"></textarea>
-        </div>
-      </div>
-    </div>
-
-    <!-- ==================== 4. EXPANDABLE SYNAPSE NODE TREE MODAL ==================== -->
-    <div class="modal-overlay" id="modal-synapse-tree">
-      <div class="modal-window" style="max-width:760px; max-height:92vh; display:flex; flex-direction:column;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
-          <div>
-            <h3 style="font-size:16px; font-weight:800; color:var(--accent-cyan);">🧠 Synapse Knowledge Graph</h3>
-            <span style="font-size:11px; color:var(--text-muted);">Syllabus Hierarchy • Progressive Disclosure • Direct Drill</span>
-          </div>
-          <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-synapse-tree').classList.remove('active')">✕</button>
-        </div>
-
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:8px;">
-          <span style="font-size:11px; color:var(--text-muted);">Explore subjects, chapters, and live concept dossiers directly</span>
-          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.setSynapseLevel('SUBJECTS')">Reset to Root</button>
-        </div>
-
-        <div class="synapse-tree-container" id="synapse-dom-tree-root"></div>
-      </div>
-    </div>
-
-    <!-- ==================== 5. TAB 1: DASHBOARD // BATTLEFIELD COMMAND CENTER ==================== -->
+    <!-- ------------------------------------------------------------------
+         VIEW 1: TAB DASHBOARD // BATTLEFIELD COMMAND CENTER
+         ------------------------------------------------------------------ -->
     <div id="tab-dashboard" class="view-container active">
       <div class="hero-banner">
         <div class="hero-content">
@@ -311,7 +53,7 @@
             <p style="font-size:12px; color:var(--accent-cyan); margin-top:2px;">"Good morning. Here's your battlefield."</p>
           </div>
           <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
-            <button class="btn btn-secondary" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openNewQuestionCreatorModal()" title="Quick-Add Question to Bank">
+            <button class="btn btn-secondary" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openNewQuestionCreatorModal()" title="Add Question to Bank">
               + Add Q
             </button>
             <button class="btn" id="btn-dash-launch-mock" onclick="CGL_OS.openCustomMockModal()" style="padding:8px 14px; font-size:12px; box-shadow:0 0 16px rgba(37,99,235,0.5);">
@@ -346,7 +88,7 @@
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
           <div>
             <div style="font-size:10.5px; font-weight:800; color:var(--accent-cyan); text-transform:uppercase; letter-spacing:0.8px;">// CONTINUE TRAINING</div>
-            <div style="font-size:14px; font-weight:800; color:#fff; margin-top:2px;" id="dash-continue-title">Percentage — Weakness Drill</div>
+            <div style="font-size:14px; font-weight:800; color:#fff; margin-top:2px;" id="dash-continue-title">Comprehensive Practice — Daily Sprint</div>
             <div style="font-size:11px; color:var(--text-muted); margin-top:2px;" id="dash-continue-sub">Targeting unattempted and recurring mistake archetypes</div>
           </div>
           <button class="btn" style="padding:8px 18px; font-size:12px; font-weight:800;" id="dash-btn-continue" onclick="CGL_OS.launchContinueTrainingDrill()">
@@ -413,7 +155,7 @@
         <button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" id="btn-neglect-drill">5-Q Tuneup</button>
       </div>
 
-      <!-- Saved Papers & Mission Cartridges -->
+      <!-- Saved Papers & Blueprints Cartridges -->
       <div style="margin-bottom:14px;">
         <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px; display:flex; justify-content:space-between;">
           <span>Saved Papers & Blueprints</span>
@@ -494,8 +236,9 @@
       </div>
     </div>
 
-    <!-- ==================== [END OF PART 1 OF 2] ==================== -->
-    <!-- ==================== 6. TAB 2: PRACTICE LAB // QUESTION CONTROL CENTER ==================== -->
+    <!-- ------------------------------------------------------------------
+         VIEW 2: TAB DOJO // PRACTICE LAB (QUESTION CONTROL CENTER)
+         ------------------------------------------------------------------ -->
     <div id="tab-dojo" class="view-container">
       <div class="card" style="background:linear-gradient(135deg, #0e172a, #070c18); border-color:var(--accent-cyan);">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
@@ -565,19 +308,26 @@
         </div>
       </div>
 
-      <!-- Inventory Metrics Bar -->
+      <!-- Inventory Metrics & Batch Selection Bar -->
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding:0 4px; font-size:11.5px;">
         <span style="color:var(--text-muted);">
-          Showing <b id="practice-filtered-count" style="color:#fff;">0</b> matching questions
+          Matching: <b id="practice-filtered-count" style="color:#fff;">0</b> questions
         </span>
         <div style="display:flex; gap:8px;">
-          <button class="btn btn-secondary" style="padding:3px 8px; font-size:10.5px;" onclick="CGL_OS.selectAllVisiblePractice(true)">Select All</button>
-          <button class="btn btn-secondary" style="padding:3px 8px; font-size:10.5px;" onclick="CGL_OS.selectAllVisiblePractice(false)">Clear</button>
+          <button class="btn btn-secondary" style="padding:3px 8px; font-size:10.5px;" onclick="CGL_OS.selectAllVisiblePractice(true)">Select Page</button>
+          <button class="btn btn-secondary" style="padding:3px 8px; font-size:10.5px;" onclick="CGL_OS.selectAllVisiblePractice(false)">Clear Selection</button>
         </div>
       </div>
 
-      <!-- Question Inventory List Container -->
-      <div id="practice-question-rows" style="margin-bottom:70px;"></div>
+      <!-- Question Inventory List Container (Populated via Paged Virtual Slices) -->
+      <div id="practice-question-rows"></div>
+
+      <!-- PAGINATION CONTROLS (Prevents 2,300+ Question CPU Lockup) -->
+      <div id="practice-pagination-controls" style="display:flex; justify-content:space-between; align-items:center; margin:16px 0 90px 0; padding:10px 14px; background:#0d1322; border-radius:10px; border:1px solid var(--border-color);">
+        <button class="btn btn-secondary" id="btn-practice-prev-page" style="padding:6px 12px; font-size:11.5px;" onclick="CGL_OS.navPracticePage(-1)">◄ Previous 25</button>
+        <span id="practice-page-info" style="font-size:11.5px; font-weight:700; color:var(--accent-cyan); font-family:var(--font-mono);">Page 1 of 1</span>
+        <button class="btn btn-secondary" id="btn-practice-next-page" style="padding:6px 12px; font-size:11.5px;" onclick="CGL_OS.navPracticePage(1)">Next 25 ►</button>
+      </div>
 
       <!-- Sticky Bottom Selection Action Bar -->
       <div id="practice-sticky-bar" style="position:fixed; bottom:var(--bottom-nav-height); left:0; right:0; background:rgba(8,12,20,0.96); backdrop-filter:blur(16px); border-top:1px solid rgba(56,189,248,0.3); padding:10px 14px; z-index:900; display:flex; justify-content:space-between; align-items:center;">
@@ -595,7 +345,9 @@
       </div>
     </div>
 
-    <!-- ==================== 7. TAB 3: CONSOLE & MASTER FORENSIC STUDIO ==================== -->
+    <!-- ------------------------------------------------------------------
+         VIEW 3: TAB CONSOLE // MASTER FORENSIC STUDIO & COMMAND BUS
+         ------------------------------------------------------------------ -->
     <div id="tab-console" class="view-container">
       
       <!-- Primary Command Bus & AI Dispatch -->
@@ -681,7 +433,7 @@
             <label>Telemetry Filter</label>
             <select id="scoped-export-filter" class="form-control" style="padding:6px; font-size:12px;">
               <option value="ALL">All Telemetry (Full Slice)</option>
-              <option value="TRAPS_ONLY">Cognitive Traps & Hesitations Only</option>
+              <option value="TRAPS_ONLY">Cognitive Traps &amp; Hesitations Only</option>
               <option value="PANIC_ONLY">Panic Slips (&lt;12s solves) Only</option>
             </select>
           </div>
@@ -715,7 +467,7 @@
               <option value="store_active_session">store_active_session</option>
               <option value="store_config">store_config</option>
             </select>
-            <button class="btn btn-cyan" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.exportCurrentSelectedStoreJson()" title="Export whichever table is currently selected">
+            <button class="btn btn-cyan" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.exportCurrentSelectedStoreJson()" title="Export table">
               💾 Export Table (.json)
             </button>
           </div>
@@ -734,11 +486,13 @@
       </div>
     </div>
 
-    <!-- ==================== 8. TAB 4: FLASHCARD VAULT & ANKI FORGE ==================== -->
+    <!-- ------------------------------------------------------------------
+         VIEW 4: TAB VAULT // FLASHCARD VAULT & ANKI FORGE
+         ------------------------------------------------------------------ -->
     <div id="tab-vault" class="view-container">
       <div class="card" style="border-color: rgba(163, 113, 247, 0.4); background: linear-gradient(135deg, #121021 0%, #090c12 100%);">
         <div class="card-title" style="color: #a371f7;">
-          <span>Flashcard Vault & Anki Forge</span>
+          <span>Flashcard Vault &amp; Anki Forge</span>
           <div style="display:flex; gap:6px; align-items:center;">
             <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openFlashcardEditorModal(true)">+ New Card</button>
             <button class="btn btn-purple" style="padding:2px 10px; font-size:11px;" onclick="CGL_OS.openAnkiExportModal()">⚡ Export to Anki</button>
@@ -794,7 +548,7 @@
 
       <!-- Plain Text, Backup & PDF Exports -->
       <div class="card">
-        <div class="card-title">Universal Plain Text & Typeset PDF Exports</div>
+        <div class="card-title">Universal Plain Text &amp; Typeset PDF Exports</div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
           <button class="btn btn-secondary" style="font-size: 12px;" onclick="CGL_OS.exportFullBackup()">Export Full Backup (.json)</button>
           <button class="btn btn-secondary" style="font-size: 12px;" onclick="CGL_OS.openBackupRestoreModal()">Restore Backup (.json)</button>
@@ -808,7 +562,284 @@
 
   </div> <!-- /#app-viewport-root -->
 
-  <!-- ==================== 9. NATIVE NEW QUESTION CREATOR MODAL ==================== -->
+
+  <!-- ==================================================================
+       ROOT-LEVEL OVERLAYS & MODALS (DECOUPLED FROM INACTIVE TAB CONTAINERS)
+       ================================================================== -->
+
+  <!-- 1. FULLSCREEN EXAM ARENA -->
+  <div id="exam-arena">
+    <div class="arena-header">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button class="hud-icon-btn" id="btn-arena-pause" title="Pause / Minimize">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </button>
+        <button class="btn btn-amber" id="btn-arena-early-lock" style="padding:4px 10px; font-size:11px; display:none;" onclick="CGL_OS.requestEndSectionEarly()">
+          🔒 Lock Section Early
+        </button>
+        <button class="btn btn-secondary" id="btn-arena-exit-review" style="padding:4px 10px; font-size:11px; display:none;" onclick="CGL_OS.exitReviewArena()">
+          ✕ Exit Review
+        </button>
+      </div>
+
+      <div style="text-align:center;">
+        <div id="hud-countdown" class="hud-timer">15:00</div>
+        <div style="font-size:10px; color:var(--text-muted);" id="hud-test-title">SSC CGL Mock</div>
+      </div>
+
+      <div style="display:flex; gap:6px;">
+        <button class="hud-icon-btn" id="btn-arena-research" style="display:none;" onclick="CGL_OS.openOmniResearchForCurrentQuestion()" title="Omni Deep Dive / Wikipedia / Math Plot">
+          🌐
+        </button>
+        <button class="hud-icon-btn" id="btn-toggle-exam-palette" onclick="CGL_OS.toggleExamPalette()" title="Open Question Palette">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="sectional-banner">
+      <div style="display:flex; align-items:center; gap:6px;">
+        <span class="badge" style="background:#1f6feb;" id="hud-section-badge">SECTION: QUANT</span>
+        <span style="font-size:11px; color:var(--accent-cyan);" id="hud-section-qinfo">Q1 of 25</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <span id="hud-panic-flag" class="badge" style="background:#da3633; display:none;">⚡ PANIC SLIP</span>
+        <span id="hud-pacing-status" style="font-family:var(--font-mono); color:var(--text-muted);">0s spent</span>
+      </div>
+    </div>
+
+    <div id="arena-lock-toast" style="display:none; background:#d29922; color:#000; font-size:12px; font-weight:700; padding:6px 14px; text-align:center;"></div>
+
+    <div class="arena-body" id="arena-body">
+      <div class="question-header">
+        <div class="q-number-pill" id="arena-q-num">Q1</div>
+        <div class="q-clock-pill">
+          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <span id="arena-q-timer">00:00</span>
+        </div>
+      </div>
+
+      <div id="arena-review-telemetry-banner" style="display:none; margin-bottom:12px;"></div>
+      <div class="q-text-canvas" id="arena-q-text"></div>
+      <div class="q-image-container" id="arena-image-container" style="display:none;"></div>
+      <div id="arena-options-container"></div>
+
+      <div id="arena-concept-bridge-box" style="display:none; margin:14px 0; background:rgba(56, 189, 248, 0.05); border:1px solid rgba(56, 189, 248, 0.2); border-radius:10px; padding:12px;">
+        <div style="font-size:10.5px; font-weight:800; color:var(--accent-cyan); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:8px;">// Associated Concept Sheets</div>
+        <div id="arena-concept-pills-wrap"></div>
+      </div>
+
+      <div id="arena-review-solution-block" style="display:none; margin-top:14px; background:#0b0f17; border:1px solid var(--border-color); border-radius:10px; padding:14px;"></div>
+    </div>
+
+    <div class="arena-footer">
+      <button class="btn btn-secondary" style="padding:8px 14px;" id="btn-q-prev">Previous</button>
+      <button class="btn btn-secondary" style="padding:8px 12px; font-size:12px; color:var(--accent-purple);" id="btn-q-review">Mark Review</button>
+      <button class="btn" style="padding:8px 18px;" id="btn-q-save-next">Save &amp; Next</button>
+    </div>
+  </div>
+
+  <!-- EXAM PALETTE DRAWER -->
+  <div class="drawer-overlay" id="exam-drawer-overlay" onclick="CGL_OS.toggleExamPalette(false)"></div>
+  <div class="palette-drawer-ui" id="exam-palette-drawer">
+    <div style="padding:14px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+      <h3 style="font-size:14px; font-weight:700;" id="palette-drawer-title">Question Palette</h3>
+      <span class="badge" style="background:#1f6feb;" id="exam-drawer-sec-badge">PART - A</span>
+    </div>
+    
+    <div id="exam-palette-section-tabs" style="display:flex; overflow-x:auto; padding:8px 12px; background:#07090e; border-bottom:1px solid var(--border-color); gap:6px;"></div>
+
+    <div id="palette-legend-bar" style="padding:10px 14px; background:#07090e; font-size:12px; display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color);">
+      <span>🟢 Ans: <b id="exam-count-ans">0</b></span>
+      <span>🟣 Marked: <b id="exam-count-marked">0</b></span>
+      <span>⚪ Unans: <b id="exam-count-unans">0</b></span>
+    </div>
+    <div class="palette-scroll-body">
+      <div class="palette-grid" id="exam-palette-grid"></div>
+    </div>
+    <div id="palette-footer-actions" style="padding:14px; border-top:1px solid var(--border-color); display:flex; flex-direction:column; gap:8px;">
+      <button class="btn btn-amber" id="btn-drawer-early-lock" style="width:100%; font-size:13px; padding:10px; display:none;" onclick="CGL_OS.requestEndSectionEarly()">
+        🔒 Lock &amp; Advance Current Section
+      </button>
+      <button class="btn btn-danger" style="width:100%; font-size:14px; padding:12px;" id="btn-submit-exam">Submit Full Test</button>
+    </div>
+  </div>
+
+  <!-- 2. UNTIMED DOJO ARENA VIEW (CLINIC) -->
+  <div id="dojo-arena-view">
+    <div class="arena-header">
+      <button class="hud-icon-btn" onclick="CGL_OS.exitDojoArena()">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      </button>
+      <div style="text-align:center;">
+        <div style="font-size:14px; font-weight:800; color:var(--accent-cyan);" id="dojo-arena-title">Dojo Practice</div>
+        <div style="font-size:10px; color:var(--text-muted);">Untimed Active Recall &amp; Method Clinic</div>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <button class="hud-icon-btn" onclick="CGL_OS.openOmniResearchForDojoQuestion()" title="Omni Deep Dive">🌐</button>
+        <button class="hud-icon-btn" onclick="CGL_OS.toggleDojoPalette(true)">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="sectional-banner" style="flex-wrap:wrap; gap:6px;">
+      <div style="display:flex; gap:6px; align-items:center;">
+        <span class="badge" style="background:#238636;" id="dojo-arena-chap-badge">QA_PERCENTAGE</span>
+        <span class="badge" style="background:#151a24; color:#38bdf8;" id="dojo-arena-method-badge">General</span>
+      </div>
+      <div id="dojo-concept-pills-wrap"></div>
+      <div>
+        <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openEditCurrentDojoQuestion()">Edit Q</button>
+      </div>
+    </div>
+
+    <div id="dojo-theory-banner" style="display:none; background:#111622; padding:10px 14px; border-bottom:1px solid var(--border-color); font-size:12px; line-height:1.5;"></div>
+
+    <div class="arena-body" id="dojo-arena-body">
+      <div class="question-header">
+        <div class="q-number-pill" id="dojo-arena-qnum">1</div>
+        <span style="font-size:12px; color:var(--text-muted);" id="dojo-arena-total-tag">Question 1 of 10</span>
+      </div>
+
+      <div class="q-text-canvas" id="dojo-arena-qtext"></div>
+      <div class="q-image-container" id="dojo-image-container" style="display:none;"></div>
+      <div id="dojo-arena-options"></div>
+
+      <div id="dojo-arena-feedback" style="display:none; padding:10px; border-radius:8px; margin:12px 0; font-size:13px; font-weight:700;"></div>
+
+      <button class="btn btn-secondary" style="width:100%; margin-top:10px; font-size:13px;" onclick="CGL_OS.toggleDojoMethod()">
+        Reveal Method &amp; Solution
+      </button>
+
+      <div id="dojo-arena-method-box" style="display:none; margin-top:12px; padding:12px; background:#151a24; border-left:3px solid var(--accent-blue); border-radius:4px; font-size:13px; line-height:1.6;"></div>
+
+      <div class="form-group" style="margin-top:14px;">
+        <label>Personal Solving Cue / Annotation (Auto-Saves to Device)</label>
+        <textarea id="dojo-arena-annotation" class="form-control" style="height:60px;" placeholder="Personal shortcut, trap caveat, or formula reminder..." oninput="CGL_OS.autoSaveDojoAnnotation(this.value)"></textarea>
+      </div>
+    </div>
+
+    <div class="arena-footer">
+      <button class="btn btn-secondary" style="padding:8px 14px;" onclick="CGL_OS.navDojoArena(-1)">Previous</button>
+      <button class="btn btn-secondary" style="padding:8px 14px;" onclick="CGL_OS.toggleDojoPalette(true)">Palette</button>
+      <button class="btn" style="padding:8px 18px;" onclick="CGL_OS.navDojoArena(1)">Next Question</button>
+    </div>
+  </div>
+
+  <!-- DOJO PALETTE DRAWER -->
+  <div class="drawer-overlay" id="dojo-drawer-overlay" onclick="CGL_OS.toggleDojoPalette(false)"></div>
+  <div class="palette-drawer-ui" id="dojo-palette-drawer">
+    <div style="padding:14px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+      <h3 style="font-size:14px; font-weight:700;">Dojo Bank Navigator</h3>
+      <span class="badge" style="background:#238636;" id="dojo-palette-count-badge">0 Qs</span>
+    </div>
+    <div class="palette-scroll-body" id="dojo-palette-scroll-body"></div>
+  </div>
+
+  <!-- 3. LIVING KNOWLEDGE STUDIO FULLSCREEN VIEW -->
+  <div id="compendium-fullscreen-view">
+    <div class="compendium-header" style="background:#090e18; border-bottom:1px solid var(--border-color); padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button class="hud-icon-btn" onclick="CGL_OS.closeCompendiumStudio()" title="Close Compendium">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        </button>
+        <div>
+          <div style="font-size:14px; font-weight:800; color:#38bdf8;" id="comp-studio-header-title">Living Knowledge Studio</div>
+          <div style="font-size:10px; color:var(--text-muted);" id="comp-studio-header-sub">Structured A4 Engineering Sheets</div>
+        </div>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.openOmniSearchModal()" title="Global Omni-Search">🔍 Search</button>
+        <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.openConceptEditorModal(false)" title="Edit Current Sheet">✎ Edit</button>
+        <button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.deleteCurrentCompendiumSheet()" title="Delete Current Sheet">🗑</button>
+      </div>
+    </div>
+
+    <!-- Selector & Sheet Control Bar -->
+    <div style="display:grid; grid-template-columns: 95px 1fr auto; gap:6px; padding:8px 14px; background:#070a10; border-bottom:1px solid var(--border-color); align-items:center; flex-shrink:0;">
+      <select id="comp-studio-subject-select" class="form-control" style="padding:6px; font-size:12px; font-weight:700;" onchange="CGL_OS.handleCompStudioSubjectChange(this.value)"></select>
+      <div style="display:flex; gap:4px; align-items:center; overflow:hidden;">
+        <select id="comp-studio-chapter-select" class="form-control" style="padding:6px; font-size:12px;" onchange="CGL_OS.handleCompStudioChapterChange(this.value)"></select>
+        <button class="btn btn-secondary" style="padding:6px 8px; font-size:11px;" onclick="CGL_OS.promptCreateNewChapter()" title="Add New Chapter Tag">+</button>
+      </div>
+      <button class="btn" style="padding:6px 10px; font-size:11px; white-space:nowrap;" onclick="CGL_OS.openConceptEditorModal(true)">+ New Sheet</button>
+    </div>
+
+    <!-- Sticky Sheets Tab Bar -->
+    <div class="comp-tabs-bar" id="comp-studio-sheet-tabs"></div>
+
+    <!-- Bi-Directional Bridge: Questions Associated with this Sheet -->
+    <div id="comp-linked-questions-bar" style="background:#090e18; border-bottom:1px solid var(--border-color); padding:6px 14px; display:flex; justify-content:space-between; align-items:center; font-size:11px; flex-shrink:0;">
+      <span style="color:var(--accent-cyan); font-weight:700;" id="comp-linked-q-count">0 Associated Questions Linked</span>
+      <button class="btn btn-secondary" style="padding:3px 8px; font-size:11px;" id="btn-drill-sheet-questions" onclick="CGL_OS.launchCurrentSheetQuestionsDrill()">⚡ Drill Sheet Qs</button>
+    </div>
+
+    <!-- Living Document Canvas Body (Vertical Reading Only; Gesture-Safe) -->
+    <div class="comp-document-canvas" id="comp-studio-canvas">
+      <div id="comp-studio-doc-content"></div>
+
+      <div style="margin-top:28px; border-top:1px solid var(--border-color); padding-top:14px;">
+        <label style="font-size:11px; font-weight:700; color:var(--text-muted); display:flex; justify-content:space-between;">
+          <span>Sheet Revision Cue / Personal Scratchpad (Auto-Saves)</span>
+          <span id="comp-scratchpad-status" style="color:var(--status-green); font-size:10px; display:none;">Saved</span>
+        </label>
+        <textarea id="comp-studio-scratchpad" class="form-control" style="height:70px; margin-top:6px;" placeholder="Personal formula reminder, exam trap caveats..." oninput="CGL_OS.autoSaveCompScratchpad(this.value)"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. PAUSE OVERLAY SHIELD -->
+  <div id="pause-shield">
+    <h2 style="font-size:22px; font-weight:800; margin-bottom:8px; color:#fff;">TEST PAUSED</h2>
+    <p style="font-size:13px; color:var(--text-muted); max-width:280px; margin-bottom:20px;">
+      Timer halted. Telemetry &amp; session state frozen safely in IndexedDB.
+    </p>
+    <div style="display:flex; flex-direction:column; gap:10px; width:220px;">
+      <button class="btn" id="btn-resume-exam" style="padding:12px;">Resume Now</button>
+      <button class="btn btn-secondary" id="btn-minimize-exam" style="border-color:var(--accent-blue); color:var(--accent-cyan); padding:12px;">Minimize to App</button>
+      <button class="btn btn-danger" style="margin-top:6px; font-size:12px; padding:10px;" id="btn-exit-exam">Exit &amp; Abandon</button>
+    </div>
+  </div>
+
+
+  <!-- ==================== ALL ROOT-LEVEL MODALS ==================== -->
+
+  <!-- Modal: Section Lock Confirm -->
+  <div class="modal-overlay" id="modal-section-lock-confirm">
+    <div class="modal-window" style="max-width:400px; text-align:center;">
+      <h3 style="font-size:18px; font-weight:800; color:var(--status-amber); margin-bottom:8px;">Lock Section Early?</h3>
+      <p style="font-size:13px; color:var(--text-muted); line-height:1.5; margin-bottom:14px;" id="lock-confirm-msg">
+        You have time remaining in this section. Once submitted, this section will be permanently locked and cannot be revisited.
+      </p>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <button class="btn btn-secondary" onclick="document.getElementById('modal-section-lock-confirm').classList.remove('active')">Cancel</button>
+        <button class="btn btn-amber" onclick="CGL_OS.confirmEndSectionEarly()">Lock &amp; Proceed</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Synapse Knowledge Tree -->
+  <div class="modal-overlay" id="modal-synapse-tree">
+    <div class="modal-window" style="max-width:760px; max-height:92vh; display:flex; flex-direction:column;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+        <div>
+          <h3 style="font-size:16px; font-weight:800; color:var(--accent-cyan);">🧠 Synapse Knowledge Graph</h3>
+          <span style="font-size:11px; color:var(--text-muted);">Syllabus Hierarchy • Progressive Disclosure • Direct Drill</span>
+        </div>
+        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-synapse-tree').classList.remove('active')">✕</button>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:8px;">
+        <span style="font-size:11px; color:var(--text-muted);">Explore subjects, chapters, and live concept dossiers directly</span>
+        <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.setSynapseLevel('SUBJECTS')">Reset to Root</button>
+      </div>
+
+      <div class="synapse-tree-container" id="synapse-dom-tree-root"></div>
+    </div>
+  </div>
+
+  <!-- Modal: Native New Question Creator -->
   <div class="modal-overlay child-layer" id="modal-new-question-creator">
     <div class="modal-window" style="max-width:680px; max-height:92vh;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -887,7 +918,7 @@
       </div>
 
       <div class="form-group">
-        <label>Step-by-Step Method & Explanation</label>
+        <label>Step-by-Step Method &amp; Explanation</label>
         <textarea id="new-q-explanation" class="form-control" style="height:80px;" placeholder="Explain the derivation, shortcut, or formula..."></textarea>
       </div>
 
@@ -904,24 +935,23 @@
 
       <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px; border-top:1px solid var(--border-color); padding-top:12px;">
         <button class="btn btn-secondary" onclick="document.getElementById('modal-new-question-creator').classList.remove('active')">Cancel</button>
-        <button class="btn btn-secondary" style="color:var(--accent-cyan); border-color:var(--accent-cyan);" onclick="CGL_OS.submitNewQuestionCreator(true)">Save & Add Another</button>
+        <button class="btn btn-secondary" style="color:var(--accent-cyan); border-color:var(--accent-cyan);" onclick="CGL_OS.submitNewQuestionCreator(true)">Save &amp; Add Another</button>
         <button class="btn" onclick="CGL_OS.submitNewQuestionCreator(false)">Save Question</button>
       </div>
     </div>
   </div>
 
-  <!-- ==================== 10. MOCK LAB // DYNAMIC GENERATOR MODAL ==================== -->
+  <!-- Modal: Dynamic Mock Lab & Builder -->
   <div class="modal-overlay child-layer" id="modal-mock-builder">
     <div class="modal-window" style="max-width:680px; max-height:92vh;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
         <div>
-          <h3 style="font-size:17px; font-weight:800; color:#38bdf8;">🧪 MOCK LAB & GENERATOR</h3>
+          <h3 style="font-size:17px; font-weight:800; color:#38bdf8;">🧪 MOCK LAB &amp; GENERATOR</h3>
           <span style="font-size:11px; color:var(--text-muted);">Dynamic Sampling • Weakness Focus • Anti-Repetition</span>
         </div>
         <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-mock-builder').classList.remove('active')">✕</button>
       </div>
 
-      <!-- Strategy Selector Buttons -->
       <div class="form-group">
         <label>What do you want to train?</label>
         <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:4px;">
@@ -991,7 +1021,7 @@
         <div class="form-group" style="margin-top:10px; margin-bottom:0;">
           <label>Sectional Clock Auto-Lock</label>
           <select id="builder-sectional-lock" class="form-control">
-            <option value="YES">Yes (Lock & Advance on Expiry / Early Seal)</option>
+            <option value="YES">Yes (Lock &amp; Advance on Expiry / Early Seal)</option>
             <option value="NO">No (Free Section Switching)</option>
           </select>
         </div>
@@ -1010,7 +1040,7 @@
     </div>
   </div>
 
-  <!-- ==================== 11. GLOBAL UNIFIED SEARCH COCKPIT MODAL ==================== -->
+  <!-- Modal: Global Search Cockpit -->
   <div class="modal-overlay child-layer" id="modal-global-search">
     <div class="modal-window" style="max-width:760px; max-height:90vh; display:flex; flex-direction:column;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1036,13 +1066,13 @@
     </div>
   </div>
 
-  <!-- ==================== 12. COGNITIVE TRAP CLINIC MODAL ==================== -->
+  <!-- Modal: Cognitive Trap Clinic -->
   <div class="modal-overlay child-layer" id="modal-trap-clinic">
     <div class="modal-window" style="max-width:680px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
         <div>
           <h3 style="font-size:16px; font-weight:800; color:var(--status-red);" id="trap-clinic-title">Cognitive Trap Clinic</h3>
-          <span style="font-size:11px; color:var(--text-muted);" id="trap-clinic-sub">Historical Mistake Biopsy & Direct Drill</span>
+          <span style="font-size:11px; color:var(--text-muted);" id="trap-clinic-sub">Historical Mistake Biopsy &amp; Direct Drill</span>
         </div>
         <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-trap-clinic').classList.remove('active')">✕ Close</button>
       </div>
@@ -1061,7 +1091,7 @@
     </div>
   </div>
 
-  <!-- ==================== 13. STAGE 1: ANALYTICAL COCKPIT MODAL ==================== -->
+  <!-- Modal: Mock Analytical Cockpit -->
   <div class="modal-overlay child-layer" id="modal-mock-review">
     <div class="modal-window" style="max-width:720px; max-height:92vh;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px; flex-wrap:wrap; gap:8px;">
@@ -1078,13 +1108,11 @@
         </div>
       </div>
 
-      <!-- Iteration Switcher -->
       <div id="rev-attempt-switcher-wrap" style="display:none; background:#070a10; border:1px solid var(--border-color); border-radius:8px; padding:8px 12px; margin-bottom:10px; justify-content:space-between; align-items:center;">
         <span style="font-size:11.5px; font-weight:700; color:var(--accent-cyan);">Inspect Attempt Iteration:</span>
         <select id="rev-attempt-select" class="form-control" style="width:auto; padding:4px 8px; font-size:11px;" onchange="CGL_OS.switchReviewAttempt(this.value)"></select>
       </div>
 
-      <!-- Metric Tiles -->
       <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:10px; text-align:center;">
         <div style="background:var(--bg-elevated); padding:8px; border-radius:6px;">
           <div style="font-size:10px; color:var(--text-muted);">SCORE</div>
@@ -1104,7 +1132,6 @@
         </div>
       </div>
 
-      <!-- Pacing Audit -->
       <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:12px; text-align:center;">
         <div class="forensic-tile">
           <div style="font-size:9px; color:var(--status-purple);">PENALTY DRAG</div>
@@ -1115,31 +1142,28 @@
           <div style="font-size:14px; font-weight:800; color:#38bdf8;" id="rev-switch-delta">0 Net</div>
         </div>
         <div class="forensic-tile">
-          <div style="font-size:9px; color:var(--status-purple);">Q-IV TIME TRAPS (>90s)</div>
+          <div style="font-size:9px; color:var(--status-purple);">Q-IV TIME TRAPS (&gt;90s)</div>
           <div style="font-size:14px; font-weight:800; color:var(--status-red);" id="rev-traps">0</div>
         </div>
       </div>
 
-      <!-- Sectional Breakdown Grid -->
       <div class="card" style="padding:10px; margin-bottom:12px;">
         <div class="card-title" style="margin-bottom:8px;">Sectional Performance Breakdown (High-Fidelity)</div>
         <div id="rev-sectional-breakdown-grid" class="sec-fidelity-grid"></div>
       </div>
 
-      <!-- Cognitive Trap Badges -->
       <div class="card" style="padding:10px; margin-bottom:14px;">
         <div class="card-title" style="margin-bottom:6px;">Cognitive Trap Distribution</div>
         <div id="rev-mistake-tags-pills" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
       </div>
 
-      <!-- Action Button -->
       <button class="btn" style="width:100%; padding:14px; font-size:15px; font-weight:800; box-shadow:0 0 16px rgba(37, 99, 235, 0.4);" onclick="CGL_OS.enterFullScreenReviewArena()">
         📖 Enter Full-Screen Review Arena
       </button>
     </div>
   </div>
 
-  <!-- ==================== 14. OMNI-RESEARCH CONTEXT DRAWER ==================== -->
+  <!-- Modal: Omni Research Drawer -->
   <div class="modal-overlay" id="modal-omni-research">
     <div class="modal-window" style="max-width:540px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1167,7 +1191,7 @@
         <a id="omni-link-google" class="btn btn-secondary" target="_blank" rel="noopener noreferrer" style="justify-content:flex-start; text-decoration:none;">
           <span style="font-size:16px;">🔍</span>
           <div style="text-align:left;">
-            <div style="font-size:13px; font-weight:700;">Google Search & Image Diagrams</div>
+            <div style="font-size:13px; font-weight:700;">Google Search &amp; Image Diagrams</div>
             <div style="font-size:10px; color:var(--text-muted);">Visual proofs, SSC PYQ discussions, and architectural maps</div>
           </div>
         </a>
@@ -1183,7 +1207,7 @@
     </div>
   </div>
 
-  <!-- ==================== 15. SUBJECT DIAGNOSTIC MODAL ==================== -->
+  <!-- Modal: Subject Diagnostic -->
   <div class="modal-overlay" id="modal-subject-diagnostic">
     <div class="modal-window" style="max-width:560px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1212,12 +1236,12 @@
         ⚡ Launch 10-Q Subject Blitz
       </button>
 
-      <div class="card-title">Chapter Coverage & Vulnerabilities</div>
+      <div class="card-title">Chapter Coverage &amp; Vulnerabilities</div>
       <div id="diag-chapter-coverage-list" style="max-height:260px; overflow-y:auto;"></div>
     </div>
   </div>
 
-  <!-- ==================== 16. COMPENDIUM OMNI-SEARCH MODAL ==================== -->
+  <!-- Modal: Compendium Omni Search -->
   <div class="modal-overlay" id="modal-comp-omni-search">
     <div class="modal-window" style="max-width:640px; max-height:85vh; display:flex; flex-direction:column;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1233,13 +1257,13 @@
     </div>
   </div>
 
-  <!-- ==================== 17. DYNAMIC TAXONOMY & MODULE MANAGER ==================== -->
+  <!-- Modal: Taxonomy & Module Manager -->
   <div class="modal-overlay" id="modal-taxonomy-manager">
     <div class="modal-window" style="max-width:540px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
         <div>
-          <h3 style="font-size:16px; font-weight:800; color:var(--accent-cyan);">Taxonomy & Module Studio</h3>
-          <span style="font-size:11px; color:var(--text-muted);">Manage Subjects, Reassign Chapters & Merge Content</span>
+          <h3 style="font-size:16px; font-weight:800; color:var(--accent-cyan);">Taxonomy &amp; Module Studio</h3>
+          <span style="font-size:11px; color:var(--text-muted);">Manage Subjects, Reassign Chapters &amp; Merge Content</span>
         </div>
         <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-taxonomy-manager').classList.remove('active')">✕</button>
       </div>
@@ -1258,7 +1282,7 @@
     </div>
   </div>
 
-  <!-- ==================== 18. MULTI-TIER AI EXPORT COCKPIT ==================== -->
+  <!-- Modal: Multi-Tier AI Export Cockpit -->
   <div class="modal-overlay" id="modal-ai-export">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1269,7 +1293,7 @@
       <div class="form-group">
         <label>Select Export Format</label>
         <select id="ai-export-mode" class="form-control" onchange="CGL_OS.updateAiExportPreview()">
-          <option value="LEAN_GEM">1. Lean Telemetry Pack (IDs, Dwell, Switches & Mistakes)</option>
+          <option value="LEAN_GEM">1. Lean Telemetry Pack (IDs, Dwell, Switches &amp; Mistakes)</option>
           <option value="DEEP_AUDIT">2. Autonomous Deep Audit (Full Text, Decision Trails, Explanations)</option>
           <option value="LONGITUDINAL">3. Longitudinal Audit (Rolling Accuracy, Nc Index, Vault Inventory)</option>
         </select>
@@ -1286,7 +1310,7 @@
     </div>
   </div>
 
-  <!-- ==================== 19. MASTER LEDGER EXPORT MODAL ==================== -->
+  <!-- Modal: Master Ledger Export -->
   <div class="modal-overlay" id="modal-ledger-export">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1295,7 +1319,7 @@
       </div>
 
       <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px;">
-        Generate static reference files grouped hierarchically by Subject & Chapter for your Gemini Gem knowledge base.
+        Generate static reference files grouped hierarchically by Subject &amp; Chapter for your Gemini Gem knowledge base.
       </p>
 
       <div class="form-group">
@@ -1312,7 +1336,7 @@
     </div>
   </div>
 
-  <!-- ==================== 20. MOCK HISTORY ARCHIVE MODAL ==================== -->
+  <!-- Modal: Mock History Archive -->
   <div class="modal-overlay" id="modal-history-archive">
     <div class="modal-window" style="max-width:680px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1331,7 +1355,7 @@
     </div>
   </div>
 
-  <!-- ==================== 21. CHAPTER DEEP DIVE INSPECTOR ==================== -->
+  <!-- Modal: Chapter Deep Dive Inspector -->
   <div class="modal-overlay" id="modal-chapter-inspector">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1366,7 +1390,7 @@
     </div>
   </div>
 
-  <!-- ==================== 22. PUBLISHING-GRADE TYPESET PRINT BOOK CONFIG ==================== -->
+  <!-- Modal: Publishing-Grade Typeset Print Book Spooler -->
   <div class="modal-overlay" id="modal-print-config">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1375,9 +1399,9 @@
       </div>
 
       <div class="form-group">
-        <label>Document Layout & Preset</label>
+        <label>Document Layout &amp; Preset</label>
         <select id="print-type" class="form-control" onchange="CGL_OS.handlePrintTypeChange(this.value)">
-          <option value="COMPENDIUM">1. Typeset Formula Book & Knowledge Compendium (Cover + TOC)</option>
+          <option value="COMPENDIUM">1. Typeset Formula Book &amp; Knowledge Compendium (Cover + TOC)</option>
           <option value="QUESTIONS">2. Standard Question Bank Practice Paper (Dual-Column)</option>
           <option value="PAST_MOCK">3. Completed Mock Exam Review Paper (Full Audit)</option>
           <option value="FLASHCARDS">4. Flashcard Vault Summary Sheet (Linear Reference)</option>
@@ -1409,12 +1433,12 @@
       </div>
 
       <button class="btn" style="width:100%; margin-top:8px; padding:12px; font-weight:800;" onclick="CGL_OS.generateAndPrintSheet()">
-        ⚡ Compile & Print Typeset PDF Document
+        ⚡ Compile &amp; Print Typeset PDF Document
       </button>
     </div>
   </div>
 
-  <!-- ==================== 23. SAVE BLUEPRINT / FIXED PAPER MODAL ==================== -->
+  <!-- Modal: Save Blueprint / Fixed Paper -->
   <div class="modal-overlay" id="modal-save-blueprint">
     <div class="modal-window" style="max-width:440px;">
       <h3 style="font-size:16px; font-weight:800; margin-bottom:10px;" id="save-preset-modal-title">Save Mock Blueprint</h3>
@@ -1429,7 +1453,7 @@
     </div>
   </div>
 
-  <!-- ==================== 24. TOPIC DOSSIER EDITOR ==================== -->
+  <!-- Modal: Topic Dossier Editor -->
   <div class="modal-overlay" id="modal-concept-editor">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1457,7 +1481,7 @@
 
       <div class="form-group">
         <label>Subtopic / Focus Cue</label>
-        <input type="text" id="concept-edit-sub" class="form-control" placeholder="e.g. Multiplier Method & Effective Formula">
+        <input type="text" id="concept-edit-sub" class="form-control" placeholder="e.g. Multiplier Method &amp; Effective Formula">
       </div>
 
       <div class="form-group">
@@ -1482,7 +1506,7 @@
     </div>
   </div>
 
-  <!-- ==================== 25. MULTI-CONCEPT GUI QUESTION EDITOR ==================== -->
+  <!-- Modal: Multi-Concept GUI Question Editor -->
   <div class="modal-overlay" id="modal-question-editor">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1552,7 +1576,7 @@
       </div>
 
       <div class="form-group">
-        <label>Method & Explanation</label>
+        <label>Method &amp; Explanation</label>
         <textarea id="edit-q-explanation" class="form-control" style="height:70px;"></textarea>
       </div>
 
@@ -1564,11 +1588,11 @@
     </div>
   </div>
 
-  <!-- ==================== 26. ANKI UNIVERSAL CARD EDITOR ==================== -->
+  <!-- Modal: Anki Universal Card Editor -->
   <div class="modal-overlay" id="modal-flashcard-editor">
     <div class="modal-window" style="max-width:540px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
-        <h3 style="font-size:16px; font-weight:800; color:#a371f7;" id="flashcard-editor-title">Card Forge & Vault Editor</h3>
+        <h3 style="font-size:16px; font-weight:800; color:#a371f7;" id="flashcard-editor-title">Card Forge &amp; Vault Editor</h3>
         <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-flashcard-editor').classList.remove('active')">✕</button>
       </div>
 
@@ -1631,7 +1655,7 @@
     </div>
   </div>
 
-  <!-- ==================== 27. UNTIMED QUICK CAROUSEL MODAL (STUDY CARD) ==================== -->
+  <!-- Modal: Untimed Quick Carousel (Study Card) -->
   <div class="modal-overlay" id="modal-flashcard-study">
     <div class="modal-window" style="max-width:560px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1662,7 +1686,6 @@
         </div>
       </div>
 
-      <!-- User Study Rating Buttons (Immediate Study Feedback) -->
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px;">
         <button class="btn btn-secondary" style="color:var(--status-red); border-color:rgba(244,63,94,0.4);" onclick="CGL_OS.navStudyCard(1)">[ × AGAIN ]</button>
         <button class="btn btn-secondary" style="color:var(--status-green); border-color:rgba(16,185,129,0.4);" onclick="CGL_OS.navStudyCard(1)">[ ✓ KNOW ]</button>
@@ -1675,13 +1698,13 @@
     </div>
   </div>
 
-  <!-- ==================== 28. NATIVE ANKI EXPORT COCKPIT ==================== -->
+  <!-- Modal: Native Anki TSV Exporter -->
   <div class="modal-overlay" id="modal-anki-export">
     <div class="modal-window" style="max-width:560px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
         <div>
           <h3 style="font-size:16px; font-weight:800; color:#a371f7;">Native Anki TSV Exporter</h3>
-          <span style="font-size:11px; color:var(--text-muted);">Direct Android AnkiDroid & Desktop Integration</span>
+          <span style="font-size:11px; color:var(--text-muted);">Direct Android AnkiDroid &amp; Desktop Integration</span>
         </div>
         <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-anki-export').classList.remove('active')">✕</button>
       </div>
@@ -1729,7 +1752,7 @@
     </div>
   </div>
 
-  <!-- ==================== 29. DATABASE STUDIO INSPECTOR ==================== -->
+  <!-- Modal: Database Studio Inspector Viewer -->
   <div class="modal-overlay child-layer" id="modal-db-inspector-viewer">
     <div class="modal-window" style="max-width:640px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1749,7 +1772,7 @@
     </div>
   </div>
 
-  <!-- ==================== 30. DISASTER RECOVERY RESTORE MODAL ==================== -->
+  <!-- Modal: Disaster Recovery Restore -->
   <div class="modal-overlay" id="modal-backup-restore">
     <div class="modal-window" style="max-width:480px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1769,7 +1792,7 @@
       <div class="form-group">
         <label>Hydration Mode</label>
         <select id="restore-hydration-mode" class="form-control">
-          <option value="WIPE_REPLACE">Clean Disaster Recovery (Full Wipe & Replace)</option>
+          <option value="WIPE_REPLACE">Clean Disaster Recovery (Full Wipe &amp; Replace)</option>
           <option value="SAFE_MERGE">Safe Merge (Non-Destructive Append / Overwrite by Key)</option>
         </select>
       </div>
@@ -1782,20 +1805,8 @@
     </div>
   </div>
 
-  <!-- ==================== 31. HARDENED PAUSE OVERLAY SHIELD ==================== -->
-  <div id="pause-shield">
-    <h2 style="font-size:22px; font-weight:800; margin-bottom:8px; color:#fff;">TEST PAUSED</h2>
-    <p style="font-size:13px; color:var(--text-muted); max-width:280px; margin-bottom:20px;">
-      Timer halted. Telemetry & session state frozen safely in IndexedDB.
-    </p>
-    <div style="display:flex; flex-direction:column; gap:10px; width:220px;">
-      <button class="btn" id="btn-resume-exam" style="padding:12px;">Resume Now</button>
-      <button class="btn btn-secondary" id="btn-minimize-exam" style="border-color:var(--accent-blue); color:var(--accent-cyan); padding:12px;">Minimize to App</button>
-      <button class="btn btn-danger" style="margin-top:6px; font-size:12px; padding:10px;" id="btn-exit-exam">Exit & Abandon</button>
-    </div>
-  </div>
 
-  <!-- ==================== 32. BOTTOM NAVIGATION ==================== -->
+  <!-- ==================== BOTTOM NAVIGATION (UNIFIED BAR) ==================== -->
   <nav id="bottom-nav">
     <button class="nav-btn active" id="nav-btn-tab-dashboard" onclick="CGL_OS.switchTab('tab-dashboard', this)">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
@@ -1815,7 +1826,7 @@
     </button>
   </nav>
 
-  <!-- ==================== 33. PUBLISHING-GRADE TYPESET PRINT ROOT ==================== -->
+  <!-- ==================== PUBLISHING-GRADE TYPESET PRINT ROOT ==================== -->
   <div id="print-sheet-root" style="display:none;" class="print-page"></div>
 
   <!-- Master JavaScript Controller with Cache-Buster Parameter v5.0 -->
