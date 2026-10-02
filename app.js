@@ -2700,7 +2700,7 @@ const CGL_OS = (() => {
       sel.innerHTML = `<option value="ALL">All Chapters (Use Matrix Below)</option>`;
     }
 
-    mockLabSelectedMatrixChapters.clear();
+    // Retain mockLabSelectedMatrixChapters so multi-subject selections persist across Custom sections
     const chipsWrap = document.getElementById("builder-chapter-chips-wrap");
     if (chipsWrap) chipsWrap.innerHTML = "";
 
@@ -2729,7 +2729,7 @@ const CGL_OS = (() => {
     if (chipsWrap) {
       availableChapters.forEach(chap => {
         const chip = document.createElement("div");
-        chip.className = "matrix-chip";
+        chip.className = "matrix-chip" + (mockLabSelectedMatrixChapters.has(chap) ? " selected" : "");
         chip.innerText = chap;
         chip.onclick = () => handleBuilderChapterChipToggle(chap, chip);
         chipsWrap.appendChild(chip);
@@ -2737,6 +2737,9 @@ const CGL_OS = (() => {
     }
 
     updateBuilderPoolEstimate();
+    if (activeMockStrategy === "CUSTOM_BUILDER") {
+      renderCustomSequenceRows();
+    }
   }
 
   function handleBuilderChapterSelectChange(val) {
@@ -2867,10 +2870,19 @@ const CGL_OS = (() => {
       div.style.marginBottom = "8px";
 
       const subChapters = TAXONOMY[row.subject] ? TAXONOMY[row.subject].chapters : [];
+      
+      // Calculate active matrix chips matching this section's subject
+      const activeMatrixForSub = Array.from(mockLabSelectedMatrixChapters).filter(c => subChapters.includes(c));
+      const matrixBadge = activeMatrixForSub.length > 0 
+        ? `<span style="font-size:10px; color:var(--accent-cyan); font-weight:700;">[Matrix: ${activeMatrixForSub.length} chapter(s) active]</span>` 
+        : `<span style="font-size:10px; color:var(--text-muted);">[Matrix: All chapters]</span>`;
 
       div.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-          <span style="font-weight:700; font-size:12px; color:var(--accent-cyan);">Section ${idx + 1}</span>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-weight:700; font-size:12px; color:var(--accent-cyan);">Section ${idx + 1}</span>
+            ${matrixBadge}
+          </div>
           ${customSequenceRows.length > 1 ? `<button class="btn btn-secondary" style="padding:2px 6px; font-size:10px; color:var(--status-red);" onclick="CGL_OS.removeCustomSectionRow(${idx})">Remove</button>` : ''}
         </div>
         <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:6px;">
@@ -2883,7 +2895,7 @@ const CGL_OS = (() => {
           <div>
             <label style="font-size:10px; color:var(--text-muted);">Chapter</label>
             <select class="form-control" style="padding:6px; font-size:11px;" onchange="CGL_OS.updateCustomRowChapter(${idx}, this.value)">
-              <option value="ALL">All</option>
+              <option value="ALL">All (Use Matrix)</option>
               ${subChapters.map(c => `<option value="${c}" ${row.chapter === c ? 'selected' : ''}>${c}</option>`).join('')}
             </select>
           </div>
@@ -3004,9 +3016,18 @@ const CGL_OS = (() => {
       for (let sIdx = 0; sIdx < customSequenceRows.length; sIdx++) {
         const row = customSequenceRows[sIdx];
         let pool = allQuestions.filter(q => q.subject === row.subject);
+        
+        // Scope pool by active matrix chips matching this section's subject
+        const matrixChapsForSub = Array.from(mockLabSelectedMatrixChapters).filter(c => {
+          return TAXONOMY[row.subject] && TAXONOMY[row.subject].chapters.includes(c);
+        });
+
         if (row.chapter && row.chapter !== "ALL") {
           pool = pool.filter(q => q.chapter === row.chapter);
+        } else if (matrixChapsForSub.length > 0) {
+          pool = pool.filter(q => matrixChapsForSub.includes(q.chapter));
         }
+
         if (pool.length === 0) pool = allQuestions.filter(q => q.subject === row.subject);
         if (pool.length === 0) pool = allQuestions;
 
@@ -4696,6 +4717,101 @@ const CGL_OS = (() => {
     const allQs = await getAllRecords("store_questions");
     const selected = allQs.filter(q => practiceSelectedIds.has(q.id));
     await compileAndLaunchArena(`Custom Drill (${selected.length} Qs)`, selected, Math.max(5, Math.round(selected.length * 1.5)), false);
+  }
+    async function getCurrentlyFilteredPracticeQuestions() {
+    const sub = document.getElementById("practice-filter-subject")?.value || "ALL";
+    const chap = document.getElementById("practice-filter-chapter")?.value || "ALL";
+    const diff = document.getElementById("practice-filter-difficulty")?.value || "ALL";
+    const perf = document.getElementById("practice-filter-performance")?.value || "ALL";
+
+    const allQs = await getAllRecords("store_questions");
+    const perfMap = await PerformanceService.getQuestionPerformanceMap();
+    const now = Date.now();
+    const sevenDaysAgo = now - (7 * 24 * 60 * 60 * 1000);
+
+    return allQs.filter(q => {
+      if (sub !== "ALL" && q.subject !== sub) return false;
+      if (chap !== "ALL" && q.chapter !== chap) return false;
+      if (diff !== "ALL" && q.difficulty !== diff) return false;
+
+      const pStats = perfMap[q.id];
+      const attempts = pStats ? pStats.attempts : 0;
+      const acc = attempts > 0 ? Math.round((pStats.correct / attempts) * 100) : 0;
+
+      if (perf === "WEAK" && (attempts === 0 || acc >= 60)) return false;
+      if (perf === "WRONG" && (!pStats || pStats.incorrect === 0)) return false;
+      if (perf === "UNSEEN" && attempts > 0) return false;
+      if (perf === "SLOW" && (!pStats || Math.round(pStats.totalTime / attempts) <= 75)) return false;
+      if (perf === "STRONG" && (attempts === 0 || acc < 80)) return false;
+
+      if (practiceActiveQuickFilter === "WEAK" && (attempts === 0 || acc >= 60)) return false;
+      if (practiceActiveQuickFilter === "WRONG" && (!pStats || pStats.incorrect === 0)) return false;
+      if (practiceActiveQuickFilter === "UNSEEN" && attempts > 0) return false;
+      if (practiceActiveQuickFilter === "IGNORED" && pStats && pStats.lastAttemptEpoch >= sevenDaysAgo) return false;
+      if (practiceActiveQuickFilter === "WITH_SHEET" && (!q.conceptId && (!Array.isArray(q.conceptIds) || q.conceptIds.length === 0))) return false;
+
+      if (practiceSearchQuery) {
+        const inId = q.id.toLowerCase().includes(practiceSearchQuery);
+        const inText = q.questionText.toLowerCase().includes(practiceSearchQuery);
+        const inPassage = (q.passageText || "").toLowerCase().includes(practiceSearchQuery);
+        const inMethod = (q.method || "").toLowerCase().includes(practiceSearchQuery);
+        const inSubtopic = (q.subtopic || "").toLowerCase().includes(practiceSearchQuery);
+        const inTags = Array.isArray(q.tags) && q.tags.some(t => t.toLowerCase().includes(practiceSearchQuery));
+        if (!inId && !inText && !inPassage && !inMethod && !inSubtopic && !inTags) return false;
+      }
+
+      return true;
+    });
+  }
+
+  async function launchSeeQuestions() {
+    let pool = [];
+    const allQs = await getAllRecords("store_questions");
+
+    if (practiceSelectedIds.size > 0) {
+      pool = allQs.filter(q => practiceSelectedIds.has(q.id));
+    } else {
+      pool = await getCurrentlyFilteredPracticeQuestions();
+    }
+
+    if (pool.length === 0) {
+      alert("No questions match the current criteria to display.");
+      return;
+    }
+
+    // Launch in Untimed Study View: solutions, methods, and options are freely navigable
+    const now = Date.now();
+    activeReviewAttempt = {
+      sessionId: "study_view_" + now,
+      title: `Study View (${pool.length} Qs)`,
+      timestamp: now,
+      timeIST: formatISTDate(now),
+      diurnalSlot: getDiurnalSlot(now),
+      mockType: "STUDY_VIEW",
+      finalScore: 0,
+      correctCount: pool.length,
+      incorrectCount: 0,
+      q4Traps: 0,
+      penaltyDrag: 0,
+      switchDelta: 0,
+      completed: true,
+      isSectionLocked: false,
+      questions: pool.map((q, idx) => ({ ...q, sectionIndex: 0, sectionName: q.chapter, globalNumber: idx + 1 })),
+      userResponses: {},
+      sections: [{ id: "SEC_1", name: "Question Explorer", durationSec: 0, questionCount: pool.length, locked: false }]
+    };
+
+    pool.forEach(q => {
+      activeReviewAttempt.userResponses[q.id] = {
+        selectedOption: null,
+        initialOption: null,
+        status: "unanswered",
+        timeSpentSec: 0,
+        errorTag: "UNCLASSIFIED"
+      };
+    });
+
+    enterFullScreenReviewArena();
   }
 
   async function buildMockFromPracticeSelection() {
@@ -7879,6 +7995,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   function initGestureControllers() {
+    // 1. Hardware Back-Button & Modal History Pop
     window.addEventListener("popstate", () => {
       if (navStack.length > 0) {
         popNavLayer();
@@ -7902,7 +8019,92 @@ ${JSON.stringify(TAXONOMY, null, 2)}
         }
       }
     });
+
+    // 2. Pure Horizontal Swipe in Mocks (#exam-arena)
+    const arenaEl = document.getElementById("exam-arena");
+    if (arenaEl) {
+      let touchStartX = 0;
+      let touchStartY = 0;
+
+      arenaEl.addEventListener("touchstart", (e) => {
+        if (e.touches.length === 1) {
+          touchStartX = e.touches[0].clientX;
+          touchStartY = e.touches[0].clientY;
+        }
+      }, { passive: true });
+
+      arenaEl.addEventListener("touchend", (e) => {
+        if (e.changedTouches.length === 1 && activeExam) {
+          const deltaX = e.changedTouches[0].clientX - touchStartX;
+          const deltaY = e.changedTouches[0].clientY - touchStartY;
+
+          // Pure horizontal swipe: horizontal displacement > 55px and 2x vertical movement
+          if (Math.abs(deltaX) > 55 && Math.abs(deltaX) > 2.0 * Math.abs(deltaY)) {
+            if (deltaX < 0) {
+              // Swipe Left -> Next Question
+              document.getElementById("btn-q-save-next")?.click();
+            } else {
+              // Swipe Right -> Previous Question
+              document.getElementById("btn-q-prev")?.click();
+            }
+          }
+        }
+      }, { passive: true });
+    }
+
+    // 3. Pure Horizontal Swipe for Switching Root Navigation Tabs
+    const viewportRoot = document.getElementById("app-viewport-root");
+    if (viewportRoot) {
+      let rootStartX = 0;
+      let rootStartY = 0;
+      const tabs = ["tab-dashboard", "tab-dojo", "tab-console", "tab-vault"];
+
+      viewportRoot.addEventListener("touchstart", (e) => {
+        // Disallow tab swipes if a modal or fullscreen arena is open
+        const isModalOpen = document.querySelector(".modal-overlay.active");
+        const isArenaOpen = arenaEl && arenaEl.style.display === "flex";
+        if (isModalOpen || isArenaOpen) return;
+
+        // Disallow if touch starts inside horizontally scrollable containers
+        const target = e.target;
+        if (target && target.closest("#dash-blueprints-pills, .comp-tabs-bar, .vault-tag-scroll, .table-responsive, .matrix-chip-grid")) {
+          return;
+        }
+
+        if (e.touches.length === 1) {
+          rootStartX = e.touches[0].clientX;
+          rootStartY = e.touches[0].clientY;
+        }
+      }, { passive: true });
+
+      viewportRoot.addEventListener("touchend", (e) => {
+        const isModalOpen = document.querySelector(".modal-overlay.active");
+        const isArenaOpen = arenaEl && arenaEl.style.display === "flex";
+        if (isModalOpen || isArenaOpen) return;
+
+        if (e.changedTouches.length === 1) {
+          const deltaX = e.changedTouches[0].clientX - rootStartX;
+          const deltaY = e.changedTouches[0].clientY - rootStartY;
+
+          if (Math.abs(deltaX) > 65 && Math.abs(deltaX) > 2.0 * Math.abs(deltaY)) {
+            const activeTabEl = document.querySelector(".view-container.active");
+            if (!activeTabEl) return;
+            const currentIdx = tabs.indexOf(activeTabEl.id);
+            if (currentIdx === -1) return;
+
+            if (deltaX < 0 && currentIdx < tabs.length - 1) {
+              // Swipe Left -> Next Tab
+              switchTab(tabs[currentIdx + 1]);
+            } else if (deltaX > 0 && currentIdx > 0) {
+              // Swipe Right -> Previous Tab
+              switchTab(tabs[currentIdx - 1]);
+            }
+          }
+        }
+      }, { passive: true });
+    }
   }
+
 
   async function initializeApplication() {
     const shield = document.getElementById("pause-shield");
@@ -7958,6 +8160,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     launchPracticeSelectedSession,
     buildMockFromPracticeSelection,
     launchSingleQuestionPractice,
+    launchSeeQuestions,
 
     openNewQuestionCreatorModal,
     handleNewQuestionImageUpload,
