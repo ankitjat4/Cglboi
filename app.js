@@ -1,7 +1,7 @@
 /**
  * ============================================================================
- * SSC CGL INTELLIGENCE OS — CORE ENGINE (ARCHITECTURE V5.1)
- * Master Application Controller — PART 1 OF 4
+ * SSC CGL INTELLIGENCE OS â€” CORE ENGINE (ARCHITECTURE V5.1)
+ * Master Application Controller â€” PART 1 OF 4
  * Architecture: Mobile-First WebAPK / Local-First PWA | IndexedDB Engine (v15)
  * Candidate: Ankit Kumar (SSC CGL 2026 Tier 1 & Tier 2 Master Preparation)
  * ============================================================================
@@ -500,7 +500,7 @@ const CGL_OS = (() => {
       chapter: "QA_GEOMETRY",
       title: "Circles & Tangents",
       subtitle: "Secants, Power of Point & Tangent Lengths",
-      content: "### Tangent-Secant Theorem (Power of a Point)\nFrom external point $P$, if $PT$ is tangent and $PAB$ is secant:\n$$PT^2 = PA \\cdot PB$$\n\n### Common Tangent Lengths\nFor radii $r_1, r_2$ and center separation $d$:\n• **Direct Common Tangent (DCT):**\n$$DCT = \\sqrt{d^2 - (r_1 - r_2)^2}$$\n• **Transverse Common Tangent (TCT):**\n$$TCT = \\sqrt{d^2 - (r_1 + r_2)^2}$$\n\n> [!trap]\n> **Externally Touching Circles:**\n> When $d = r_1 + r_2$, the transverse tangent drops to $0$ and $DCT = 2\\sqrt{r_1 r_2}$.",
+      content: "### Tangent-Secant Theorem (Power of a Point)\nFrom external point $P$, if $PT$ is tangent and $PAB$ is secant:\n$$PT^2 = PA \\cdot PB$$\n\n### Common Tangent Lengths\nFor radii $r_1, r_2$ and center separation $d$:\nâ€¢ **Direct Common Tangent (DCT):**\n$$DCT = \\sqrt{d^2 - (r_1 - r_2)^2}$$\nâ€¢ **Transverse Common Tangent (TCT):**\n$$TCT = \\sqrt{d^2 - (r_1 + r_2)^2}$$\n\n> [!trap]\n> **Externally Touching Circles:**\n> When $d = r_1 + r_2$, the transverse tangent drops to $0$ and $DCT = 2\\sqrt{r_1 r_2}$.",
       imageUrl: "",
       timestamp: Date.now()
     },
@@ -510,7 +510,7 @@ const CGL_OS = (() => {
       chapter: "GA_POLITY",
       title: "Supreme Court & Writ Jurisdiction",
       subtitle: "Articles 32, 124, 131, 226",
-      content: "### Constitutional Architecture\n• **Article 124:** Establishment and constitution of the Supreme Court of India.\n• **Article 131:** Original jurisdiction of the Supreme Court (Federal inter-state disputes).\n• **Article 143:** Advisory jurisdiction on Presidential references.\n• **Article 226:** High Courts writ jurisdiction for Fundamental and statutory rights.",
+      content: "### Constitutional Architecture\nâ€¢ **Article 124:** Establishment and constitution of the Supreme Court of India.\nâ€¢ **Article 131:** Original jurisdiction of the Supreme Court (Federal inter-state disputes).\nâ€¢ **Article 143:** Advisory jurisdiction on Presidential references.\nâ€¢ **Article 226:** High Courts writ jurisdiction for Fundamental and statutory rights.",
       imageUrl: "",
       timestamp: Date.now()
     }
@@ -662,15 +662,15 @@ const CGL_OS = (() => {
     // 2. Multi-Line Callout Blocks (Support multi-line [!trap], [!formula], [!tip])
     out = out.replace(/(?:^|\n)>\s*\[!trap\]([^\n]*(?:\n>[^\n]*)*)/gi, (match, body) => {
       const cleanBody = body.replace(/^\s*>\s?/gm, "").trim();
-      return `<div class="callout-box trap"><b>⚠️ Cognitive Trap:</b><br>${cleanBody}</div>`;
+      return `<div class="callout-box trap"><b>âš ï¸ Cognitive Trap:</b><br>${cleanBody}</div>`;
     });
     out = out.replace(/(?:^|\n)>\s*\[!formula\]([^\n]*(?:\n>[^\n]*)*)/gi, (match, body) => {
       const cleanBody = body.replace(/^\s*>\s?/gm, "").trim();
-      return `<div class="callout-box formula"><b>⚡ Formula / Identity:</b><br>${cleanBody}</div>`;
+      return `<div class="callout-box formula"><b>âš¡ Formula / Identity:</b><br>${cleanBody}</div>`;
     });
     out = out.replace(/(?:^|\n)>\s*\[!tip\]([^\n]*(?:\n>[^\n]*)*)/gi, (match, body) => {
       const cleanBody = body.replace(/^\s*>\s?/gm, "").trim();
-      return `<div class="callout-box"><b>💡 Tactical Tip:</b><br>${cleanBody}</div>`;
+      return `<div class="callout-box"><b>ðŸ’¡ Tactical Tip:</b><br>${cleanBody}</div>`;
     });
 
     // 3. Headings with Anchors for Sheet TOC Generation
@@ -691,26 +691,26 @@ const CGL_OS = (() => {
 
     // 5. Syllogisms & Structured Item Rows
     out = out.replace(/(?:Statements?\s*:)\s*([\s\S]+?)(?=(?:Conclusions?\s*:|Conclusions?|$))/i, (match, body) => {
-      const items = body.split(/(?:\(\d+\)|\(\w+\)|\d+\.|\n•|\n-)/).map(s => s.trim()).filter(Boolean);
+      const items = body.split(/(?:\(\d+\)|\(\w+\)|\d+\.|\nâ€¢|\n-)/).map(s => s.trim()).filter(Boolean);
       const rows = items.map((item, idx) => `
         <div class="q-itemized-row">
           <span class="q-item-num">(${idx + 1})</span>
           <span>${item}</span>
         </div>
       `).join('');
-      return `<div class="q-structured-block"><div class="q-block-header"><span>📋 Statements:</span></div>${rows}</div>`;
+      return `<div class="q-structured-block"><div class="q-block-header"><span>ðŸ“‹ Statements:</span></div>${rows}</div>`;
     });
 
     out = out.replace(/(?:Conclusions?\s*:)\s*([\s\S]+?)(?=(?:\n\n[A-Z]|Options?|$))/i, (match, body) => {
       const roman = ["I", "II", "III", "IV", "V", "VI"];
-      const items = body.split(/(?:\(\d+\)|\(\w+\)|\[\w+\]|\d+\.|\n•|\n-)/).map(s => s.trim()).filter(Boolean);
+      const items = body.split(/(?:\(\d+\)|\(\w+\)|\[\w+\]|\d+\.|\nâ€¢|\n-)/).map(s => s.trim()).filter(Boolean);
       const rows = items.map((item, idx) => `
         <div class="q-itemized-row">
           <span class="q-item-num">[${roman[idx] || (idx + 1)}]</span>
           <span>${item}</span>
         </div>
       `).join('');
-      return `<div class="q-structured-block" style="margin-top:6px;"><div class="q-block-header"><span style="color:var(--accent-purple-light);">🎯 Conclusions:</span></div>${rows}</div>`;
+      return `<div class="q-structured-block" style="margin-top:6px;"><div class="q-block-header"><span style="color:var(--accent-purple-light);">ðŸŽ¯ Conclusions:</span></div>${rows}</div>`;
     });
 
     // 6. Responsive Markdown Tables
@@ -1080,12 +1080,12 @@ const CGL_OS = (() => {
           statsBox.style.display = "block";
           statsBox.innerHTML = `
             <b>Backup File Validated:</b><br>
-            • Questions: ${pendingHydrationData.store_questions.length}<br>
-            • Attempts & Scores: ${pendingHydrationData.store_attempts.length}<br>
-            • Flashcards: ${pendingHydrationData.store_flashcards.length}<br>
-            • Living Knowledge Sheets: ${pendingHydrationData.store_concepts.length}<br>
-            • Clinical AI Consultations: ${pendingHydrationData.store_ai_consultations.length}<br>
-            • Saved Blueprints & Papers: ${pendingHydrationData.store_saved_mocks.length}
+            â€¢ Questions: ${pendingHydrationData.store_questions.length}<br>
+            â€¢ Attempts & Scores: ${pendingHydrationData.store_attempts.length}<br>
+            â€¢ Flashcards: ${pendingHydrationData.store_flashcards.length}<br>
+            â€¢ Living Knowledge Sheets: ${pendingHydrationData.store_concepts.length}<br>
+            â€¢ Clinical AI Consultations: ${pendingHydrationData.store_ai_consultations.length}<br>
+            â€¢ Saved Blueprints & Papers: ${pendingHydrationData.store_saved_mocks.length}
           `;
         }
         const execBtn = document.getElementById("btn-execute-restore");
@@ -1277,7 +1277,7 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * SECTION 11: SHARED SERVICE — TAXONOMY SERVICE
+   * SECTION 11: SHARED SERVICE â€” TAXONOMY SERVICE
    * Full User-Driven Taxonomy Control, Reassignment & Safe Chapter Merging
    * ========================================================================== */
   const TaxonomyService = {
@@ -1430,7 +1430,7 @@ const CGL_OS = (() => {
   };
 
   /* ==========================================================================
-   * SECTION 12: SHARED SERVICE — QUESTION SERVICE
+   * SECTION 12: SHARED SERVICE â€” QUESTION SERVICE
    * Full CRUD, Validation, Duplication & Atomic Passage-Set Grouping
    * ========================================================================== */
   const QuestionService = {
@@ -1538,7 +1538,7 @@ const CGL_OS = (() => {
   };
 
   /* ==========================================================================
-   * SECTION 13: SHARED SERVICE — CONCEPT SERVICE (LIVING KNOWLEDGE STUDIO)
+   * SECTION 13: SHARED SERVICE â€” CONCEPT SERVICE (LIVING KNOWLEDGE STUDIO)
    * Sheet CRUD, In-Sheet TOC Generator & Question Discovery
    * ========================================================================== */
   const ConceptService = {
@@ -1621,7 +1621,7 @@ const CGL_OS = (() => {
   };
 
   /* ==========================================================================
-   * SECTION 14: SHARED SERVICE — SEARCH SERVICE
+   * SECTION 14: SHARED SERVICE â€” SEARCH SERVICE
    * In-Memory Unified Search Engine across Questions, Sheets & Taxonomy
    * ========================================================================== */
   const SearchService = {
@@ -1803,8 +1803,8 @@ const CGL_OS = (() => {
             return `
               <span style="font-size:10.5px; font-family:var(--font-mono); background:var(--bg-elevated); border:1px solid var(--border-color); padding:3px 8px; border-radius:5px; display:inline-flex; align-items:center; gap:6px;">
                 <span>${c} <small style="color:var(--accent-cyan);">(${qCount}Q/${cCount}S)</small></span>
-                <span title="Merge or Reassign Chapter" style="cursor:pointer; color:var(--accent-cyan); font-weight:bold;" onclick="CGL_OS.openChapterMergeModal('${subKey}', '${c}')">⇄</span>
-                <span title="Delete Chapter" style="cursor:pointer; color:var(--status-red); opacity:0.7;" onclick="CGL_OS.deleteChapterFromSubject('${subKey}', '${c}')">✕</span>
+                <span title="Merge or Reassign Chapter" style="cursor:pointer; color:var(--accent-cyan); font-weight:bold;" onclick="CGL_OS.openChapterMergeModal('${subKey}', '${c}')">â‡„</span>
+                <span title="Delete Chapter" style="cursor:pointer; color:var(--status-red); opacity:0.7;" onclick="CGL_OS.deleteChapterFromSubject('${subKey}', '${c}')">âœ•</span>
               </span>
             `;
           }).join('')}
@@ -2203,7 +2203,7 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * SECTION 17: SHARED SERVICE — PERFORMANCE SERVICE
+   * SECTION 17: SHARED SERVICE â€” PERFORMANCE SERVICE
    * Telemetry Aggregation, Cold-Start Guards & Dynamic ERI Telemetry
    * ========================================================================== */
   const PerformanceService = {
@@ -2414,7 +2414,7 @@ const CGL_OS = (() => {
   };
 
   /* ==========================================================================
-   * SECTION 18: SHARED SERVICE — MOCK SERVICE & ATOMIC GROUP SAMPLING
+   * SECTION 18: SHARED SERVICE â€” MOCK SERVICE & ATOMIC GROUP SAMPLING
    * Atomic Passage Clustering, Ephemeral Session Support & Fisher-Yates Shuffle
    * ========================================================================== */
   const MockService = {
@@ -2492,7 +2492,7 @@ const CGL_OS = (() => {
       }
 
       if (eligiblePool.length === 0) {
-        throw new Error(`Zero eligible questions match the designated criteria (${subject} • ${chapter}).`);
+        throw new Error(`Zero eligible questions match the designated criteria (${subject} â€¢ ${chapter}).`);
       }
 
       // 2. Anti-Repetition Recency Filter
@@ -2538,60 +2538,6 @@ const CGL_OS = (() => {
           if (prioritizedPool.length === 0) prioritizedPool = eligiblePool;
         }
       } else if (mode === "SLOW") {
-        prioritizedPool = eligiblePool.filter(q => {
-          const stats = perfMap[q.id];
-          return stats && stats.attempts > 0 && Math.round(stats.totalTime / stats.attempts) > 75;
-        });
-        if (prioritizedPool.length === 0) prioritizedPool = eligiblePool;
-      } else if (mode === "IGNORED") {
-        const now = Date.now();
-        const sevenDaysAgo = now - (7 * 24 * 60 * 60 * 1000);
-        prioritizedPool = eligiblePool.filter(q => {
-          const stats = perfMap[q.id];
-          return !stats || stats.lastAttemptEpoch < sevenDaysAgo;
-        });
-        if (prioritizedPool.length === 0) prioritizedPool = eligiblePool;
-      } else if (mode === "PATTERN_COVERAGE" || patternBalanced) {
-        const patternGroups = {};
-        eligiblePool.forEach(q => {
-          const pKey = q.method || q.subtopic || "General";
-          if (!patternGroups[pKey]) patternGroups[pKey] = [];
-          patternGroups[pKey].push(q);
-        });
-
-        const balancedSelection = [];
-        const groupKeys = Object.keys(patternGroups);
-        let gIdx = 0;
-        groupKeys.forEach(k => this.shuffle(patternGroups[k], seed));
-
-        while (balancedSelection.length < count && groupKeys.some(k => patternGroups[k].length > 0)) {
-          const currentKey = groupKeys[gIdx % groupKeys.length];
-          if (patternGroups[currentKey].length > 0) {
-            balancedSelection.push(patternGroups[currentKey].pop());
-          }
-          gIdx++;
-        }
-        prioritizedPool = balancedSelection;
-      } else {
-        prioritizedPool = eligiblePool;
-      }
-
-      // 4. ATOMIC PASSAGE-SET CLUSTERING & SAMPLING
-      // Ensures Reading Comprehension, Cloze Tests and Reasoning sets are sampled in contiguous blocks
-      const shuffledCandidates = this.shuffle([...prioritizedPool], seed);
-      const clusteredSelection = [];
-      const handledPassageIds = new Set();
-      const addedQuestionIds = new Set();
-
-      for (const q of shuffledCandidates) {
-        if (clusteredSelection.length >= count) break;
-        if (addedQuestionIds.has(q.id)) continue;
-
-        if (q.parentPassageId) {
-          if (!handledPassageIds.has(q.parentPassageId)) {
-            handledPassageIds.add(q.parentPassageId);
-            // Query and assemble all sibling questions sharing this passage ID
-            const siblings = allBankQuestions
     async generate(config) {
       const {
         title = "SSC CGL Practice Mock",
@@ -2888,7 +2834,6 @@ const CGL_OS = (() => {
       };
     },
 
-
     async saveMockDefinition(mockData) {
       const clean = sanitizeSavedMock(mockData);
       await putRecord("store_saved_mocks", clean);
@@ -3045,7 +2990,7 @@ const CGL_OS = (() => {
     try {
       const config = getActiveBuilderConfig();
       const instance = await MockService.generate({ ...config, count: Math.min(config.count, 15) });
-      const qIds = instance.questions.map((q, idx) => `${idx + 1}. [${q.subject} • ${q.chapter}] ${q.questionText.slice(0, 75)}...`).join("\n\n");
+      const qIds = instance.questions.map((q, idx) => `${idx + 1}. [${q.subject} â€¢ ${q.chapter}] ${q.questionText.slice(0, 75)}...`).join("\n\n");
       alert(`MOCK PREVIEW (${instance.questions.length} Questions Sampled):\n\n${qIds}`);
     } catch (err) {
       alert("Preview Error: " + err.message);
@@ -3301,7 +3246,7 @@ const CGL_OS = (() => {
       }
 
       await compileAndLaunchArena(
-        `Custom Routine (${signatureTags.join('➔')})`,
+        `Custom Routine (${signatureTags.join('âž”')})`,
         flattened,
         customSequenceRows.reduce((a, b) => a + b.durationMin, 0),
         isLock,
@@ -3439,13 +3384,13 @@ const CGL_OS = (() => {
       safeSetDisplay("btn-arena-early-lock", "none");
       safeSetDisplay("btn-drawer-early-lock", "none");
       safeSetDisplay("btn-q-review", "none");
-      safeSetText("btn-q-save-next", "Next Question ►");
+      safeSetText("btn-q-save-next", "Next Question â–º");
       safeSetDisplay("btn-submit-exam", "none");
       safeSetText("palette-drawer-title", "Review Palette");
       safeSetHtml("palette-legend-bar", `
-        <span>🟢 Correct</span>
-        <span>🔴 Incorrect</span>
-        <span>⚪ Unattempted</span>
+        <span>ðŸŸ¢ Correct</span>
+        <span>ðŸ”´ Incorrect</span>
+        <span>âšª Unattempted</span>
       `);
       safeSetDisplay("hud-panic-flag", resp.isPanicSlip ? "inline-block" : "none");
 
@@ -3467,8 +3412,8 @@ const CGL_OS = (() => {
         safeSetDisplay("btn-arena-early-lock", "inline-flex");
         safeSetDisplay("btn-drawer-early-lock", "block");
         const isLast = activeExam.activeSectionIndex === activeExam.sections.length - 1;
-        safeSetText("btn-arena-early-lock", isLast ? "🔒 Submit Final Section" : "🔒 End Section Early");
-        safeSetText("btn-drawer-early-lock", isLast ? "🔒 Lock & Submit Final Section" : "🔒 End & Advance Section Early");
+        safeSetText("btn-arena-early-lock", isLast ? "ðŸ”’ Submit Final Section" : "ðŸ”’ End Section Early");
+        safeSetText("btn-drawer-early-lock", isLast ? "ðŸ”’ Lock & Submit Final Section" : "ðŸ”’ End & Advance Section Early");
       } else {
         safeSetDisplay("btn-arena-early-lock", "none");
         safeSetDisplay("btn-drawer-early-lock", "none");
@@ -3534,7 +3479,7 @@ const CGL_OS = (() => {
           const btn = document.createElement("button");
           btn.className = "btn btn-cyan";
           btn.style.cssText = "padding:6px 12px; font-size:12px; font-weight:700;";
-          btn.innerText = `📖 Browse Sheets for ${q.chapter}`;
+          btn.innerText = `ðŸ“– Browse Sheets for ${q.chapter}`;
           btn.onclick = () => openCompendiumToSheet(null, q.subject, q.chapter);
           pillsWrap.appendChild(btn);
         } else {
@@ -3542,7 +3487,7 @@ const CGL_OS = (() => {
             const btn = document.createElement("button");
             btn.className = "btn btn-cyan";
             btn.style.cssText = "padding:6px 12px; font-size:12px; font-weight:700;";
-            btn.innerText = `📖 Sheet: ${cId.replace(/^top_/, '').replace(/_/g, ' ')}`;
+            btn.innerText = `ðŸ“– Sheet: ${cId.replace(/^top_/, '').replace(/_/g, ' ')}`;
             btn.onclick = () => openCompendiumToSheet(cId, q.subject, q.chapter);
             pillsWrap.appendChild(btn);
           });
@@ -3564,16 +3509,16 @@ const CGL_OS = (() => {
         <div style="background:var(--bg-elevated); border:1px solid ${isCor ? 'var(--status-green)' : (isAtt ? 'var(--status-red)' : 'var(--border-color)')}; border-radius:8px; padding:10px; font-size:12px;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <span style="font-weight:800; color:${isCor ? 'var(--status-green)' : (isAtt ? 'var(--status-red)' : 'var(--text-muted)')};">
-              ${isCor ? '✓ CORRECT (+2.0)' : (isAtt ? '✗ INCORRECT (-0.5)' : '⚪ UNATTEMPTED (0.0)')}
+              ${isCor ? 'âœ“ CORRECT (+2.0)' : (isAtt ? 'âœ— INCORRECT (-0.5)' : 'âšª UNATTEMPTED (0.0)')}
             </span>
             <span style="font-family:var(--font-mono); color:var(--text-muted);">${resp.timeSpentSec || 0}s spent</span>
           </div>
           ${resp.decisionTrail && resp.decisionTrail.length > 0 ? `
             <div style="margin-top:6px; color:var(--accent-cyan); font-size:11px;">
-              <b>Hesitation Trail:</b> ${resp.decisionTrail.map(d => `Opt ${d.opt} (${d.atSec}s)`).join(' ➔ ')}
+              <b>Hesitation Trail:</b> ${resp.decisionTrail.map(d => `Opt ${d.opt} (${d.atSec}s)`).join(' âž” ')}
             </div>
           ` : ''}
-          ${resp.isPanicSlip ? `<div style="margin-top:4px; color:var(--status-red); font-size:11px; font-weight:700;">⚠️ Detected as Panic Slip (&lt;8s solve under end-of-section pressure).</div>` : ''}
+          ${resp.isPanicSlip ? `<div style="margin-top:4px; color:var(--status-red); font-size:11px; font-weight:700;">âš ï¸ Detected as Panic Slip (&lt;8s solve under end-of-section pressure).</div>` : ''}
           ${resp.errorTag && resp.errorTag !== 'UNCLASSIFIED' && resp.errorTag !== 'VALID_CALCULATED_RISK' ? `<div style="margin-top:4px; color:#f87171; font-size:11px;"><b>Active Classification:</b> #${resp.errorTag}</div>` : ''}
           ${resp.errorTag === 'VALID_CALCULATED_RISK' ? `<div style="margin-top:4px; color:var(--status-green); font-size:11px;"><b>Tag Cleared:</b> Valid Calculated Risk / Speed Move</div>` : ''}
         </div>
@@ -3584,7 +3529,7 @@ const CGL_OS = (() => {
 
       let optionsHtml = `
         <option value="UNCLASSIFIED" ${currentTag==='UNCLASSIFIED'?'selected':''}>Override Mistake Tag...</option>
-        <option value="VALID_CALCULATED_RISK" ${currentTag==='VALID_CALCULATED_RISK'?'selected':''}>✓ Valid Calculated Risk (Clear Trap Penalty)</option>
+        <option value="VALID_CALCULATED_RISK" ${currentTag==='VALID_CALCULATED_RISK'?'selected':''}>âœ“ Valid Calculated Risk (Clear Trap Penalty)</option>
       `;
       customMistakeTags.forEach(t => {
         if (t !== "VALID_CALCULATED_RISK") {
@@ -3661,8 +3606,8 @@ const CGL_OS = (() => {
       card.innerHTML = `
         <span style="font-weight:700; color:var(--text-muted); font-size:13px;">${idx + 1}.</span>
         <div style="flex:1;">${formatRichText(optText)}</div>
-        ${isRev && idx === q.correctIndex ? '<span style="font-size:11px; font-weight:800; color:var(--status-green);">✓ Correct</span>' : ''}
-        ${isRev && idx === resp.selectedOption && idx !== q.correctIndex ? '<span style="font-size:11px; font-weight:800; color:var(--status-red);">✗ Your Pick</span>' : ''}
+        ${isRev && idx === q.correctIndex ? '<span style="font-size:11px; font-weight:800; color:var(--status-green);">âœ“ Correct</span>' : ''}
+        ${isRev && idx === resp.selectedOption && idx !== q.correctIndex ? '<span style="font-size:11px; font-weight:800; color:var(--status-red);">âœ— Your Pick</span>' : ''}
       `;
       container.appendChild(card);
     });
@@ -3750,11 +3695,11 @@ const CGL_OS = (() => {
         tabBtn.className = "anchor-pill" + (sIdx === activeExam.activeSectionIndex ? " active" : "");
         
         if (isLocked && sec.locked) {
-          tabBtn.innerText = `🔒 ${sec.name.split(" ")[0]}`;
+          tabBtn.innerText = `ðŸ”’ ${sec.name.split(" ")[0]}`;
           tabBtn.style.opacity = "0.5";
           tabBtn.style.cursor = "not-allowed";
         } else if (isLocked && sIdx > activeExam.activeSectionIndex) {
-          tabBtn.innerText = `⏳ ${sec.name.split(" ")[0]}`;
+          tabBtn.innerText = `â³ ${sec.name.split(" ")[0]}`;
           tabBtn.style.opacity = "0.6";
         } else {
           tabBtn.innerText = sec.name.split(" ")[0];
@@ -3894,7 +3839,7 @@ const CGL_OS = (() => {
     Object.values(activeExam.userResponses).forEach(r => { if (r.status === "answered") ansCount++; });
 
     safeSetText("mini-player-title", activeExam.title);
-    safeSetText("mini-player-sub", `${q && q.sectionName ? q.sectionName.split(' ')[0] : 'Exam'} • Q${q ? (q.globalNumber || 1) : 1}`);
+    safeSetText("mini-player-sub", `${q && q.sectionName ? q.sectionName.split(' ')[0] : 'Exam'} â€¢ Q${q ? (q.globalNumber || 1) : 1}`);
     safeSetText("mini-player-time", `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`);
     safeSetText("mini-player-ans", `${ansCount}/${activeExam.questions.length} Ans`);
 
@@ -4119,6 +4064,82 @@ const CGL_OS = (() => {
    * Preserves explicitly configured section durations. Divides total time
    * evenly only if section-specific durations were not assigned.
    */
+  async function compileAndLaunchArena(title, questionsPool, durationMin, isSectionLocked = false, customSections = null, isEphemeral = false) {
+    clearInterval(examTimerInterval);
+    clearInterval(questionTimerInterval);
+
+    let configuredSections = [];
+    let flattenedQuestions = [];
+    let globalCounter = 1;
+
+    if (Array.isArray(customSections) && customSections.length > 0) {
+      // PRESERVE CUSTOM SECTIONAL CLOCKS
+      configuredSections = customSections.map((sec, sIdx) => ({
+        id: sec.id || `SEC_${sIdx + 1}`,
+        name: sec.name || `${TAXONOMY[sec.subject] ? TAXONOMY[sec.subject].name : sec.subject} (Sec ${sIdx + 1})`,
+        durationSec: sec.durationSec || (sec.durationMin ? sec.durationMin * 60 : Math.round((durationMin * 60) / customSections.length)),
+        questionCount: sec.questionCount || 0,
+        locked: false
+      }));
+
+      flattenedQuestions = questionsPool.map((q, idx) => ({
+        ...q,
+        sectionIndex: typeof q.sectionIndex === "number" ? q.sectionIndex : 0,
+        sectionName: q.sectionName || (configuredSections[q.sectionIndex || 0]?.name || title),
+        localNumber: q.localNumber || (idx + 1),
+        globalNumber: q.globalNumber || (idx + 1)
+      }));
+    } else {
+      const rawSections = {};
+      questionsPool.forEach((q) => {
+        const sKey = (q.sectionIndex !== undefined && q.sectionName) 
+          ? `${q.sectionIndex}_${q.sectionName}` 
+          : `sub_${q.subject || 'GEN'}`;
+        if (!rawSections[sKey]) {
+          rawSections[sKey] = {
+            name: q.sectionName || (TAXONOMY[q.subject] ? TAXONOMY[q.subject].name : q.subject || "Section"),
+            questions: []
+          };
+        }
+        rawSections[sKey].questions.push(q);
+      });
+
+      const secKeys = Object.keys(rawSections);
+
+      if (secKeys.length > 1) {
+        const secDuration = Math.round((durationMin * 60) / secKeys.length);
+        secKeys.forEach((sKey, sIdx) => {
+          const secData = rawSections[sKey];
+          const secObj = {
+            id: `SEC_${sIdx + 1}`,
+            name: secData.name,
+            durationSec: secDuration,
+            questionCount: secData.questions.length,
+            locked: false
+          };
+          configuredSections.push(secObj);
+
+          secData.questions.forEach((q, lIdx) => {
+            flattenedQuestions.push({
+              ...q,
+              sectionIndex: sIdx,
+              sectionName: secData.name,
+              localNumber: lIdx + 1,
+              globalNumber: globalCounter++
+            });
+          });
+        });
+      } else {
+        configuredSections = [{
+          id: "SEC_1",
+          name: title || "Diagnostic Arena",
+          durationSec: durationMin * 60,
+          questionCount: questionsPool.length,
+          locked: false
+        }];
+        flattenedQuestions = questionsPool.map((q, idx) => ({
+          ...q,
+          sectionIndex: 0,
   async function compileAndLaunchArena(title, questionsPool, durationMin, isSectionLocked = false, customSections = null, isEphemeral = false) {
     clearInterval(examTimerInterval);
     clearInterval(questionTimerInterval);
@@ -4393,7 +4414,6 @@ const CGL_OS = (() => {
       return { totalQueried: ids.length, foundCount: found.length, missingCount: missing.length, found, missing };
     },
 
-
     // 2. Safe Read & Telemetry Queries
     SEARCH_QUESTIONS: async (payload) => {
       const res = await SearchService.searchAll(payload.query, payload.filters || payload, payload.limit || 25);
@@ -4478,7 +4498,7 @@ const CGL_OS = (() => {
 
     MERGE_CHAPTERS: async (payload) => {
       await TaxonomyService.mergeChapters(payload.subject, payload.sourceChapter, payload.targetChapter);
-      return { success: true, merged: `${payload.sourceChapter} ➔ ${payload.targetChapter}` };
+      return { success: true, merged: `${payload.sourceChapter} âž” ${payload.targetChapter}` };
     },
 
     // 6. Bidirectional AI Memory Storage & Retrieval
@@ -4507,7 +4527,7 @@ const CGL_OS = (() => {
         goal: payload.goal || "Remediation",
         subject: payload.subject || "QA",
         steps: Array.isArray(payload.steps) ? payload.steps : [],
-        successCondition: payload.successCondition || "≥80% accuracy",
+        successCondition: payload.successCondition || "â‰¥80% accuracy",
         status: payload.status || "active",
         createdAt: Date.now()
       };
@@ -4657,12 +4677,6 @@ const CGL_OS = (() => {
       for (const act of actions) {
         const handler = COMMAND_REGISTRY[act.action];
         if (handler) {
-          await handler(act.payload || {});
-        }
-      }
-      SearchService.invalidate();
-      return { success: true, actionsExecuted: actions.length };
-    },
     INGEST_AND_ASSEMBLE_COMPLETE_MOCK: async (payload) => {
       const {
         title = "Curated Practice Mock",
@@ -4858,6 +4872,7 @@ const CGL_OS = (() => {
         questionCount: questions.length
       };
     },
+
 
     AI_PRESCRIBE_REMEDY: async (payload) => {
       const qIds = payload.questionIds || [];
@@ -5068,7 +5083,7 @@ const CGL_OS = (() => {
     const isExpanded = stemEl.classList.toggle("expanded");
     const toggleBtn = document.getElementById(`toggle-${stemId}`);
     if (toggleBtn) {
-      toggleBtn.innerText = isExpanded ? "[ Collapse ▲ ]" : "[ Read Full Stem ▼ ]";
+      toggleBtn.innerText = isExpanded ? "[ Collapse â–² ]" : "[ Read Full Stem â–¼ ]";
     }
   }
 
@@ -5149,9 +5164,9 @@ const CGL_OS = (() => {
       const acc = attempts > 0 ? Math.round((pStats.correct / attempts) * 100) : 0;
       let statusBadge = `<span class="badge" style="background:#151a24; color:var(--text-muted);">Unseen</span>`;
       if (attempts > 0) {
-        if (acc >= 80) statusBadge = `<span class="badge" style="background:rgba(16,185,129,0.2); color:var(--status-green);">🟢 ${acc}% (${attempts}A)</span>`;
-        else if (acc >= 60) statusBadge = `<span class="badge" style="background:rgba(245,158,11,0.2); color:var(--status-amber);">🟡 ${acc}% (${attempts}A)</span>`;
-        else statusBadge = `<span class="badge" style="background:rgba(244,63,94,0.2); color:var(--status-red);">🔴 ${acc}% (${attempts}A)</span>`;
+        if (acc >= 80) statusBadge = `<span class="badge" style="background:rgba(16,185,129,0.2); color:var(--status-green);">ðŸŸ¢ ${acc}% (${attempts}A)</span>`;
+        else if (acc >= 60) statusBadge = `<span class="badge" style="background:rgba(245,158,11,0.2); color:var(--status-amber);">ðŸŸ¡ ${acc}% (${attempts}A)</span>`;
+        else statusBadge = `<span class="badge" style="background:rgba(244,63,94,0.2); color:var(--status-red);">ðŸ”´ ${acc}% (${attempts}A)</span>`;
       }
 
       const isChecked = practiceSelectedIds.has(q.id);
@@ -5166,18 +5181,18 @@ const CGL_OS = (() => {
           <div class="practice-q-header">
             <div style="display:flex; align-items:center; gap:6px;">
               <span class="practice-q-id">${q.id}</span>
-              <span class="badge" style="background:#1f6feb;">${q.subject} • ${q.chapter}</span>
+              <span class="badge" style="background:#1f6feb;">${q.subject} â€¢ ${q.chapter}</span>
               ${q.parentPassageId ? `<span class="q-passage-set-badge">SET ${q.setOrder || 1}/${q.setTotal || 1}</span>` : ''}
               ${statusBadge}
             </div>
             <div class="practice-q-actions">
               <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px;" onclick="CGL_OS.QuestionService.get('${q.id}').then(q => CGL_OS.openEditQuestionModal(q))">Edit</button>
               <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px; color:var(--accent-cyan);" onclick="CGL_OS.duplicateCurrentEditingQuestionFromId('${q.id}')">Clone</button>
-              <button class="btn btn-cyan" style="padding:2px 8px; font-size:10px; font-weight:700;" onclick="CGL_OS.launchSingleQuestionPractice('${q.id}')">⚡ Solve</button>
+              <button class="btn btn-cyan" style="padding:2px 8px; font-size:10px; font-weight:700;" onclick="CGL_OS.launchSingleQuestionPractice('${q.id}')">âš¡ Solve</button>
             </div>
           </div>
           <div id="${stemDomId}" class="practice-q-stem">${formatRichText(q.questionText)}</div>
-          <span id="toggle-${stemDomId}" class="practice-q-stem-toggle" onclick="CGL_OS.togglePracticeStemExpansion('${stemDomId}')">[ Read Full Stem ▼ ]</span>
+          <span id="toggle-${stemDomId}" class="practice-q-stem-toggle" onclick="CGL_OS.togglePracticeStemExpansion('${stemDomId}')">[ Read Full Stem â–¼ ]</span>
           <div class="practice-q-footer">
             <span>Method: <b>${q.method || q.subtopic || 'General'}</b></span>
             <span>Source: <i>${q.source || 'Manual'}</i></span>
@@ -5419,7 +5434,7 @@ const CGL_OS = (() => {
       subject: sub,
       chapter: chap,
       method: method,
-      title: chap === "ALL" ? `${sub} • Entire Subject Dojo` : (method !== "ALL" ? `${chap} • ${method}` : `${chap} Dojo`),
+      title: chap === "ALL" ? `${sub} â€¢ Entire Subject Dojo` : (method !== "ALL" ? `${chap} â€¢ ${method}` : `${chap} Dojo`),
       formulaBrief: matchedDossier ? matchedDossier.content : null,
       questions: pool,
       currentIndex: 0,
@@ -5494,7 +5509,7 @@ const CGL_OS = (() => {
         const btn = document.createElement("button");
         btn.className = "btn btn-secondary";
         btn.style.cssText = "padding:2px 8px; font-size:11px; color:var(--accent-cyan);";
-        btn.innerText = `📖 ${cId.replace(/^top_/, '').replace(/_/g, ' ')}`;
+        btn.innerText = `ðŸ“– ${cId.replace(/^top_/, '').replace(/_/g, ' ')}`;
         btn.onclick = () => openCompendiumToSheet(cId, q.subject, q.chapter);
         dojoPillsWrap.appendChild(btn);
       });
@@ -5549,11 +5564,11 @@ const CGL_OS = (() => {
           if (idx === q.correctIndex) {
             fb.style.background = "rgba(16, 185, 129, 0.22)";
             fb.style.color = "var(--status-green)";
-            fb.innerText = "✓ Correct Answer!";
+            fb.innerText = "âœ“ Correct Answer!";
           } else {
             fb.style.background = "rgba(244, 63, 94, 0.22)";
             fb.style.color = "var(--status-red)";
-            fb.innerText = `✗ Incorrect. Correct is Option ${q.correctIndex + 1}.`;
+            fb.innerText = `âœ— Incorrect. Correct is Option ${q.correctIndex + 1}.`;
           }
         }
         renderDojoArenaQuestion();
@@ -5751,7 +5766,7 @@ const CGL_OS = (() => {
             <span>Accuracy:</span> <b style="color:${acc >= 80 ? 'var(--status-green)' : (acc >= 60 ? 'var(--status-amber)' : 'var(--status-red)')};">${acc}%</b>
           </div>
           <div class="sec-fidelity-metric-row">
-            <span>Split (🟢/🔴/⚪):</span> <b>${s.cor} / ${s.inc} / ${s.unans}</b>
+            <span>Split (ðŸŸ¢/ðŸ”´/âšª):</span> <b>${s.cor} / ${s.inc} / ${s.unans}</b>
           </div>
           <div class="sec-fidelity-metric-row">
             <span>Penalty Drag:</span> <b style="color:#f87171;">-${s.penalty.toFixed(1)}</b>
@@ -5870,7 +5885,7 @@ const CGL_OS = (() => {
         div.style.marginBottom = "8px";
         div.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-            <span class="badge" style="background:#1f6feb;">${item.question.subject} • ${item.question.chapter}</span>
+            <span class="badge" style="background:#1f6feb;">${item.question.subject} â€¢ ${item.question.chapter}</span>
             <span style="font-family:var(--font-mono); font-size:11px; color:#f87171;">${item.response.timeSpentSec || 0}s spent</span>
           </div>
           <div style="font-size:13px; color:#fff; line-height:1.5; margin:6px 0;">${formatRichText(item.question.questionText)}</div>
@@ -5935,7 +5950,7 @@ const CGL_OS = (() => {
 
     const acc = subAtt > 0 ? Math.round((subCor / subAtt) * 100) : 0;
     safeSetText("diag-subject-acc", subAtt > 0 ? `${acc}%` : "--");
-    safeSetText("diag-subject-counts", `${subAtt} Solved • ${subCor} Correct`);
+    safeSetText("diag-subject-counts", `${subAtt} Solved â€¢ ${subCor} Correct`);
 
     const gauge = document.getElementById("diag-acc-gauge");
     if (gauge) {
@@ -6065,13 +6080,13 @@ const CGL_OS = (() => {
         row.className = "attempt-sub-row";
         row.innerHTML = `
           <div>
-            <b>Attempt ${iter.attemptNumber || 1}</b> • <span style="color:var(--text-muted);">${iter.timeIST ? iter.timeIST.split(',')[1] : ''}</span>
+            <b>Attempt ${iter.attemptNumber || 1}</b> â€¢ <span style="color:var(--text-muted);">${iter.timeIST ? iter.timeIST.split(',')[1] : ''}</span>
           </div>
           <div style="display:flex; align-items:center; gap:8px;">
             <span style="font-weight:700; color:var(--accent-cyan);">${(iter.finalScore || 0).toFixed(1)} pts</span>
-            <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.exportMockByIdJson('${iter.sessionId}')">📥 Export</button>
+            <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.exportMockByIdJson('${iter.sessionId}')">ðŸ“¥ Export</button>
             <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openMockReview('${iter.sessionId}')">Inspect</button>
-            <button class="btn btn-danger" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.deleteAttemptSession('${iter.sessionId}')">🗑</button>
+            <button class="btn btn-danger" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.deleteAttemptSession('${iter.sessionId}')">ðŸ—‘</button>
           </div>
         `;
         subList.appendChild(row);
@@ -6218,7 +6233,7 @@ const CGL_OS = (() => {
     });
 
     safeSetText("comp-studio-header-title", sheet.title);
-    safeSetText("comp-studio-header-sub", `${sheet.chapter} • Sheet ${activeCompSheetIndex + 1} of ${currentCompSheets.length}`);
+    safeSetText("comp-studio-header-sub", `${sheet.chapter} â€¢ Sheet ${activeCompSheetIndex + 1} of ${currentCompSheets.length}`);
 
     const linkedQs = await ConceptService.getLinkedQuestions(sheet.id, sheet.chapter);
     safeSetText("comp-linked-q-count", `${linkedQs.length} Associated Questions Linked`);
@@ -6259,9 +6274,9 @@ const CGL_OS = (() => {
         <div style="font-size:14.5px; line-height:1.75; color:var(--text-main);">${formatRichText(sheet.content)}</div>
         
         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:28px; padding-top:14px; border-top:1px solid var(--border-color);">
-          <button class="btn btn-secondary" onclick="CGL_OS.navCompStudioSheet(-1)">[ ← ] Previous Sheet</button>
+          <button class="btn btn-secondary" onclick="CGL_OS.navCompStudioSheet(-1)">[ â† ] Previous Sheet</button>
           <span style="font-size:12px; font-weight:700; color:var(--text-muted);">${activeCompSheetIndex + 1} / ${currentCompSheets.length}</span>
-          <button class="btn btn-secondary" onclick="CGL_OS.navCompStudioSheet(1)">Next Sheet [ → ]</button>
+          <button class="btn btn-secondary" onclick="CGL_OS.navCompStudioSheet(1)">Next Sheet [ â†’ ]</button>
         </div>
       `;
     }
@@ -6446,7 +6461,7 @@ const CGL_OS = (() => {
   function triggerOmniResearchDrawer(q) {
     if (!q) return;
     const queryText = (q.subtopic || q.method || q.chapter).replace(/_/g, " ");
-    safeSetText("omni-research-query-sub", `${q.subject} • ${q.chapter}`);
+    safeSetText("omni-research-query-sub", `${q.subject} â€¢ ${q.chapter}`);
     safeSetText("omni-research-prompt-preview", q.questionText.slice(0, 160) + "...");
 
     const wikiUrl = `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(queryText + " SSC CGL")}`;
@@ -6526,7 +6541,7 @@ const CGL_OS = (() => {
       div.style.cursor = "pointer";
       div.innerHTML = `
         <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-          <span class="badge" style="background:#1f6feb;">${res.subject} • ${res.chapter}</span>
+          <span class="badge" style="background:#1f6feb;">${res.subject} â€¢ ${res.chapter}</span>
         </div>
         <b style="font-size:14px; color:#fff;">${res.title}</b>
         <div style="font-size:11px; color:var(--accent-cyan); font-family:var(--font-mono); margin-bottom:4px;">${res.subtitle || ''}</div>
@@ -6571,8 +6586,8 @@ const CGL_OS = (() => {
     breadcrumb.style.cssText = "display:flex; align-items:center; gap:8px; font-size:12px; margin-bottom:12px; color:var(--accent-cyan);";
     breadcrumb.innerHTML = `
       <span style="cursor:pointer;" onclick="CGL_OS.setSynapseLevel('SUBJECTS')">All Subjects</span>
-      ${synapseActiveSubject ? ` ➔ <span style="cursor:pointer;" onclick="CGL_OS.setSynapseLevel('CHAPTERS', '${synapseActiveSubject}')">${synapseActiveSubject}</span>` : ''}
-      ${synapseActiveChapter ? ` ➔ <b>${synapseActiveChapter}</b>` : ''}
+      ${synapseActiveSubject ? ` âž” <span style="cursor:pointer;" onclick="CGL_OS.setSynapseLevel('CHAPTERS', '${synapseActiveSubject}')">${synapseActiveSubject}</span>` : ''}
+      ${synapseActiveChapter ? ` âž” <b>${synapseActiveChapter}</b>` : ''}
     `;
     rootContainer.appendChild(breadcrumb);
 
@@ -6593,7 +6608,7 @@ const CGL_OS = (() => {
             <span class="badge" style="background:#1f6feb;">${sKey}</span>
           </div>
           <div style="font-size:11px; color:var(--text-muted); margin-top:8px;">
-            ${sub.chapters.length} Chapters • ${qCount} Questions • ${cCount} Sheets
+            ${sub.chapters.length} Chapters â€¢ ${qCount} Questions â€¢ ${cCount} Sheets
           </div>
         `;
         tile.onclick = () => setSynapseLevel("CHAPTERS", sKey);
@@ -6614,11 +6629,11 @@ const CGL_OS = (() => {
         row.innerHTML = `
           <div style="overflow:hidden;" onclick="CGL_OS.setSynapseLevel('CONCEPTS', '${synapseActiveSubject}', '${chap}')">
             <b style="color:#fff; font-size:13px;">${chap}</b>
-            <div style="font-size:10.5px; color:var(--text-muted);">${chapQs.length} Qs • ${chapSheets.length} Living Sheets</div>
+            <div style="font-size:10.5px; color:var(--text-muted);">${chapQs.length} Qs â€¢ ${chapSheets.length} Living Sheets</div>
           </div>
           <div style="display:flex; gap:6px;">
-            <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.launchDirectChapterDrill('${synapseActiveSubject}', '${chap}')">⚡ Drill</button>
-            <button class="btn btn-cyan" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.setSynapseLevel('CONCEPTS', '${synapseActiveSubject}', '${chap}')">Explore ➔</button>
+            <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.launchDirectChapterDrill('${synapseActiveSubject}', '${chap}')">âš¡ Drill</button>
+            <button class="btn btn-cyan" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.setSynapseLevel('CONCEPTS', '${synapseActiveSubject}', '${chap}')">Explore âž”</button>
           </div>
         `;
         list.appendChild(row);
@@ -6632,7 +6647,7 @@ const CGL_OS = (() => {
       header.style.cssText = "display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;";
       header.innerHTML = `
         <span style="font-weight:700; color:#fff;">${synapseActiveChapter} Inventory (${chapQs.length} Qs, ${chapSheets.length} Sheets)</span>
-        <button class="btn" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.launchDirectChapterDrill('${synapseActiveSubject}', '${synapseActiveChapter}')">⚡ Drill Entire Chapter (${chapQs.length} Qs)</button>
+        <button class="btn" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.launchDirectChapterDrill('${synapseActiveSubject}', '${synapseActiveChapter}')">âš¡ Drill Entire Chapter (${chapQs.length} Qs)</button>
       `;
       rootContainer.appendChild(header);
 
@@ -6644,7 +6659,7 @@ const CGL_OS = (() => {
         item.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <div>
-              <b style="color:var(--accent-cyan); font-size:13px;">📖 ${sheet.title}</b>
+              <b style="color:var(--accent-cyan); font-size:13px;">ðŸ“– ${sheet.title}</b>
               <div style="font-size:11px; color:var(--text-muted);">${sheet.subtitle || ''}</div>
             </div>
             <div style="display:flex; gap:6px;">
@@ -6720,10 +6735,10 @@ const CGL_OS = (() => {
       safeSetText("dash-continue-sub", "Zero completed tests detected. Tap to run diagnostic onboarding mock.");
     } else if (weakChapters.length > 0) {
       const targetWeak = weakChapters[0];
-      safeSetText("dash-continue-title", `${targetWeak.chapter} — Weakness Drill`);
+      safeSetText("dash-continue-title", `${targetWeak.chapter} â€” Weakness Drill`);
       safeSetText("dash-continue-sub", `Current accuracy: ${targetWeak.accuracy}% (${targetWeak.wrong} incorrect answers recorded)`);
     } else {
-      safeSetText("dash-continue-title", "Comprehensive Practice — Daily Sprint");
+      safeSetText("dash-continue-title", "Comprehensive Practice â€” Daily Sprint");
       safeSetText("dash-continue-sub", "All syllabus chapters currently within nominal accuracy bands");
     }
 
@@ -6734,10 +6749,10 @@ const CGL_OS = (() => {
       if (completedAttempts.length === 0) {
         weakListContainer.innerHTML = `<p style="font-size:11.5px; color:var(--text-muted); padding:10px 0;">Awaiting baseline diagnostic telemetry.</p>`;
       } else if (weakChapters.length === 0) {
-        weakListContainer.innerHTML = `<p style="font-size:12px; color:var(--status-green); padding:10px 0;">✓ Zero weak chapters detected! Excellent mastery.</p>`;
+        weakListContainer.innerHTML = `<p style="font-size:12px; color:var(--status-green); padding:10px 0;">âœ“ Zero weak chapters detected! Excellent mastery.</p>`;
       } else {
         weakChapters.slice(0, 4).forEach((w, i) => {
-          const colorIcon = i === 0 ? "🔴" : (i === 1 ? "🟠" : "🟡");
+          const colorIcon = i === 0 ? "ðŸ”´" : (i === 1 ? "ðŸŸ " : "ðŸŸ¡");
           const row = document.createElement("div");
           row.className = "weak-item-row";
           row.innerHTML = `
@@ -6838,7 +6853,7 @@ const CGL_OS = (() => {
 
     if (totalTraps === 0) {
       heatBar.innerHTML = `<div style="width:100%; height:100%; background:rgba(16,185,129,0.2); display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--status-green);">Zero cognitive trap penalties recorded. Clean execution!</div>`;
-      legend.innerHTML = `<span style="font-size:10px; color:var(--status-green);">Clean Decision Trail • No Traps</span>`;
+      legend.innerHTML = `<span style="font-size:10px; color:var(--status-green);">Clean Decision Trail â€¢ No Traps</span>`;
       return;
     }
 
@@ -6948,8 +6963,8 @@ const CGL_OS = (() => {
     blueprints.forEach(bp => {
       const pill = document.createElement("button");
       pill.className = "anchor-pill";
-      const icon = bp.type === "FIXED_PAPER" ? "📌" : "⚡";
-      pill.innerHTML = `<span>${icon} ${bp.title}</span><span style="opacity:0.6; font-size:9px;" onclick="event.stopPropagation(); CGL_OS.deleteSavedPreset('${bp.id}')">✕</span>`;
+      const icon = bp.type === "FIXED_PAPER" ? "ðŸ“Œ" : "âš¡";
+      pill.innerHTML = `<span>${icon} ${bp.title}</span><span style="opacity:0.6; font-size:9px;" onclick="event.stopPropagation(); CGL_OS.deleteSavedPreset('${bp.id}')">âœ•</span>`;
       pill.onclick = () => launchSavedPreset(bp.id);
       pillsContainer.appendChild(pill);
     });
@@ -7001,8 +7016,8 @@ const CGL_OS = (() => {
           <span class="ticket-sec-pill" style="color:var(--status-red);">Traps: ${att.q4Traps || 0}</span>
         </div>
         <div class="ticket-actions-bar">
-          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.exportMockByIdJson('${att.sessionId}')">📥 Export</button>
-          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--status-green);" onclick="CGL_OS.reattemptMock('${att.sessionId}')">🔁 Re-attempt</button>
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.exportMockByIdJson('${att.sessionId}')">ðŸ“¥ Export</button>
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--status-green);" onclick="CGL_OS.reattemptMock('${att.sessionId}')">ðŸ” Re-attempt</button>
           <button class="btn btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openMockReview('${att.sessionId}')">Inspect Solutions</button>
         </div>
       `;
@@ -7102,7 +7117,7 @@ const CGL_OS = (() => {
           <div>
             <div style="font-weight:700; font-family:var(--font-mono); font-size:13px;">${chap}</div>
             <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
-              Bank: ${totalInBank} Qs • ${chapAtt > 0 ? `Speed: ${Math.round(chapSec / chapAtt)}s` : "No solve data"}
+              Bank: ${totalInBank} Qs â€¢ ${chapAtt > 0 ? `Speed: ${Math.round(chapSec / chapAtt)}s` : "No solve data"}
             </div>
           </div>
           <div style="text-align:right;">
@@ -7230,14 +7245,14 @@ const CGL_OS = (() => {
         <div class="vault-compact-header" onclick="this.parentElement.classList.toggle('open')">
           <div style="overflow:hidden; padding-right:8px;">
             <div style="display:flex; align-items:center; gap:6px; margin-bottom:2px;">
-              <span class="badge" style="background:#151a24; color:var(--accent-cyan); font-size:10px;">${f.subject} • ${f.chapter}</span>
+              <span class="badge" style="background:#151a24; color:var(--accent-cyan); font-size:10px;">${f.subject} â€¢ ${f.chapter}</span>
               <span class="anki-type-tag">${f.cardType || 'BASIC'}</span>
             </div>
             <div style="font-size:12.5px; font-weight:600; color:#fff; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">
               ${f.front.replace(/\$+/g, '').slice(0, 75)}...
             </div>
           </div>
-          <span style="font-size:12px; color:var(--text-muted); font-family:var(--font-mono);">▼</span>
+          <span style="font-size:12px; color:var(--text-muted); font-family:var(--font-mono);">â–¼</span>
         </div>
         <div class="vault-compact-drawer">
           <div style="font-size:14px; line-height:1.6; color:#fff; margin-bottom:8px;"><b>Prompt:</b><br>${formatRichText(f.front)}</div>
@@ -7325,7 +7340,7 @@ const CGL_OS = (() => {
 
     activeVaultFlipped = false;
     safeSetText("fc-study-progress", `Card ${activeVaultIndex + 1} of ${activeVaultDeck.length}`);
-    safeSetText("fc-card-chapter", `${card.subject} • ${card.chapter}`);
+    safeSetText("fc-card-chapter", `${card.subject} â€¢ ${card.chapter}`);
     safeSetText("fc-card-type-tag", card.cardType || (card.extra ? 'BASIC_EXTRA' : 'BASIC'));
     safeSetHtml("fc-card-body", formatRichText(card.front));
 
@@ -7653,7 +7668,7 @@ const CGL_OS = (() => {
         const subName = TAXONOMY[s] ? TAXONOMY[s].name : s;
         tocHtml += `<div style="font-weight:bold; margin-top:8px; font-size:11pt;">${secCounter++}. ${subName} (${s})</div>`;
         Object.keys(tocMap[s]).forEach(c => {
-          tocHtml += `<div style="padding-left:14px; font-weight:600; color:#333; margin-top:3px;">• ${c}</div>`;
+          tocHtml += `<div style="padding-left:14px; font-weight:600; color:#333; margin-top:3px;">â€¢ ${c}</div>`;
           tocMap[s][c].forEach(title => {
             tocHtml += `<div class="print-toc-item" style="padding-left:28px;"><span>${title}</span><span style="color:#777;">Engineering Sheet</span></div>`;
           });
@@ -7792,7 +7807,7 @@ const CGL_OS = (() => {
               ${q.options.map((opt, i) => `(${i + 1}) ${formatRichText(opt)} &nbsp; `).join('')}
             </div>
             <div style="font-size:9pt; margin-top:6px; background:#f4f4f4; padding:6px; border-left:3px solid ${isCor ? '#238636' : '#da3633'};">
-              <b>Your Pick:</b> Option ${resp.selectedOption !== null && resp.selectedOption !== undefined ? resp.selectedOption + 1 : 'None'} (${isCor ? '✓ Correct' : '✗ Incorrect'}) | <b>Time:</b> ${resp.timeSpentSec || 0}s<br>
+              <b>Your Pick:</b> Option ${resp.selectedOption !== null && resp.selectedOption !== undefined ? resp.selectedOption + 1 : 'None'} (${isCor ? 'âœ“ Correct' : 'âœ— Incorrect'}) | <b>Time:</b> ${resp.timeSpentSec || 0}s<br>
               <b>Key:</b> Option ${q.correctIndex + 1} | <i>${formatRichText(q.explanation || '')}</i>
             </div>
           </div>
@@ -7821,7 +7836,7 @@ const CGL_OS = (() => {
 
         content += `
           <div class="print-question">
-            <strong>Card ${idx + 1}. [${f.subject} • ${f.chapter}]</strong> (${f.cardType || 'BASIC'})<br>
+            <strong>Card ${idx + 1}. [${f.subject} â€¢ ${f.chapter}]</strong> (${f.cardType || 'BASIC'})<br>
             <b>Prompt:</b> ${formatRichText(f.front)}${fImg}<br>
             <div style="font-size:9.5pt; margin-top:4px;"><b>Answer:</b> ${formatRichText(f.back)}${bImg}</div>
             ${f.extra ? `<div style="font-size:9pt; color:#444; margin-top:2px;"><b>Extra:</b> ${formatRichText(f.extra)}</div>` : ''}
@@ -8264,9 +8279,9 @@ const CGL_OS = (() => {
       const allAtt = await getAllRecords("store_attempts");
       const flashcards = await getAllRecords("store_flashcards");
       payload = `# SSC CGL Strategic Telemetry Audit\n` +
-        `• Generated at: ${formatISTDate(Date.now())}\n` +
-        `• Completed Standard Mocks: ${allAtt.length}\n` +
-        `• Vault Flashcards Registered: ${flashcards.length}\n`;
+        `â€¢ Generated at: ${formatISTDate(Date.now())}\n` +
+        `â€¢ Completed Standard Mocks: ${allAtt.length}\n` +
+        `â€¢ Vault Flashcards Registered: ${flashcards.length}\n`;
     }
 
     safeSetValue("ai-export-preview", payload);
@@ -8348,7 +8363,7 @@ const CGL_OS = (() => {
     let md = `# SSC CGL Flashcard Vault Export\nGenerated on: ${formatISTDate(Date.now())}\nTotal Cards: ${flashcards.length}\n\n`;
 
     flashcards.forEach(f => {
-      md += `### [${f.subject} • ${f.chapter}] ${f.id} (${f.cardType || 'BASIC'})\n`;
+      md += `### [${f.subject} â€¢ ${f.chapter}] ${f.id} (${f.cardType || 'BASIC'})\n`;
       md += `**Prompt (Front):**\n${f.front}\n\n`;
       md += `**Answer (Back):**\n${f.back}\n\n`;
       if (f.extra) md += `**Extra Notes:**\n${f.extra}\n\n`;
@@ -8453,8 +8468,8 @@ ${JSON.stringify(TAXONOMY, null, 2)}
         div.style.padding = "10px";
         div.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-            <span class="badge" style="background:#1f6feb;">${q.subject} • ${q.chapter}</span>
-            <button class="btn btn-secondary" style="padding:2px 8px; font-size:10px;" onclick="CGL_OS.launchSingleQuestionPractice('${q.id}')">⚡ Solve</button>
+            <span class="badge" style="background:#1f6feb;">${q.subject} â€¢ ${q.chapter}</span>
+            <button class="btn btn-secondary" style="padding:2px 8px; font-size:10px;" onclick="CGL_OS.launchSingleQuestionPractice('${q.id}')">âš¡ Solve</button>
           </div>
           <div style="font-size:13px; line-height:1.5; color:#fff;">${formatRichText(q.questionText)}</div>
         `;
@@ -8474,7 +8489,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
         div.style.padding = "10px";
         div.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-            <b style="font-size:13.5px; color:#fff;">📖 ${c.title}</b>
+            <b style="font-size:13.5px; color:#fff;">ðŸ“– ${c.title}</b>
             <button class="btn btn-secondary" style="padding:2px 8px; font-size:10px;" onclick="CGL_OS.openCompendiumToSheet('${c.id}', '${c.subject}', '${c.chapter}')">Read Sheet</button>
           </div>
           <div style="font-size:11px; color:var(--text-muted);">${c.subtitle || ''}</div>
