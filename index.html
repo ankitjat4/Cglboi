@@ -35,7 +35,9 @@
     </div>
   </div>
 
-  <!-- ==================== APPLICATION VIEWPORT ROOT ==================== -->
+  <!-- ==================================================================
+       APPLICATION VIEWPORT ROOT (CONTAINS STRICTLY THE 4 PRIMARY TAB VIEWS)
+       ================================================================== -->
   <div id="app-viewport-root">
 
     <!-- ------------------------------------------------------------------
@@ -71,9 +73,9 @@
         </div>
         <div class="card" style="margin-bottom:0; padding:12px 8px;">
           <div style="font-size:10px; font-weight:800; color:var(--status-green); text-transform:uppercase;">ACCURACY</div>
-          <div style="font-size:20px; font-weight:900; font-family:var(--font-mono); color:var(--status-green); margin-top:4px;" id="dash-stat-accuracy">--</div>
+          <div style="font-size:20px; font-weight:900; font-family:var(--font-mono); color:var(--status-green); margin-top:4px;" id="dash-stat-accuracy">0%</div>
         </div>
-        <div class="card" style="margin-bottom:0; padding:12px 8px; cursor:pointer;" onclick="CGL_OS.launchWeakAreasClinic(20)">
+        <div class="card" style="margin-bottom:0; padding:12px 8px; cursor:pointer;" onclick="CGL_OS.MockService.generate({mode:'WEAKNESS', count:20}).then(i => CGL_OS.MockService.launchMockSession(i))">
           <div style="font-size:10px; font-weight:800; color:var(--status-red); text-transform:uppercase;">WEAK AREAS</div>
           <div style="font-size:20px; font-weight:900; font-family:var(--font-mono); color:var(--status-red); margin-top:4px;" id="dash-stat-weak">0</div>
         </div>
@@ -88,8 +90,8 @@
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
           <div>
             <div style="font-size:10.5px; font-weight:800; color:var(--accent-cyan); text-transform:uppercase; letter-spacing:0.8px;">// CONTINUE TRAINING</div>
-            <div style="font-size:14px; font-weight:800; color:#fff; margin-top:2px;" id="dash-continue-title">Start Diagnostic Baseline</div>
-            <div style="font-size:11px; color:var(--text-muted); margin-top:2px;" id="dash-continue-sub">Complete your initial calibration mock to establish weak areas</div>
+            <div style="font-size:14px; font-weight:800; color:#fff; margin-top:2px;" id="dash-continue-title">Comprehensive Practice — Daily Sprint</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:2px;" id="dash-continue-sub">Targeting unattempted and recurring mistake archetypes</div>
           </div>
           <button class="btn" style="padding:8px 18px; font-size:12px; font-weight:800;" id="dash-btn-continue" onclick="CGL_OS.launchContinueTrainingDrill()">
             CONTINUE
@@ -105,9 +107,9 @@
             <span style="font-size:9.5px; color:var(--status-red);">Needs Work</span>
           </div>
           <div id="dash-weak-areas-list" style="min-height:90px;">
-            <p style="font-size:11.5px; color:var(--text-muted); padding:10px 0;">No diagnostic sessions recorded yet.</p>
+            <p style="font-size:11.5px; color:var(--text-muted); padding:10px 0;">Calculating diagnostic weaknesses...</p>
           </div>
-          <button class="btn btn-danger" style="width:100%; padding:8px; font-size:11px; margin-top:8px;" onclick="CGL_OS.launchWeakAreasClinic(25)">
+          <button class="btn btn-danger" style="width:100%; padding:8px; font-size:11px; margin-top:8px;" onclick="CGL_OS.MockService.generate({mode:'WEAKNESS', count:25}).then(i => CGL_OS.MockService.launchMockSession(i))">
             ⚡ TRAIN WEAK AREAS
           </button>
         </div>
@@ -143,7 +145,9 @@
             <span class="badge" style="background:#151a24; color:var(--accent-cyan);" id="eri-status-tier">Calibrating</span>
           </div>
           <div style="font-size:24px; font-weight:800; color:#fff; margin:2px 0;" id="eri-score-val">0.0</div>
-          <div style="font-size:10.5px; color:var(--text-muted);" id="eri-breakdown-sub">Acc: 0.0/50 • Vel: 0.0/30 • Exp: 0.0/20</div>
+          <div style="font-size:10.5px; color:var(--text-muted);" id="eri-breakdown-sub">
+            <span id="eri-sub-acc">Acc: 0.0/50</span> • <span id="eri-sub-vel">Vel: 0.0/30</span> • <span id="eri-sub-exp">Exp: 0.0/20</span>
+          </div>
         </div>
       </div>
 
@@ -164,7 +168,7 @@
         <div id="dash-blueprints-pills"></div>
       </div>
 
-      <!-- Cognitive Trap Distribution Matrix (Active Heat Bar) -->
+      <!-- Cognitive Trap Distribution Matrix -->
       <div class="card" style="padding:12px; margin-bottom:14px;">
         <div class="card-title" style="margin-bottom:4px;">
           <span>Cognitive Trap Distribution</span>
@@ -322,7 +326,7 @@
       <!-- Question Inventory List Container (Populated via Paged Virtual Slices) -->
       <div id="practice-question-rows"></div>
 
-      <!-- PAGINATION CONTROLS -->
+      <!-- PAGINATION CONTROLS (Prevents 2,300+ Question CPU Lockup) -->
       <div id="practice-pagination-controls" style="display:flex; justify-content:space-between; align-items:center; margin:16px 0 90px 0; padding:10px 14px; background:#0d1322; border-radius:10px; border:1px solid var(--border-color);">
         <button class="btn btn-secondary" id="btn-practice-prev-page" style="padding:6px 12px; font-size:11.5px;" onclick="CGL_OS.navPracticePage(-1)">◄ Previous 25</button>
         <span id="practice-page-info" style="font-size:11.5px; font-weight:700; color:var(--accent-cyan); font-family:var(--font-mono);">Page 1 of 1</span>
@@ -562,9 +566,8 @@
 
   </div> <!-- /#app-viewport-root -->
 
-
   <!-- ==================================================================
-       ROOT-LEVEL OVERLAYS & MODALS
+       ROOT-LEVEL VIEWS & MODALS (DECOUPLED FROM INACTIVE TAB CONTAINERS)
        ================================================================== -->
 
   <!-- 1. FULLSCREEN EXAM ARENA -->
@@ -620,10 +623,16 @@
       </div>
 
       <div id="arena-review-telemetry-banner" style="display:none; margin-bottom:12px;"></div>
-      
-      <!-- Atomic Passage Container for RC, Cloze Tests & Caselets -->
-      <div class="q-passage-container" id="arena-passage-box" style="display:none;"></div>
-      
+
+      <!-- Pinned Reading Comprehension / Cloze / Caselet Container -->
+      <div id="arena-passage-container" class="q-passage-container" style="display:none;">
+        <div class="q-passage-header">
+          <span class="q-passage-tag" id="arena-passage-tag">PASSAGE CONTEXT</span>
+          <span class="q-passage-set-badge" id="arena-passage-set-badge">SET Q 1/5</span>
+        </div>
+        <div class="q-passage-body" id="arena-passage-body"></div>
+      </div>
+
       <div class="q-text-canvas" id="arena-q-text"></div>
       <div class="q-image-container" id="arena-image-container" style="display:none;"></div>
       <div id="arena-options-container"></div>
@@ -706,7 +715,15 @@
         <span style="font-size:12px; color:var(--text-muted);" id="dojo-arena-total-tag">Question 1 of 10</span>
       </div>
 
-      <div class="q-passage-container" id="dojo-passage-box" style="display:none;"></div>
+      <!-- Pinned Dojo Passage Container -->
+      <div id="dojo-passage-container" class="q-passage-container" style="display:none;">
+        <div class="q-passage-header">
+          <span class="q-passage-tag" id="dojo-passage-tag">PASSAGE CONTEXT</span>
+          <span class="q-passage-set-badge" id="dojo-passage-set-badge">SET Q 1/5</span>
+        </div>
+        <div class="q-passage-body" id="dojo-passage-body"></div>
+      </div>
+
       <div class="q-text-canvas" id="dojo-arena-qtext"></div>
       <div class="q-image-container" id="dojo-image-container" style="display:none;"></div>
       <div id="dojo-arena-options"></div>
@@ -780,7 +797,7 @@
       <button class="btn btn-secondary" style="padding:3px 8px; font-size:11px;" id="btn-drill-sheet-questions" onclick="CGL_OS.launchCurrentSheetQuestionsDrill()">⚡ Drill Sheet Qs</button>
     </div>
 
-    <!-- Living Document Canvas Body (Gesture-Safe, Horizontal Scroll Enabled) -->
+    <!-- Living Document Canvas Body (Vertical Reading with Horizontal Layout Shield) -->
     <div class="comp-document-canvas" id="comp-studio-canvas">
       <div id="comp-studio-doc-content"></div>
 
@@ -885,14 +902,26 @@
         </div>
       </div>
 
-      <!-- Passage Context Section (For RC, Cloze Tests, DI & Puzzles) -->
-      <div class="form-group" style="background:#090e1a; border:1px solid var(--border-color); border-radius:8px; padding:10px;">
-        <label style="font-size:11px; color:var(--accent-cyan);">Shared Passage / Set Context (Optional - For RC, Cloze, Puzzles)</label>
-        <input type="text" id="new-q-passage-id" class="form-control" placeholder="Passage Set ID (e.g. pass_cgl_rc_01)..." style="font-size:12px; margin-bottom:6px;">
-        <textarea id="new-q-passage-text" class="form-control" style="height:65px; font-size:12px;" placeholder="Paste shared reading comprehension passage, puzzle premise, or directions here..."></textarea>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:6px;">
-          <input type="number" id="new-q-set-order" class="form-control" placeholder="Question Order in Set (e.g. 1)" style="font-size:11px;">
-          <input type="number" id="new-q-set-total" class="form-control" placeholder="Total Questions in Set (e.g. 5)" style="font-size:11px;">
+      <!-- Passage / Multi-Question Caselet Set Fields -->
+      <div style="background:rgba(56,189,248,0.04); border:1px solid rgba(56,189,248,0.18); border-radius:9px; padding:10px; margin-bottom:12px;">
+        <div style="font-size:10.5px; font-weight:800; color:var(--accent-cyan); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px;">// Passage / Caselet Set Grouping (Optional)</div>
+        <div style="display:grid; grid-template-columns:2fr 1fr 1fr; gap:8px; margin-bottom:6px;">
+          <div>
+            <label style="font-size:10px; color:var(--text-muted);">Parent Passage ID</label>
+            <input type="text" id="new-q-parent-passage-id" class="form-control" placeholder="e.g. psg_cgl_rc_001" style="font-size:12px;">
+          </div>
+          <div>
+            <label style="font-size:10px; color:var(--text-muted);">Set Order</label>
+            <input type="number" id="new-q-set-order" class="form-control" placeholder="1" min="1" style="font-size:12px;">
+          </div>
+          <div>
+            <label style="font-size:10px; color:var(--text-muted);">Set Total</label>
+            <input type="number" id="new-q-set-total" class="form-control" placeholder="5" min="1" style="font-size:12px;">
+          </div>
+        </div>
+        <div>
+          <label style="font-size:10px; color:var(--text-muted);">Passage Text (Shared by all sibling questions in set)</label>
+          <textarea id="new-q-passage-text" class="form-control" style="height:55px; font-size:12px;" placeholder="Full reading comprehension context, cloze text, or caselet prompt..."></textarea>
         </div>
       </div>
 
@@ -957,13 +986,13 @@
     </div>
   </div>
 
-  <!-- Modal: Dynamic Mock Lab & Multi-Chapter Builder -->
+  <!-- Modal: Dynamic Mock Lab & Builder (Multi-Chapter Matrix Support) -->
   <div class="modal-overlay child-layer" id="modal-mock-builder">
-    <div class="modal-window" style="max-width:720px; max-height:92vh;">
+    <div class="modal-window" style="max-width:680px; max-height:92vh;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
         <div>
           <h3 style="font-size:17px; font-weight:800; color:#38bdf8;">🧪 MOCK LAB &amp; GENERATOR</h3>
-          <span style="font-size:11px; color:var(--text-muted);">Dynamic Sampling • Multi-Chapter Matrix • Anti-Repetition</span>
+          <span style="font-size:11px; color:var(--text-muted);">Dynamic Sampling • Weakness Focus • Multi-Chapter Matrix</span>
         </div>
         <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-mock-builder').classList.remove('active')">✕</button>
       </div>
@@ -975,43 +1004,40 @@
           <button class="anchor-pill" id="strat-pill-weak" onclick="CGL_OS.setMockStrategy('WEAKNESS', this)">WEAK</button>
           <button class="anchor-pill" id="strat-pill-unseen" onclick="CGL_OS.setMockStrategy('UNSEEN', this)">UNSEEN</button>
           <button class="anchor-pill" id="strat-pill-ignored" onclick="CGL_OS.setMockStrategy('IGNORED', this)">IGNORED</button>
-          <button class="anchor-pill" id="strat-pill-chapter" onclick="CGL_OS.setMockStrategy('CHAPTER', this)">CHAPTER MATRIX</button>
+          <button class="anchor-pill" id="strat-pill-chapter" onclick="CGL_OS.setMockStrategy('CHAPTER', this)">CHAPTER</button>
           <button class="anchor-pill" id="strat-pill-sectional" onclick="CGL_OS.setMockStrategy('SECTIONAL', this)">SECTIONAL</button>
-          <button class="anchor-pill" id="strat-pill-custom" onclick="CGL_OS.setMockStrategy('CUSTOM_BUILDER', this)">CUSTOM QUEUE</button>
+          <button class="anchor-pill" id="strat-pill-custom" onclick="CGL_OS.setMockStrategy('CUSTOM_BUILDER', this)">CUSTOM</button>
         </div>
       </div>
 
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
         <div class="form-group">
-          <label>Primary Subject</label>
+          <label>Subject Scope</label>
           <select id="builder-subject" class="form-control" onchange="CGL_OS.updateBuilderChapters(this.value)">
             <option value="ALL">All Subjects</option>
           </select>
         </div>
         <div class="form-group">
-          <label>Difficulty Band</label>
-          <select id="builder-difficulty" class="form-control">
-            <option value="ALL">Mixed</option>
-            <option value="EASY">Easy</option>
-            <option value="MEDIUM">Medium</option>
-            <option value="HARD">Hard</option>
+          <label>Quick Chapter Filter</label>
+          <select id="builder-chapter" class="form-control" onchange="CGL_OS.handleBuilderChapterSelectChange(this.value)">
+            <option value="ALL">All Chapters (Use Matrix Below)</option>
           </select>
         </div>
       </div>
 
-      <!-- Granular Multi-Chapter Matrix Selector -->
-      <div class="form-group" id="builder-chapter-matrix-wrap">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <label style="margin-bottom:0;">Multi-Chapter Selection Matrix (Tap to Toggle)</label>
+      <!-- Granular Interactive Multi-Chapter Matrix Chips -->
+      <div class="form-group" id="builder-matrix-group">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+          <label style="margin-bottom:0;">Granular Chapter Matrix Selection</label>
           <div style="display:flex; gap:6px;">
-            <button class="btn btn-secondary" style="padding:2px 8px; font-size:10px;" onclick="CGL_OS.selectAllBuilderChips(true)">Select All</button>
-            <button class="btn btn-secondary" style="padding:2px 8px; font-size:10px;" onclick="CGL_OS.selectAllBuilderChips(false)">Clear</button>
+            <button class="btn btn-secondary" style="padding:2px 8px; font-size:10px;" onclick="CGL_OS.toggleAllBuilderMatrixChips(true)">Select All</button>
+            <button class="btn btn-secondary" style="padding:2px 8px; font-size:10px;" onclick="CGL_OS.toggleAllBuilderMatrixChips(false)">Clear</button>
           </div>
         </div>
-        <div class="chip-selector-grid" id="builder-chapter-chips-grid"></div>
+        <div id="builder-chapter-chips-wrap" class="matrix-chip-grid"></div>
       </div>
 
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
         <div class="form-group">
           <label>Question Count</label>
           <input type="number" id="builder-count" class="form-control" value="25" min="5" max="100" onchange="CGL_OS.updateBuilderPoolEstimate()">
@@ -1019,6 +1045,15 @@
         <div class="form-group">
           <label>Duration (Minutes)</label>
           <input type="number" id="builder-duration" class="form-control" value="15" min="1" max="120">
+        </div>
+        <div class="form-group">
+          <label>Difficulty</label>
+          <select id="builder-difficulty" class="form-control">
+            <option value="ALL">Mixed</option>
+            <option value="EASY">Easy</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="HARD">Hard</option>
+          </select>
         </div>
       </div>
 
@@ -1033,7 +1068,7 @@
         </label>
       </div>
 
-      <!-- Custom Multi-Section Stack Queue -->
+      <!-- Custom Multi-Section Stack Wrap (Scoped Chapter & Duration Rows) -->
       <div id="custom-sequence-stack-wrap" style="display:none; margin-bottom:14px; background:#070b14; padding:12px; border-radius:9px; border:1px solid var(--border-color);">
         <div class="card-title">
           <span>Configured Section Queue</span>
@@ -1156,15 +1191,15 @@
 
       <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:12px; text-align:center;">
         <div class="forensic-tile">
-          <div style="font-size:9px; color:var(--accent-purple-light);">PENALTY DRAG</div>
+          <div style="font-size:9px; color:var(--status-purple);">PENALTY DRAG</div>
           <div style="font-size:14px; font-weight:800; color:#f87171;" id="rev-penalty">-0.00</div>
         </div>
         <div class="forensic-tile">
-          <div style="font-size:9px; color:var(--accent-purple-light);">2ND GUESS NET</div>
+          <div style="font-size:9px; color:var(--status-purple);">2ND GUESS NET</div>
           <div style="font-size:14px; font-weight:800; color:#38bdf8;" id="rev-switch-delta">0 Net</div>
         </div>
         <div class="forensic-tile">
-          <div style="font-size:9px; color:var(--accent-purple-light);">Q-IV TIME TRAPS (&gt;90s)</div>
+          <div style="font-size:9px; color:var(--status-purple);">Q-IV TIME TRAPS (&gt;90s)</div>
           <div style="font-size:14px; font-weight:800; color:var(--status-red);" id="rev-traps">0</div>
         </div>
       </div>
@@ -1370,7 +1405,7 @@
         <button class="btn btn-secondary" style="font-size:11px; padding:6px 10px;" onclick="CGL_OS.renderArchiveList('ALL')">All Tests</button>
         <button class="btn btn-secondary" style="font-size:11px; padding:6px 10px;" onclick="CGL_OS.renderArchiveList('TIER_1')">Tier-1 Full</button>
         <button class="btn btn-secondary" style="font-size:11px; padding:6px 10px;" onclick="CGL_OS.renderArchiveList('SECTIONAL')">Sectionals</button>
-        <button class="btn btn-secondary" style="font-size:11px; padding:6px 10px;" onclick="CGL_OS.renderArchiveList('CUSTOM')">Custom Routines</button>
+        <button class="btn btn-secondary" style="font-size:11px; padding:6px 10px;" onclick="CGL_OS.renderArchiveList('CUSTOM')">Custom Sequences</button>
       </div>
 
       <div id="archive-list-container"></div>
@@ -1528,7 +1563,7 @@
     </div>
   </div>
 
-  <!-- Modal: Multi-Concept GUI Question Editor -->
+  <!-- Modal: Multi-Concept GUI Question Editor (Passage Grouping Fields Added) -->
   <div class="modal-overlay" id="modal-question-editor">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1560,11 +1595,27 @@
         </div>
       </div>
 
-      <!-- Passage Context in Edit Mode -->
-      <div class="form-group" style="background:#090e1a; border:1px solid var(--border-color); border-radius:8px; padding:10px;">
-        <label style="font-size:11px; color:var(--accent-cyan);">Shared Passage / Set Context</label>
-        <input type="text" id="edit-q-passage-id" class="form-control" placeholder="Passage ID..." style="font-size:12px; margin-bottom:6px;">
-        <textarea id="edit-q-passage-text" class="form-control" style="height:65px; font-size:12px;" placeholder="Shared passage text..."></textarea>
+      <!-- Passage Metadata -->
+      <div style="background:rgba(56,189,248,0.04); border:1px solid rgba(56,189,248,0.18); border-radius:9px; padding:10px; margin-bottom:12px;">
+        <div style="font-size:10.5px; font-weight:800; color:var(--accent-cyan); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px;">// Passage / Caselet Set Grouping (Optional)</div>
+        <div style="display:grid; grid-template-columns:2fr 1fr 1fr; gap:8px; margin-bottom:6px;">
+          <div>
+            <label style="font-size:10px; color:var(--text-muted);">Parent Passage ID</label>
+            <input type="text" id="edit-q-parent-passage-id" class="form-control" placeholder="e.g. psg_cgl_rc_001" style="font-size:12px;">
+          </div>
+          <div>
+            <label style="font-size:10px; color:var(--text-muted);">Set Order</label>
+            <input type="number" id="edit-q-set-order" class="form-control" placeholder="1" min="1" style="font-size:12px;">
+          </div>
+          <div>
+            <label style="font-size:10px; color:var(--text-muted);">Set Total</label>
+            <input type="number" id="edit-q-set-total" class="form-control" placeholder="5" min="1" style="font-size:12px;">
+          </div>
+        </div>
+        <div>
+          <label style="font-size:10px; color:var(--text-muted);">Passage Text</label>
+          <textarea id="edit-q-passage-text" class="form-control" style="height:55px; font-size:12px;" placeholder="Full reading comprehension context, cloze text, or caselet prompt..."></textarea>
+        </div>
       </div>
 
       <div class="form-group">
@@ -1801,30 +1852,6 @@
     </div>
   </div>
 
-  <!-- Modal: Universal Data Download Fallback Modal (Guarantees zero data loss in Web APKs) -->
-  <div class="modal-overlay child-layer" id="modal-download-fallback">
-    <div class="modal-window" style="max-width:580px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
-        <div>
-          <h3 style="font-size:15px; font-weight:800; color:var(--accent-cyan);" id="fallback-modal-title">Data Ready for Extraction</h3>
-          <span style="font-size:10.5px; color:var(--text-muted);" id="fallback-modal-filename">export.json</span>
-        </div>
-        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-download-fallback').classList.remove('active')">✕</button>
-      </div>
-
-      <p style="font-size:11.5px; color:var(--text-muted); margin-bottom:10px;">
-        If direct system download was blocked by your device shell, copy this raw payload to clipboard:
-      </p>
-
-      <div class="fallback-export-box" id="fallback-modal-payload-preview"></div>
-
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
-        <button class="btn btn-secondary" id="btn-fallback-retry-blob">Retry Direct Save</button>
-        <button class="btn" onclick="CGL_OS.copyFallbackPayloadToClipboard()">📋 Copy Raw to Clipboard</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Modal: Disaster Recovery Restore -->
   <div class="modal-overlay" id="modal-backup-restore">
     <div class="modal-window" style="max-width:480px;">
@@ -1858,6 +1885,41 @@
     </div>
   </div>
 
+  <!-- Modal: Resilient Download Fallback (Tier-3 Buffer for WebAPK / WebView) -->
+  <div class="modal-overlay child-layer" id="modal-download-fallback">
+    <div class="modal-window" style="max-width:540px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+        <div>
+          <h3 style="font-size:15px; font-weight:800; color:var(--accent-cyan);">Data Export Buffer</h3>
+          <span style="font-size:10.5px; color:var(--text-muted);" id="download-fallback-title">File: export.json</span>
+        </div>
+        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-download-fallback').classList.remove('active')">✕</button>
+      </div>
+      <p style="font-size:11.5px; color:var(--text-muted); margin-bottom:10px;">
+        Browser filesystem download was restricted. Copy the raw payload below to manually transfer your data:
+      </p>
+      <textarea id="download-fallback-text" class="download-fallback-area" readonly></textarea>
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:12px;">
+        <button class="btn btn-secondary" onclick="document.getElementById('modal-download-fallback').classList.remove('active')">Dismiss</button>
+        <button class="btn btn-cyan" onclick="CGL_OS.copyDownloadFallbackToClipboard()">📋 Copy Raw Payload</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Cold-Start Onboarding Baseline -->
+  <div class="modal-overlay child-layer" id="modal-onboarding-baseline">
+    <div class="modal-window" style="max-width:480px; text-align:center;">
+      <div style="font-size:32px; margin-bottom:6px;">🎯</div>
+      <h3 style="font-size:18px; font-weight:800; color:#fff; margin-bottom:6px;">Welcome to CGL_OS Diagnostic Engine</h3>
+      <p style="font-size:12.5px; color:var(--text-muted); line-height:1.6; margin-bottom:16px;">
+        Zero completed test sessions detected. Before launching specialized weakness drills, complete a quick 12-question diagnostic baseline mock to calibrate your ERI gauge, pacing profile, and cognitive trap detector.
+      </p>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <button class="btn btn-secondary" onclick="document.getElementById('modal-onboarding-baseline').classList.remove('active')">Explore Bank First</button>
+        <button class="btn" style="font-weight:800;" onclick="CGL_OS.launchOnboardingDiagnosticMock()">⚡ Start Diagnostic</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ==================== BOTTOM NAVIGATION (UNIFIED BAR) ==================== -->
   <nav id="bottom-nav">
