@@ -38,7 +38,7 @@
   <!-- APPLICATION VIEWPORT ROOT -->
   <div id="app-viewport-root">
 
-    <!-- ==================== 1. TIMED EXAM & REVIEW ARENA ==================== -->
+    <!-- ==================== 1. TIMED EXAM & REVIEW ARENA (EXPERIENCE PRESERVED) ==================== -->
     <div id="exam-arena">
       <div class="arena-header">
         <div style="display:flex; align-items:center; gap:8px;">
@@ -154,78 +154,209 @@
       </div>
     </div>
 
-    <!-- ==================== 2. UNTIMED DOJO ARENA ==================== -->
-    <div id="dojo-arena-view">
-      <div class="arena-header">
-        <button class="hud-icon-btn" onclick="CGL_OS.exitDojoArena()">
-          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-        </button>
-        <div style="text-align:center;">
-          <div style="font-size:14px; font-weight:800; color:var(--accent-cyan);" id="dojo-arena-title">Dojo Practice</div>
-          <div style="font-size:10px; color:var(--text-muted);">Untimed Active Recall & Method Clinic</div>
+    <!-- ==================== 2. PRACTICE LAB // QUESTION CONTROL CENTER ==================== -->
+    <div id="tab-dojo" class="view-container">
+      <div class="card" style="background:linear-gradient(135deg, #0e172a, #070c18); border-color:var(--accent-cyan);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <div>
+            <div style="font-family:var(--font-mono); font-size:11px; font-weight:800; color:var(--accent-cyan); text-transform:uppercase;">// PRACTICE LAB</div>
+            <h2 style="font-size:19px; font-weight:800; color:#fff;">Question Control Center</h2>
+          </div>
+          <button class="btn btn-cyan" style="padding:8px 14px; font-size:12px;" onclick="CGL_OS.openNewQuestionCreatorModal()">
+            + NEW QUESTION
+          </button>
         </div>
-        <div style="display:flex; gap:6px;">
-          <button class="hud-icon-btn" onclick="CGL_OS.openOmniResearchForDojoQuestion()" title="Omni Deep Dive">🌐</button>
-          <button class="hud-icon-btn" onclick="CGL_OS.toggleDojoPalette(true)">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+        <p style="font-size:11.5px; color:var(--text-muted); margin-top:4px;">
+          Filter, select, drill, or compile custom mocks directly from your canonical question universe.
+        </p>
+      </div>
+
+      <!-- Live Search & Primary Dropdown Filter Bar -->
+      <div class="card" style="padding:14px; margin-bottom:12px;">
+        <div style="margin-bottom:10px;">
+          <input type="text" id="practice-search-input" class="form-control" placeholder="🔎 Search questions, text, formulas, tags, methods, or ID (e.g. q_cgl_qa_geom_011)..." oninput="CGL_OS.handlePracticeSearchInput(this.value)">
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px; margin-bottom:10px;">
+          <div>
+            <label style="font-size:10px; color:var(--text-muted); font-weight:700;">Subject</label>
+            <select id="practice-filter-subject" class="form-control" style="padding:6px; font-size:11.5px;" onchange="CGL_OS.handlePracticeSubjectChange(this.value)">
+              <option value="ALL">All Subjects</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:10px; color:var(--text-muted); font-weight:700;">Chapter</label>
+            <select id="practice-filter-chapter" class="form-control" style="padding:6px; font-size:11.5px;" onchange="CGL_OS.renderPracticeQuestionsTable()">
+              <option value="ALL">All Chapters</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:10px; color:var(--text-muted); font-weight:700;">Difficulty</label>
+            <select id="practice-filter-difficulty" class="form-control" style="padding:6px; font-size:11.5px;" onchange="CGL_OS.renderPracticeQuestionsTable()">
+              <option value="ALL">Any Difficulty</option>
+              <option value="EASY">Easy</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="HARD">Hard</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:10px; color:var(--text-muted); font-weight:700;">Performance</label>
+            <select id="practice-filter-performance" class="form-control" style="padding:6px; font-size:11.5px;" onchange="CGL_OS.renderPracticeQuestionsTable()">
+              <option value="ALL">Any Status</option>
+              <option value="WEAK">🔴 Weak (&lt;60% Acc)</option>
+              <option value="WRONG">❌ Previously Wrong</option>
+              <option value="UNSEEN">✨ Unseen (0 Attempts)</option>
+              <option value="SLOW">⏳ Slow (&gt;75s)</option>
+              <option value="STRONG">🟢 Strong (≥80% Acc)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Secondary Filter Pills -->
+        <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+          <span style="font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Quick Filters:</span>
+          <button class="anchor-pill active" id="pill-filter-all" onclick="CGL_OS.setPracticeQuickFilter('ALL', this)">All</button>
+          <button class="anchor-pill" id="pill-filter-weak" onclick="CGL_OS.setPracticeQuickFilter('WEAK', this)">🔴 Weak</button>
+          <button class="anchor-pill" id="pill-filter-wrong" onclick="CGL_OS.setPracticeQuickFilter('WRONG', this)">❌ Wrong</button>
+          <button class="anchor-pill" id="pill-filter-unseen" onclick="CGL_OS.setPracticeQuickFilter('UNSEEN', this)">✨ Unseen</button>
+          <button class="anchor-pill" id="pill-filter-ignored" onclick="CGL_OS.setPracticeQuickFilter('IGNORED', this)">💤 Ignored (7d+)</button>
+          <button class="anchor-pill" id="pill-filter-withsheet" onclick="CGL_OS.setPracticeQuickFilter('WITH_SHEET', this)">📖 With Sheet</button>
+        </div>
+      </div>
+
+      <!-- Inventory Metrics Bar -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding:0 4px; font-size:11.5px;">
+        <span style="color:var(--text-muted);">
+          Showing <b id="practice-filtered-count" style="color:#fff;">0</b> matching questions
+        </span>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-secondary" style="padding:3px 8px; font-size:10.5px;" onclick="CGL_OS.selectAllVisiblePractice(true)">Select All</button>
+          <button class="btn btn-secondary" style="padding:3px 8px; font-size:10.5px;" onclick="CGL_OS.selectAllVisiblePractice(false)">Clear</button>
+        </div>
+      </div>
+
+      <!-- Question Inventory List Container -->
+      <div id="practice-question-rows" style="margin-bottom:70px;"></div>
+
+      <!-- Sticky Bottom Selection Action Bar -->
+      <div id="practice-sticky-bar" style="position:fixed; bottom:var(--bottom-nav-height); left:0; right:0; background:rgba(8,12,20,0.96); backdrop-filter:blur(16px); border-top:1px solid rgba(56,189,248,0.3); padding:10px 14px; z-index:900; display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span class="badge" style="background:#1f6feb; font-size:11px;" id="practice-selected-count">0 Selected</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="CGL_OS.buildMockFromPracticeSelection()">
+            📦 Build Mock
+          </button>
+          <button class="btn" style="padding:6px 16px; font-size:12px; font-weight:800;" onclick="CGL_OS.launchPracticeSelectedSession()">
+            ⚡ Practice Selected
           </button>
         </div>
       </div>
+    </div>
 
-      <div class="sectional-banner" style="flex-wrap:wrap; gap:6px;">
-        <div style="display:flex; gap:6px; align-items:center;">
-          <span class="badge" style="background:#238636;" id="dojo-arena-chap-badge">QA_PERCENTAGE</span>
-          <span class="badge" style="background:#151a24; color:#38bdf8;" id="dojo-arena-method-badge">General</span>
-        </div>
-        <div id="dojo-concept-pills-wrap"></div>
-        <div>
-          <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openEditCurrentDojoQuestion()">Edit Q</button>
-        </div>
-      </div>
-
-      <div id="dojo-theory-banner" style="display:none; background:#111622; padding:10px 14px; border-bottom:1px solid var(--border-color); font-size:12px; line-height:1.5;"></div>
-
-      <div class="arena-body" id="dojo-arena-body">
-        <div class="question-header">
-          <div class="q-number-pill" id="dojo-arena-qnum">1</div>
-          <span style="font-size:12px; color:var(--text-muted);" id="dojo-arena-total-tag">Question 1 of 10</span>
+    <!-- ==================== NATIVE NEW QUESTION CREATOR MODAL ==================== -->
+    <div class="modal-overlay child-layer" id="modal-new-question-creator">
+      <div class="modal-window" style="max-width:680px; max-height:92vh;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+          <div>
+            <h3 style="font-size:16px; font-weight:800; color:var(--accent-cyan);">+ NEW QUESTION CREATOR</h3>
+            <span style="font-size:10.5px; color:var(--text-muted);">Author canonical question directly into local database</span>
+          </div>
+          <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-new-question-creator').classList.remove('active')">✕</button>
         </div>
 
-        <div class="q-text-canvas" id="dojo-arena-qtext"></div>
-        <div class="q-image-container" id="dojo-image-container" style="display:none;"></div>
-        <div id="dojo-arena-options"></div>
-
-        <div id="dojo-arena-feedback" style="display:none; padding:10px; border-radius:8px; margin:12px 0; font-size:13px; font-weight:700;"></div>
-
-        <button class="btn btn-secondary" style="width:100%; margin-top:10px; font-size:13px;" onclick="CGL_OS.toggleDojoMethod()">
-          Reveal Method & Solution
-        </button>
-
-        <div id="dojo-arena-method-box" style="display:none; margin-top:12px; padding:12px; background:#151a24; border-left:3px solid var(--accent-blue); border-radius:4px; font-size:13px; line-height:1.6;"></div>
-
-        <div class="form-group" style="margin-top:14px;">
-          <label>Personal Solving Cue / Annotation (Auto-Saves to Device)</label>
-          <textarea id="dojo-arena-annotation" class="form-control" style="height:60px;" placeholder="Personal shortcut, trap caveat, or formula reminder..." oninput="CGL_OS.autoSaveDojoAnnotation(this.value)"></textarea>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div class="form-group">
+            <label>Subject</label>
+            <select id="new-q-subject" class="form-control" onchange="CGL_OS.syncNewQuestionChapterSelect(this.value)"></select>
+          </div>
+          <div class="form-group">
+            <label>Chapter</label>
+            <select id="new-q-chapter" class="form-control"></select>
+          </div>
         </div>
-      </div>
 
-      <div class="arena-footer">
-        <button class="btn btn-secondary" style="padding:8px 14px;" onclick="CGL_OS.navDojoArena(-1)">Previous</button>
-        <button class="btn btn-secondary" style="padding:8px 14px;" onclick="CGL_OS.toggleDojoPalette(true)">Palette</button>
-        <button class="btn" style="padding:8px 18px;" onclick="CGL_OS.navDojoArena(1)">Next Question</button>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+          <div class="form-group">
+            <label>Subtopic / Concept</label>
+            <input type="text" id="new-q-subtopic" class="form-control" placeholder="e.g. Successive Percentage">
+          </div>
+          <div class="form-group">
+            <label>Method Type</label>
+            <input type="text" id="new-q-method" class="form-control" placeholder="e.g. Multiplier Method">
+          </div>
+          <div class="form-group">
+            <label>Difficulty</label>
+            <select id="new-q-difficulty" class="form-control">
+              <option value="MEDIUM" selected>Medium</option>
+              <option value="EASY">Easy</option>
+              <option value="HARD">Hard</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Question Text (KaTeX math in $...$ or $$...$$)</label>
+          <textarea id="new-q-text" class="form-control" style="height:90px;" placeholder="Type complete question stem here..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label style="font-size:11px; color:var(--accent-cyan);">Diagram / Image Attachment (Optional - Auto Compressed)</label>
+          <div style="display:grid; grid-template-columns:1fr auto; gap:6px;">
+            <input type="text" id="new-q-img-url" class="form-control" placeholder="Paste image URL (or select file)..." style="font-size:12px;">
+            <input type="file" id="new-q-img-file" class="form-control" accept="image/*" style="width:110px; font-size:11px;" onchange="CGL_OS.handleNewQuestionImageUpload(this)">
+          </div>
+          <div id="new-q-img-preview-box" style="display:none; margin-top:6px; text-align:center;"></div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+          <div class="form-group"><label>Option A (1)</label><input type="text" id="new-q-opt-0" class="form-control" placeholder="Option A text..."></div>
+          <div class="form-group"><label>Option B (2)</label><input type="text" id="new-q-opt-1" class="form-control" placeholder="Option B text..."></div>
+          <div class="form-group"><label>Option C (3)</label><input type="text" id="new-q-opt-2" class="form-control" placeholder="Option C text..."></div>
+          <div class="form-group"><label>Option D (4)</label><input type="text" id="new-q-opt-3" class="form-control" placeholder="Option D text..."></div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div class="form-group">
+            <label>Correct Answer</label>
+            <select id="new-q-correct" class="form-control" style="font-weight:700; color:var(--status-green);">
+              <option value="0">Option A (1)</option>
+              <option value="1">Option B (2)</option>
+              <option value="2">Option C (3)</option>
+              <option value="3">Option D (4)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Provenance / Source</label>
+            <input type="text" id="new-q-source" class="form-control" placeholder="e.g. PYQ Tier-1 2024 / Pinnacle / Manual">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Step-by-Step Method & Explanation</label>
+          <textarea id="new-q-explanation" class="form-control" style="height:80px;" placeholder="Explain the derivation, shortcut, or formula..."></textarea>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div class="form-group">
+            <label>Tags (Comma-separated)</label>
+            <input type="text" id="new-q-tags" class="form-control" placeholder="Percentage, Successive, PYQ">
+          </div>
+          <div class="form-group">
+            <label>Linked Concept IDs (Comma-separated)</label>
+            <input type="text" id="new-q-concepts" class="form-control" placeholder="top_qa_pct_basics">
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px; border-top:1px solid var(--border-color); padding-top:12px;">
+          <button class="btn btn-secondary" onclick="document.getElementById('modal-new-question-creator').classList.remove('active')">Cancel</button>
+          <button class="btn btn-secondary" style="color:var(--accent-cyan); border-color:var(--accent-cyan);" onclick="CGL_OS.submitNewQuestionCreator(true)">Save & Add Another</button>
+          <button class="btn" onclick="CGL_OS.submitNewQuestionCreator(false)">Save Question</button>
+        </div>
       </div>
     </div>
 
-    <!-- DOJO PALETTE DRAWER -->
-    <div class="drawer-overlay" id="dojo-drawer-overlay" onclick="CGL_OS.toggleDojoPalette(false)"></div>
-    <div class="palette-drawer-ui" id="dojo-palette-drawer">
-      <div style="padding:14px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
-        <h3 style="font-size:14px; font-weight:700;">Dojo Bank Navigator</h3>
-        <span class="badge" style="background:#238636;" id="dojo-palette-count-badge">0 Qs</span>
-      </div>
-      <div class="palette-scroll-body" id="dojo-palette-scroll-body"></div>
-    </div>
-
+    <!-- ==================== [END OF PART 1 OF 2] ==================== -->
     <!-- ==================== 3. FULL-SCREEN LIVING COMPENDIUM STUDIO ==================== -->
     <div id="compendium-fullscreen-view">
       <div class="compendium-header" style="background:#090e18; border-bottom:1px solid var(--border-color); padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
@@ -264,7 +395,7 @@
         <button class="btn btn-secondary" style="padding:3px 8px; font-size:11px;" id="btn-drill-sheet-questions" onclick="CGL_OS.launchCurrentSheetQuestionsDrill()">⚡ Drill Sheet Qs</button>
       </div>
 
-      <!-- Living Document Canvas Body (Gesture-Safe Vertical Reading) -->
+      <!-- Living Document Canvas Body (Vertical Reading Only; Gesture-Safe) -->
       <div class="comp-document-canvas" id="comp-studio-canvas">
         <div id="comp-studio-doc-content"></div>
 
@@ -283,7 +414,7 @@
       <div class="modal-window" style="max-width:760px; max-height:92vh; display:flex; flex-direction:column;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
           <div>
-            <h3 style="font-size:16px; font-weight:800; color:var(--accent-cyan);">Synapse Knowledge Graph</h3>
+            <h3 style="font-size:16px; font-weight:800; color:var(--accent-cyan);">🧠 Synapse Knowledge Graph</h3>
             <span style="font-size:11px; color:var(--text-muted);">Syllabus Hierarchy • Progressive Disclosure • Direct Drill</span>
           </div>
           <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-synapse-tree').classList.remove('active')">✕</button>
@@ -298,7 +429,7 @@
       </div>
     </div>
 
-    <!-- ==================== 5. TAB 1: DASHBOARD ==================== -->
+    <!-- ==================== 5. TAB 1: DASHBOARD // BATTLEFIELD COMMAND CENTER ==================== -->
     <div id="tab-dashboard" class="view-container active">
       <div class="hero-banner">
         <div class="hero-content">
@@ -308,29 +439,85 @@
               <span>LIVE HUD • TARGET: SSC CGL 2026</span>
             </div>
             <h2 style="font-size:20px; font-weight:800; color:#fff; margin-top:2px;">Welcome back, Ankit</h2>
-            <p style="font-size:12px; color:var(--accent-cyan); margin-top:2px;">Command Center • Tier-1 & Tier-2 Master Preparation</p>
+            <p style="font-size:12px; color:var(--accent-cyan); margin-top:2px;">"Good morning. Here's your battlefield."</p>
           </div>
           <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
-            <button class="btn btn-secondary" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openEditQuestionModal(null)" title="Quick-Add Question to Bank">
+            <button class="btn btn-secondary" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openNewQuestionCreatorModal()" title="Quick-Add Question to Bank">
               + Add Q
             </button>
             <button class="btn" id="btn-dash-launch-mock" onclick="CGL_OS.openCustomMockModal()" style="padding:8px 14px; font-size:12px; box-shadow:0 0 16px rgba(37,99,235,0.5);">
-              Launch Mock
+              Mock Lab
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Quick Action Command Toolbar -->
-      <div class="card" style="padding:10px 14px; margin-bottom:14px; background:linear-gradient(145deg, #0e1526 0%, #080c14 100%);">
-        <div style="font-size:11px; font-weight:800; color:var(--accent-cyan); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:8px;">// Tactical Quick Actions</div>
-        <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;">
-          <button class="btn btn-secondary" style="padding:6px 12px; font-size:11.5px; white-space:nowrap;" onclick="CGL_OS.MockService.generate({mode:'RANDOM', count:25, durationMin:15}).then(i => CGL_OS.MockService.launchMockSession(i))">🎲 Random 25</button>
-          <button class="btn btn-secondary" style="padding:6px 12px; font-size:11.5px; white-space:nowrap;" onclick="CGL_OS.MockService.generate({mode:'WEAKNESS', count:20, durationMin:15}).then(i => CGL_OS.MockService.launchMockSession(i))">⚠️ Weak 20</button>
-          <button class="btn btn-secondary" style="padding:6px 12px; font-size:11.5px; white-space:nowrap;" onclick="CGL_OS.MockService.generate({mode:'UNATTEMPTED', count:15, durationMin:10}).then(i => CGL_OS.MockService.launchMockSession(i))">✨ Unseen 15</button>
-          <button class="btn btn-secondary" style="padding:6px 12px; font-size:11.5px; white-space:nowrap;" onclick="CGL_OS.openGlobalSearchModal()">🔍 Search Bank</button>
-          <button class="btn btn-cyan" style="padding:6px 12px; font-size:11.5px; white-space:nowrap;" onclick="CGL_OS.openEditQuestionModal(null)">+ Add New Q</button>
+      <!-- TOP 4 BATTLEFIELD TILES (REAL DB DATA) -->
+      <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:14px; text-align:center;">
+        <div class="card" style="margin-bottom:0; padding:12px 8px;">
+          <div style="font-size:10px; font-weight:800; color:var(--accent-cyan); text-transform:uppercase;">QUESTIONS</div>
+          <div style="font-size:20px; font-weight:900; font-family:var(--font-mono); margin-top:4px;" id="dash-stat-questions">0</div>
         </div>
+        <div class="card" style="margin-bottom:0; padding:12px 8px;">
+          <div style="font-size:10px; font-weight:800; color:var(--status-green); text-transform:uppercase;">ACCURACY</div>
+          <div style="font-size:20px; font-weight:900; font-family:var(--font-mono); color:var(--status-green); margin-top:4px;" id="dash-stat-accuracy">0%</div>
+        </div>
+        <div class="card" style="margin-bottom:0; padding:12px 8px; cursor:pointer;" onclick="CGL_OS.MockService.generate({mode:'WEAKNESS', count:20}).then(i => CGL_OS.MockService.launchMockSession(i))">
+          <div style="font-size:10px; font-weight:800; color:var(--status-red); text-transform:uppercase;">WEAK AREAS</div>
+          <div style="font-size:20px; font-weight:900; font-family:var(--font-mono); color:var(--status-red); margin-top:4px;" id="dash-stat-weak">0</div>
+        </div>
+        <div class="card" style="margin-bottom:0; padding:12px 8px;">
+          <div style="font-size:10px; font-weight:800; color:var(--accent-purple-light); text-transform:uppercase;">STUDY TIME</div>
+          <div style="font-size:20px; font-weight:900; font-family:var(--font-mono); color:#fff; margin-top:4px;" id="dash-stat-time">0m</div>
+        </div>
+      </div>
+
+      <!-- CONTINUE TRAINING CARD -->
+      <div class="card" style="background:linear-gradient(145deg, #101c30 0%, #080c14 100%); border-left:4px solid var(--accent-cyan); padding:14px; margin-bottom:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <div>
+            <div style="font-size:10.5px; font-weight:800; color:var(--accent-cyan); text-transform:uppercase; letter-spacing:0.8px;">// CONTINUE TRAINING</div>
+            <div style="font-size:14px; font-weight:800; color:#fff; margin-top:2px;" id="dash-continue-title">Percentage — Weakness Drill</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:2px;" id="dash-continue-sub">Targeting unattempted and recurring mistake archetypes</div>
+          </div>
+          <button class="btn" style="padding:8px 18px; font-size:12px; font-weight:800;" id="dash-btn-continue" onclick="CGL_OS.launchContinueTrainingDrill()">
+            CONTINUE
+          </button>
+        </div>
+      </div>
+
+      <!-- SPLIT BATTLEFIELD GRID: WEAK AREAS VS RECENT PERFORMANCE -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;">
+        <div class="card" style="margin-bottom:0; padding:14px;">
+          <div class="card-title" style="margin-bottom:8px;">
+            <span>Your Weak Areas</span>
+            <span style="font-size:9.5px; color:var(--status-red);">Needs Work</span>
+          </div>
+          <div id="dash-weak-areas-list" style="min-height:90px;">
+            <p style="font-size:11.5px; color:var(--text-muted); padding:10px 0;">Calculating diagnostic weaknesses...</p>
+          </div>
+          <button class="btn btn-danger" style="width:100%; padding:8px; font-size:11px; margin-top:8px;" onclick="CGL_OS.MockService.generate({mode:'WEAKNESS', count:25}).then(i => CGL_OS.MockService.launchMockSession(i))">
+            ⚡ TRAIN WEAK AREAS
+          </button>
+        </div>
+
+        <div class="card" style="margin-bottom:0; padding:14px;">
+          <div class="card-title" style="margin-bottom:8px;">
+            <span>Recent Performance</span>
+            <span style="font-size:9.5px; color:var(--status-green);">Mastery</span>
+          </div>
+          <div id="dash-subject-batteries"></div>
+        </div>
+      </div>
+
+      <!-- QUICK NAVIGATION STRIP -->
+      <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:8px; margin-bottom:14px;">
+        <button class="anchor-pill active" onclick="CGL_OS.switchTab('tab-dojo')">🧪 PRACTICE LAB</button>
+        <button class="anchor-pill" onclick="CGL_OS.openCustomMockModal()">🧪 MOCK LAB</button>
+        <button class="anchor-pill" onclick="CGL_OS.openCompendiumStudio()">📖 KNOWLEDGE</button>
+        <button class="anchor-pill" onclick="CGL_OS.openSynapseGraphModal()">🧠 SYNAPSE</button>
+        <button class="anchor-pill" onclick="CGL_OS.switchTab('tab-vault')">🃏 VAULT</button>
+        <button class="anchor-pill" onclick="CGL_OS.switchTab('tab-console')">🤖 AI CONSOLE</button>
       </div>
 
       <!-- Exam Readiness Index (ERI) Dial -->
@@ -411,15 +598,6 @@
         </div>
       </div>
 
-      <!-- Subject Mastery Batteries -->
-      <div class="card">
-        <div class="card-title">
-          <span>Subject Mastery Matrix</span>
-          <span style="font-size:10px; color:var(--accent-cyan);">Tap Subject to Drill</span>
-        </div>
-        <div id="dash-subject-batteries"></div>
-      </div>
-
       <!-- Recent Mocks -->
       <div class="card">
         <div class="card-title">
@@ -447,79 +625,7 @@
       </div>
     </div>
 
-    <!-- ==================== 6. TAB 2: DOJO & KNOWLEDGE COMPENDIUM ==================== -->
-    <div id="tab-dojo" class="view-container">
-      <div class="card" style="background:linear-gradient(135deg, #131b29, #090c12); border-color:#238636;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <h2 style="font-size:18px; font-weight:800;">Question Dojo & Practice Hub</h2>
-            <p style="font-size:12px; color:var(--text-muted); margin-top:2px;">
-              Untimed active recall, question editing, and targeted method drilling.
-            </p>
-          </div>
-          <button class="btn btn-cyan" style="padding:6px 12px; font-size:12px;" onclick="CGL_OS.openEditQuestionModal(null)">
-            + Add Question
-          </button>
-        </div>
-      </div>
-
-      <div class="card" style="border-color:var(--accent-cyan);">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <b style="font-size:14px; color:var(--accent-cyan);">Synapse Knowledge Graph</b>
-            <p style="font-size:11px; color:var(--text-muted);">Progressive disclosure linking subjects, chapters & living sheets.</p>
-          </div>
-          <button class="btn btn-cyan" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openSynapseGraphModal()">
-            Open Explorer
-          </button>
-        </div>
-      </div>
-
-      <div class="card" style="border-color:#38bdf8;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <b style="font-size:14px; color:#38bdf8;">Living Knowledge Studio</b>
-            <p style="font-size:11px; color:var(--text-muted);">A4 living document dossiers, formula callouts, in-sheet TOC & omni-search.</p>
-          </div>
-          <button class="btn" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openCompendiumStudio()">
-            Open Studio
-          </button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">
-          <span>Select Module & Method to Practice</span>
-          <button class="btn btn-secondary" style="padding:2px 8px; font-size:10px; color:var(--accent-cyan);" onclick="CGL_OS.openTaxonomyManagerModal()">⚙ Modules</button>
-        </div>
-        
-        <div class="form-group">
-          <label>Subject / Module</label>
-          <select id="dojo-nav-subject" class="form-control" onchange="CGL_OS.updateDojoChapters()"></select>
-        </div>
-
-        <div class="form-group">
-          <label>Chapter</label>
-          <select id="dojo-nav-chapter" class="form-control" onchange="CGL_OS.updateDojoMethods()"></select>
-        </div>
-
-        <div class="form-group">
-          <label>Subtopic / Method Type</label>
-          <select id="dojo-nav-method" class="form-control"></select>
-        </div>
-
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
-          <button class="btn" onclick="CGL_OS.launchFilteredDojo()">
-            Launch Dojo Session
-          </button>
-          <button class="btn btn-secondary" onclick="CGL_OS.openEditQuestionModal(null, document.getElementById('dojo-nav-subject').value, document.getElementById('dojo-nav-chapter').value)">
-            + Add Q to Chapter
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ==================== 7. TAB 3: CONSOLE & MASTER FORENSIC STUDIO ==================== -->
+    <!-- ==================== 6. TAB 3: CONSOLE & MASTER FORENSIC STUDIO ==================== -->
     <div id="tab-console" class="view-container">
       
       <!-- Primary Command Bus & AI Dispatch -->
@@ -563,7 +669,7 @@
             📖 Knowledge Sheets (.json)
           </button>
           <button class="btn btn-secondary" style="font-size:12px; padding:9px;" onclick="CGL_OS.exportFlashcardVaultJson()">
-            🗂️️ Card Vault (.json)
+            🗂 Card Vault (.json)
           </button>
           <button class="btn btn-secondary" style="font-size:12px; padding:9px;" onclick="CGL_OS.downloadLedgerJson()">
             📚 Master Bank (.json)
@@ -658,7 +764,7 @@
       </div>
     </div>
 
-    <!-- ==================== 8. TAB 4: FLASHCARD VAULT & ANKI FORGE ==================== -->
+    <!-- ==================== 7. TAB 4: FLASHCARD VAULT & ANKI FORGE ==================== -->
     <div id="tab-vault" class="view-container">
       <div class="card" style="border-color: rgba(163, 113, 247, 0.4); background: linear-gradient(135deg, #121021 0%, #090c12 100%);">
         <div class="card-title" style="color: #a371f7;">
@@ -731,6 +837,106 @@
     </div>
 
   </div> <!-- /#app-viewport-root -->
+
+  <!-- ==================== 8. MOCK LAB // DYNAMIC GENERATOR MODAL ==================== -->
+  <div class="modal-overlay child-layer" id="modal-mock-builder">
+    <div class="modal-window" style="max-width:680px; max-height:92vh;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+        <div>
+          <h3 style="font-size:17px; font-weight:800; color:#38bdf8;">🧪 MOCK LAB & GENERATOR</h3>
+          <span style="font-size:11px; color:var(--text-muted);">Dynamic Sampling • Weakness Focus • Anti-Repetition</span>
+        </div>
+        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-mock-builder').classList.remove('active')">✕</button>
+      </div>
+
+      <!-- Strategy Selector Buttons -->
+      <div class="form-group">
+        <label>What do you want to train?</label>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:4px;">
+          <button class="anchor-pill active" id="strat-pill-random" onclick="CGL_OS.setMockStrategy('RANDOM', this)">RANDOM</button>
+          <button class="anchor-pill" id="strat-pill-weak" onclick="CGL_OS.setMockStrategy('WEAKNESS', this)">WEAK</button>
+          <button class="anchor-pill" id="strat-pill-unseen" onclick="CGL_OS.setMockStrategy('UNSEEN', this)">UNSEEN</button>
+          <button class="anchor-pill" id="strat-pill-ignored" onclick="CGL_OS.setMockStrategy('IGNORED', this)">IGNORED</button>
+          <button class="anchor-pill" id="strat-pill-chapter" onclick="CGL_OS.setMockStrategy('CHAPTER', this)">CHAPTER</button>
+          <button class="anchor-pill" id="strat-pill-sectional" onclick="CGL_OS.setMockStrategy('SECTIONAL', this)">SECTIONAL</button>
+          <button class="anchor-pill" id="strat-pill-custom" onclick="CGL_OS.setMockStrategy('CUSTOM_BUILDER', this)">CUSTOM</button>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <div class="form-group">
+          <label>Subject</label>
+          <select id="builder-subject" class="form-control" onchange="CGL_OS.updateBuilderChapters(this.value)">
+            <option value="ALL">All Subjects</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Chapter Focus</label>
+          <select id="builder-chapter" class="form-control" onchange="CGL_OS.updateBuilderPoolEstimate()">
+            <option value="ALL">All Chapters</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+        <div class="form-group">
+          <label>Question Count</label>
+          <input type="number" id="builder-count" class="form-control" value="25" min="5" max="100" onchange="CGL_OS.updateBuilderPoolEstimate()">
+        </div>
+        <div class="form-group">
+          <label>Duration (Minutes)</label>
+          <input type="number" id="builder-duration" class="form-control" value="15" min="1" max="120">
+        </div>
+        <div class="form-group">
+          <label>Difficulty</label>
+          <select id="builder-difficulty" class="form-control">
+            <option value="ALL">Mixed</option>
+            <option value="EASY">Easy</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="HARD">Hard</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+        <label style="display:flex; align-items:center; gap:8px; font-size:12px; cursor:pointer;">
+          <input type="checkbox" id="builder-avoid-recent" checked style="width:16px; height:16px;">
+          <span>Exclude recently seen questions</span>
+        </label>
+        <label style="display:flex; align-items:center; gap:8px; font-size:12px; cursor:pointer;">
+          <input type="checkbox" id="builder-shuffle" checked style="width:16px; height:16px;">
+          <span>Shuffle question order</span>
+        </label>
+      </div>
+
+      <!-- Custom Multi-Section Stack Wrap -->
+      <div id="custom-sequence-stack-wrap" style="display:none; margin-bottom:14px; background:#070b14; padding:12px; border-radius:9px; border:1px solid var(--border-color);">
+        <div class="card-title">
+          <span>Configured Section Queue</span>
+          <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.addCustomSectionRow()">+ Add Section</button>
+        </div>
+        <div id="custom-sequence-rows-container"></div>
+        <div class="form-group" style="margin-top:10px; margin-bottom:0;">
+          <label>Sectional Clock Auto-Lock</label>
+          <select id="builder-sectional-lock" class="form-control">
+            <option value="YES">Yes (Lock & Advance on Expiry / Early Seal)</option>
+            <option value="NO">No (Free Section Switching)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Pool Estimate Box -->
+      <div style="background:#0c1220; border:1px solid rgba(56,189,248,0.3); border-radius:8px; padding:10px 14px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:12px; color:var(--text-muted);" id="builder-pool-estimate">Estimated pool: 0 questions</span>
+        <button class="btn btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openSaveBlueprintModal('DYNAMIC_BLUEPRINT')">Save as Blueprint</button>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <button class="btn btn-secondary" onclick="CGL_OS.previewMockSelection()">PREVIEW MOCK</button>
+        <button class="btn" style="font-weight:800;" onclick="CGL_OS.launchConfiguredMock()">⚡ LAUNCH MOCK</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ==================== 9. GLOBAL UNIFIED SEARCH COCKPIT MODAL ==================== -->
   <div class="modal-overlay child-layer" id="modal-global-search">
@@ -1058,7 +1264,7 @@
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
         <div>
-          <h3 style="font-size:16px; font-weight:800;" id="insp-chapter-title">QA_GEOMETRY</h3>
+          <h3 style="font-size:16px; font-weight:800;" id="insp-chapter-title">QA_PERCENTAGE</h3>
           <span style="font-size:11px; color:var(--text-muted);" id="insp-subject-title">Quantitative Aptitude</span>
         </div>
         <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-chapter-inspector').classList.remove('active')">✕</button>
@@ -1136,48 +1342,7 @@
     </div>
   </div>
 
-  <!-- ==================== 21. MULTI-SUBJECT CUSTOM MOCK BUILDER ==================== -->
-  <div class="modal-overlay" id="modal-mock-builder">
-    <div class="modal-window">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-        <h3 style="font-size:16px; font-weight:800;">Custom Mock Generator</h3>
-        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-mock-builder').classList.remove('active')">✕</button>
-      </div>
-
-      <div class="form-group">
-        <label>Exam Blueprint Preset</label>
-        <select id="builder-blueprint-preset" class="form-control" onchange="CGL_OS.applyBlueprintPreset(this.value)">
-          <option value="CUSTOM_BUILDER">Custom Sequence Builder (Stack Arbitrary Sections)</option>
-          <option value="TIER1_FULL">Tier 1 Full Mock (4 Sections × 15 Mins)</option>
-          <option value="TIER2_SEC1">Tier 2 Paper 1 (Math + Reasoning 60 Mins)</option>
-          <option value="QA_BLITZ">Quantitative Arithmetic Blitz (10 Mins)</option>
-        </select>
-      </div>
-
-      <div id="custom-sequence-stack-wrap">
-        <div class="card-title">
-          <span>Configured Section Queue</span>
-          <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.addCustomSectionRow()">+ Add Section</button>
-        </div>
-        <div id="custom-sequence-rows-container"></div>
-      </div>
-
-      <div class="form-group" style="margin-top:10px;">
-        <label>Sectional Clock Auto-Lock</label>
-        <select id="builder-sectional-lock" class="form-control">
-          <option value="YES">Yes (Lock & Advance on Expiry / Early Seal)</option>
-          <option value="NO">No (Free Section Switching)</option>
-        </select>
-      </div>
-
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px;">
-        <button class="btn btn-secondary" onclick="CGL_OS.openSaveBlueprintModal('DYNAMIC_BLUEPRINT')">Save Blueprint</button>
-        <button class="btn" onclick="CGL_OS.launchConfiguredMock()">Launch Arena</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ==================== 22. SAVE BLUEPRINT / FIXED PAPER MODAL ==================== -->
+  <!-- ==================== 21. SAVE BLUEPRINT / FIXED PAPER MODAL ==================== -->
   <div class="modal-overlay" id="modal-save-blueprint">
     <div class="modal-window" style="max-width:440px;">
       <h3 style="font-size:16px; font-weight:800; margin-bottom:10px;" id="save-preset-modal-title">Save Mock Blueprint</h3>
@@ -1192,7 +1357,7 @@
     </div>
   </div>
 
-  <!-- ==================== 23. TOPIC DOSSIER EDITOR ==================== -->
+  <!-- ==================== 22. TOPIC DOSSIER EDITOR ==================== -->
   <div class="modal-overlay" id="modal-concept-editor">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1209,18 +1374,18 @@
         </div>
         <div class="form-group">
           <label>Chapter Tag</label>
-          <input type="text" id="concept-edit-chapter" class="form-control" placeholder="e.g. QA_GEOMETRY">
+          <input type="text" id="concept-edit-chapter" class="form-control" placeholder="e.g. QA_PERCENTAGE">
         </div>
       </div>
 
       <div class="form-group">
         <label>Sheet Title</label>
-        <input type="text" id="concept-edit-title" class="form-control" placeholder="e.g. Triangles & Incenters">
+        <input type="text" id="concept-edit-title" class="form-control" placeholder="e.g. Successive Percentage Change">
       </div>
 
       <div class="form-group">
         <label>Subtopic / Focus Cue</label>
-        <input type="text" id="concept-edit-sub" class="form-control" placeholder="e.g. Angle Bisectors & Radii Formulas">
+        <input type="text" id="concept-edit-sub" class="form-control" placeholder="e.g. Multiplier Method & Effective Formula">
       </div>
 
       <div class="form-group">
@@ -1245,11 +1410,11 @@
     </div>
   </div>
 
-  <!-- ==================== 24. MULTI-CONCEPT GUI QUESTION EDITOR (MANUAL ADD / EDIT) ==================== -->
+  <!-- ==================== 23. MULTI-CONCEPT GUI QUESTION EDITOR ==================== -->
   <div class="modal-overlay" id="modal-question-editor">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-        <h3 style="font-size:16px; font-weight:800;" id="editor-title">Add / Edit Question</h3>
+        <h3 style="font-size:16px; font-weight:800;" id="editor-title">Edit Question</h3>
         <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-question-editor').classList.remove('active')">✕</button>
       </div>
 
@@ -1299,18 +1464,18 @@
         <input type="file" id="edit-q-img-file" class="form-control" accept="image/*" onchange="CGL_OS.handleQuestionImageUpload(this)">
       </div>
 
-      <div class="form-group"><label>Option 1</label><input type="text" id="edit-opt-0" class="form-control"></div>
-      <div class="form-group"><label>Option 2</label><input type="text" id="edit-opt-1" class="form-control"></div>
-      <div class="form-group"><label>Option 3</label><input type="text" id="edit-opt-2" class="form-control"></div>
-      <div class="form-group"><label>Option 4</label><input type="text" id="edit-opt-3" class="form-control"></div>
+      <div class="form-group"><label>Option 1 (A)</label><input type="text" id="edit-opt-0" class="form-control"></div>
+      <div class="form-group"><label>Option 2 (B)</label><input type="text" id="edit-opt-1" class="form-control"></div>
+      <div class="form-group"><label>Option 3 (C)</label><input type="text" id="edit-opt-2" class="form-control"></div>
+      <div class="form-group"><label>Option 4 (D)</label><input type="text" id="edit-opt-3" class="form-control"></div>
 
       <div class="form-group">
         <label>Correct Option</label>
         <select id="edit-q-correct" class="form-control">
-          <option value="0">Option 1</option>
-          <option value="1">Option 2</option>
-          <option value="2">Option 3</option>
-          <option value="3">Option 4</option>
+          <option value="0">Option 1 (A)</option>
+          <option value="1">Option 2 (B)</option>
+          <option value="2">Option 3 (C)</option>
+          <option value="3">Option 4 (D)</option>
         </select>
       </div>
 
@@ -1327,7 +1492,7 @@
     </div>
   </div>
 
-  <!-- ==================== 25. ANKI UNIVERSAL CARD EDITOR ==================== -->
+  <!-- ==================== 24. ANKI UNIVERSAL CARD EDITOR ==================== -->
   <div class="modal-overlay" id="modal-flashcard-editor">
     <div class="modal-window" style="max-width:540px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1344,7 +1509,7 @@
         </div>
         <div class="form-group">
           <label>Chapter Tag</label>
-          <input type="text" id="edit-fc-chapter" class="form-control" placeholder="e.g. QA_GEOMETRY">
+          <input type="text" id="edit-fc-chapter" class="form-control" placeholder="e.g. QA_PERCENTAGE">
         </div>
       </div>
 
@@ -1359,7 +1524,7 @@
 
       <div class="form-group">
         <label>Front Prompt / Question (KaTeX in $...$ or {{c1::cloze}})</label>
-        <textarea id="edit-fc-front" class="form-control" style="height:70px;" placeholder="e.g. What is the incenter angle formula for vertex angle A?"></textarea>
+        <textarea id="edit-fc-front" class="form-control" style="height:70px;" placeholder="e.g. What happens when two successive percentage changes occur?"></textarea>
       </div>
       <div class="form-group">
         <label style="font-size:11px; color:var(--accent-cyan);">Front Diagram / Image (Optional)</label>
@@ -1369,7 +1534,7 @@
 
       <div class="form-group">
         <label>Back Solution / Target Core Fact (KaTeX in $...$ or $$...$$)</label>
-        <textarea id="edit-fc-back" class="form-control" style="height:75px;" placeholder="e.g. $$\angle BIC = 90^\circ + \frac{\angle A}{2}$$"></textarea>
+        <textarea id="edit-fc-back" class="form-control" style="height:75px;" placeholder="e.g. $$Net = a + b + \frac{ab}{100}$$"></textarea>
       </div>
       <div class="form-group">
         <label style="font-size:11px; color:var(--accent-cyan);">Back Visual Proof / Derivation Image (Optional)</label>
@@ -1379,12 +1544,12 @@
 
       <div class="form-group">
         <label>Extra Notes / TCS Caveats (Appended to Anki Back)</label>
-        <textarea id="edit-fc-extra" class="form-control" style="height:55px;" placeholder="e.g. If exterior angle bisectors, angle becomes 90 - A/2."></textarea>
+        <textarea id="edit-fc-extra" class="form-control" style="height:55px;" placeholder="e.g. Always remember to carry signs (+ for profit/increase, - for loss/discount)."></textarea>
       </div>
 
       <div class="form-group">
         <label>Tags (Comma-separated)</label>
-        <input type="text" id="edit-fc-tags" class="form-control" placeholder="Formula, Incenter, Geometry, TCS_Trap">
+        <input type="text" id="edit-fc-tags" class="form-control" placeholder="Formula, Percentage, Successive, TCS_Trap">
       </div>
 
       <div style="display:flex; gap:8px;">
@@ -1394,7 +1559,7 @@
     </div>
   </div>
 
-  <!-- ==================== 26. UNTIMED QUICK CAROUSEL MODAL ==================== -->
+  <!-- ==================== 25. UNTIMED QUICK CAROUSEL MODAL (STUDY CARD) ==================== -->
   <div class="modal-overlay" id="modal-flashcard-study">
     <div class="modal-window" style="max-width:560px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1408,7 +1573,7 @@
       <div class="vault-carousel-wrap">
         <div class="vault-card-canvas" id="fc-card-view" onclick="CGL_OS.flipStudyFlashcard()">
           <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted);">
-            <span class="badge" style="background:#151a24; color:var(--accent-cyan);" id="fc-card-chapter">QA_GEOMETRY</span>
+            <span class="badge" style="background:#151a24; color:var(--accent-cyan);" id="fc-card-chapter">QA_PERCENTAGE</span>
             <span class="anki-type-tag" id="fc-card-type-tag">BASIC_EXTRA</span>
           </div>
 
@@ -1419,20 +1584,26 @@
           <div class="fc-img-box" id="fc-card-front-img-box" style="display:none;"></div>
           <div class="fc-img-box" id="fc-card-back-img-box" style="display:none;"></div>
 
-          <div style="font-size:11px; color:var(--text-muted); text-align:center;" id="fc-card-cue">
-            Tap card to flip answer
+          <div style="font-size:11px; color:var(--text-muted); text-align:center; padding:6px; background:#070b14; border-radius:6px; margin-top:8px;" id="fc-card-cue">
+            [ TAP TO REVEAL ]
           </div>
         </div>
       </div>
 
+      <!-- User Study Rating Buttons (Immediate Study Feedback) -->
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px;">
+        <button class="btn btn-secondary" style="color:var(--status-red); border-color:rgba(244,63,94,0.4);" onclick="CGL_OS.navStudyCard(1)">[ × AGAIN ]</button>
+        <button class="btn btn-secondary" style="color:var(--status-green); border-color:rgba(16,185,129,0.4);" onclick="CGL_OS.navStudyCard(1)">[ ✓ KNOW ]</button>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
         <button class="btn btn-secondary" onclick="CGL_OS.navStudyCard(-1)">◄ Previous Card</button>
         <button class="btn" style="background:#8957e5;" onclick="CGL_OS.navStudyCard(1)">Next Card ►</button>
       </div>
     </div>
   </div>
 
-  <!-- ==================== 27. NATIVE ANKI EXPORT COCKPIT ==================== -->
+  <!-- ==================== 26. NATIVE ANKI EXPORT COCKPIT ==================== -->
   <div class="modal-overlay" id="modal-anki-export">
     <div class="modal-window" style="max-width:560px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1486,7 +1657,7 @@
     </div>
   </div>
 
-  <!-- ==================== 28. DATABASE STUDIO INSPECTOR ==================== -->
+  <!-- ==================== 27. DATABASE STUDIO INSPECTOR ==================== -->
   <div class="modal-overlay child-layer" id="modal-db-inspector-viewer">
     <div class="modal-window" style="max-width:640px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1506,7 +1677,7 @@
     </div>
   </div>
 
-  <!-- ==================== 29. DISASTER RECOVERY RESTORE MODAL ==================== -->
+  <!-- ==================== 28. DISASTER RECOVERY RESTORE MODAL ==================== -->
   <div class="modal-overlay" id="modal-backup-restore">
     <div class="modal-window" style="max-width:480px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
@@ -1539,7 +1710,7 @@
     </div>
   </div>
 
-  <!-- ==================== 30. HARDENED PAUSE OVERLAY SHIELD ==================== -->
+  <!-- ==================== 29. HARDENED PAUSE OVERLAY SHIELD ==================== -->
   <div id="pause-shield">
     <h2 style="font-size:22px; font-weight:800; margin-bottom:8px; color:#fff;">TEST PAUSED</h2>
     <p style="font-size:13px; color:var(--text-muted); max-width:280px; margin-bottom:20px;">
@@ -1552,7 +1723,7 @@
     </div>
   </div>
 
-  <!-- ==================== 31. BOTTOM NAVIGATION ==================== -->
+  <!-- ==================== 30. BOTTOM NAVIGATION ==================== -->
   <nav id="bottom-nav">
     <button class="nav-btn active" id="nav-btn-tab-dashboard" onclick="CGL_OS.switchTab('tab-dashboard', this)">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
@@ -1560,7 +1731,7 @@
     </button>
     <button class="nav-btn" id="nav-btn-tab-dojo" onclick="CGL_OS.switchTab('tab-dojo', this)">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-      Dojo
+      Practice Lab
     </button>
     <button class="nav-btn" id="nav-btn-tab-console" onclick="CGL_OS.switchTab('tab-console', this)">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
@@ -1572,7 +1743,7 @@
     </button>
   </nav>
 
-  <!-- ==================== 32. PUBLISHING-GRADE TYPESET PRINT ROOT ==================== -->
+  <!-- ==================== 31. PUBLISHING-GRADE TYPESET PRINT ROOT ==================== -->
   <div id="print-sheet-root" style="display:none;" class="print-page"></div>
 
   <!-- Master JavaScript Controller with Cache-Buster Parameter v5.0 -->
