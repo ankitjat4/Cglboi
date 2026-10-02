@@ -12,8 +12,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" crossorigin="anonymous">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js" crossorigin="anonymous"></script>
 
-  <!-- External Stylesheet with Cache-Buster v5.1 -->
-  <link rel="stylesheet" href="style.css?v=5.1">
+  <!-- External Stylesheet with Cache-Buster v5.3 -->
+  <link rel="stylesheet" href="style.css?v=5.3">
 </head>
 <body>
 
@@ -340,9 +340,6 @@
           <span class="badge" style="background:#1f6feb; font-size:11px;" id="practice-selected-count">0 Selected</span>
         </div>
         <div style="display:flex; gap:8px;">
-          <button class="btn btn-cyan" style="padding:6px 14px; font-size:12px; font-weight:800;" onclick="CGL_OS.launchSeeQuestions()">
-            👁️ See Questions
-          </button>
           <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="CGL_OS.buildMockFromPracticeSelection()">
             📦 Build Mock
           </button>
@@ -364,7 +361,7 @@
           <span>JSON Command Bus & AI Dispatch (v2)</span>
           <span class="badge" style="background:#1f6feb;">Live Telemetry Bus</span>
         </div>
-        <textarea class="form-control" id="console-payload" style="height:140px; font-family:var(--font-mono); font-size:12px; color:#38bdf8;" placeholder='Paste executable AI command payload here (e.g. CREATE_MOCK, SEARCH_QUESTIONS, CREATE_QUESTION, INGEST_AND_ASSEMBLE_COMPLETE_MOCK)...'></textarea>
+        <textarea class="form-control" id="console-payload" style="height:140px; font-family:var(--font-mono); font-size:12px; color:#38bdf8;" placeholder='Paste executable AI command payload here (e.g. CREATE_MOCK, SEARCH_QUESTIONS, FETCH_QUESTIONS, INGEST_AND_ASSEMBLE_COMPLETE_MOCK)...'></textarea>
         
         <!-- Machine-Readable AI Execution Output Terminal -->
         <div id="console-output-box" class="json-code-box" style="display:none; margin-top:10px; max-height:220px; overflow-y:auto;"></div>
@@ -1948,7 +1945,7 @@
   <!-- ==================== PUBLISHING-GRADE TYPESET PRINT ROOT ==================== -->
   <div id="print-sheet-root" style="display:none;" class="print-page"></div>
 
-  <!-- Update cache-buster query parameter to v5.2 -->
+  <!-- Master JavaScript Controller with Cache-Buster Parameter v5.3 -->
   <script src="app.js?v=5.3"></script>
 </body>
 </html>
