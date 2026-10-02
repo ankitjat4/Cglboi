@@ -6,35 +6,75 @@
  * Candidate: Ankit Kumar (SSC CGL 2026 Tier 1 & Tier 2 Master Preparation)
  * 
  * Scope of Part 1:
- * - Runtime State & Global Anchors
- * - Full Seed Data & Canonical Taxonomy Baseline (22 Arithmetic Chapters)
- * - IST Dual-Temporal Engine & Math Typesetter (KaTeX Token Isolator)
- * - Hardened IndexedDB Harness & Non-Destructive seedData()
- * - Full Disaster Recovery Backup & Normalization Engine
+ * - Immediate Global Namespace Anchoring & Safe Defensive DOM Wrappers
+ * - Complete Runtime State & Variables
+ * - Canonical Initial Seed Taxonomy (22 Arithmetic Chapters + Advanced + Full Syllabi)
+ * - Complete Pre-Seeded Question Bank, Topic Dossiers, Blueprints & Flashcards
+ * - Dual-Temporal IST Clock & KaTeX Formula Token Isolator / Typesetter
+ * - LIFO Navigation Stack & Touch Controller (Canvas Swipe Hijack Removed)
+ * - Non-Destructive IndexedDB Harness & Authority Protection
+ * - Full System Backup, Restoration & Multi-Store Schema Normalizers
  * - Shared Services: TaxonomyService, QuestionService, ConceptService, SearchService
- * - Taxonomy Management UI & Safe Chapter Merge Tool
- * - Question Editor UI: Manual Add, Edit, Image Upload & Duplicate
+ * - Taxonomy Management UI & Safe Chapter Reassignment / Merging
+ * - Native Question Creator & Editor UI (Manual Entry, Image Compression, Duplication)
  * ============================================================================
  */
 
-// Global window anchor registration
-window.CGL_OS = null;
+// Immediate Global Registration to prevent any "CGL_OS is not defined" reference errors
+window.CGL_OS = window.CGL_OS || {};
 
 const CGL_OS = (() => {
   /* ==========================================================================
-   * 1. CONSTANTS, SCHEMAS & RUNTIME EXECUTION STATE
+   * SECTION 1: DEFENSIVE DOM BINDING HELPERS (CRASH-PROOF GUARDS)
+   * ========================================================================== */
+  function safeBind(id, event, handler) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener(event, handler);
+      return true;
+    }
+    return false;
+  }
+
+  function safeSetText(id, text) {
+    const el = document.getElementById(id);
+    if (el) el.innerText = text;
+  }
+
+  function safeSetHtml(id, html) {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = html;
+  }
+
+  function safeSetValue(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.value = val;
+  }
+
+  function safeSetDisplay(id, displayStyle) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = displayStyle;
+  }
+
+  /* ==========================================================================
+   * SECTION 2: CONSTANTS, DB CONFIG & RUNTIME EXECUTION STATE
    * ========================================================================== */
   const DB_NAME = "cgl_os_db";
   const DB_VERSION = 15;
   let db = null;
   let dbInitPromise = null;
 
-  // Active Runtime Execution State
+  // Active Timed Exam & Review Arena State
   let activeExam = null;
   let examTimerInterval = null;
   let questionTimerInterval = null;
   let dojoExam = null;
   let activeReviewAttempt = null;
+
+  // Practice Lab / Question Control Center State
+  let practiceSearchQuery = "";
+  let practiceSelectedIds = new Set();
+  let practiceActiveQuickFilter = "ALL";
 
   // Full-Screen Living Compendium Studio State
   let activeCompSubject = "QA";
@@ -43,7 +83,7 @@ const CGL_OS = (() => {
   let currentCompSheets = [];
   let currentConceptImageBase64 = "";
 
-  // Universal Anki Forge & Scalable Vault State (Tab 4)
+  // Universal Flashcard Vault State (Tab 4)
   let currentFcFrontImgBase64 = "";
   let currentFcBackImgBase64 = "";
   let activeVaultDeck = [];
@@ -52,23 +92,21 @@ const CGL_OS = (() => {
   let vaultSearchQuery = "";
   let vaultActiveTag = "ALL";
 
-  // Synapse Knowledge Graph & Progressive Explorer State
+  // Synapse Knowledge Explorer State (Progressive Disclosure)
   let synapseTreeBuilt = false;
   let synapseCurrentLevel = "SUBJECTS"; // 'SUBJECTS' | 'CHAPTERS' | 'CONCEPTS'
   let synapseActiveSubject = null;
   let synapseActiveChapter = null;
 
-  // Interactive Cognitive Trap Clinic State
+  // Interactive Cognitive Trap Clinic & Disaster Recovery
   let activeClinicTrapType = "TIME_TRAP_Q4";
   let activeClinicQuestions = [];
-
-  // Disaster Recovery Hydration State
   let pendingHydrationData = null;
 
-  // Question GUI Editor State
+  // Native Question GUI Creator State
   let currentQuestionImageBase64 = "";
 
-  // Custom Mistake Tags State
+  // Standard Cognitive Trap Classifications
   let customMistakeTags = [
     "CALCULATION_SLIP",
     "READING_TRAP",
@@ -83,10 +121,10 @@ const CGL_OS = (() => {
 
   /**
    * CANONICAL INITIAL TAXONOMY SEED
-   * Includes the complete 22-chapter Arithmetic hierarchy.
-   * CRITICAL ARCHITECTURAL GUARANTEE:
-   * Used strictly as a fallback on a blank database. Once written to store_config,
-   * the database record is 100% authoritative. The app NEVER re-injects deleted chapters.
+   * Contains all 22 Arithmetic chapters + Advanced + full Reasoning, English, and GA.
+   * CRITICAL GUARANTEE:
+   * Used ONLY on fresh/blank database initialization. Once saved into store_config,
+   * the database record is the 100% authoritative master. Deleted chapters are NEVER revived!
    */
   const DEFAULT_TAXONOMY = {
     QA: {
@@ -381,7 +419,7 @@ const CGL_OS = (() => {
   ];
 
   /* ==========================================================================
-   * 2. DUAL-TEMPORAL & INDIAN STANDARD TIME (IST) UTILITIES
+   * SECTION 3: DUAL-TEMPORAL & INDIAN STANDARD TIME (IST) UTILITIES
    * ========================================================================== */
   function formatISTDate(epochMs = Date.now()) {
     try {
@@ -425,7 +463,7 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * 3. UNIVERSAL SSC CGL TYPESETTER & KATEX ISOLATION ENGINE
+   * SECTION 4: TYPESETTER, KATEX FORMULA ISOLATION & IMAGE UTILITIES
    * ========================================================================== */
   function formatRichText(str) {
     if (!str) return "";
@@ -443,7 +481,7 @@ const CGL_OS = (() => {
     });
 
     // 2. Callout Blocks
-    out = out.replace(/^>\s*\[!trap\]\s*(.*)$/gm, '<div class="callout-box trap"><b>⚠️ Trapping Point:</b> $1</div>');
+    out = out.replace(/^>\s*\[!trap\]\s*(.*)$/gm, '<div class="callout-box trap"><b>⚠️ Cognitive Trap:</b> $1</div>');
     out = out.replace(/^>\s*\[!formula\]\s*(.*)$/gm, '<div class="callout-box formula"><b>⚡ Formula:</b> $1</div>');
     out = out.replace(/^>\s*\[!tip\]\s*(.*)$/gm, '<div class="callout-box"><b>💡 Tip / Shortcut:</b> $1</div>');
 
@@ -492,7 +530,7 @@ const CGL_OS = (() => {
       return `<div class="q-structured-block" style="margin-top:6px;"><div class="q-block-header"><span style="color:var(--accent-purple-light);">🎯 Conclusions:</span></div>${rows}</div>`;
     });
 
-    // 7. Markdown Table Conversion
+    // 7. Markdown Tables
     out = out.replace(/(\|[^\n]+\|\r?\n)((?:\|:?[-]+:?)+\|)(\r?\n(?:\|[^\n]+\|\r?\n?)+)/g, (match, headerLine, alignLine, bodyLines) => {
       const headers = headerLine.trim().split('|').filter(c => c.trim().length > 0).map(c => `<th>${c.trim()}</th>`).join('');
       const rows = bodyLines.trim().split('\n').map(row => {
@@ -560,7 +598,7 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * 4. LIFO NAVIGATION STACK & ANDROID GESTURE CONTROLLER
+   * SECTION 5: LIFO NAVIGATION STACK & GESTURE CONTROLLER
    * ========================================================================== */
   const navStack = [];
 
@@ -591,7 +629,7 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * 5. HARDENED INDEXEDDB ENGINE (NON-DESTRUCTIVE RE-SEEDING)
+   * SECTION 6: HARDENED INDEXEDDB ENGINE (NON-DESTRUCTIVE RE-SEEDING)
    * ========================================================================== */
   function getDB() {
     if (db) return Promise.resolve(db);
@@ -607,7 +645,7 @@ const CGL_OS = (() => {
 
       req.onupgradeneeded = (e) => {
         const d = e.target.result;
-        const stores = [
+        const canonicalStores = [
           { name: "store_questions", key: "id" },
           { name: "store_attempts", key: "sessionId" },
           { name: "store_flashcards", key: "id" },
@@ -619,7 +657,7 @@ const CGL_OS = (() => {
           { name: "store_config", key: "key" }
         ];
 
-        stores.forEach(s => {
+        canonicalStores.forEach(s => {
           if (!d.objectStoreNames.contains(s.name)) {
             d.createObjectStore(s.name, { keyPath: s.key });
           }
@@ -739,7 +777,7 @@ const CGL_OS = (() => {
       await putRecord("store_config", { key: "custom_mistake_tags", value: customMistakeTags });
     }
 
-    // Authoritative Taxonomy Check: Respect user deletions!
+    // Authoritative Taxonomy Check: Respect user deletions and modifications!
     const savedTaxonomyConfig = await getRecord("store_config", "system_taxonomy");
     if (savedTaxonomyConfig && savedTaxonomyConfig.value && typeof savedTaxonomyConfig.value === "object") {
       TAXONOMY = savedTaxonomyConfig.value;
@@ -804,7 +842,7 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * 6. FULL BACKUP, DISASTER RECOVERY & SANITIZERS
+   * SECTION 7: FULL BACKUP, DISASTER RECOVERY & SANITIZERS
    * ========================================================================== */
   async function exportFullBackup() {
     const envelope = {
@@ -839,11 +877,13 @@ const CGL_OS = (() => {
 
   function openBackupRestoreModal() {
     pendingHydrationData = null;
-    document.getElementById("restore-backup-file-input").value = "";
-    document.getElementById("btn-execute-restore").disabled = true;
-    document.getElementById("restore-file-preview-stats").style.display = "none";
+    safeSetValue("restore-backup-file-input", "");
+    const execBtn = document.getElementById("btn-execute-restore");
+    if (execBtn) execBtn.disabled = true;
+    safeSetDisplay("restore-file-preview-stats", "none");
     pushHistoryState("modal-backup-restore");
-    document.getElementById("modal-backup-restore").classList.add("active");
+    const m = document.getElementById("modal-backup-restore");
+    if (m) m.classList.add("active");
   }
 
   function handleBackupFileSelect(input) {
@@ -857,20 +897,24 @@ const CGL_OS = (() => {
         pendingHydrationData = normalizeBackupStructure(parsed);
 
         const statsBox = document.getElementById("restore-file-preview-stats");
-        statsBox.style.display = "block";
-        statsBox.innerHTML = `
-          <b>Backup File Validated:</b><br>
-          • Questions: ${pendingHydrationData.store_questions.length}<br>
-          • Attempts & Scores: ${pendingHydrationData.store_attempts.length}<br>
-          • Flashcards: ${pendingHydrationData.store_flashcards.length}<br>
-          • Living Knowledge Sheets: ${pendingHydrationData.store_concepts.length}<br>
-          • Clinical AI Consultations: ${pendingHydrationData.store_ai_consultations.length}<br>
-          • Saved Blueprints & Papers: ${pendingHydrationData.store_saved_mocks.length}
-        `;
-        document.getElementById("btn-execute-restore").disabled = false;
+        if (statsBox) {
+          statsBox.style.display = "block";
+          statsBox.innerHTML = `
+            <b>Backup File Validated:</b><br>
+            • Questions: ${pendingHydrationData.store_questions.length}<br>
+            • Attempts & Scores: ${pendingHydrationData.store_attempts.length}<br>
+            • Flashcards: ${pendingHydrationData.store_flashcards.length}<br>
+            • Living Knowledge Sheets: ${pendingHydrationData.store_concepts.length}<br>
+            • Clinical AI Consultations: ${pendingHydrationData.store_ai_consultations.length}<br>
+            • Saved Blueprints & Papers: ${pendingHydrationData.store_saved_mocks.length}
+          `;
+        }
+        const execBtn = document.getElementById("btn-execute-restore");
+        if (execBtn) execBtn.disabled = false;
       } catch (err) {
         alert("Corrupted Backup File: " + err.message);
-        document.getElementById("btn-execute-restore").disabled = true;
+        const execBtn = document.getElementById("btn-execute-restore");
+        if (execBtn) execBtn.disabled = true;
       }
     };
     reader.readAsText(file);
@@ -925,6 +969,7 @@ const CGL_OS = (() => {
       correctIndex: (typeof q.correctIndex === "number" && q.correctIndex >= 0 && q.correctIndex <= 3) ? q.correctIndex : 0,
       explanation: q.explanation || "",
       source: q.source || "Manual Entry",
+      difficulty: q.difficulty || "MEDIUM",
       tags: Array.isArray(q.tags) ? q.tags : ["Hydrated"],
       annotation: q.annotation || "",
       createdAt: q.createdAt || Date.now(),
@@ -1005,7 +1050,8 @@ const CGL_OS = (() => {
 
   async function executeHydrationRestore() {
     if (!pendingHydrationData) return;
-    const mode = document.getElementById("restore-hydration-mode").value;
+    const modeEl = document.getElementById("restore-hydration-mode");
+    const mode = modeEl ? modeEl.value : "SAFE_MERGE";
 
     try {
       const storeKeys = [
@@ -1031,19 +1077,23 @@ const CGL_OS = (() => {
       }
 
       alert("Disaster Recovery Complete! All records restored safely.");
-      document.getElementById("modal-backup-restore").classList.remove("active");
+      const modal = document.getElementById("modal-backup-restore");
+      if (modal) modal.classList.remove("active");
       SearchService.invalidate();
       await syncAllTaxonomyDropdowns();
       await renderDashboard();
       await updateDojoChapters();
       await renderVault();
+      if (typeof renderPracticeQuestionsTable === "function") {
+        await renderPracticeQuestionsTable();
+      }
     } catch (err) {
       alert("Hydration Error: " + err.message);
     }
   }
 
   /* ==========================================================================
-   * 7. SHARED SERVICE — TAXONOMY SERVICE
+   * SECTION 8: SHARED SERVICE — TAXONOMY SERVICE
    * Full User-Driven Taxonomy Control, Reassignment & Safe Chapter Merging
    * ========================================================================== */
   const TaxonomyService = {
@@ -1207,7 +1257,7 @@ const CGL_OS = (() => {
   };
 
   /* ==========================================================================
-   * 8. SHARED SERVICE — QUESTION SERVICE
+   * SECTION 9: SHARED SERVICE — QUESTION SERVICE
    * Full CRUD, Validation, Duplication & Provenance Tracking
    * ========================================================================== */
   const QuestionService = {
@@ -1307,7 +1357,7 @@ const CGL_OS = (() => {
   };
 
   /* ==========================================================================
-   * 9. SHARED SERVICE — CONCEPT SERVICE (LIVING KNOWLEDGE STUDIO)
+   * SECTION 10: SHARED SERVICE — CONCEPT SERVICE (LIVING KNOWLEDGE STUDIO)
    * Sheet CRUD, In-Sheet TOC Generator & Question Discovery
    * ========================================================================== */
   const ConceptService = {
@@ -1394,7 +1444,7 @@ const CGL_OS = (() => {
   };
 
   /* ==========================================================================
-   * 10. SHARED SERVICE — SEARCH SERVICE
+   * SECTION 11: SHARED SERVICE — SEARCH SERVICE
    * In-Memory Unified Search Engine across Questions, Sheets & Taxonomy
    * ========================================================================== */
   const SearchService = {
@@ -1442,6 +1492,7 @@ const CGL_OS = (() => {
         if (filters.chapter && filters.chapter !== "ALL" && q.chapter !== filters.chapter) return false;
         if (filters.method && filters.method !== "ALL" && q.method !== filters.method) return false;
         if (filters.source && filters.source !== "ALL" && q.source !== filters.source) return false;
+        if (filters.difficulty && filters.difficulty !== "ALL" && q.difficulty !== filters.difficulty) return false;
 
         if (term) {
           const inId = q.id.toLowerCase().includes(term);
@@ -1477,7 +1528,7 @@ const CGL_OS = (() => {
   };
 
   /* ==========================================================================
-   * 11. DYNAMIC TAXONOMY & SELECTOR SYNCHRONIZER UI
+   * SECTION 12: DYNAMIC TAXONOMY & SELECTOR SYNCHRONIZER UI
    * ========================================================================== */
   async function syncAllTaxonomyDropdowns() {
     await TaxonomyService.getTaxonomy();
@@ -1515,16 +1566,31 @@ const CGL_OS = (() => {
     populateSelect("print-subject", true);
     populateSelect("concept-edit-subject", false);
     populateSelect("edit-q-subject", false);
+    populateSelect("new-q-subject", false);
     populateSelect("edit-fc-subject", false);
     populateSelect("vault-deck-filter-sub", true);
     populateSelect("scoped-export-subject", true);
     populateSelect("anki-export-subject", true);
+    populateSelect("practice-filter-subject", true);
+    populateSelect("builder-subject", true);
+    populateSelect("global-search-filter-sub", true);
+
+    // Sync child chapter dropdowns
+    const dojoSub = document.getElementById("dojo-nav-subject");
+    if (dojoSub) updateDojoChapters();
+    const practiceSub = document.getElementById("practice-filter-subject");
+    if (practiceSub) handlePracticeSubjectChange(practiceSub.value);
+    const builderSub = document.getElementById("builder-subject");
+    if (builderSub) updateBuilderChapters(builderSub.value);
+    const newQSub = document.getElementById("new-q-subject");
+    if (newQSub) syncNewQuestionChapterSelect(newQSub.value);
   }
 
   function openTaxonomyManagerModal() {
     renderTaxonomyManagerList();
     pushHistoryState("modal-taxonomy-manager");
-    document.getElementById("modal-taxonomy-manager").classList.add("active");
+    const m = document.getElementById("modal-taxonomy-manager");
+    if (m) m.classList.add("active");
   }
 
   async function renderTaxonomyManagerList() {
@@ -1574,8 +1640,8 @@ const CGL_OS = (() => {
   async function addNewSubjectAction() {
     const keyInput = document.getElementById("new-sub-key");
     const nameInput = document.getElementById("new-sub-name");
-    const key = keyInput.value.trim().toUpperCase().replace(/\s+/g, '_');
-    const name = nameInput.value.trim();
+    const key = keyInput ? keyInput.value.trim().toUpperCase().replace(/\s+/g, '_') : "";
+    const name = nameInput ? nameInput.value.trim() : "";
 
     if (!key || !name) {
       alert("Both Key and Full Name are required.");
@@ -1584,8 +1650,8 @@ const CGL_OS = (() => {
 
     try {
       await TaxonomyService.addSubject(key, name);
-      keyInput.value = "";
-      nameInput.value = "";
+      if (keyInput) keyInput.value = "";
+      if (nameInput) nameInput.value = "";
       renderTaxonomyManagerList();
       await renderDashboard();
       await updateDojoChapters();
@@ -1671,55 +1737,166 @@ const CGL_OS = (() => {
     }
   }
 
-  /* ==========================================================================
-   * 12. QUESTION GUI EDITOR CONTROLLERS (ADD, EDIT, DUPLICATE, UPLOAD)
-   * ========================================================================== */
-  function openEditQuestionModal(qData = null, presetSub = null, presetChap = null) {
-    const isNew = !qData;
-    currentQuestionImageBase64 = "";
+  function syncNewQuestionChapterSelect(subKey) {
+    const sel = document.getElementById("new-q-chapter");
+    if (!sel || !TAXONOMY[subKey]) return;
+    sel.innerHTML = "";
+    TAXONOMY[subKey].chapters.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c;
+      opt.innerText = c;
+      sel.appendChild(opt);
+    });
+  }
 
-    document.getElementById("editor-title").innerText = isNew ? "Add New Question" : "Edit Question";
-    document.getElementById("edit-q-id").value = isNew 
-      ? QuestionService.generateId(presetSub || "QA") 
-      : qData.id;
+  /* ==========================================================================
+   * SECTION 13: NATIVE QUESTION GUI CREATOR & EDITOR CONTROLLERS
+   * ========================================================================== */
+  function openNewQuestionCreatorModal(presetSub = null, presetChap = null) {
+    currentQuestionImageBase64 = "";
+    const sub = presetSub || (document.getElementById("practice-filter-subject")?.value !== "ALL" ? document.getElementById("practice-filter-subject")?.value : "QA");
+    safeSetValue("new-q-subject", sub);
+    syncNewQuestionChapterSelect(sub);
+    if (presetChap) safeSetValue("new-q-chapter", presetChap);
+
+    safeSetValue("new-q-subtopic", "");
+    safeSetValue("new-q-method", "");
+    safeSetValue("new-q-difficulty", "MEDIUM");
+    safeSetValue("new-q-text", "");
+    safeSetValue("new-q-img-url", "");
+    safeSetValue("new-q-img-file", "");
+    safeSetDisplay("new-q-img-preview-box", "none");
+    safeSetValue("new-q-opt-0", "");
+    safeSetValue("new-q-opt-1", "");
+    safeSetValue("new-q-opt-2", "");
+    safeSetValue("new-q-opt-3", "");
+    safeSetValue("new-q-correct", "0");
+    safeSetValue("new-q-source", "Manual Entry");
+    safeSetValue("new-q-explanation", "");
+    safeSetValue("new-q-tags", "");
+    safeSetValue("new-q-concepts", "");
+
+    pushHistoryState("modal-new-question-creator");
+    const m = document.getElementById("modal-new-question-creator");
+    if (m) m.classList.add("active");
+  }
+
+  async function handleNewQuestionImageUpload(input) {
+    if (input.files && input.files[0]) {
+      currentQuestionImageBase64 = await compressImageFile(input.files[0]);
+      const pBox = document.getElementById("new-q-img-preview-box");
+      if (pBox) {
+        pBox.style.display = "block";
+        pBox.innerHTML = `<img src="${currentQuestionImageBase64}" style="max-height:120px; border-radius:6px; border:1px solid var(--border-color);">`;
+      }
+    }
+  }
+
+  async function submitNewQuestionCreator(keepOpen = false) {
+    const sub = document.getElementById("new-q-subject")?.value || "QA";
+    const chap = document.getElementById("new-q-chapter")?.value || "QA_PERCENTAGE";
+    const text = document.getElementById("new-q-text")?.value.trim() || "";
+    const opt0 = document.getElementById("new-q-opt-0")?.value.trim() || "";
+    const opt1 = document.getElementById("new-q-opt-1")?.value.trim() || "";
+    const opt2 = document.getElementById("new-q-opt-2")?.value.trim() || "";
+    const opt3 = document.getElementById("new-q-opt-3")?.value.trim() || "";
+    const correctIdx = parseInt(document.getElementById("new-q-correct")?.value || "0", 10);
+    const rawConcepts = document.getElementById("new-q-concepts")?.value.trim() || "";
+    const parsedConcepts = rawConcepts.split(",").map(s => s.trim()).filter(Boolean);
+
+    if (!text || !opt0 || !opt1 || !opt2 || !opt3) {
+      alert("Question stem and all 4 options are mandatory.");
+      return;
+    }
+
+    const qObj = {
+      id: QuestionService.generateId(sub),
+      subject: sub,
+      chapter: chap,
+      subtopic: document.getElementById("new-q-subtopic")?.value.trim() || "",
+      method: document.getElementById("new-q-method")?.value.trim() || "",
+      difficulty: document.getElementById("new-q-difficulty")?.value || "MEDIUM",
+      conceptId: parsedConcepts[0] || "",
+      conceptIds: parsedConcepts,
+      questionText: text,
+      imageUrl: currentQuestionImageBase64 || document.getElementById("new-q-img-url")?.value.trim() || "",
+      options: [opt0, opt1, opt2, opt3],
+      correctIndex: correctIdx,
+      explanation: document.getElementById("new-q-explanation")?.value.trim() || "",
+      source: document.getElementById("new-q-source")?.value.trim() || "Manual Entry",
+      tags: (document.getElementById("new-q-tags")?.value || "").split(",").map(s => s.trim()).filter(Boolean),
+      annotation: ""
+    };
+
+    try {
+      await QuestionService.create(qObj);
+      alert(`Question created successfully: ${qObj.id}`);
+      await renderDashboard();
+      if (typeof renderPracticeQuestionsTable === "function") {
+        await renderPracticeQuestionsTable();
+      }
+
+      if (keepOpen) {
+        safeSetValue("new-q-text", "");
+        safeSetValue("new-q-img-url", "");
+        safeSetValue("new-q-img-file", "");
+        safeSetDisplay("new-q-img-preview-box", "none");
+        currentQuestionImageBase64 = "";
+        safeSetValue("new-q-opt-0", "");
+        safeSetValue("new-q-opt-1", "");
+        safeSetValue("new-q-opt-2", "");
+        safeSetValue("new-q-opt-3", "");
+        safeSetValue("new-q-explanation", "");
+      } else {
+        const m = document.getElementById("modal-new-question-creator");
+        if (m) m.classList.remove("active");
+      }
+    } catch (err) {
+      alert("Creation Error: " + err.message);
+    }
+  }
+
+  function openEditQuestionModal(qData = null, presetSub = null, presetChap = null) {
+    if (!qData) {
+      openNewQuestionCreatorModal(presetSub, presetChap);
+      return;
+    }
+
+    currentQuestionImageBase64 = "";
+    safeSetText("editor-title", "Edit Question");
+    safeSetValue("edit-q-id", qData.id);
 
     const subSelect = document.getElementById("edit-q-subject");
-    if (subSelect) {
-      subSelect.value = isNew ? (presetSub || "QA") : qData.subject;
-    }
+    if (subSelect) subSelect.value = qData.subject;
 
-    const chapInput = document.getElementById("edit-q-chapter");
-    if (chapInput) {
-      chapInput.value = isNew 
-        ? (presetChap || (TAXONOMY[presetSub || "QA"]?.chapters[0] || "QA_PERCENTAGE")) 
-        : qData.chapter;
-    }
+    safeSetValue("edit-q-chapter", qData.chapter);
+    safeSetValue("edit-q-subtopic", qData.subtopic || "");
+    safeSetValue("edit-q-method", qData.method || "");
+    safeSetValue("edit-q-source", qData.source || "Manual Entry");
 
-    document.getElementById("edit-q-subtopic").value = isNew ? "" : (qData.subtopic || "");
-    document.getElementById("edit-q-method").value = isNew ? "" : (qData.method || "");
-
-    const cIds = (qData && qData.conceptIds && qData.conceptIds.length > 0)
+    const cIds = (Array.isArray(qData.conceptIds) && qData.conceptIds.length > 0)
       ? qData.conceptIds.join(", ")
-      : (qData && qData.conceptId ? qData.conceptId : "");
-    document.getElementById("edit-q-concept-ids").value = isNew ? "" : cIds;
+      : (qData.conceptId || "");
+    safeSetValue("edit-q-concept-ids", cIds);
 
-    document.getElementById("edit-q-text").value = isNew ? "" : qData.questionText;
-    document.getElementById("edit-q-img-url").value = isNew ? "" : (qData.imageUrl || "");
-    document.getElementById("edit-q-img-file").value = "";
+    safeSetValue("edit-q-text", qData.questionText);
+    safeSetValue("edit-q-img-url", qData.imageUrl || "");
+    safeSetValue("edit-q-img-file", "");
 
-    document.getElementById("edit-opt-0").value = isNew ? "" : (qData.options[0] || "");
-    document.getElementById("edit-opt-1").value = isNew ? "" : (qData.options[1] || "");
-    document.getElementById("edit-opt-2").value = isNew ? "" : (qData.options[2] || "");
-    document.getElementById("edit-opt-3").value = isNew ? "" : (qData.options[3] || "");
+    safeSetValue("edit-opt-0", qData.options[0] || "");
+    safeSetValue("edit-opt-1", qData.options[1] || "");
+    safeSetValue("edit-opt-2", qData.options[2] || "");
+    safeSetValue("edit-opt-3", qData.options[3] || "");
 
-    document.getElementById("edit-q-correct").value = isNew ? "0" : qData.correctIndex;
-    document.getElementById("edit-q-explanation").value = isNew ? "" : (qData.explanation || "");
+    safeSetValue("edit-q-correct", qData.correctIndex || 0);
+    safeSetValue("edit-q-explanation", qData.explanation || "");
 
-    const delBtn = document.getElementById("btn-delete-q");
-    if (delBtn) delBtn.style.display = isNew ? "none" : "block";
+    safeSetDisplay("btn-delete-q", "block");
+    safeSetDisplay("btn-dup-q", "block");
 
     pushHistoryState("modal-question-editor");
-    document.getElementById("modal-question-editor").classList.add("active");
+    const m = document.getElementById("modal-question-editor");
+    if (m) m.classList.add("active");
   }
 
   function openEditCurrentDojoQuestion() {
@@ -1734,60 +1911,60 @@ const CGL_OS = (() => {
   }
 
   async function saveQuestionEditor() {
-    const id = document.getElementById("edit-q-id").value.trim();
-    const urlInput = document.getElementById("edit-q-img-url").value.trim();
-    const rawConceptIds = document.getElementById("edit-q-concept-ids").value.trim();
+    const id = document.getElementById("edit-q-id")?.value.trim() || "";
+    const urlInput = document.getElementById("edit-q-img-url")?.value.trim() || "";
+    const rawConceptIds = document.getElementById("edit-q-concept-ids")?.value.trim() || "";
     const parsedConceptIds = rawConceptIds.split(",").map(s => s.trim()).filter(Boolean);
 
     const qObj = {
       id: id,
-      subject: document.getElementById("edit-q-subject").value,
-      chapter: document.getElementById("edit-q-chapter").value.trim().toUpperCase(),
-      subtopic: document.getElementById("edit-q-subtopic").value.trim(),
-      method: document.getElementById("edit-q-method").value.trim(),
+      subject: document.getElementById("edit-q-subject")?.value || "QA",
+      chapter: (document.getElementById("edit-q-chapter")?.value || "QA_PERCENTAGE").trim().toUpperCase(),
+      subtopic: document.getElementById("edit-q-subtopic")?.value.trim() || "",
+      method: document.getElementById("edit-q-method")?.value.trim() || "",
       conceptId: parsedConceptIds[0] || "",
       conceptIds: parsedConceptIds,
-      questionText: document.getElementById("edit-q-text").value.trim(),
+      questionText: document.getElementById("edit-q-text")?.value.trim() || "",
       imageUrl: currentQuestionImageBase64 || urlInput,
       options: [
-        document.getElementById("edit-opt-0").value.trim(),
-        document.getElementById("edit-opt-1").value.trim(),
-        document.getElementById("edit-opt-2").value.trim(),
-        document.getElementById("edit-opt-3").value.trim()
+        document.getElementById("edit-opt-0")?.value.trim() || "",
+        document.getElementById("edit-opt-1")?.value.trim() || "",
+        document.getElementById("edit-opt-2")?.value.trim() || "",
+        document.getElementById("edit-opt-3")?.value.trim() || ""
       ],
-      correctIndex: parseInt(document.getElementById("edit-q-correct").value, 10),
-      explanation: document.getElementById("edit-q-explanation").value.trim(),
-      source: "Manual Entry",
+      correctIndex: parseInt(document.getElementById("edit-q-correct")?.value || "0", 10),
+      explanation: document.getElementById("edit-q-explanation")?.value.trim() || "",
+      source: document.getElementById("edit-q-source")?.value.trim() || "Manual Entry",
       tags: ["UserSaved"],
       annotation: ""
     };
 
     try {
-      const existing = await QuestionService.get(id);
-      if (existing) {
-        await QuestionService.update(id, qObj);
-      } else {
-        await QuestionService.create(qObj);
-      }
+      await QuestionService.update(id, qObj);
+      const m = document.getElementById("modal-question-editor");
+      if (m) m.classList.remove("active");
 
-      document.getElementById("modal-question-editor").classList.remove("active");
       if (dojoExam && dojoExam.questions[dojoExam.currentIndex]?.id === id) {
         dojoExam.questions[dojoExam.currentIndex] = qObj;
         renderDojoArenaQuestion();
       }
       await renderDashboard();
-      alert(`Question ${id} saved successfully.`);
+      if (typeof renderPracticeQuestionsTable === "function") {
+        await renderPracticeQuestionsTable();
+      }
+      alert(`Question ${id} updated successfully.`);
     } catch (err) {
-      alert("Validation Error: " + err.message);
+      alert("Save Error: " + err.message);
     }
   }
 
   async function duplicateCurrentEditingQuestion() {
-    const id = document.getElementById("edit-q-id").value.trim();
+    const id = document.getElementById("edit-q-id")?.value.trim();
     if (!id) return;
     try {
       const clone = await QuestionService.duplicate(id);
-      document.getElementById("modal-question-editor").classList.remove("active");
+      const m = document.getElementById("modal-question-editor");
+      if (m) m.classList.remove("active");
       alert(`Duplicated as new question: ${clone.id}`);
       openEditQuestionModal(clone);
     } catch (err) {
@@ -1796,10 +1973,13 @@ const CGL_OS = (() => {
   }
 
   async function deleteCurrentEditingQuestion() {
-    const id = document.getElementById("edit-q-id").value.trim();
-    if (confirm(`Permanently delete question ${id}? (Attempts referencing this question remain preserved)`)) {
+    const id = document.getElementById("edit-q-id")?.value.trim();
+    if (!id) return;
+    if (confirm(`Permanently delete question ${id}? (Historical attempts referencing this question remain preserved)`)) {
       await QuestionService.delete(id);
-      document.getElementById("modal-question-editor").classList.remove("active");
+      const m = document.getElementById("modal-question-editor");
+      if (m) m.classList.remove("active");
+
       if (dojoExam) {
         dojoExam.questions = dojoExam.questions.filter(q => q.id !== id);
         if (dojoExam.currentIndex >= dojoExam.questions.length) dojoExam.currentIndex = 0;
@@ -1807,13 +1987,16 @@ const CGL_OS = (() => {
         else exitDojoArena();
       }
       await renderDashboard();
+      if (typeof renderPracticeQuestionsTable === "function") {
+        await renderPracticeQuestionsTable();
+      }
       alert(`Question ${id} removed.`);
     }
   }
 
   // --- End of Part 1 ---
   /* ==========================================================================
-   * SECTION 13: SHARED SERVICE — PERFORMANCE SERVICE
+   * SECTION 14: SHARED SERVICE — PERFORMANCE SERVICE
    * Telemetry Aggregation, Question/Chapter Vulnerabilities & Neglect Metrics
    * ========================================================================== */
   const PerformanceService = {
@@ -1825,7 +2008,7 @@ const CGL_OS = (() => {
     async calculateGlobalMetrics() {
       const completed = await this.getHistoricalAttempts();
       if (completed.length === 0) {
-        return { totalMocks: 0, accuracy: 0, avgSpeed: 0, trapsHit: 0, eri: "0.0", neglectAlert: null };
+        return { totalMocks: 0, accuracy: 0, avgSpeed: 0, trapsHit: 0, eri: "0.0", totalStudyTimeSec: 0, neglectAlert: null };
       }
 
       let totalCor = 0, totalAtt = 0, totalSec = 0, traps = 0;
@@ -1857,7 +2040,8 @@ const CGL_OS = (() => {
         accuracy: acc,
         avgSpeed: avgSpeed,
         trapsHit: traps,
-        eri: totalERI
+        eri: totalERI,
+        totalStudyTimeSec: totalSec
       };
     },
 
@@ -1895,7 +2079,7 @@ const CGL_OS = (() => {
         wrong: wrongCount,
         accuracy: accuracy,
         avgSpeed: avgSpeed,
-        isWeak: attempted >= 5 && accuracy < 60
+        isWeak: attempted >= 3 && accuracy < 60
       };
     },
 
@@ -1997,8 +2181,8 @@ const CGL_OS = (() => {
   };
 
   /* ==========================================================================
-   * SECTION 14: SHARED SERVICE — MOCK SERVICE & QUESTION SELECTION ENGINE
-   * Fisher-Yates Randomizer, Pattern Balancing, Weakness Weights & Blueprint Manager
+   * SECTION 15: SHARED SERVICE — MOCK SERVICE & QUESTION SELECTION ENGINE
+   * Unbiased Fisher-Yates Shuffle, Multi-Mode Sampling & Blueprint Separation
    * ========================================================================== */
   const MockService = {
     shuffle(array, seed = null) {
@@ -2034,7 +2218,8 @@ const CGL_OS = (() => {
         subject = "ALL",
         chapter = "ALL",
         method = "ALL",
-        mode = "RANDOM", // 'RANDOM' | 'WEAKNESS' | 'INCORRECT' | 'UNATTEMPTED' | 'SLOW' | 'PATTERN_COVERAGE'
+        difficulty = "ALL",
+        mode = "RANDOM", // 'RANDOM' | 'WEAKNESS' | 'INCORRECT' | 'UNATTEMPTED' | 'UNSEEN' | 'SLOW' | 'IGNORED' | 'CHAPTER' | 'SECTIONAL' | 'PATTERN_COVERAGE'
         excludeRecentMocks = false,
         recentMockWindow = 3,
         randomizeOrder = true,
@@ -2048,6 +2233,7 @@ const CGL_OS = (() => {
       const allBankQuestions = await getAllRecords("store_questions");
       let eligiblePool = [];
 
+      // 1. Resolve Explicit IDs if supplied
       if (Array.isArray(explicitQuestionIds) && explicitQuestionIds.length > 0) {
         explicitQuestionIds.forEach(id => {
           const found = allBankQuestions.find(q => q.id === id);
@@ -2060,6 +2246,7 @@ const CGL_OS = (() => {
           if (subject && subject !== "ALL" && q.subject !== subject) return false;
           if (chapter && chapter !== "ALL" && q.chapter !== chapter) return false;
           if (method && method !== "ALL" && q.method !== method) return false;
+          if (difficulty && difficulty !== "ALL" && q.difficulty !== difficulty) return false;
           return true;
         });
       }
@@ -2068,6 +2255,7 @@ const CGL_OS = (() => {
         throw new Error(`Zero eligible questions match the scope (${subject} • ${chapter} • ${method}).`);
       }
 
+      // 2. Anti-Repetition Recency Filter
       const attempts = await getAllRecords("store_attempts");
       const completed = attempts.filter(a => a.completed).sort((a, b) => b.timestamp - a.timestamp);
 
@@ -2086,10 +2274,11 @@ const CGL_OS = (() => {
         }
       }
 
+      // 3. Apply Performance and Mode Strategies
       const perfMap = await PerformanceService.getQuestionPerformanceMap();
       let prioritizedPool = [];
 
-      if (mode === "UNATTEMPTED") {
+      if (mode === "UNATTEMPTED" || mode === "UNSEEN") {
         prioritizedPool = eligiblePool.filter(q => !perfMap[q.id] || perfMap[q.id].attempts === 0);
         if (prioritizedPool.length === 0) prioritizedPool = eligiblePool;
       } else if (mode === "INCORRECT") {
@@ -2109,7 +2298,16 @@ const CGL_OS = (() => {
           return stats && stats.attempts > 0 && Math.round(stats.totalTime / stats.attempts) > 75;
         });
         if (prioritizedPool.length === 0) prioritizedPool = eligiblePool;
+      } else if (mode === "IGNORED") {
+        const now = Date.now();
+        const sevenDaysAgo = now - (7 * 24 * 60 * 60 * 1000);
+        prioritizedPool = eligiblePool.filter(q => {
+          const stats = perfMap[q.id];
+          return !stats || stats.lastAttemptEpoch < sevenDaysAgo;
+        });
+        if (prioritizedPool.length === 0) prioritizedPool = eligiblePool;
       } else if (mode === "PATTERN_COVERAGE" || patternBalanced) {
+        // Group by pattern/method and select evenly across patterns
         const patternGroups = {};
         eligiblePool.forEach(q => {
           const pKey = q.method || q.subtopic || "General";
@@ -2134,9 +2332,11 @@ const CGL_OS = (() => {
         prioritizedPool = eligiblePool;
       }
 
+      // 4. True Fisher-Yates Shuffle & Slicing
       const shuffledSelection = this.shuffle([...prioritizedPool], seed);
       const finalSelectedQuestions = shuffledSelection.slice(0, Math.min(count, shuffledSelection.length));
 
+      // 5. Final Display Randomization
       if (randomizeOrder) {
         this.shuffle(finalSelectedQuestions, seed);
       }
@@ -2172,20 +2372,109 @@ const CGL_OS = (() => {
   };
 
   /* ==========================================================================
-   * SECTION 15: CUSTOM MOCK BUILDER & SAVED PRESET CONTROLLERS
+   * SECTION 16: MOCK LAB / BUILDER CONTROLLERS & STRATEGY SELECTION
    * ========================================================================== */
+  let activeMockStrategy = "RANDOM";
   let customSequenceRows = [];
 
-  function openCustomMockModal() {
-    if (customSequenceRows.length === 0) {
-      customSequenceRows = [
-        { id: 1, subject: "QA", count: 25, durationMin: 15 },
-        { id: 2, subject: "ENG", count: 25, durationMin: 15 }
-      ];
+  function setMockStrategy(strategy, btnEl) {
+    activeMockStrategy = strategy;
+    document.querySelectorAll('[id^="strat-pill-"]').forEach(el => el.classList.remove("active"));
+    if (btnEl) btnEl.classList.add("active");
+
+    const wrap = document.getElementById("custom-sequence-stack-wrap");
+    if (strategy === "CUSTOM_BUILDER") {
+      if (wrap) wrap.style.display = "block";
+      if (customSequenceRows.length === 0) {
+        customSequenceRows = [
+          { id: 1, subject: "QA", count: 25, durationMin: 15 },
+          { id: 2, subject: "ENG", count: 25, durationMin: 15 }
+        ];
+      }
+      renderCustomSequenceRows();
+    } else {
+      if (wrap) wrap.style.display = "none";
     }
-    renderCustomSequenceRows();
+
+    updateBuilderPoolEstimate();
+  }
+
+  function updateBuilderChapters(subKey) {
+    const sel = document.getElementById("builder-chapter");
+    if (!sel) return;
+    sel.innerHTML = `<option value="ALL">All Chapters</option>`;
+
+    if (subKey === "ALL") {
+      updateBuilderPoolEstimate();
+      return;
+    }
+
+    const sub = TAXONOMY[subKey];
+    if (sub && Array.isArray(sub.chapters)) {
+      sub.chapters.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c;
+        opt.innerText = c;
+        sel.appendChild(opt);
+      });
+    }
+    updateBuilderPoolEstimate();
+  }
+
+  async function updateBuilderPoolEstimate() {
+    const sub = document.getElementById("builder-subject")?.value || "ALL";
+    const chap = document.getElementById("builder-chapter")?.value || "ALL";
+    const allQs = await getAllRecords("store_questions");
+
+    const pool = allQs.filter(q => {
+      if (sub !== "ALL" && q.subject !== sub) return false;
+      if (chap !== "ALL" && q.chapter !== chap) return false;
+      return true;
+    });
+
+    safeSetText("builder-pool-estimate", `Estimated pool: ${pool.length} questions`);
+  }
+
+  async function previewMockSelection() {
+    try {
+      const config = getActiveBuilderConfig();
+      const instance = await MockService.generate({ ...config, count: Math.min(config.count, 15) });
+      const qIds = instance.questions.map((q, idx) => `${idx + 1}. [${q.subject} • ${q.chapter}] ${q.questionText.slice(0, 75)}...`).join("\n\n");
+      alert(`MOCK PREVIEW (${instance.questions.length} Questions Sampled):\n\n${qIds}`);
+    } catch (err) {
+      alert("Preview Error: " + err.message);
+    }
+  }
+
+  function getActiveBuilderConfig() {
+    const sub = document.getElementById("builder-subject")?.value || "ALL";
+    const chap = document.getElementById("builder-chapter")?.value || "ALL";
+    const count = parseInt(document.getElementById("builder-count")?.value || "25", 10);
+    const duration = parseInt(document.getElementById("builder-duration")?.value || "15", 10);
+    const diff = document.getElementById("builder-difficulty")?.value || "ALL";
+    const avoidRecent = document.getElementById("builder-avoid-recent")?.checked ?? true;
+    const shuffle = document.getElementById("builder-shuffle")?.checked ?? true;
+
+    return {
+      title: chap !== "ALL" ? `${chap} Practice Mock` : (sub !== "ALL" ? `${sub} Sectional Mock` : `Targeted ${activeMockStrategy} Mock`),
+      subject: sub,
+      chapter: chap,
+      count: count,
+      durationMin: duration,
+      difficulty: diff,
+      mode: activeMockStrategy,
+      excludeRecentMocks: avoidRecent,
+      randomizeOrder: shuffle,
+      isSectionLocked: false
+    };
+  }
+
+  function openCustomMockModal() {
+    setMockStrategy("RANDOM", document.getElementById("strat-pill-random"));
+    updateBuilderChapters("ALL");
     pushHistoryState("modal-mock-builder");
-    document.getElementById("modal-mock-builder").classList.add("active");
+    const m = document.getElementById("modal-mock-builder");
+    if (m) m.classList.add("active");
   }
 
   function addCustomSectionRow() {
@@ -2240,62 +2529,27 @@ const CGL_OS = (() => {
   }
 
   function updateCustomRowSubject(idx, val) { customSequenceRows[idx].subject = val; }
-  function updateCustomRowCount(idx, val) { customSequenceRows[idx].count = parseInt(val) || 25; }
-  function updateCustomRowDuration(idx, val) { customSequenceRows[idx].durationMin = parseInt(val) || 15; }
-
-  function applyBlueprintPreset(val) {
-    const wrap = document.getElementById("custom-sequence-stack-wrap");
-    if (val === "CUSTOM_BUILDER") {
-      wrap.style.display = "block";
-    } else if (val === "TIER1_FULL") {
-      wrap.style.display = "none";
-      customSequenceRows = [
-        { id: 1, subject: "REAS", count: 25, durationMin: 15 },
-        { id: 2, subject: "GA", count: 25, durationMin: 15 },
-        { id: 3, subject: "QA", count: 25, durationMin: 15 },
-        { id: 4, subject: "ENG", count: 25, durationMin: 15 }
-      ];
-    } else if (val === "TIER2_SEC1") {
-      wrap.style.display = "none";
-      customSequenceRows = [
-        { id: 1, subject: "QA", count: 30, durationMin: 30 },
-        { id: 2, subject: "REAS", count: 30, durationMin: 30 }
-      ];
-    } else if (val === "QA_BLITZ") {
-      wrap.style.display = "none";
-      customSequenceRows = [
-        { id: 1, subject: "QA", count: 15, durationMin: 10 }
-      ];
-    }
-  }
+  function updateCustomRowCount(idx, val) { customSequenceRows[idx].count = parseInt(val, 10) || 25; }
+  function updateCustomRowDuration(idx, val) { customSequenceRows[idx].durationMin = parseInt(val, 10) || 15; }
 
   function openSaveBlueprintModal(mode = "DYNAMIC_BLUEPRINT", targetId = "") {
-    document.getElementById("save-preset-mode").value = mode;
-    document.getElementById("save-preset-target-id").value = targetId;
+    safeSetValue("save-preset-mode", mode);
+    safeSetValue("save-preset-target-id", targetId);
+    safeSetText("save-preset-modal-title", mode === "FIXED_PAPER" ? "Freeze Mock as Fixed Paper" : "Save Mock Blueprint");
+    safeSetValue("blueprint-title-input", "");
 
-    const titleInput = document.getElementById("blueprint-title-input");
-    const modalTitle = document.getElementById("save-preset-modal-title");
-
-    if (mode === "FIXED_PAPER") {
-      modalTitle.innerText = "Freeze Mock as Fixed Paper";
-      titleInput.placeholder = "e.g. CGL 2024 Tier 1 Replica (Exact Questions)";
-    } else {
-      modalTitle.innerText = "Save Dynamic Blueprint Ruleset";
-      titleInput.placeholder = "e.g. Speed Blitz Alpha (QA + REAS)";
-    }
-
-    titleInput.value = "";
     pushHistoryState("modal-save-blueprint");
-    document.getElementById("modal-save-blueprint").classList.add("active");
+    const m = document.getElementById("modal-save-blueprint");
+    if (m) m.classList.add("active");
   }
 
   async function saveCurrentPresetAction() {
-    const mode = document.getElementById("save-preset-mode").value;
-    const targetId = document.getElementById("save-preset-target-id").value;
-    const title = document.getElementById("blueprint-title-input").value.trim();
+    const mode = document.getElementById("save-preset-mode")?.value || "DYNAMIC_BLUEPRINT";
+    const targetId = document.getElementById("save-preset-target-id")?.value || "";
+    const title = document.getElementById("blueprint-title-input")?.value.trim() || "";
 
     if (!title) {
-      alert("Title is required.");
+      alert("Blueprint title is required.");
       return;
     }
 
@@ -2317,20 +2571,21 @@ const CGL_OS = (() => {
         questions: JSON.parse(JSON.stringify(target.questions))
       };
     } else {
-      const isLock = document.getElementById("builder-sectional-lock").value === "YES";
+      const isLock = document.getElementById("builder-sectional-lock")?.value === "YES";
       record = {
         id: "bp_" + Date.now(),
         type: "DYNAMIC_BLUEPRINT",
         title: title,
         isSectionLocked: isLock,
-        selectionRule: { mode: "BALANCED" },
+        selectionRule: getActiveBuilderConfig(),
         sections: JSON.parse(JSON.stringify(customSequenceRows)),
         questions: null
       };
     }
 
     await MockService.saveMockDefinition(record);
-    document.getElementById("modal-save-blueprint").classList.remove("active");
+    const m = document.getElementById("modal-save-blueprint");
+    if (m) m.classList.remove("active");
     alert(`Saved "${title}" (${mode === "FIXED_PAPER" ? "Fixed Question Paper" : "Dynamic Blueprint"}) to Dashboard.`);
     await renderDashboardBlueprints();
   }
@@ -2342,9 +2597,9 @@ const CGL_OS = (() => {
     if (preset.type === "FIXED_PAPER" && preset.questions && preset.questions.length > 0) {
       await MockService.launchMockSession(preset);
     } else {
-      customSequenceRows = preset.sections || customSequenceRows;
-      document.getElementById("builder-sectional-lock").value = preset.isSectionLocked ? "YES" : "NO";
-      await launchConfiguredMock();
+      const rule = preset.selectionRule || { title: preset.title, count: 25, mode: "RANDOM" };
+      const instance = await MockService.generate(rule);
+      await MockService.launchMockSession(instance);
     }
   }
 
@@ -2359,123 +2614,64 @@ const CGL_OS = (() => {
     const modal = document.getElementById("modal-mock-builder");
     if (modal) modal.classList.remove("active");
 
-    const isLock = document.getElementById("builder-sectional-lock").value === "YES";
-    const allQuestions = await getAllRecords("store_questions");
+    if (activeMockStrategy === "CUSTOM_BUILDER") {
+      const isLock = document.getElementById("builder-sectional-lock")?.value === "YES";
+      const allQuestions = await getAllRecords("store_questions");
 
-    let sections = [];
-    let flattened = [];
-    let signatureTags = [];
-    let globalCounter = 1;
+      let sections = [];
+      let flattened = [];
+      let signatureTags = [];
+      let globalCounter = 1;
 
-    for (let sIdx = 0; sIdx < customSequenceRows.length; sIdx++) {
-      const row = customSequenceRows[sIdx];
-      let pool = allQuestions.filter(q => q.subject === row.subject);
-      if (pool.length === 0) pool = allQuestions;
+      for (let sIdx = 0; sIdx < customSequenceRows.length; sIdx++) {
+        const row = customSequenceRows[sIdx];
+        let pool = allQuestions.filter(q => q.subject === row.subject);
+        if (pool.length === 0) pool = allQuestions;
 
-      // Genuine Fisher-Yates random selection for custom builder
-      const shuffled = MockService.shuffle([...pool]);
-      const sectionQuestions = shuffled.slice(0, Math.min(row.count, shuffled.length));
-      signatureTags.push(row.subject);
+        const shuffled = MockService.shuffle([...pool]);
+        const sectionQuestions = shuffled.slice(0, Math.min(row.count, shuffled.length));
+        signatureTags.push(row.subject);
 
-      const secObj = {
-        id: `SEC_${sIdx + 1}_${row.subject}`,
-        subject: row.subject,
-        name: `${TAXONOMY[row.subject] ? TAXONOMY[row.subject].name : row.subject} (Sec ${sIdx + 1})`,
-        durationSec: row.durationMin * 60,
-        questionCount: sectionQuestions.length,
-        locked: false
-      };
-      sections.push(secObj);
+        const secObj = {
+          id: `SEC_${sIdx + 1}_${row.subject}`,
+          subject: row.subject,
+          name: `${TAXONOMY[row.subject] ? TAXONOMY[row.subject].name : row.subject} (Sec ${sIdx + 1})`,
+          durationSec: row.durationMin * 60,
+          questionCount: sectionQuestions.length,
+          locked: false
+        };
+        sections.push(secObj);
 
-      sectionQuestions.forEach((q, qIdx) => {
-        flattened.push({
-          ...q,
-          sectionIndex: sIdx,
-          sectionName: secObj.name,
-          localNumber: qIdx + 1,
-          globalNumber: globalCounter++
+        sectionQuestions.forEach((q, qIdx) => {
+          flattened.push({
+            ...q,
+            sectionIndex: sIdx,
+            sectionName: secObj.name,
+            localNumber: qIdx + 1,
+            globalNumber: globalCounter++
+          });
         });
-      });
+      }
+
+      await compileAndLaunchArena(`Custom Routine (${signatureTags.join('➔')})`, flattened, customSequenceRows.reduce((a, b) => a + b.durationMin, 0), isLock);
+    } else {
+      const config = getActiveBuilderConfig();
+      const instance = await MockService.generate(config);
+      await MockService.launchMockSession(instance);
     }
-
-    if (flattened.length === 0) {
-      alert("Database question pool empty for configured routine.");
-      return;
-    }
-
-    const isStandardTier1 = customSequenceRows.length === 4;
-    const isSingleSectional = customSequenceRows.length === 1;
-    const now = Date.now();
-
-    activeExam = {
-      sessionId: "mock_" + now,
-      parentSessionId: null,
-      attemptNumber: 1,
-      timestamp: now,
-      timeIST: formatISTDate(now),
-      diurnalSlot: getDiurnalSlot(now),
-      title: isStandardTier1 ? "SSC CGL Tier 1 Full Mock" : (isSingleSectional ? `${customSequenceRows[0].subject} Sectional Mock` : `Custom Routine (${signatureTags.join('➔')})`),
-      mockType: isStandardTier1 ? "TIER_1" : (isSingleSectional ? "SECTIONAL" : "CUSTOM"),
-      signatureTag: `CUSTOM_${signatureTags.join('_')}`,
-      isSectionLocked: isLock,
-      sections: sections,
-      activeSectionIndex: 0,
-      currentQuestionIndex: 0,
-      questions: flattened,
-      sectionRemainingSec: sections[0].durationSec,
-      currentQTimeSpentSec: 0,
-      userResponses: {},
-      isPaused: false,
-      isReviewMode: false
-    };
-
-    activeExam.questions.forEach(q => {
-      activeExam.userResponses[q.id] = {
-        selectedOption: null,
-        initialOption: null,
-        status: "unanswered",
-        switches: 0,
-        decisionTrail: [],
-        timeSpentSec: 0,
-        struck: []
-      };
-    });
-
-    await putRecord("store_active_session", { id: "current_session", session: activeExam });
-    hideMiniPlayer();
-
-    if (document.activeElement) document.activeElement.blur();
-    pushNavLayer("exam-arena", () => {
-      const pauseBtn = document.getElementById("btn-arena-pause");
-      if (pauseBtn) pauseBtn.click();
-    });
-    document.getElementById("exam-arena").style.display = "flex";
-    renderActiveExamQuestion();
-    startExamTimers();
-  }
-
-  async function launchConfiguredMockDirect(sub, chap, count, durMin) {
-    const instance = await MockService.generate({
-      title: `${chap === 'ALL' ? sub : chap} Blitz Drill`,
-      subject: sub,
-      chapter: chap,
-      count: count,
-      durationMin: durMin,
-      mode: "RANDOM"
-    });
-    await MockService.launchMockSession(instance);
   }
 
   /* ==========================================================================
-   * SECTION 16: TIMED EXAM ARENA CONTROLLER
+   * SECTION 17: TIMED EXAM ARENA CONTROLLER & PALETTE
    * ========================================================================== */
   function startExamTimers() {
     clearInterval(examTimerInterval);
     clearInterval(questionTimerInterval);
 
     if (activeExam && activeExam.isReviewMode) {
-      document.getElementById("hud-countdown").innerText = "REVIEW";
-      document.getElementById("hud-countdown").className = "hud-timer";
+      safeSetText("hud-countdown", "REVIEW");
+      const cEl = document.getElementById("hud-countdown");
+      if (cEl) cEl.className = "hud-timer";
       return;
     }
 
@@ -2486,11 +2682,12 @@ const CGL_OS = (() => {
       const m = Math.floor(activeExam.sectionRemainingSec / 60);
       const s = activeExam.sectionRemainingSec % 60;
       const clockEl = document.getElementById("hud-countdown");
-      clockEl.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-
-      if (activeExam.sectionRemainingSec < 180) clockEl.className = "hud-timer crimson";
-      else if (activeExam.sectionRemainingSec < 300) clockEl.className = "hud-timer amber";
-      else clockEl.className = "hud-timer";
+      if (clockEl) {
+        clockEl.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        if (activeExam.sectionRemainingSec < 180) clockEl.className = "hud-timer crimson";
+        else if (activeExam.sectionRemainingSec < 300) clockEl.className = "hud-timer amber";
+        else clockEl.className = "hud-timer";
+      }
 
       if (activeExam.sectionRemainingSec <= 0) {
         handleSectionLockTransition(true);
@@ -2502,8 +2699,8 @@ const CGL_OS = (() => {
       activeExam.currentQTimeSpentSec++;
       const m = Math.floor(activeExam.currentQTimeSpentSec / 60);
       const s = activeExam.currentQTimeSpentSec % 60;
-      document.getElementById("arena-q-timer").innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-      document.getElementById("hud-pacing-status").innerText = `${activeExam.currentQTimeSpentSec}s on Q`;
+      safeSetText("arena-q-timer", `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`);
+      safeSetText("hud-pacing-status", `${activeExam.currentQTimeSpentSec}s on Q`);
 
       const curQ = activeExam.questions[activeExam.currentQuestionIndex];
       if (curQ && activeExam.userResponses[curQ.id]) {
@@ -2518,21 +2715,25 @@ const CGL_OS = (() => {
     const m = Math.floor(activeExam.sectionRemainingSec / 60);
     const s = activeExam.sectionRemainingSec % 60;
 
-    document.getElementById("lock-confirm-msg").innerHTML = `
-      You have <b>${m}m ${s}s</b> remaining in <b>${curSec.name}</b>.<br><br>
+    safeSetHtml("lock-confirm-msg", `
+      You have <b>${m}m ${s}s</b> remaining in <b>${curSec ? curSec.name : 'this section'}</b>.<br><br>
       Locking early will permanently seal this section. You cannot return to it.
-    `;
-    document.getElementById("modal-section-lock-confirm").classList.add("active");
+    `);
+    const modal = document.getElementById("modal-section-lock-confirm");
+    if (modal) modal.classList.add("active");
   }
 
   function confirmEndSectionEarly() {
-    document.getElementById("modal-section-lock-confirm").classList.remove("active");
+    const modal = document.getElementById("modal-section-lock-confirm");
+    if (modal) modal.classList.remove("active");
     handleSectionLockTransition(false);
   }
 
   function handleSectionLockTransition(isAutoExpired) {
     if (!activeExam) return;
-    activeExam.sections[activeExam.activeSectionIndex].locked = true;
+    if (activeExam.sections[activeExam.activeSectionIndex]) {
+      activeExam.sections[activeExam.activeSectionIndex].locked = true;
+    }
 
     if (activeExam.activeSectionIndex < activeExam.sections.length - 1) {
       activeExam.activeSectionIndex++;
@@ -2564,68 +2765,57 @@ const CGL_OS = (() => {
     const resp = activeExam.userResponses[q.id] || {};
     const isRev = !!activeExam.isReviewMode;
 
-    const pauseBtn = document.getElementById("btn-arena-pause");
-    const exitRevBtn = document.getElementById("btn-arena-exit-review");
-    const lockBtn = document.getElementById("btn-arena-early-lock");
-    const drawerLockBtn = document.getElementById("btn-drawer-early-lock");
-    const revBtn = document.getElementById("btn-q-review");
-    const saveNextBtn = document.getElementById("btn-q-save-next");
-    const telemBanner = document.getElementById("arena-review-telemetry-banner");
-    const solutionBlock = document.getElementById("arena-review-solution-block");
-    const conceptBridgeBox = document.getElementById("arena-concept-bridge-box");
-    const researchBtn = document.getElementById("btn-arena-research");
-    const panicFlag = document.getElementById("hud-panic-flag");
-
-    if (researchBtn) researchBtn.style.display = "inline-flex";
+    safeSetDisplay("btn-arena-research", "inline-flex");
 
     if (isRev) {
-      if (pauseBtn) pauseBtn.style.display = "none";
-      if (exitRevBtn) exitRevBtn.style.display = "inline-flex";
-      if (lockBtn) lockBtn.style.display = "none";
-      if (drawerLockBtn) drawerLockBtn.style.display = "none";
-      if (revBtn) revBtn.style.display = "none";
-      if (saveNextBtn) saveNextBtn.innerText = "Next Question ►";
-      document.getElementById("btn-submit-exam").style.display = "none";
-      document.getElementById("palette-drawer-title").innerText = "Review Palette";
-      document.getElementById("palette-legend-bar").innerHTML = `
+      safeSetDisplay("btn-arena-pause", "none");
+      safeSetDisplay("btn-arena-exit-review", "inline-flex");
+      safeSetDisplay("btn-arena-early-lock", "none");
+      safeSetDisplay("btn-drawer-early-lock", "none");
+      safeSetDisplay("btn-q-review", "none");
+      safeSetText("btn-q-save-next", "Next Question ►");
+      safeSetDisplay("btn-submit-exam", "none");
+      safeSetText("palette-drawer-title", "Review Palette");
+      safeSetHtml("palette-legend-bar", `
         <span>🟢 Correct</span>
         <span>🔴 Incorrect</span>
         <span>⚪ Unattempted</span>
-      `;
-      if (panicFlag) panicFlag.style.display = resp.isPanicSlip ? "inline-block" : "none";
+      `);
+      safeSetDisplay("hud-panic-flag", resp.isPanicSlip ? "inline-block" : "none");
 
       const spent = resp.timeSpentSec || 0;
       const mSpent = Math.floor(spent / 60);
       const sSpent = spent % 60;
-      document.getElementById("arena-q-timer").innerText = `${String(mSpent).padStart(2, '0')}:${String(sSpent).padStart(2, '0')}`;
-      document.getElementById("hud-pacing-status").innerText = `${spent}s on Q`;
+      safeSetText("arena-q-timer", `${String(mSpent).padStart(2, '0')}:${String(sSpent).padStart(2, '0')}`);
+      safeSetText("hud-pacing-status", `${spent}s on Q`);
     } else {
-      if (pauseBtn) pauseBtn.style.display = "inline-flex";
-      if (exitRevBtn) exitRevBtn.style.display = "none";
-      if (revBtn) revBtn.style.display = "inline-flex";
-      if (saveNextBtn) saveNextBtn.innerText = "Save & Next";
-      document.getElementById("btn-submit-exam").style.display = "block";
-      document.getElementById("palette-drawer-title").innerText = "Question Palette";
-      if (panicFlag) panicFlag.style.display = "none";
+      safeSetDisplay("btn-arena-pause", "inline-flex");
+      safeSetDisplay("btn-arena-exit-review", "none");
+      safeSetDisplay("btn-q-review", "inline-flex");
+      safeSetText("btn-q-save-next", "Save & Next");
+      safeSetDisplay("btn-submit-exam", "block");
+      safeSetText("palette-drawer-title", "Question Palette");
+      safeSetDisplay("hud-panic-flag", "none");
 
       if (activeExam.isSectionLocked) {
-        if (lockBtn) lockBtn.style.display = "inline-flex";
-        if (drawerLockBtn) drawerLockBtn.style.display = "block";
+        safeSetDisplay("btn-arena-early-lock", "inline-flex");
+        safeSetDisplay("btn-drawer-early-lock", "block");
         const isLast = activeExam.activeSectionIndex === activeExam.sections.length - 1;
-        if (lockBtn) lockBtn.innerText = isLast ? "🔒 Submit Final Section" : "🔒 End Section Early";
-        if (drawerLockBtn) drawerLockBtn.innerText = isLast ? "🔒 Lock & Submit Final Section" : "🔒 End & Advance Section Early";
+        safeSetText("btn-arena-early-lock", isLast ? "🔒 Submit Final Section" : "🔒 End Section Early");
+        safeSetText("btn-drawer-early-lock", isLast ? "🔒 Lock & Submit Final Section" : "🔒 End & Advance Section Early");
       } else {
-        if (lockBtn) lockBtn.style.display = "none";
-        if (drawerLockBtn) drawerLockBtn.style.display = "none";
+        safeSetDisplay("btn-arena-early-lock", "none");
+        safeSetDisplay("btn-drawer-early-lock", "none");
       }
     }
 
     const secQs = activeExam.questions.filter(item => item.sectionIndex === q.sectionIndex);
-    document.getElementById("hud-section-badge").innerText = `${q.sectionName ? q.sectionName.toUpperCase() : 'EXAM'}`;
-    document.getElementById("hud-section-qinfo").innerText = `Sec Q${q.localNumber || (activeExam.currentQuestionIndex + 1)} of ${secQs.length} (Global Q${q.globalNumber || (activeExam.currentQuestionIndex + 1)})`;
-    document.getElementById("arena-q-num").innerText = `Q${q.globalNumber || (activeExam.currentQuestionIndex + 1)}`;
-    document.getElementById("arena-q-text").innerHTML = formatRichText(q.questionText);
+    safeSetText("hud-section-badge", `${q.sectionName ? q.sectionName.toUpperCase() : 'EXAM'}`);
+    safeSetText("hud-section-qinfo", `Sec Q${q.localNumber || (activeExam.currentQuestionIndex + 1)} of ${secQs.length} (Global Q${q.globalNumber || (activeExam.currentQuestionIndex + 1)})`);
+    safeSetText("arena-q-num", `Q${q.globalNumber || (activeExam.currentQuestionIndex + 1)}`);
+    safeSetHtml("arena-q-text", formatRichText(q.questionText));
 
+    const revBtn = document.getElementById("btn-q-review");
     if (!isRev && revBtn) {
       if (resp.status === "marked") {
         revBtn.style.color = "#fff";
@@ -2639,46 +2829,53 @@ const CGL_OS = (() => {
     }
 
     const imgBox = document.getElementById("arena-image-container");
-    if (q.imageUrl && q.imageUrl.trim().length > 0) {
-      imgBox.style.display = "block";
-      imgBox.innerHTML = `<img src="${q.imageUrl}" alt="Question Diagram">`;
-    } else {
-      imgBox.style.display = "none";
-      imgBox.innerHTML = "";
+    if (imgBox) {
+      if (q.imageUrl && q.imageUrl.trim().length > 0) {
+        imgBox.style.display = "block";
+        imgBox.innerHTML = `<img src="${q.imageUrl}" alt="Question Diagram">`;
+      } else {
+        imgBox.style.display = "none";
+        imgBox.innerHTML = "";
+      }
     }
 
     // Dynamic Multi-Concept Linked Knowledge Pills in Review Mode
+    const conceptBridgeBox = document.getElementById("arena-concept-bridge-box");
     if (isRev && conceptBridgeBox) {
       conceptBridgeBox.style.display = "block";
       const pillsWrap = document.getElementById("arena-concept-pills-wrap");
-      pillsWrap.innerHTML = "";
+      if (pillsWrap) {
+        pillsWrap.innerHTML = "";
+        const linkedIds = (Array.isArray(q.conceptIds) && q.conceptIds.length > 0)
+          ? q.conceptIds
+          : (q.conceptId ? [q.conceptId] : []);
 
-      const linkedIds = (Array.isArray(q.conceptIds) && q.conceptIds.length > 0)
-        ? q.conceptIds
-        : (q.conceptId ? [q.conceptId] : []);
-
-      if (linkedIds.length === 0) {
-        const btn = document.createElement("button");
-        btn.className = "btn btn-cyan";
-        btn.style.cssText = "padding:6px 12px; font-size:12px; font-weight:700;";
-        btn.innerText = `📖 Browse Sheets for ${q.chapter}`;
-        btn.onclick = () => openCompendiumToSheet(null, q.subject, q.chapter);
-        pillsWrap.appendChild(btn);
-      } else {
-        linkedIds.forEach(cId => {
+        if (linkedIds.length === 0) {
           const btn = document.createElement("button");
           btn.className = "btn btn-cyan";
           btn.style.cssText = "padding:6px 12px; font-size:12px; font-weight:700;";
-          btn.innerText = `📖 Sheet: ${cId.replace(/^top_/, '').replace(/_/g, ' ')}`;
-          btn.onclick = () => openCompendiumToSheet(cId, q.subject, q.chapter);
+          btn.innerText = `📖 Browse Sheets for ${q.chapter}`;
+          btn.onclick = () => openCompendiumToSheet(null, q.subject, q.chapter);
           pillsWrap.appendChild(btn);
-        });
+        } else {
+          linkedIds.forEach(cId => {
+            const btn = document.createElement("button");
+            btn.className = "btn btn-cyan";
+            btn.style.cssText = "padding:6px 12px; font-size:12px; font-weight:700;";
+            btn.innerText = `📖 Sheet: ${cId.replace(/^top_/, '').replace(/_/g, ' ')}`;
+            btn.onclick = () => openCompendiumToSheet(cId, q.subject, q.chapter);
+            pillsWrap.appendChild(btn);
+          });
+        }
       }
     } else if (conceptBridgeBox) {
       conceptBridgeBox.style.display = "none";
     }
 
-    // Telemetry & Decision Trail Banner in Review Mode
+    // Telemetry & Hesitation Decision Trail Banner
+    const telemBanner = document.getElementById("arena-review-telemetry-banner");
+    const solutionBlock = document.getElementById("arena-review-solution-block");
+
     if (isRev && telemBanner && solutionBlock) {
       const isAtt = resp.selectedOption !== null && resp.selectedOption !== undefined;
       const isCor = isAtt && resp.selectedOption === q.correctIndex;
@@ -2706,7 +2903,7 @@ const CGL_OS = (() => {
       const currentTag = resp.errorTag || "UNCLASSIFIED";
 
       let optionsHtml = `
-        <option value="UNCLASSIFIED" ${currentTag==='UNCLASSIFIED'?'selected':''}>Select / Override Mistake Tag...</option>
+        <option value="UNCLASSIFIED" ${currentTag==='UNCLASSIFIED'?'selected':''}>Override Mistake Tag...</option>
         <option value="VALID_CALCULATED_RISK" ${currentTag==='VALID_CALCULATED_RISK'?'selected':''}>✓ Valid Calculated Risk (Clear Trap Penalty)</option>
       `;
       customMistakeTags.forEach(t => {
@@ -2733,6 +2930,7 @@ const CGL_OS = (() => {
     }
 
     const container = document.getElementById("arena-options-container");
+    if (!container) return;
     container.innerHTML = "";
 
     q.options.forEach((optText, idx) => {
@@ -2792,8 +2990,9 @@ const CGL_OS = (() => {
     if (!isRev) activeExam.currentQTimeSpentSec = 0;
   }
 
-  // Question Navigation Listeners
-  document.getElementById("btn-q-save-next").addEventListener("click", () => {
+  // Safe Navigation Event Bindings
+  safeBind("btn-q-save-next", "click", () => {
+    if (!activeExam) return;
     const q = activeExam.questions[activeExam.currentQuestionIndex];
     const resp = activeExam.userResponses[q.id];
 
@@ -2812,7 +3011,8 @@ const CGL_OS = (() => {
     toggleExamPalette(true);
   });
 
-  document.getElementById("btn-q-prev").addEventListener("click", () => {
+  safeBind("btn-q-prev", "click", () => {
+    if (!activeExam) return;
     const prevIdx = activeExam.currentQuestionIndex - 1;
     if (prevIdx >= 0) {
       if (activeExam.isReviewMode || !activeExam.isSectionLocked || activeExam.questions[prevIdx].sectionIndex === activeExam.activeSectionIndex) {
@@ -2822,8 +3022,8 @@ const CGL_OS = (() => {
     }
   });
 
-  document.getElementById("btn-q-review").addEventListener("click", () => {
-    if (activeExam.isReviewMode) return;
+  safeBind("btn-q-review", "click", () => {
+    if (!activeExam || activeExam.isReviewMode) return;
     const q = activeExam.questions[activeExam.currentQuestionIndex];
     const resp = activeExam.userResponses[q.id];
     if (resp.status === "marked") {
@@ -2838,6 +3038,8 @@ const CGL_OS = (() => {
     if (document.activeElement) document.activeElement.blur();
     const drawer = document.getElementById("exam-palette-drawer");
     const overlay = document.getElementById("exam-drawer-overlay");
+    if (!drawer || !overlay) return;
+
     const isOpen = drawer.classList.contains("open");
     const shouldOpen = forceOpen !== null ? forceOpen : !isOpen;
 
@@ -2853,38 +3055,41 @@ const CGL_OS = (() => {
 
   function renderExamPaletteGrid(filterSectionIndex = null) {
     const grid = document.getElementById("exam-palette-grid");
+    if (!grid) return;
     grid.innerHTML = "";
 
     const tabsWrap = document.getElementById("exam-palette-section-tabs");
-    tabsWrap.innerHTML = "";
+    if (tabsWrap) tabsWrap.innerHTML = "";
 
     const isRev = !!activeExam.isReviewMode;
     const isLocked = activeExam.isSectionLocked && !isRev;
 
-    activeExam.sections.forEach((sec, sIdx) => {
-      const tabBtn = document.createElement("button");
-      tabBtn.className = "anchor-pill" + (sIdx === activeExam.activeSectionIndex ? " active" : "");
-      
-      if (isLocked && sec.locked) {
-        tabBtn.innerText = `🔒 ${sec.name.split(" ")[0]}`;
-        tabBtn.style.opacity = "0.5";
-        tabBtn.style.cursor = "not-allowed";
-      } else if (isLocked && sIdx > activeExam.activeSectionIndex) {
-        tabBtn.innerText = `⏳ ${sec.name.split(" ")[0]}`;
-        tabBtn.style.opacity = "0.6";
-      } else {
-        tabBtn.innerText = sec.name.split(" ")[0];
-        tabBtn.addEventListener("click", () => {
-          if (isLocked && sIdx !== activeExam.activeSectionIndex) {
-            alert("Sectional lock is active! Sections must be completed sequentially.");
-            return;
-          }
-          activeExam.activeSectionIndex = sIdx;
-          renderExamPaletteGrid(sIdx);
-        });
-      }
-      tabsWrap.appendChild(tabBtn);
-    });
+    if (tabsWrap) {
+      activeExam.sections.forEach((sec, sIdx) => {
+        const tabBtn = document.createElement("button");
+        tabBtn.className = "anchor-pill" + (sIdx === activeExam.activeSectionIndex ? " active" : "");
+        
+        if (isLocked && sec.locked) {
+          tabBtn.innerText = `🔒 ${sec.name.split(" ")[0]}`;
+          tabBtn.style.opacity = "0.5";
+          tabBtn.style.cursor = "not-allowed";
+        } else if (isLocked && sIdx > activeExam.activeSectionIndex) {
+          tabBtn.innerText = `⏳ ${sec.name.split(" ")[0]}`;
+          tabBtn.style.opacity = "0.6";
+        } else {
+          tabBtn.innerText = sec.name.split(" ")[0];
+          tabBtn.addEventListener("click", () => {
+            if (isLocked && sIdx !== activeExam.activeSectionIndex) {
+              alert("Sectional lock is active! Sections must be completed sequentially.");
+              return;
+            }
+            activeExam.activeSectionIndex = sIdx;
+            renderExamPaletteGrid(sIdx);
+          });
+        }
+        tabsWrap.appendChild(tabBtn);
+      });
+    }
 
     const targetSec = filterSectionIndex !== null 
       ? filterSectionIndex 
@@ -2902,9 +3107,9 @@ const CGL_OS = (() => {
         else if (resp.status === "marked") marked++;
         else unans++;
       });
-      document.getElementById("exam-count-ans").innerText = ans;
-      document.getElementById("exam-count-marked").innerText = marked;
-      document.getElementById("exam-count-unans").innerText = unans;
+      safeSetText("exam-count-ans", ans);
+      safeSetText("exam-count-marked", marked);
+      safeSetText("exam-count-unans", unans);
     }
 
     displayedQs.forEach(q => {
@@ -2951,43 +3156,40 @@ const CGL_OS = (() => {
     });
   }
 
-  // Arena Pause & Minimize Controllers
-  const pauseBtnEl = document.getElementById("btn-arena-pause");
-  if (pauseBtnEl) {
-    pauseBtnEl.addEventListener("pointerdown", async (e) => {
-      e.preventDefault();
-      if (!activeExam || activeExam.isReviewMode) return;
-      activeExam.isPaused = true;
-      clearInterval(examTimerInterval);
-      clearInterval(questionTimerInterval);
-      await putRecord("store_active_session", { id: "current_session", session: activeExam });
+  // Safe Arena Pause & Minimize Bindings
+  safeBind("btn-arena-pause", "pointerdown", async (e) => {
+    e.preventDefault();
+    if (!activeExam || activeExam.isReviewMode) return;
+    activeExam.isPaused = true;
+    clearInterval(examTimerInterval);
+    clearInterval(questionTimerInterval);
+    await putRecord("store_active_session", { id: "current_session", session: activeExam });
 
-      const shield = document.getElementById("pause-shield");
-      shield.style.setProperty("display", "flex", "important");
-    });
-  }
-
-  document.getElementById("btn-resume-exam").addEventListener("click", () => {
     const shield = document.getElementById("pause-shield");
-    shield.style.setProperty("display", "none", "important");
+    if (shield) shield.style.setProperty("display", "flex", "important");
+  });
+
+  safeBind("btn-resume-exam", "click", () => {
+    const shield = document.getElementById("pause-shield");
+    if (shield) shield.style.setProperty("display", "none", "important");
     if (activeExam) {
       activeExam.isPaused = false;
       startExamTimers();
     }
   });
 
-  document.getElementById("btn-minimize-exam").addEventListener("click", async () => {
+  safeBind("btn-minimize-exam", "click", async () => {
     const shield = document.getElementById("pause-shield");
-    shield.style.setProperty("display", "none", "important");
-    document.getElementById("exam-arena").style.display = "none";
+    if (shield) shield.style.setProperty("display", "none", "important");
+    safeSetDisplay("exam-arena", "none");
     updateMiniPlayerDock();
   });
 
-  document.getElementById("btn-exit-exam").addEventListener("click", async () => {
+  safeBind("btn-exit-exam", "click", async () => {
     if (confirm("Abandon active mock test? Current unsubmitted progress will be lost.")) {
       const shield = document.getElementById("pause-shield");
-      shield.style.setProperty("display", "none", "important");
-      document.getElementById("exam-arena").style.display = "none";
+      if (shield) shield.style.setProperty("display", "none", "important");
+      safeSetDisplay("exam-arena", "none");
       clearInterval(examTimerInterval);
       clearInterval(questionTimerInterval);
       await deleteRecordFromStore("store_active_session", "current_session");
@@ -3003,22 +3205,24 @@ const CGL_OS = (() => {
       return;
     }
     const dock = document.getElementById("mini-player-dock");
+    if (!dock) return;
+
     const q = activeExam.questions[activeExam.currentQuestionIndex];
     const m = Math.floor(activeExam.sectionRemainingSec / 60);
     const s = activeExam.sectionRemainingSec % 60;
     let ansCount = 0;
     Object.values(activeExam.userResponses).forEach(r => { if (r.status === "answered") ansCount++; });
 
-    document.getElementById("mini-player-title").innerText = activeExam.title;
-    document.getElementById("mini-player-sub").innerText = `${q && q.sectionName ? q.sectionName.split(' ')[0] : 'Exam'} • Q${q ? (q.globalNumber || 1) : 1}`;
-    document.getElementById("mini-player-time").innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-    document.getElementById("mini-player-ans").innerText = `${ansCount}/${activeExam.questions.length} Ans`;
+    safeSetText("mini-player-title", activeExam.title);
+    safeSetText("mini-player-sub", `${q && q.sectionName ? q.sectionName.split(' ')[0] : 'Exam'} • Q${q ? (q.globalNumber || 1) : 1}`);
+    safeSetText("mini-player-time", `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`);
+    safeSetText("mini-player-ans", `${ansCount}/${activeExam.questions.length} Ans`);
 
     dock.style.display = "flex";
   }
 
   function hideMiniPlayer() {
-    document.getElementById("mini-player-dock").style.display = "none";
+    safeSetDisplay("mini-player-dock", "none");
   }
 
   async function resumeFromMiniPlayer() {
@@ -3034,12 +3238,12 @@ const CGL_OS = (() => {
       const pauseBtn = document.getElementById("btn-arena-pause");
       if (pauseBtn) pauseBtn.click();
     });
-    document.getElementById("exam-arena").style.display = "flex";
+    safeSetDisplay("exam-arena", "flex");
     renderActiveExamQuestion();
     startExamTimers();
   }
 
-  document.getElementById("btn-submit-exam").addEventListener("click", () => {
+  safeBind("btn-submit-exam", "click", () => {
     if (confirm("Confirm final submission of full mock test?")) {
       toggleExamPalette(false);
       submitExamSession();
@@ -3118,7 +3322,7 @@ const CGL_OS = (() => {
 
     await putRecord("store_attempts", activeExam);
 
-    document.getElementById("exam-arena").style.display = "none";
+    safeSetDisplay("exam-arena", "none");
     await renderDashboard();
     openMockReview(activeExam);
   }
@@ -3188,14 +3392,15 @@ const CGL_OS = (() => {
       const pauseBtn = document.getElementById("btn-arena-pause");
       if (pauseBtn) pauseBtn.click();
     });
-    document.getElementById("exam-arena").style.display = "flex";
+    safeSetDisplay("exam-arena", "flex");
     renderActiveExamQuestion();
     startExamTimers();
   }
 
   function enterFullScreenReviewArena() {
     if (!activeReviewAttempt) return;
-    document.getElementById("modal-mock-review").classList.remove("active");
+    const m = document.getElementById("modal-mock-review");
+    if (m) m.classList.remove("active");
 
     activeExam = {
       ...JSON.parse(JSON.stringify(activeReviewAttempt)),
@@ -3207,15 +3412,15 @@ const CGL_OS = (() => {
     };
 
     pushNavLayer("exam-arena", () => {
-      document.getElementById("exam-arena").style.display = "none";
+      safeSetDisplay("exam-arena", "none");
     });
-    document.getElementById("exam-arena").style.display = "flex";
+    safeSetDisplay("exam-arena", "flex");
     renderActiveExamQuestion();
     startExamTimers();
   }
 
   function exitReviewArena() {
-    document.getElementById("exam-arena").style.display = "none";
+    safeSetDisplay("exam-arena", "none");
     activeExam = null;
     if (activeReviewAttempt) {
       openMockReview(activeReviewAttempt);
@@ -3327,16 +3532,17 @@ const CGL_OS = (() => {
       const pauseBtn = document.getElementById("btn-arena-pause");
       if (pauseBtn) pauseBtn.click();
     });
-    document.getElementById("exam-arena").style.display = "flex";
+    safeSetDisplay("exam-arena", "flex");
     renderActiveExamQuestion();
     startExamTimers();
   }
 
   /* ==========================================================================
-   * SECTION 17: AI CONSOLE COMMAND BUS (V2) & MACHINE-READABLE REGISTRY
+   * SECTION 18: CONSOLE COMMAND BUS (V2) & BIDIRECTIONAL AI PERSISTENT MEMORY
+   * Symmetrical Commands, Structured Outputs & Consultation Memory Lifecycles
    * ========================================================================== */
   const COMMAND_REGISTRY = {
-    // 1. Symmetrical Mock Creation (Driven by shared MockService)
+    // 1. Symmetrical Mock Creation (Calls unified MockService)
     CREATE_MOCK: async (payload) => {
       const instance = await MockService.generate(payload.selection || payload);
       let savedRecord = null;
@@ -3364,7 +3570,7 @@ const CGL_OS = (() => {
       };
     },
 
-    // 2. Safe Read & Telemetry Extraction Commands
+    // 2. Safe Read & Telemetry Queries
     SEARCH_QUESTIONS: async (payload) => {
       const res = await SearchService.searchAll(payload.query, payload.filters || payload, payload.limit || 25);
       return { count: res.totalQuestions, results: res.questions };
@@ -3398,7 +3604,7 @@ const CGL_OS = (() => {
       return await getAllRecords("store_saved_mocks");
     },
 
-    // 3. Question CRUD via Shared QuestionService
+    // 3. Question CRUD
     CREATE_QUESTION: async (payload) => {
       const q = await QuestionService.create(payload.question || payload);
       return { created: true, id: q.id, question: q };
@@ -3428,7 +3634,56 @@ const CGL_OS = (() => {
       return { success: true, merged: `${payload.sourceChapter} ➔ ${payload.targetChapter}` };
     },
 
-    // 5. Protected Raw DB Directive (Requires confirmation token for CLEAR)
+    // 5. Bidirectional AI Memory Storage & Retrieval
+    SAVE_AI_INSIGHT: async (payload) => {
+      const insight = {
+        id: payload.insightId || `insight_${Date.now()}`,
+        type: payload.type || "weakness", // 'weakness' | 'misconception' | 'pattern' | 'progress'
+        subject: payload.subject || "QA",
+        chapter: payload.chapter || "",
+        concept: payload.concept || "",
+        statement: payload.statement || "",
+        evidenceIds: Array.isArray(payload.evidence) ? payload.evidence : [],
+        confidence: payload.confidence || 0.85,
+        status: payload.status || "active", // 'active' | 'resolved' | 'outdated'
+        recommendedAction: payload.recommendedAction || "",
+        createdAt: payload.createdAt || Date.now(),
+        updatedAt: Date.now()
+      };
+      await putRecord("store_ai_consultations", insight);
+      return { success: true, insightId: insight.id };
+    },
+
+    SAVE_AI_PLAN: async (payload) => {
+      const plan = {
+        id: payload.planId || `plan_${Date.now()}`,
+        goal: payload.goal || "Remediation",
+        subject: payload.subject || "QA",
+        steps: Array.isArray(payload.steps) ? payload.steps : [],
+        successCondition: payload.successCondition || "≥80% accuracy",
+        status: payload.status || "active",
+        createdAt: Date.now()
+      };
+      await putRecord("store_ai_consultations", plan);
+      return { success: true, planId: plan.id };
+    },
+
+    GET_AI_CONTEXT: async () => {
+      const allConsultations = await getAllRecords("store_ai_consultations");
+      const attempts = await getAllRecords("store_attempts");
+      const global = await PerformanceService.calculateGlobalMetrics();
+      const weak = await PerformanceService.getWeakChapters();
+
+      return {
+        timestampIST: formatISTDate(Date.now()),
+        globalMetrics: global,
+        weakAreas: weak.slice(0, 5),
+        recentCompletedAttemptsCount: attempts.filter(a => a.completed).length,
+        persistedAiConsultations: allConsultations.slice(-10)
+      };
+    },
+
+    // 6. Protected Raw DB Directive (Requires confirmation token for CLEAR)
     RAW_DB_OPERATION: async (payload) => {
       const { store, operation, key, record, confirmationToken } = payload;
       const allowedStores = [
@@ -3453,7 +3708,7 @@ const CGL_OS = (() => {
       throw new Error(`Unsupported raw operation: ${operation}`);
     },
 
-    // 6. Complete Compatibility with Existing Console Command Actions
+    // 7. Complete Compatibility with Legacy Actions
     BATCH_INGEST_QUESTIONS: async (payload) => {
       const count = await QuestionService.bulkCreate(payload.questions, "Ingested Bank");
       return { success: true, count: count };
@@ -3533,50 +3788,6 @@ const CGL_OS = (() => {
       return { success: true, mockId: paper.id, questionsCount: resolved.length };
     },
 
-    CREATE_AND_SAVE_FIXED_MOCK: async (payload) => {
-      const {
-        title = "Curated Mock Paper",
-        isSectionLocked = true,
-        launchImmediately = false,
-        durationMin = 15,
-        existingQuestionIds = [],
-        newQuestions = []
-      } = payload;
-
-      if (newQuestions.length > 0) {
-        await QuestionService.bulkCreate(newQuestions, "Curated Paper");
-      }
-
-      const allQs = await getAllRecords("store_questions");
-      const combinedPool = [];
-
-      existingQuestionIds.forEach(targetId => {
-        const found = allQs.find(q => q.id === targetId);
-        if (found) combinedPool.push(found);
-      });
-
-      newQuestions.forEach(q => {
-        const sanitized = sanitizeQuestion(q);
-        if (!combinedPool.some(item => item.id === sanitized.id)) {
-          combinedPool.push(sanitized);
-        }
-      });
-
-      const paper = await MockService.saveMockDefinition({
-        title: title,
-        type: "FIXED_PAPER",
-        isSectionLocked: !!isSectionLocked,
-        sections: [{ id: 1, subject: "QA", count: combinedPool.length, durationMin: durationMin }],
-        questions: combinedPool
-      });
-
-      if (launchImmediately) {
-        await MockService.launchMockSession({ title, questions: combinedPool, durationMin, isSectionLocked });
-      }
-
-      return { success: true, mockId: paper.id, questionsCount: combinedPool.length };
-    },
-
     EXECUTE_AI_CONSULTATION_BUNDLE: async (payload) => {
       const { consultationDossier, actions = [] } = payload;
       if (consultationDossier) {
@@ -3653,8 +3864,10 @@ const CGL_OS = (() => {
   };
 
   async function executeConsoleCommand() {
-    const raw = document.getElementById("console-payload").value.trim();
+    const rawInput = document.getElementById("console-payload");
     const consoleOutput = document.getElementById("console-output-box");
+    if (!rawInput) return;
+    const raw = rawInput.value.trim();
     let cmd;
 
     try {
@@ -3683,7 +3896,7 @@ const CGL_OS = (() => {
         consoleOutput.innerText = formattedJson;
         consoleOutput.style.display = "block";
       } else {
-        document.getElementById("console-payload").value = formattedJson;
+        rawInput.value = formattedJson;
       }
 
       await renderDashboard();
@@ -3749,14 +3962,221 @@ const CGL_OS = (() => {
           ]
         }
       };
-      document.getElementById("console-payload").value = JSON.stringify(sample, null, 2);
+      safeSetValue("console-payload", JSON.stringify(sample, null, 2));
     }
   }
 
   // --- End of Part 2 ---
   /* ==========================================================================
-   * SECTION 18: UNTIMED DOJO PRACTICE & METHOD CLINIC
-   * Active Recall, Method Breakdown & Dynamic Multi-Concept Pills
+   * SECTION 19: PRACTICE LAB // QUESTION CONTROL CENTER CONTROLLER
+   * Live Search, Multi-Filter Engine, Checkbox Selection & Batch Launching
+   * ========================================================================== */
+  function handlePracticeSearchInput(val) {
+    practiceSearchQuery = String(val || "").trim().toLowerCase();
+    renderPracticeQuestionsTable();
+  }
+
+  function handlePracticeSubjectChange(subKey) {
+    const chapSelect = document.getElementById("practice-filter-chapter");
+    if (!chapSelect) return;
+    chapSelect.innerHTML = `<option value="ALL">All Chapters</option>`;
+
+    if (subKey !== "ALL" && TAXONOMY[subKey] && Array.isArray(TAXONOMY[subKey].chapters)) {
+      TAXONOMY[subKey].chapters.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c;
+        opt.innerText = c;
+        chapSelect.appendChild(opt);
+      });
+    }
+    renderPracticeQuestionsTable();
+  }
+
+  function setPracticeQuickFilter(filterType, btnEl) {
+    practiceActiveQuickFilter = filterType;
+    document.querySelectorAll('[id^="pill-filter-"]').forEach(el => el.classList.remove("active"));
+    if (btnEl) btnEl.classList.add("active");
+    renderPracticeQuestionsTable();
+  }
+
+  function togglePracticeQuestionSelection(id, checked) {
+    if (checked) {
+      practiceSelectedIds.add(id);
+    } else {
+      practiceSelectedIds.delete(id);
+    }
+    updatePracticeSelectionUI();
+  }
+
+  function selectAllVisiblePractice(selectAll) {
+    const checkboxes = document.querySelectorAll(".practice-checkbox");
+    checkboxes.forEach(cb => {
+      cb.checked = selectAll;
+      if (selectAll) practiceSelectedIds.add(cb.dataset.id);
+      else practiceSelectedIds.delete(cb.dataset.id);
+    });
+    updatePracticeSelectionUI();
+  }
+
+  function updatePracticeSelectionUI() {
+    safeSetText("practice-selected-count", `${practiceSelectedIds.size} Selected`);
+    const cards = document.querySelectorAll(".practice-q-card");
+    cards.forEach(c => {
+      const qId = c.dataset.id;
+      c.classList.toggle("selected", practiceSelectedIds.has(qId));
+    });
+  }
+
+  async function renderPracticeQuestionsTable() {
+    const container = document.getElementById("practice-question-rows");
+    if (!container) return;
+
+    const sub = document.getElementById("practice-filter-subject")?.value || "ALL";
+    const chap = document.getElementById("practice-filter-chapter")?.value || "ALL";
+    const diff = document.getElementById("practice-filter-difficulty")?.value || "ALL";
+    const perf = document.getElementById("practice-filter-performance")?.value || "ALL";
+
+    const allQs = await getAllRecords("store_questions");
+    const perfMap = await PerformanceService.getQuestionPerformanceMap();
+    const now = Date.now();
+    const sevenDaysAgo = now - (7 * 24 * 60 * 60 * 1000);
+
+    const filtered = allQs.filter(q => {
+      if (sub !== "ALL" && q.subject !== sub) return false;
+      if (chap !== "ALL" && q.chapter !== chap) return false;
+      if (diff !== "ALL" && q.difficulty !== diff) return false;
+
+      const pStats = perfMap[q.id];
+      const attempts = pStats ? pStats.attempts : 0;
+      const acc = attempts > 0 ? Math.round((pStats.correct / attempts) * 100) : 0;
+
+      // Dropdown performance filter
+      if (perf === "WEAK" && (attempts === 0 || acc >= 60)) return false;
+      if (perf === "WRONG" && (!pStats || pStats.incorrect === 0)) return false;
+      if (perf === "UNSEEN" && attempts > 0) return false;
+      if (perf === "SLOW" && (!pStats || Math.round(pStats.totalTime / attempts) <= 75)) return false;
+      if (perf === "STRONG" && (attempts === 0 || acc < 80)) return false;
+
+      // Quick filter pills
+      if (practiceActiveQuickFilter === "WEAK" && (attempts === 0 || acc >= 60)) return false;
+      if (practiceActiveQuickFilter === "WRONG" && (!pStats || pStats.incorrect === 0)) return false;
+      if (practiceActiveQuickFilter === "UNSEEN" && attempts > 0) return false;
+      if (practiceActiveQuickFilter === "IGNORED" && pStats && pStats.lastAttemptEpoch >= sevenDaysAgo) return false;
+      if (practiceActiveQuickFilter === "WITH_SHEET" && (!q.conceptId && (!Array.isArray(q.conceptIds) || q.conceptIds.length === 0))) return false;
+
+      // Text search query
+      if (practiceSearchQuery) {
+        const inId = q.id.toLowerCase().includes(practiceSearchQuery);
+        const inText = q.questionText.toLowerCase().includes(practiceSearchQuery);
+        const inMethod = (q.method || "").toLowerCase().includes(practiceSearchQuery);
+        const inSubtopic = (q.subtopic || "").toLowerCase().includes(practiceSearchQuery);
+        const inTags = Array.isArray(q.tags) && q.tags.some(t => t.toLowerCase().includes(practiceSearchQuery));
+        if (!inId && !inText && !inMethod && !inSubtopic && !inTags) return false;
+      }
+
+      return true;
+    });
+
+    safeSetText("practice-filtered-count", filtered.length);
+    container.innerHTML = "";
+
+    if (filtered.length === 0) {
+      container.innerHTML = `<div style="text-align:center; padding:40px 14px; color:var(--text-muted); font-size:12.5px;">No questions match current criteria. Adjust filters or add a new question.</div>`;
+      return;
+    }
+
+    filtered.forEach(q => {
+      const pStats = perfMap[q.id];
+      const attempts = pStats ? pStats.attempts : 0;
+      const acc = attempts > 0 ? Math.round((pStats.correct / attempts) * 100) : 0;
+      let statusBadge = `<span class="badge" style="background:#151a24; color:var(--text-muted);">Unseen</span>`;
+      if (attempts > 0) {
+        if (acc >= 80) statusBadge = `<span class="badge" style="background:rgba(16,185,129,0.2); color:var(--status-green);">🟢 ${acc}% (${attempts}A)</span>`;
+        else if (acc >= 60) statusBadge = `<span class="badge" style="background:rgba(245,158,11,0.2); color:var(--status-amber);">🟡 ${acc}% (${attempts}A)</span>`;
+        else statusBadge = `<span class="badge" style="background:rgba(244,63,94,0.2); color:var(--status-red);">🔴 ${acc}% (${attempts}A)</span>`;
+      }
+
+      const isChecked = practiceSelectedIds.has(q.id);
+      const card = document.createElement("div");
+      card.className = "practice-q-card" + (isChecked ? " selected" : "");
+      card.dataset.id = q.id;
+
+      card.innerHTML = `
+        <input type="checkbox" class="practice-checkbox" data-id="${q.id}" ${isChecked ? 'checked' : ''} onchange="CGL_OS.togglePracticeQuestionSelection('${q.id}', this.checked)">
+        <div class="practice-q-main">
+          <div class="practice-q-header">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span class="practice-q-id">${q.id}</span>
+              <span class="badge" style="background:#1f6feb;">${q.subject} • ${q.chapter}</span>
+              ${statusBadge}
+            </div>
+            <div class="practice-q-actions">
+              <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px;" onclick="CGL_OS.openEditQuestionModal(CGL_OS.QuestionService.get('${q.id}').then(q => CGL_OS.openEditQuestionModal(q)))">Edit</button>
+              <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px; color:var(--accent-cyan);" onclick="CGL_OS.duplicateCurrentEditingQuestionFromId('${q.id}')">Clone</button>
+              <button class="btn btn-cyan" style="padding:2px 8px; font-size:10px; font-weight:700;" onclick="CGL_OS.launchSingleQuestionPractice('${q.id}')">⚡ Solve</button>
+            </div>
+          </div>
+          <div class="practice-q-stem">${formatRichText(q.questionText)}</div>
+          <div class="practice-q-footer">
+            <span>Method: <b>${q.method || q.subtopic || 'General'}</b></span>
+            <span>Source: <i>${q.source || 'Manual'}</i></span>
+          </div>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  async function duplicateCurrentEditingQuestionFromId(id) {
+    try {
+      const clone = await QuestionService.duplicate(id);
+      alert(`Cloned as ${clone.id}.`);
+      openEditQuestionModal(clone);
+    } catch (err) {
+      alert("Clone Error: " + err.message);
+    }
+  }
+
+  async function launchSingleQuestionPractice(id) {
+    const q = await QuestionService.get(id);
+    if (!q) return;
+    await compileAndLaunchArena(`Focus Drill: ${q.chapter}`, [q], 5, false);
+  }
+
+  async function launchPracticeSelectedSession() {
+    if (practiceSelectedIds.size === 0) {
+      alert("Select at least one question from the list to practice.");
+      return;
+    }
+    const allQs = await getAllRecords("store_questions");
+    const selected = allQs.filter(q => practiceSelectedIds.has(q.id));
+    await compileAndLaunchArena(`Custom Drill (${selected.length} Qs)`, selected, Math.max(5, Math.round(selected.length * 1.5)), false);
+  }
+
+  async function buildMockFromPracticeSelection() {
+    if (practiceSelectedIds.size === 0) {
+      alert("Select at least one question to build a mock paper.");
+      return;
+    }
+    const allQs = await getAllRecords("store_questions");
+    const selected = allQs.filter(q => practiceSelectedIds.has(q.id));
+    const title = prompt("Enter title for this Custom Fixed Mock Paper:", `Curated Practice (${selected.length} Qs)`);
+    if (!title || !title.trim()) return;
+
+    const paper = await MockService.saveMockDefinition({
+      title: title.trim(),
+      type: "FIXED_PAPER",
+      isSectionLocked: false,
+      sections: [{ id: 1, subject: selected[0]?.subject || "QA", count: selected.length, durationMin: Math.max(5, Math.round(selected.length * 1.5)) }],
+      questions: selected
+    });
+
+    alert(`Saved fixed mock "${paper.title}" to Dashboard!`);
+    await renderDashboard();
+  }
+
+  /* ==========================================================================
+   * SECTION 20: UNTIMED DOJO PRACTICE & METHOD CLINIC
    * ========================================================================== */
   async function updateDojoChapters() {
     const sub = document.getElementById("dojo-nav-subject") ? document.getElementById("dojo-nav-subject").value : "QA";
@@ -3770,12 +4190,10 @@ const CGL_OS = (() => {
 
     const allQs = await getAllRecords("store_questions");
     const qChaps = allQs.filter(q => q.subject === sub).map(q => q.chapter);
-
-    const allConcepts = await getAllRecords("store_concepts");
+    const allConcepts = await ConceptService.getAll();
     const cChaps = allConcepts.filter(c => c.subject === sub).map(c => c.chapter);
 
     const mergedChapters = [...new Set([...definedChaps, ...qChaps, ...cChaps])];
-
     mergedChapters.forEach(c => {
       const opt = document.createElement("option");
       opt.value = c;
@@ -3807,9 +4225,9 @@ const CGL_OS = (() => {
   }
 
   async function launchFilteredDojo() {
-    const sub = document.getElementById("dojo-nav-subject").value;
-    const chap = document.getElementById("dojo-nav-chapter").value;
-    const method = document.getElementById("dojo-nav-method").value;
+    const sub = document.getElementById("dojo-nav-subject")?.value || "QA";
+    const chap = document.getElementById("dojo-nav-chapter")?.value || "ALL";
+    const method = document.getElementById("dojo-nav-method")?.value || "ALL";
 
     const allQs = await getAllRecords("store_questions");
     let pool = allQs.filter(q => q.subject === sub);
@@ -3821,13 +4239,9 @@ const CGL_OS = (() => {
       return;
     }
 
-    pool.sort((a, b) => {
-      if (a.subject !== b.subject) return a.subject.localeCompare(b.subject);
-      if (a.chapter !== b.chapter) return a.chapter.localeCompare(b.chapter);
-      return (a.subtopic || "").localeCompare(b.subtopic || "");
-    });
+    pool = MockService.shuffle([...pool]);
 
-    const allDossiers = await getAllRecords("store_concepts");
+    const allDossiers = await ConceptService.getAll();
     const matchedDossier = allDossiers.find(c => c.chapter === chap || (method !== "ALL" && c.title === method));
 
     dojoExam = {
@@ -3851,37 +4265,39 @@ const CGL_OS = (() => {
     });
 
     pushNavLayer("dojo-arena-view", () => {
-      document.getElementById("dojo-arena-view").style.display = "none";
+      safeSetDisplay("dojo-arena-view", "none");
     });
-    document.getElementById("dojo-arena-view").style.display = "flex";
+    safeSetDisplay("dojo-arena-view", "flex");
     renderDojoArenaQuestion();
   }
 
   function exitDojoArena() {
-    document.getElementById("dojo-arena-view").style.display = "none";
+    safeSetDisplay("dojo-arena-view", "none");
   }
 
   function renderDojoArenaQuestion() {
+    if (!dojoExam) return;
     const q = dojoExam.questions[dojoExam.currentIndex];
     const resp = dojoExam.userResponses[q.id];
 
-    document.getElementById("dojo-arena-title").innerText = dojoExam.title;
-    document.getElementById("dojo-arena-chap-badge").innerText = q.chapter;
-    document.getElementById("dojo-arena-method-badge").innerText = q.method || q.subtopic || "General";
-    document.getElementById("dojo-arena-qnum").innerText = q.dojoSequentialNum;
-    document.getElementById("dojo-arena-total-tag").innerText = `Question ${q.dojoSequentialNum} of ${dojoExam.questions.length}`;
-    document.getElementById("dojo-arena-qtext").innerHTML = formatRichText(q.questionText);
+    safeSetText("dojo-arena-title", dojoExam.title);
+    safeSetText("dojo-arena-chap-badge", q.chapter);
+    safeSetText("dojo-arena-method-badge", q.method || q.subtopic || "General");
+    safeSetText("dojo-arena-qnum", q.dojoSequentialNum);
+    safeSetText("dojo-arena-total-tag", `Question ${q.dojoSequentialNum} of ${dojoExam.questions.length}`);
+    safeSetHtml("dojo-arena-qtext", formatRichText(q.questionText));
 
     const imgBox = document.getElementById("dojo-image-container");
-    if (q.imageUrl && q.imageUrl.trim().length > 0) {
-      imgBox.style.display = "block";
-      imgBox.innerHTML = `<img src="${q.imageUrl}" alt="Diagram">`;
-    } else {
-      imgBox.style.display = "none";
-      imgBox.innerHTML = "";
+    if (imgBox) {
+      if (q.imageUrl && q.imageUrl.trim().length > 0) {
+        imgBox.style.display = "block";
+        imgBox.innerHTML = `<img src="${q.imageUrl}" alt="Diagram">`;
+      } else {
+        imgBox.style.display = "none";
+        imgBox.innerHTML = "";
+      }
     }
 
-    // Dynamic Multi-Concept Linked Knowledge Pills in Dojo Sectional Banner
     const dojoPillsWrap = document.getElementById("dojo-concept-pills-wrap");
     if (dojoPillsWrap) {
       dojoPillsWrap.innerHTML = "";
@@ -3897,35 +4313,30 @@ const CGL_OS = (() => {
         btn.onclick = () => openCompendiumToSheet(cId, q.subject, q.chapter);
         dojoPillsWrap.appendChild(btn);
       });
-
-      if (linkedIds.length === 0) {
-        const btn = document.createElement("button");
-        btn.className = "btn btn-secondary";
-        btn.style.cssText = "padding:2px 8px; font-size:11px;";
-        btn.innerText = "📖 Sheet";
-        btn.onclick = () => openCompendiumToSheet(null, q.subject, q.chapter);
-        dojoPillsWrap.appendChild(btn);
-      }
     }
 
     const theoryBanner = document.getElementById("dojo-theory-banner");
-    if (dojoExam.formulaBrief) {
-      theoryBanner.style.display = "block";
-      theoryBanner.innerHTML = `<strong>Concept Brief:</strong> ${formatRichText(dojoExam.formulaBrief)}`;
-    } else {
-      theoryBanner.style.display = "none";
+    if (theoryBanner) {
+      if (dojoExam.formulaBrief) {
+        theoryBanner.style.display = "block";
+        theoryBanner.innerHTML = `<strong>Concept Brief:</strong> ${formatRichText(dojoExam.formulaBrief)}`;
+      } else {
+        theoryBanner.style.display = "none";
+      }
     }
 
-    const fb = document.getElementById("dojo-arena-feedback");
-    fb.style.display = "none";
+    safeSetDisplay("dojo-arena-feedback", "none");
 
     const mb = document.getElementById("dojo-arena-method-box");
-    mb.style.display = resp.revealed ? "block" : "none";
-    mb.innerHTML = `<strong>Solution & Method:</strong><br>${formatRichText(q.explanation || 'No method registered.')}`;
+    if (mb) {
+      mb.style.display = resp.revealed ? "block" : "none";
+      mb.innerHTML = `<strong>Solution & Method:</strong><br>${formatRichText(q.explanation || 'No method registered.')}`;
+    }
 
-    document.getElementById("dojo-arena-annotation").value = q.annotation || "";
+    safeSetValue("dojo-arena-annotation", q.annotation || "");
 
     const optContainer = document.getElementById("dojo-arena-options");
+    if (!optContainer) return;
     optContainer.innerHTML = "";
 
     q.options.forEach((optText, idx) => {
@@ -3947,15 +4358,18 @@ const CGL_OS = (() => {
         resp.status = "answered";
         if (navigator.vibrate) navigator.vibrate(idx === q.correctIndex ? 25 : [40, 40]);
 
-        fb.style.display = "block";
-        if (idx === q.correctIndex) {
-          fb.style.background = "rgba(16, 185, 129, 0.22)";
-          fb.style.color = "var(--status-green)";
-          fb.innerText = "✓ Correct Answer!";
-        } else {
-          fb.style.background = "rgba(244, 63, 94, 0.22)";
-          fb.style.color = "var(--status-red)";
-          fb.innerText = `✗ Incorrect. Correct is Option ${q.correctIndex + 1}.`;
+        const fb = document.getElementById("dojo-arena-feedback");
+        if (fb) {
+          fb.style.display = "block";
+          if (idx === q.correctIndex) {
+            fb.style.background = "rgba(16, 185, 129, 0.22)";
+            fb.style.color = "var(--status-green)";
+            fb.innerText = "✓ Correct Answer!";
+          } else {
+            fb.style.background = "rgba(244, 63, 94, 0.22)";
+            fb.style.color = "var(--status-red)";
+            fb.innerText = `✗ Incorrect. Correct is Option ${q.correctIndex + 1}.`;
+          }
         }
         renderDojoArenaQuestion();
       });
@@ -3965,6 +4379,7 @@ const CGL_OS = (() => {
   }
 
   function navDojoArena(step) {
+    if (!dojoExam) return;
     const next = dojoExam.currentIndex + step;
     if (next >= 0 && next < dojoExam.questions.length) {
       dojoExam.currentIndex = next;
@@ -3973,11 +4388,12 @@ const CGL_OS = (() => {
   }
 
   function toggleDojoMethod() {
+    if (!dojoExam) return;
     const q = dojoExam.questions[dojoExam.currentIndex];
     const resp = dojoExam.userResponses[q.id];
     resp.revealed = !resp.revealed;
     const mb = document.getElementById("dojo-arena-method-box");
-    mb.style.display = resp.revealed ? "block" : "none";
+    if (mb) mb.style.display = resp.revealed ? "block" : "none";
   }
 
   async function autoSaveDojoAnnotation(val) {
@@ -3990,6 +4406,7 @@ const CGL_OS = (() => {
   function toggleDojoPalette(open) {
     const drawer = document.getElementById("dojo-palette-drawer");
     const overlay = document.getElementById("dojo-drawer-overlay");
+    if (!drawer || !overlay) return;
 
     if (open) {
       renderDojoPaletteGrid();
@@ -4003,8 +4420,9 @@ const CGL_OS = (() => {
 
   function renderDojoPaletteGrid() {
     const scrollBody = document.getElementById("dojo-palette-scroll-body");
+    if (!scrollBody || !dojoExam) return;
     scrollBody.innerHTML = "";
-    document.getElementById("dojo-palette-count-badge").innerText = `${dojoExam.questions.length} Qs`;
+    safeSetText("dojo-palette-count-badge", `${dojoExam.questions.length} Qs`);
 
     const grouped = {};
     dojoExam.questions.forEach((q, idx) => {
@@ -4015,13 +4433,9 @@ const CGL_OS = (() => {
 
     Object.keys(grouped).forEach(chapterKey => {
       const items = grouped[chapterKey];
-
       const header = document.createElement("div");
-      header.style.padding = "6px 0";
-      header.style.fontSize = "11px";
-      header.style.fontWeight = "700";
-      header.style.color = "var(--accent-cyan)";
-      header.innerHTML = `<span>${chapterKey} (${items.length} Qs)</span>`;
+      header.style.cssText = "padding:6px 0; font-size:11px; font-weight:700; color:var(--accent-cyan);";
+      header.innerText = `${chapterKey} (${items.length} Qs)`;
       scrollBody.appendChild(header);
 
       const grid = document.createElement("div");
@@ -4049,7 +4463,7 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * SECTION 19: STAGE 1 REVIEW COCKPIT & SECTIONAL FIDELITY
+   * SECTION 21: REVIEW COCKPIT & SECTIONAL PERFORMANCE FIDELITY
    * ========================================================================== */
   async function openMockReview(attemptOrId) {
     let att = typeof attemptOrId === "string" 
@@ -4064,21 +4478,22 @@ const CGL_OS = (() => {
       archiveModal.classList.remove("active");
     }
 
-    document.getElementById("review-modal-title").innerText = `${att.title}${att.attemptNumber > 1 ? ` (Attempt ${att.attemptNumber})` : ''}`;
-    document.getElementById("review-modal-date").innerText = att.timeIST || formatISTDate(att.timestamp);
-    document.getElementById("rev-score").innerText = (att.finalScore || 0).toFixed(2);
+    safeSetText("review-modal-title", `${att.title}${att.attemptNumber > 1 ? ` (Attempt ${att.attemptNumber})` : ''}`);
+    safeSetText("review-modal-date", att.timeIST || formatISTDate(att.timestamp));
+    safeSetText("rev-score", (att.finalScore || 0).toFixed(2));
 
     const totalAtt = (att.correctCount || 0) + (att.incorrectCount || 0);
-    document.getElementById("rev-acc").innerText = totalAtt > 0 ? `${Math.round((att.correctCount / totalAtt) * 100)}%` : "0%";
-    document.getElementById("rev-cor").innerText = att.correctCount || 0;
-    document.getElementById("rev-inc").innerText = att.incorrectCount || 0;
+    safeSetText("rev-acc", totalAtt > 0 ? `${Math.round((att.correctCount / totalAtt) * 100)}%` : "0%");
+    safeSetText("rev-cor", att.correctCount || 0);
+    safeSetText("rev-inc", att.incorrectCount || 0);
+    safeSetText("rev-penalty", `-${(att.penaltyDrag || 0).toFixed(2)}`);
+    safeSetText("rev-switch-delta", `${att.switchDelta > 0 ? '+' : ''}${att.switchDelta || 0} Net`);
+    safeSetText("rev-traps", att.q4Traps || 0);
 
-    document.getElementById("rev-penalty").innerText = `-${(att.penaltyDrag || 0).toFixed(2)}`;
-    document.getElementById("rev-switch-delta").innerText = `${att.switchDelta > 0 ? '+' : ''}${att.switchDelta || 0} Net`;
-    document.getElementById("rev-traps").innerText = att.q4Traps || 0;
-
-    document.getElementById("btn-review-reattempt").onclick = () => reattemptMock(att.sessionId);
-    document.getElementById("btn-review-save-fixed").onclick = () => openSaveBlueprintModal("FIXED_PAPER", att.sessionId);
+    const reattemptBtn = document.getElementById("btn-review-reattempt");
+    if (reattemptBtn) reattemptBtn.onclick = () => reattemptMock(att.sessionId);
+    const saveFixedBtn = document.getElementById("btn-review-save-fixed");
+    if (saveFixedBtn) saveFixedBtn.onclick = () => openSaveBlueprintModal("FIXED_PAPER", att.sessionId);
 
     // Threaded Attempt Iteration Switcher
     const rootId = att.parentSessionId || att.sessionId;
@@ -4088,7 +4503,7 @@ const CGL_OS = (() => {
     const switchWrap = document.getElementById("rev-attempt-switcher-wrap");
     const switchSelect = document.getElementById("rev-attempt-select");
 
-    if (thread.length > 1) {
+    if (thread.length > 1 && switchWrap && switchSelect) {
       switchWrap.style.display = "flex";
       switchSelect.innerHTML = "";
       thread.sort((a, b) => (a.attemptNumber || 1) - (b.attemptNumber || 1));
@@ -4099,97 +4514,103 @@ const CGL_OS = (() => {
         if (iter.sessionId === att.sessionId) opt.selected = true;
         switchSelect.appendChild(opt);
       });
-    } else {
+    } else if (switchWrap) {
       switchWrap.style.display = "none";
     }
 
     // High-Fidelity Sectional Breakdown
     const secGrid = document.getElementById("rev-sectional-breakdown-grid");
-    secGrid.innerHTML = "";
-    const secScores = {};
+    if (secGrid) {
+      secGrid.innerHTML = "";
+      const secScores = {};
 
-    if (att.questions && Array.isArray(att.questions) && att.userResponses) {
-      att.questions.forEach(q => {
-        const secName = q.subject || "GEN";
-        if (!secScores[secName]) {
-          secScores[secName] = { score: 0, cor: 0, inc: 0, unans: 0, att: 0, penalty: 0, totalTimeSec: 0 };
-        }
-        const resp = att.userResponses[q.id];
-        secScores[secName].totalTimeSec += (resp ? (resp.timeSpentSec || 0) : 0);
-
-        if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
-          secScores[secName].att++;
-          if (resp.selectedOption === q.correctIndex) {
-            secScores[secName].score += 2.0;
-            secScores[secName].cor++;
-          } else {
-            secScores[secName].score -= 0.5;
-            secScores[secName].penalty += 0.5;
-            secScores[secName].inc++;
+      if (att.questions && Array.isArray(att.questions) && att.userResponses) {
+        att.questions.forEach(q => {
+          const secName = q.subject || "GEN";
+          if (!secScores[secName]) {
+            secScores[secName] = { score: 0, cor: 0, inc: 0, unans: 0, att: 0, penalty: 0, totalTimeSec: 0 };
           }
-        } else {
-          secScores[secName].unans++;
-        }
+          const resp = att.userResponses[q.id];
+          secScores[secName].totalTimeSec += (resp ? (resp.timeSpentSec || 0) : 0);
+
+          if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
+            secScores[secName].att++;
+            if (resp.selectedOption === q.correctIndex) {
+              secScores[secName].score += 2.0;
+              secScores[secName].cor++;
+            } else {
+              secScores[secName].score -= 0.5;
+              secScores[secName].penalty += 0.5;
+              secScores[secName].inc++;
+            }
+          } else {
+            secScores[secName].unans++;
+          }
+        });
+      }
+
+      Object.keys(secScores).forEach(sKey => {
+        const s = secScores[sKey];
+        const mDwell = Math.floor(s.totalTimeSec / 60);
+        const sDwell = s.totalTimeSec % 60;
+        const acc = s.att > 0 ? Math.round((s.cor / s.att) * 100) : 0;
+
+        const card = document.createElement("div");
+        card.className = "sec-fidelity-card";
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:4px; margin-bottom:6px;">
+            <b style="color:var(--accent-cyan); font-size:12px;">${TAXONOMY[sKey] ? TAXONOMY[sKey].name.split(' ')[0] : sKey}</b>
+            <span style="font-weight:800; font-size:13px; color:#fff;">${s.score.toFixed(1)} pts</span>
+          </div>
+          <div class="sec-fidelity-metric-row">
+            <span>Accuracy:</span> <b style="color:${acc >= 80 ? 'var(--status-green)' : (acc >= 60 ? 'var(--status-amber)' : 'var(--status-red)')};">${acc}%</b>
+          </div>
+          <div class="sec-fidelity-metric-row">
+            <span>Split (🟢/🔴/⚪):</span> <b>${s.cor} / ${s.inc} / ${s.unans}</b>
+          </div>
+          <div class="sec-fidelity-metric-row">
+            <span>Penalty Drag:</span> <b style="color:#f87171;">-${s.penalty.toFixed(1)}</b>
+          </div>
+          <div class="sec-fidelity-metric-row">
+            <span>Section Dwell:</span> <b style="font-family:var(--font-mono);">${String(mDwell).padStart(2, '0')}:${String(sDwell).padStart(2, '0')}</b>
+          </div>
+        `;
+        secGrid.appendChild(card);
       });
     }
-
-    Object.keys(secScores).forEach(sKey => {
-      const s = secScores[sKey];
-      const mDwell = Math.floor(s.totalTimeSec / 60);
-      const sDwell = s.totalTimeSec % 60;
-      const acc = s.att > 0 ? Math.round((s.cor / s.att) * 100) : 0;
-
-      const card = document.createElement("div");
-      card.className = "sec-fidelity-card";
-      card.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:4px; margin-bottom:6px;">
-          <b style="color:var(--accent-cyan); font-size:12px;">${TAXONOMY[sKey] ? TAXONOMY[sKey].name.split(' ')[0] : sKey}</b>
-          <span style="font-weight:800; font-size:13px; color:#fff;">${s.score.toFixed(1)} pts</span>
-        </div>
-        <div class="sec-fidelity-metric-row">
-          <span>Accuracy:</span> <b style="color:${acc >= 80 ? 'var(--status-green)' : (acc >= 60 ? 'var(--status-amber)' : 'var(--status-red)')};">${acc}%</b>
-        </div>
-        <div class="sec-fidelity-metric-row">
-          <span>Split (🟢/🔴/⚪):</span> <b>${s.cor} / ${s.inc} / ${s.unans}</b>
-        </div>
-        <div class="sec-fidelity-metric-row">
-          <span>Penalty Drag:</span> <b style="color:#f87171;">-${s.penalty.toFixed(1)}</b>
-        </div>
-        <div class="sec-fidelity-metric-row">
-          <span>Section Dwell:</span> <b style="font-family:var(--font-mono);">${String(mDwell).padStart(2, '0')}:${String(sDwell).padStart(2, '0')}</b>
-        </div>
-      `;
-      secGrid.appendChild(card);
-    });
 
     const tagPills = document.getElementById("rev-mistake-tags-pills");
-    tagPills.innerHTML = "";
-    const tagCounts = {};
-    if (att.userResponses) {
-      Object.values(att.userResponses).forEach(r => {
-        if (r && r.errorTag && r.errorTag !== "UNCLASSIFIED" && r.errorTag !== "VALID_CALCULATED_RISK") {
-          tagCounts[r.errorTag] = (tagCounts[r.errorTag] || 0) + 1;
-        }
-      });
-    }
+    if (tagPills) {
+      tagPills.innerHTML = "";
+      const tagCounts = {};
+      if (att.userResponses) {
+        Object.values(att.userResponses).forEach(r => {
+          if (r && r.errorTag && r.errorTag !== "UNCLASSIFIED" && r.errorTag !== "VALID_CALCULATED_RISK") {
+            tagCounts[r.errorTag] = (tagCounts[r.errorTag] || 0) + 1;
+          }
+        });
+      }
 
-    if (Object.keys(tagCounts).length === 0) {
-      tagPills.innerHTML = `<span style="font-size:11px; color:var(--text-muted);">Zero active trap penalties logged for this attempt.</span>`;
-    } else {
-      Object.keys(tagCounts).forEach(tag => {
-        const span = document.createElement("span");
-        span.className = "badge";
-        span.style.background = "#5a1e1e";
-        span.style.color = "#f87171";
-        span.innerText = `${tag.replace(/_/g, ' ')}: ${tagCounts[tag]}`;
-        tagPills.appendChild(span);
-      });
+      if (Object.keys(tagCounts).length === 0) {
+        tagPills.innerHTML = `<span style="font-size:11px; color:var(--text-muted);">Zero active trap penalties logged for this attempt.</span>`;
+      } else {
+        Object.keys(tagCounts).forEach(tag => {
+          const span = document.createElement("span");
+          span.className = "badge";
+          span.style.background = "#5a1e1e";
+          span.style.color = "#f87171";
+          span.innerText = `${tag.replace(/_/g, ' ')}: ${tagCounts[tag]}`;
+          tagPills.appendChild(span);
+        });
+      }
     }
 
     pushNavLayer("modal-mock-review", () => {
-      document.getElementById("modal-mock-review").classList.remove("active");
+      const m = document.getElementById("modal-mock-review");
+      if (m) m.classList.remove("active");
     });
-    document.getElementById("modal-mock-review").classList.add("active");
+    const m = document.getElementById("modal-mock-review");
+    if (m) m.classList.add("active");
   }
 
   function switchReviewAttempt(targetSessionId) {
@@ -4220,16 +4641,13 @@ const CGL_OS = (() => {
       }
       await putRecord("store_attempts", activeReviewAttempt);
     }
-    renderDashboard();
+    await renderDashboard();
     openMockReview(activeReviewAttempt);
   }
 
-  /* ==========================================================================
-   * SECTION 20: COGNITIVE TRAP CLINIC & SUBJECT DIAGNOSTICS
-   * ========================================================================== */
   async function openTrapClinicModal(trapType) {
     activeClinicTrapType = trapType;
-    document.getElementById("trap-clinic-title").innerText = `Trap Clinic: #${trapType.replace(/_/g, ' ')}`;
+    safeSetText("trap-clinic-title", `Trap Clinic: #${trapType.replace(/_/g, ' ')}`);
 
     const allAttempts = await getAllRecords("store_attempts");
     const completed = allAttempts.filter(a => a.completed);
@@ -4251,9 +4669,10 @@ const CGL_OS = (() => {
       }
     });
 
-    document.getElementById("trap-clinic-summary-badge").innerText = `${activeClinicQuestions.length} Vulnerabilities Registered`;
+    safeSetText("trap-clinic-summary-badge", `${activeClinicQuestions.length} Vulnerabilities Registered`);
 
     const list = document.getElementById("trap-clinic-question-list");
+    if (!list) return;
     list.innerHTML = "";
 
     if (activeClinicQuestions.length === 0) {
@@ -4279,9 +4698,11 @@ const CGL_OS = (() => {
     }
 
     pushNavLayer("modal-trap-clinic", () => {
-      document.getElementById("modal-trap-clinic").classList.remove("active");
+      const m = document.getElementById("modal-trap-clinic");
+      if (m) m.classList.remove("active");
     });
-    document.getElementById("modal-trap-clinic").classList.add("active");
+    const m = document.getElementById("modal-trap-clinic");
+    if (m) m.classList.add("active");
   }
 
   async function drillFilteredTrapQuestions() {
@@ -4289,7 +4710,9 @@ const CGL_OS = (() => {
       alert("No trap questions available to drill.");
       return;
     }
-    document.getElementById("modal-trap-clinic").classList.remove("active");
+    const modal = document.getElementById("modal-trap-clinic");
+    if (modal) modal.classList.remove("active");
+
     const uniquePool = [];
     activeClinicQuestions.forEach(item => {
       if (!uniquePool.some(q => q.id === item.question.id)) {
@@ -4304,8 +4727,8 @@ const CGL_OS = (() => {
     const sub = TAXONOMY[subKey];
     if (!sub) return;
 
-    document.getElementById("diag-subject-name").innerText = `${sub.name} (${subKey})`;
-    document.getElementById("diag-subject-sub").innerText = `Complete Syllabus & Chapter Analysis`;
+    safeSetText("diag-subject-name", `${sub.name} (${subKey})`);
+    safeSetText("diag-subject-sub", `Complete Syllabus & Chapter Analysis`);
 
     const attempts = await getAllRecords("store_attempts");
     const completed = attempts.filter(a => a.completed);
@@ -4326,68 +4749,75 @@ const CGL_OS = (() => {
     });
 
     const acc = subAtt > 0 ? Math.round((subCor / subAtt) * 100) : 0;
-    document.getElementById("diag-subject-acc").innerText = subAtt > 0 ? `${acc}%` : "--";
-    document.getElementById("diag-subject-counts").innerText = `${subAtt} Solved • ${subCor} Correct`;
+    safeSetText("diag-subject-acc", subAtt > 0 ? `${acc}%` : "--");
+    safeSetText("diag-subject-counts", `${subAtt} Solved • ${subCor} Correct`);
 
     const gauge = document.getElementById("diag-acc-gauge");
-    gauge.setAttribute("stroke-dasharray", `${acc}, 100`);
-    if (acc >= 80) gauge.style.stroke = "var(--status-green-border)";
-    else if (acc >= 65) gauge.style.stroke = "var(--status-amber)";
-    else gauge.style.stroke = "var(--status-red)";
+    if (gauge) {
+      gauge.setAttribute("stroke-dasharray", `${acc}, 100`);
+      gauge.style.stroke = acc >= 80 ? "var(--status-green-border)" : (acc >= 65 ? "var(--status-amber)" : "var(--status-red)");
+    }
 
     const chapList = document.getElementById("diag-chapter-coverage-list");
-    chapList.innerHTML = "";
-
-    sub.chapters.forEach(chap => {
-      let cAtt = 0, cCor = 0;
-      completed.forEach(c => {
-        if (c.questions && Array.isArray(c.questions)) {
-          c.questions.forEach(q => {
-            if (q.chapter === chap) {
-              const resp = (c.userResponses && typeof c.userResponses === "object") ? c.userResponses[q.id] : null;
-              if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
-                cAtt++;
-                if (resp.selectedOption === q.correctIndex) cCor++;
+    if (chapList) {
+      chapList.innerHTML = "";
+      sub.chapters.forEach(chap => {
+        let cAtt = 0, cCor = 0;
+        completed.forEach(c => {
+          if (c.questions && Array.isArray(c.questions)) {
+            c.questions.forEach(q => {
+              if (q.chapter === chap) {
+                const resp = (c.userResponses && typeof c.userResponses === "object") ? c.userResponses[q.id] : null;
+                if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
+                  cAtt++;
+                  if (resp.selectedOption === q.correctIndex) cCor++;
+                }
               }
-            }
-          });
-        }
+            });
+          }
+        });
+
+        const cAcc = cAtt > 0 ? Math.round((cCor / cAtt) * 100) : 0;
+        const div = document.createElement("div");
+        div.className = "card";
+        div.style.padding = "8px 10px";
+        div.style.marginBottom = "6px";
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <span style="font-weight:700; font-family:var(--font-mono); font-size:12px;">${chap}</span>
+            <span class="badge" style="background:${cAtt > 0 ? '#1b4d2e' : '#151a24'}; color:${cAtt > 0 ? '#4ade80' : '#8b949e'};">
+              ${cAtt > 0 ? `${cAcc}% (${cAtt} Qs)` : '0 Qs'}
+            </span>
+          </div>
+          <div class="battery-bar-container" style="height:6px;">
+            <div class="battery-bar-fill" style="width:${cAcc}%; background:${cAcc >= 80 ? 'var(--status-green)' : (cAcc >= 60 ? 'var(--status-amber)' : 'var(--accent-blue)')};"></div>
+          </div>
+        `;
+        chapList.appendChild(div);
       });
+    }
 
-      const cAcc = cAtt > 0 ? Math.round((cCor / cAtt) * 100) : 0;
-
-      const div = document.createElement("div");
-      div.className = "card";
-      div.style.padding = "8px 10px";
-      div.style.marginBottom = "6px";
-      div.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-          <span style="font-weight:700; font-family:var(--font-mono); font-size:12px;">${chap}</span>
-          <span class="badge" style="background:${cAtt > 0 ? '#1b4d2e' : '#151a24'}; color:${cAtt > 0 ? '#4ade80' : '#8b949e'};">
-            ${cAtt > 0 ? `${cAcc}% (${cAtt} Qs)` : '0 Qs'}
-          </span>
-        </div>
-        <div class="battery-bar-container" style="height:6px;">
-          <div class="battery-bar-fill" style="width:${cAcc}%; background:${cAcc >= 80 ? 'var(--status-green)' : (cAcc >= 60 ? 'var(--status-amber)' : 'var(--accent-blue)')};"></div>
-        </div>
-      `;
-      chapList.appendChild(div);
-    });
-
-    document.getElementById("btn-launch-subject-blitz").onclick = () => {
-      document.getElementById("modal-subject-diagnostic").classList.remove("active");
-      launchConfiguredMockDirect(subKey, "ALL", 10, 8);
-    };
+    const blitzBtn = document.getElementById("btn-launch-subject-blitz");
+    if (blitzBtn) {
+      blitzBtn.onclick = () => {
+        const m = document.getElementById("modal-subject-diagnostic");
+        if (m) m.classList.remove("active");
+        launchConfiguredMockDirect(subKey, "ALL", 10, 8);
+      };
+    }
 
     pushHistoryState("modal-subject-diagnostic");
-    document.getElementById("modal-subject-diagnostic").classList.add("active");
+    const m = document.getElementById("modal-subject-diagnostic");
+    if (m) m.classList.add("active");
   }
 
   function openHistoryArchiveModal() {
     pushNavLayer("modal-history-archive", () => {
-      document.getElementById("modal-history-archive").classList.remove("active");
+      const m = document.getElementById("modal-history-archive");
+      if (m) m.classList.remove("active");
     });
-    document.getElementById("modal-history-archive").classList.add("active");
+    const m = document.getElementById("modal-history-archive");
+    if (m) m.classList.add("active");
     renderArchiveList("ALL");
   }
 
@@ -4395,10 +4825,10 @@ const CGL_OS = (() => {
     const attempts = await getAllRecords("store_attempts");
     const completed = attempts.filter(a => a.completed);
     const container = document.getElementById("archive-list-container");
+    if (!container) return;
     container.innerHTML = "";
 
     let list = completed.slice().sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
     if (filterType !== "ALL") {
       list = list.filter(a => a.mockType === filterType);
     }
@@ -4452,6 +4882,7 @@ const CGL_OS = (() => {
             <span style="font-weight:700; color:var(--accent-cyan);">${(iter.finalScore || 0).toFixed(1)} pts</span>
             <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.exportMockByIdJson('${iter.sessionId}')">📥 Export</button>
             <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openMockReview('${iter.sessionId}')">Inspect</button>
+            <button class="btn btn-danger" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.deleteAttemptSession('${iter.sessionId}')">🗑</button>
           </div>
         `;
         subList.appendChild(row);
@@ -4467,35 +4898,1343 @@ const CGL_OS = (() => {
 
       div.appendChild(header);
       div.appendChild(subList);
-
-      const footerBar = document.createElement("div");
-      footerBar.className = "ticket-actions-bar";
-      footerBar.style.padding = "8px 12px";
-      footerBar.innerHTML = `
-        <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.exportMockByIdJson('${latest.sessionId}')">📥 Export Mock (.json)</button>
-        <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.openSaveBlueprintModal('FIXED_PAPER', '${latest.sessionId}')">📌 Freeze Paper</button>
-        <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--status-green);" onclick="CGL_OS.reattemptMock('${latest.sessionId}')">🔁 Re-attempt</button>
-        <button class="btn btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openMockReview('${latest.sessionId}')">Inspect Latest</button>
-      `;
-      div.appendChild(footerBar);
-
       container.appendChild(div);
     });
   }
 
+  async function deleteAttemptSession(sessionId) {
+    if (confirm("Delete this completed attempt record? Derived performance statistics will recalculate immediately. (Question bank remains intact)")) {
+      await deleteRecordFromStore("store_attempts", sessionId);
+      await renderDashboard();
+      renderArchiveList("ALL");
+      alert("Attempt record deleted and statistics updated.");
+    }
+  }
+
   /* ==========================================================================
-   * SECTION 21: PUBLISHING-GRADE TYPESET PRINT BOOK ENGINE
+   * SECTION 22: LIVING KNOWLEDGE STUDIO (GESTURE-SAFE READING & IN-SHEET TOC)
+   * ========================================================================== */
+  async function openCompendiumToSheet(conceptId, targetSub, targetChap) {
+    const openModals = document.querySelectorAll(".modal-overlay.active");
+    openModals.forEach(m => m.classList.remove("active"));
+
+    let item = null;
+    if (conceptId) {
+      item = await ConceptService.get(conceptId);
+    }
+    if (!item && targetChap) {
+      const all = await ConceptService.getAll();
+      item = all.find(c => c.chapter === targetChap);
+    }
+
+    activeCompSubject = item ? item.subject : (targetSub || "QA");
+    activeCompChapter = item ? item.chapter : (targetChap || "QA_PERCENTAGE");
+
+    pushNavLayer("compendium-fullscreen-view", () => {
+      safeSetDisplay("compendium-fullscreen-view", "none");
+    });
+    safeSetDisplay("compendium-fullscreen-view", "flex");
+
+    const subSelect = document.getElementById("comp-studio-subject-select");
+    if (subSelect) subSelect.value = activeCompSubject;
+
+    await handleCompStudioSubjectChange(activeCompSubject);
+    if (item) {
+      const sheetIdx = currentCompSheets.findIndex(s => s.id === item.id);
+      if (sheetIdx !== -1) {
+        activeCompSheetIndex = sheetIdx;
+        renderActiveCompSheet();
+      }
+    }
+  }
+
+  async function handleCompStudioSubjectChange(sub) {
+    activeCompSubject = sub;
+    const chapSelect = document.getElementById("comp-studio-chapter-select");
+    if (!chapSelect) return;
+    chapSelect.innerHTML = "";
+
+    const allDossiers = await ConceptService.getAll();
+    const canonChaps = (TAXONOMY[sub] && Array.isArray(TAXONOMY[sub].chapters)) ? TAXONOMY[sub].chapters : [];
+    const existingChaps = [...new Set(allDossiers.filter(d => d.subject === sub).map(d => d.chapter))];
+    const combined = [...new Set([...canonChaps, ...existingChaps])];
+
+    combined.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c;
+      opt.innerText = c;
+      chapSelect.appendChild(opt);
+    });
+
+    if (combined.length > 0) {
+      activeCompChapter = combined[0];
+      chapSelect.value = activeCompChapter;
+    }
+    await renderCompStudioSheets();
+  }
+
+  async function handleCompStudioChapterChange(chap) {
+    activeCompChapter = chap;
+    activeCompSheetIndex = 0;
+    await renderCompStudioSheets();
+  }
+
+  async function renderCompStudioSheets() {
+    const allDossiers = await ConceptService.getAll();
+    currentCompSheets = allDossiers.filter(d => d.subject === activeCompSubject && d.chapter === activeCompChapter);
+
+    const tabsBar = document.getElementById("comp-studio-sheet-tabs");
+    const docContent = document.getElementById("comp-studio-doc-content");
+    if (tabsBar) tabsBar.innerHTML = "";
+    if (docContent) docContent.innerHTML = "";
+
+    if (currentCompSheets.length === 0) {
+      if (docContent) {
+        docContent.innerHTML = `
+          <div style="text-align:center; padding:50px 14px; color:var(--text-muted);">
+            <h3 style="font-size:16px; margin-bottom:8px; color:#fff;">No Topic Sheets in ${activeCompChapter}</h3>
+            <p style="font-size:12px; margin-bottom:14px;">This chapter has no living sheets yet. Author your first sheet below.</p>
+            <button class="btn" onclick="CGL_OS.openConceptEditorModal(true)">+ Create First Sheet</button>
+          </div>
+        `;
+      }
+      safeSetText("comp-linked-q-count", "0 Questions Linked");
+      return;
+    }
+
+    if (activeCompSheetIndex >= currentCompSheets.length) activeCompSheetIndex = 0;
+
+    if (tabsBar) {
+      currentCompSheets.forEach((sheet, idx) => {
+        const tab = document.createElement("button");
+        tab.className = "comp-sheet-tab" + (idx === activeCompSheetIndex ? " active" : "");
+        tab.innerText = sheet.title || `Sheet ${idx + 1}`;
+        tab.addEventListener("click", () => {
+          activeCompSheetIndex = idx;
+          renderActiveCompSheet();
+        });
+        tabsBar.appendChild(tab);
+      });
+    }
+
+    await renderActiveCompSheet();
+  }
+
+  async function renderActiveCompSheet() {
+    const sheet = currentCompSheets[activeCompSheetIndex];
+    if (!sheet) return;
+
+    document.querySelectorAll(".comp-sheet-tab").forEach((t, i) => {
+      t.classList.toggle("active", i === activeCompSheetIndex);
+    });
+
+    safeSetText("comp-studio-header-title", sheet.title);
+    safeSetText("comp-studio-header-sub", `${sheet.chapter} • Sheet ${activeCompSheetIndex + 1} of ${currentCompSheets.length}`);
+
+    // Discovery: Linked Questions
+    const linkedQs = await ConceptService.getLinkedQuestions(sheet.id, sheet.chapter);
+    safeSetText("comp-linked-q-count", `${linkedQs.length} Associated Questions Linked`);
+
+    // In-Sheet TOC Generator for Instant Intra-Sheet Jumps
+    const toc = ConceptService.generateTOC(sheet.content);
+    let tocHtml = "";
+    if (toc.length > 0) {
+      tocHtml = `
+        <div class="sheet-toc-pill-wrap">
+          <span style="font-size:10px; font-weight:800; color:var(--accent-cyan); text-transform:uppercase; letter-spacing:0.8px; align-self:center;">Jump to:</span>
+          ${toc.map(item => `
+            <a href="#${item.anchor}" class="anchor-pill" onclick="document.getElementById('${item.anchor}').scrollIntoView({behavior:'smooth'}); return false;">
+              ${item.title}
+            </a>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    let imgHtml = "";
+    if (sheet.imageUrl && sheet.imageUrl.trim().length > 0) {
+      imgHtml = `<div style="text-align:center; margin:16px 0;"><img src="${sheet.imageUrl}" style="max-height:280px; max-width:100%; border-radius:8px; border:1px solid var(--border-color);"></div>`;
+    }
+
+    const docContent = document.getElementById("comp-studio-doc-content");
+    if (docContent) {
+      docContent.innerHTML = `
+        <div style="border-bottom:1px solid var(--border-color); padding-bottom:10px; margin-bottom:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="badge" style="background:#1f6feb;">${sheet.chapter}</span>
+            <span style="font-size:11px; color:var(--text-muted);">${formatISTDate(sheet.timestamp || Date.now())}</span>
+          </div>
+          <h1 style="font-size:22px; font-weight:800; color:#fff; margin-top:8px;">${sheet.title}</h1>
+          ${sheet.subtitle ? `<div style="font-size:13px; color:var(--accent-cyan); font-family:var(--font-mono); margin-top:2px;">${sheet.subtitle}</div>` : ''}
+        </div>
+        ${tocHtml}
+        ${imgHtml}
+        <div style="font-size:14.5px; line-height:1.75; color:var(--text-main);">${formatRichText(sheet.content)}</div>
+        
+        <!-- EXPLICIT PAGINATION TOOLBAR: Prevents accidental sheet transition during vertical reading -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:28px; padding-top:14px; border-top:1px solid var(--border-color);">
+          <button class="btn btn-secondary" onclick="CGL_OS.navCompStudioSheet(-1)">[ ← ] Previous Sheet</button>
+          <span style="font-size:12px; font-weight:700; color:var(--text-muted);">${activeCompSheetIndex + 1} / ${currentCompSheets.length}</span>
+          <button class="btn btn-secondary" onclick="CGL_OS.navCompStudioSheet(1)">Next Sheet [ → ]</button>
+        </div>
+      `;
+    }
+
+    const noteKey = `scratch_${sheet.id}`;
+    const savedNote = await getRecord("store_notes", noteKey);
+    safeSetValue("comp-studio-scratchpad", savedNote ? savedNote.content : "");
+  }
+
+  function navCompStudioSheet(step) {
+    if (currentCompSheets.length === 0) return;
+    activeCompSheetIndex += step;
+    if (activeCompSheetIndex < 0) activeCompSheetIndex = currentCompSheets.length - 1;
+    if (activeCompSheetIndex >= currentCompSheets.length) activeCompSheetIndex = 0;
+    renderActiveCompSheet();
+  }
+
+  async function autoSaveCompScratchpad(val) {
+    const sheet = currentCompSheets[activeCompSheetIndex];
+    if (!sheet) return;
+    await putRecord("store_notes", { id: `scratch_${sheet.id}`, content: val, timestamp: Date.now() });
+    const st = document.getElementById("comp-scratchpad-status");
+    if (st) {
+      st.style.display = "inline";
+      setTimeout(() => { st.style.display = "none"; }, 1500);
+    }
+  }
+
+  async function deleteCurrentCompendiumSheet() {
+    if (!currentCompSheets || currentCompSheets.length === 0) return;
+    const curr = currentCompSheets[activeCompSheetIndex];
+    if (confirm(`Permanently delete living sheet: "${curr.title}"?`)) {
+      await ConceptService.delete(curr.id);
+      await renderCompStudioSheets();
+    }
+  }
+
+  async function promptCreateNewChapter() {
+    const chapName = prompt(`Enter new chapter tag for ${activeCompSubject} (e.g. ${activeCompSubject}_NEW_TOPIC):`);
+    if (!chapName || !chapName.trim()) return;
+
+    try {
+      const formatted = await TaxonomyService.addChapter(activeCompSubject, chapName);
+      await handleCompStudioSubjectChange(activeCompSubject);
+      const cSel = document.getElementById("comp-studio-chapter-select");
+      if (cSel) cSel.value = formatted;
+      await handleCompStudioChapterChange(formatted);
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  function insertDossierSnippet(type) {
+    const textarea = document.getElementById("concept-edit-body");
+    if (!textarea) return;
+    let snippet = "";
+    if (type === "FORMULA") snippet = "\n> [!formula] Key Identity\n> $$a^2 + b^2 = c^2$$\n";
+    if (type === "TRAP") snippet = "\n> [!trap] Critical TCS Deduction\n> Verify whether radius or diameter is specified.\n";
+    if (type === "TABLE") snippet = "\n| Condition | Method | Shortcut |\n| :--- | :--- | :--- |\n| Case 1 | Direct Tangent | $2\\sqrt{r_1 r_2}$ |\n";
+    textarea.value += snippet;
+    textarea.focus();
+  }
+
+  async function launchCurrentSheetQuestionsDrill() {
+    const sheet = currentCompSheets[activeCompSheetIndex];
+    if (!sheet) return;
+
+    closeCompendiumStudio();
+    const linked = await ConceptService.getLinkedQuestions(sheet.id, sheet.chapter);
+
+    if (linked.length === 0) {
+      alert(`No questions in bank for ${sheet.chapter}.`);
+      return;
+    }
+
+    const instance = await MockService.generate({
+      title: `Sheet Practice: ${sheet.title}`,
+      explicitQuestionIds: linked.map(q => q.id),
+      count: Math.min(25, linked.length),
+      mode: "RANDOM"
+    });
+    await MockService.launchMockSession(instance);
+  }
+
+  function openCompendiumStudio() {
+    pushNavLayer("compendium-fullscreen-view", () => {
+      safeSetDisplay("compendium-fullscreen-view", "none");
+    });
+    safeSetDisplay("compendium-fullscreen-view", "flex");
+    handleCompStudioSubjectChange(activeCompSubject || "QA");
+  }
+
+  function closeCompendiumStudio() {
+    safeSetDisplay("compendium-fullscreen-view", "none");
+  }
+
+  function openConceptEditorModal(isNew = true) {
+    currentConceptImageBase64 = "";
+    safeSetText("concept-editor-title", isNew ? "Add Topic Sheet" : "Edit Topic Sheet");
+
+    if (isNew || currentCompSheets.length === 0) {
+      safeSetValue("concept-edit-id", "top_" + Date.now());
+      safeSetValue("concept-edit-subject", activeCompSubject || "QA");
+      safeSetValue("concept-edit-chapter", activeCompChapter || "QA_PERCENTAGE");
+      safeSetValue("concept-edit-title", "");
+      safeSetValue("concept-edit-sub", "");
+      safeSetValue("concept-edit-body", "");
+      safeSetValue("concept-edit-img-url", "");
+      safeSetValue("concept-edit-img-file", "");
+    } else {
+      const curr = currentCompSheets[activeCompSheetIndex];
+      safeSetValue("concept-edit-id", curr.id);
+      safeSetValue("concept-edit-subject", curr.subject);
+      safeSetValue("concept-edit-chapter", curr.chapter);
+      safeSetValue("concept-edit-title", curr.title);
+      safeSetValue("concept-edit-sub", curr.subtitle || "");
+      safeSetValue("concept-edit-body", curr.content);
+      safeSetValue("concept-edit-img-url", curr.imageUrl || "");
+      safeSetValue("concept-edit-img-file", "");
+    }
+
+    pushHistoryState("modal-concept-editor");
+    const m = document.getElementById("modal-concept-editor");
+    if (m) m.classList.add("active");
+  }
+
+  async function handleConceptImageUpload(input) {
+    if (input.files && input.files[0]) {
+      currentConceptImageBase64 = await compressImageFile(input.files[0]);
+    }
+  }
+
+  async function saveConceptCard() {
+    const id = document.getElementById("concept-edit-id")?.value;
+    const subject = document.getElementById("concept-edit-subject")?.value;
+    const chapter = document.getElementById("concept-edit-chapter")?.value.trim().toUpperCase();
+    const title = document.getElementById("concept-edit-title")?.value.trim();
+    const subtitle = document.getElementById("concept-edit-sub")?.value.trim();
+    const content = document.getElementById("concept-edit-body")?.value.trim();
+    const urlInput = document.getElementById("concept-edit-img-url")?.value.trim();
+
+    if (!title || !content || !chapter) {
+      alert("Chapter, Topic Title, and Content are required.");
+      return;
+    }
+
+    const obj = {
+      id: id,
+      subject: subject,
+      chapter: chapter,
+      title: title,
+      subtitle: subtitle,
+      content: content,
+      imageUrl: currentConceptImageBase64 || urlInput,
+      timestamp: Date.now()
+    };
+
+    const existing = await ConceptService.get(id);
+    if (existing) {
+      await ConceptService.update(id, obj);
+    } else {
+      await ConceptService.create(obj);
+    }
+
+    const m = document.getElementById("modal-concept-editor");
+    if (m) m.classList.remove("active");
+    openCompendiumToSheet(id, subject, chapter);
+  }
+
+  function openOmniResearchForCurrentQuestion() {
+    if (!activeExam) return;
+    const q = activeExam.questions[activeExam.currentQuestionIndex];
+    triggerOmniResearchDrawer(q);
+  }
+
+  function openOmniResearchForDojoQuestion() {
+    if (!dojoExam) return;
+    const q = dojoExam.questions[dojoExam.currentIndex];
+    triggerOmniResearchDrawer(q);
+  }
+
+  function triggerOmniResearchDrawer(q) {
+    if (!q) return;
+    const queryText = (q.subtopic || q.method || q.chapter).replace(/_/g, " ");
+    safeSetText("omni-research-query-sub", `${q.subject} • ${q.chapter}`);
+    safeSetText("omni-research-prompt-preview", q.questionText.slice(0, 160) + "...");
+
+    const wikiUrl = `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(queryText + " SSC CGL")}`;
+    const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(q.questionText.slice(0, 100) + " " + queryText)}`;
+
+    let wolframQuery = queryText;
+    const mathMatch = q.questionText.match(/\$([^\$]+)\$/);
+    if (mathMatch && mathMatch[1]) {
+      wolframQuery = mathMatch[1].replace(/\\text\{.*?\}/g, "").replace(/\\/g, "");
+    }
+    const wolframUrl = `https://www.wolframalpha.com/input?i=${encodeURIComponent(wolframQuery)}`;
+
+    const wEl = document.getElementById("omni-link-wiki");
+    if (wEl) wEl.href = wikiUrl;
+    const gEl = document.getElementById("omni-link-google");
+    if (gEl) gEl.href = googleUrl;
+    const wfEl = document.getElementById("omni-link-wolfram");
+    if (wfEl) wfEl.href = wolframUrl;
+
+    pushHistoryState("modal-omni-research");
+    const m = document.getElementById("modal-omni-research");
+    if (m) m.classList.add("active");
+  }
+
+  function jumpToConceptFromReview(conceptId) {
+    const q = activeExam.questions[activeExam.currentQuestionIndex];
+    openCompendiumToSheet(conceptId, q.subject, q.chapter);
+  }
+
+  function jumpToConceptFromDojo() {
+    if (!dojoExam) return;
+    const q = dojoExam.questions[dojoExam.currentIndex];
+    const targetCId = (Array.isArray(q.conceptIds) && q.conceptIds.length > 0) ? q.conceptIds[0] : q.conceptId;
+    openCompendiumToSheet(targetCId, q.subject, q.chapter);
+  }
+
+  function openOmniSearchModal() {
+    pushHistoryState("modal-comp-omni-search");
+    const m = document.getElementById("modal-comp-omni-search");
+    if (m) m.classList.add("active");
+    safeSetValue("comp-omni-search-input", "");
+    safeSetHtml("comp-omni-results-list", `<p style="color:var(--text-muted); text-align:center; padding:20px;">Type keywords above to query across all living sheets.</p>`);
+    setTimeout(() => {
+      const inp = document.getElementById("comp-omni-search-input");
+      if (inp) inp.focus();
+    }, 150);
+  }
+
+  async function executeOmniSearch(keyword) {
+    const list = document.getElementById("comp-omni-results-list");
+    if (!list) return;
+    const term = keyword.trim().toLowerCase();
+    if (!term) {
+      list.innerHTML = `<p style="color:var(--text-muted); text-align:center; padding:20px;">Type keywords above to query across all living sheets.</p>`;
+      return;
+    }
+
+    const allDossiers = await ConceptService.getAll();
+    const results = allDossiers.filter(d => 
+      (d.title && d.title.toLowerCase().includes(term)) ||
+      (d.subtitle && d.subtitle.toLowerCase().includes(term)) ||
+      (d.chapter && d.chapter.toLowerCase().includes(term)) ||
+      (d.content && d.content.toLowerCase().includes(term))
+    );
+
+    list.innerHTML = "";
+    if (results.length === 0) {
+      list.innerHTML = `<p style="color:var(--text-muted); text-align:center; padding:20px;">No matching formulas, traps, or sheets found.</p>`;
+      return;
+    }
+
+    results.forEach(res => {
+      const div = document.createElement("div");
+      div.className = "card";
+      div.style.padding = "10px";
+      div.style.marginBottom = "8px";
+      div.style.cursor = "pointer";
+      div.innerHTML = `
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+          <span class="badge" style="background:#1f6feb;">${res.subject} • ${res.chapter}</span>
+        </div>
+        <b style="font-size:14px; color:#fff;">${res.title}</b>
+        <div style="font-size:11px; color:var(--accent-cyan); font-family:var(--font-mono); margin-bottom:4px;">${res.subtitle || ''}</div>
+        <div style="font-size:12px; color:var(--text-muted); max-height:40px; overflow:hidden; text-overflow:ellipsis;">${res.content.slice(0, 100)}...</div>
+      `;
+      div.addEventListener("click", () => {
+        const modal = document.getElementById("modal-comp-omni-search");
+        if (modal) modal.classList.remove("active");
+        openCompendiumToSheet(res.id, res.subject, res.chapter);
+      });
+      list.appendChild(div);
+    });
+  }
+
+  /* ==========================================================================
+   * SECTION 23: SYNAPSE KNOWLEDGE EXPLORER
+   * ========================================================================== */
+  async function openSynapseGraphModal() {
+    synapseCurrentLevel = "SUBJECTS";
+    synapseActiveSubject = null;
+    synapseActiveChapter = null;
+    renderSynapseExplorer();
+
+    pushNavLayer("modal-synapse-tree", () => {
+      const m = document.getElementById("modal-synapse-tree");
+      if (m) m.classList.remove("active");
+    });
+    const m = document.getElementById("modal-synapse-tree");
+    if (m) m.classList.add("active");
+  }
+
+  async function renderSynapseExplorer() {
+    const rootContainer = document.getElementById("synapse-dom-tree-root");
+    if (!rootContainer) return;
+    rootContainer.innerHTML = "";
+
+    const allQs = await getAllRecords("store_questions");
+    const allConcepts = await ConceptService.getAll();
+    const taxonomy = await TaxonomyService.getTaxonomy();
+
+    const breadcrumb = document.createElement("div");
+    breadcrumb.style.cssText = "display:flex; align-items:center; gap:8px; font-size:12px; margin-bottom:12px; color:var(--accent-cyan);";
+    breadcrumb.innerHTML = `
+      <span style="cursor:pointer;" onclick="CGL_OS.setSynapseLevel('SUBJECTS')">All Subjects</span>
+      ${synapseActiveSubject ? ` ➔ <span style="cursor:pointer;" onclick="CGL_OS.setSynapseLevel('CHAPTERS', '${synapseActiveSubject}')">${synapseActiveSubject}</span>` : ''}
+      ${synapseActiveChapter ? ` ➔ <b>${synapseActiveChapter}</b>` : ''}
+    `;
+    rootContainer.appendChild(breadcrumb);
+
+    if (synapseCurrentLevel === "SUBJECTS") {
+      const grid = document.createElement("div");
+      grid.style.cssText = "display:grid; grid-template-columns:1fr 1fr; gap:10px;";
+      Object.keys(taxonomy).forEach(sKey => {
+        const sub = taxonomy[sKey];
+        const qCount = allQs.filter(q => q.subject === sKey).length;
+        const cCount = allConcepts.filter(c => c.subject === sKey).length;
+
+        const tile = document.createElement("div");
+        tile.className = "card";
+        tile.style.cssText = "cursor:pointer; padding:14px; margin-bottom:0;";
+        tile.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <b style="font-size:14px; color:#fff;">${sub.name}</b>
+            <span class="badge" style="background:#1f6feb;">${sKey}</span>
+          </div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:8px;">
+            ${sub.chapters.length} Chapters • ${qCount} Questions • ${cCount} Sheets
+          </div>
+        `;
+        tile.onclick = () => setSynapseLevel("CHAPTERS", sKey);
+        grid.appendChild(tile);
+      });
+      rootContainer.appendChild(grid);
+    } else if (synapseCurrentLevel === "CHAPTERS") {
+      const sub = taxonomy[synapseActiveSubject];
+      const list = document.createElement("div");
+
+      sub.chapters.forEach(chap => {
+        const chapQs = allQs.filter(q => q.subject === synapseActiveSubject && q.chapter === chap);
+        const chapSheets = allConcepts.filter(c => c.subject === synapseActiveSubject && c.chapter === chap);
+
+        const row = document.createElement("div");
+        row.className = "tree-node-row";
+        row.style.marginBottom = "6px";
+        row.innerHTML = `
+          <div style="overflow:hidden;" onclick="CGL_OS.setSynapseLevel('CONCEPTS', '${synapseActiveSubject}', '${chap}')">
+            <b style="color:#fff; font-size:13px;">${chap}</b>
+            <div style="font-size:10.5px; color:var(--text-muted);">${chapQs.length} Qs • ${chapSheets.length} Living Sheets</div>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.launchDirectChapterDrill('${synapseActiveSubject}', '${chap}')">⚡ Drill</button>
+            <button class="btn btn-cyan" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.setSynapseLevel('CONCEPTS', '${synapseActiveSubject}', '${chap}')">Explore ➔</button>
+          </div>
+        `;
+        list.appendChild(row);
+      });
+      rootContainer.appendChild(list);
+    } else if (synapseCurrentLevel === "CONCEPTS") {
+      const chapSheets = allConcepts.filter(c => c.subject === synapseActiveSubject && c.chapter === synapseActiveChapter);
+      const chapQs = allQs.filter(q => q.subject === synapseActiveSubject && q.chapter === synapseActiveChapter);
+
+      const header = document.createElement("div");
+      header.style.cssText = "display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;";
+      header.innerHTML = `
+        <span style="font-weight:700; color:#fff;">${synapseActiveChapter} Inventory (${chapQs.length} Qs, ${chapSheets.length} Sheets)</span>
+        <button class="btn" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.launchDirectChapterDrill('${synapseActiveSubject}', '${synapseActiveChapter}')">⚡ Drill Entire Chapter (${chapQs.length} Qs)</button>
+      `;
+      rootContainer.appendChild(header);
+
+      chapSheets.forEach(sheet => {
+        const item = document.createElement("div");
+        item.className = "card";
+        item.style.padding = "10px";
+        item.style.marginBottom = "8px";
+        item.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <b style="color:var(--accent-cyan); font-size:13px;">📖 ${sheet.title}</b>
+              <div style="font-size:11px; color:var(--text-muted);">${sheet.subtitle || ''}</div>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button class="btn btn-secondary" style="padding:3px 8px; font-size:10px;" onclick="CGL_OS.openCompendiumToSheet('${sheet.id}', '${synapseActiveSubject}', '${synapseActiveChapter}')">Read</button>
+              <button class="btn btn-cyan" style="padding:3px 8px; font-size:10px;" onclick="CGL_OS.launchDirectSheetDrill('${sheet.id}', '${synapseActiveSubject}', '${synapseActiveChapter}')">Drill</button>
+            </div>
+          </div>
+        `;
+        rootContainer.appendChild(item);
+      });
+    }
+  }
+
+  function setSynapseLevel(level, subject = null, chapter = null) {
+    synapseCurrentLevel = level;
+    if (subject) synapseActiveSubject = subject;
+    if (chapter) synapseActiveChapter = chapter;
+    renderSynapseExplorer();
+  }
+
+  async function launchDirectChapterDrill(subKey, chap) {
+    const modal = document.getElementById("modal-synapse-tree");
+    if (modal) modal.classList.remove("active");
+    const instance = await MockService.generate({
+      title: `${chap} Master Drill`,
+      subject: subKey,
+      chapter: chap,
+      count: 25,
+      mode: "RANDOM"
+    });
+    await MockService.launchMockSession(instance);
+  }
+
+  async function launchDirectSheetDrill(conceptId, subject, chapter) {
+    const modal = document.getElementById("modal-synapse-tree");
+    if (modal) modal.classList.remove("active");
+    const linkedQs = await ConceptService.getLinkedQuestions(conceptId, chapter);
+    if (linkedQs.length === 0) {
+      alert(`No questions linked to sheet ${conceptId}.`);
+      return;
+    }
+    const instance = await MockService.generate({
+      title: `Sheet Practice: ${conceptId}`,
+      explicitQuestionIds: linkedQs.map(q => q.id),
+      count: linkedQs.length,
+      mode: "RANDOM"
+    });
+    await MockService.launchMockSession(instance);
+  }
+
+  /* ==========================================================================
+   * SECTION 24: DASHBOARD & ACTIVE COMMAND CENTER CONTROLLER
+   * ========================================================================== */
+  async function renderDashboard() {
+    const allQs = await getAllRecords("store_questions");
+    const metrics = await PerformanceService.calculateGlobalMetrics();
+    const weakChapters = await PerformanceService.getWeakChapters();
+    const neglect = await PerformanceService.calculateNeglect();
+
+    // 1. Top 4 Battlefield HUD Tiles
+    safeSetText("dash-stat-questions", allQs.length);
+    safeSetText("dash-stat-accuracy", metrics.totalMocks > 0 ? `${metrics.accuracy}%` : "--");
+    safeSetText("dash-stat-weak", weakChapters.length);
+    const hrs = Math.floor((metrics.totalStudyTimeSec || 0) / 3600);
+    const mins = Math.floor(((metrics.totalStudyTimeSec || 0) % 3600) / 60);
+    safeSetText("dash-stat-time", `${hrs}h ${mins}m`);
+
+    // 2. Continue Training Card (Priority to weakest chapter)
+    const targetWeak = weakChapters.length > 0 ? weakChapters[0] : null;
+    if (targetWeak) {
+      safeSetText("dash-continue-title", `${targetWeak.chapter} — Weakness Drill`);
+      safeSetText("dash-continue-sub", `Current accuracy: ${targetWeak.accuracy}% (${targetWeak.wrong} incorrect answers recorded)`);
+    } else {
+      safeSetText("dash-continue-title", "Comprehensive Practice — Daily Sprint");
+      safeSetText("dash-continue-sub", "All syllabus chapters currently within nominal accuracy bands");
+    }
+
+    // 3. Left Column: Your Weak Areas
+    const weakListContainer = document.getElementById("dash-weak-areas-list");
+    if (weakListContainer) {
+      weakListContainer.innerHTML = "";
+      if (weakChapters.length === 0) {
+        weakListContainer.innerHTML = `<p style="font-size:12px; color:var(--status-green); padding:10px 0;">✓ Zero weak chapters detected! Excellent mastery.</p>`;
+      } else {
+        weakChapters.slice(0, 4).forEach((w, i) => {
+          const colorIcon = i === 0 ? "🔴" : (i === 1 ? "🟠" : "🟡");
+          const row = document.createElement("div");
+          row.className = "weak-item-row";
+          row.innerHTML = `
+            <span>${colorIcon} <b>${w.chapter}</b></span>
+            <span style="font-family:var(--font-mono); color:var(--status-red);">${w.accuracy}% (${w.attempted}Q)</span>
+          `;
+          weakListContainer.appendChild(row);
+        });
+      }
+    }
+
+    // 4. Right Column: Recent Performance (Subject Mastery Batteries)
+    renderDashboardSubjectBatteries(await PerformanceService.getHistoricalAttempts());
+
+    // 5. Classic HUD Dial & KPIs
+    safeSetText("kpi-total-mocks", metrics.totalMocks);
+    safeSetText("kpi-global-acc", metrics.totalMocks > 0 ? `${metrics.accuracy}%` : "--");
+    safeSetText("kpi-avg-speed", metrics.totalMocks > 0 ? `${metrics.avgSpeed}s` : "--");
+    safeSetText("kpi-traps-hit", metrics.trapsHit);
+
+    const circleGauge = document.getElementById("gauge-acc-circle");
+    if (circleGauge) {
+      circleGauge.setAttribute("stroke-dasharray", `${metrics.accuracy}, 100`);
+      circleGauge.style.stroke = metrics.accuracy >= 80 ? "var(--status-green-border)" : (metrics.accuracy >= 65 ? "var(--status-amber)" : "var(--status-red)");
+    }
+
+    const eriVal = document.getElementById("eri-score-val");
+    const eriTier = document.getElementById("eri-status-tier");
+    const eriCircle = document.getElementById("eri-gauge-circle");
+    if (eriVal) eriVal.innerText = metrics.eri;
+    if (eriCircle) eriCircle.setAttribute("stroke-dasharray", `${metrics.eri}, 100`);
+    if (eriTier) {
+      eriTier.innerText = metrics.eri >= 80 ? "Tier-1 Formidable" : (metrics.eri >= 65 ? "Competitive Form" : "Calibrating");
+    }
+
+    // 6. Neglect Warning
+    const negAlert = document.getElementById("dash-neglect-alert");
+    if (negAlert) {
+      if (neglect) {
+        negAlert.style.display = "flex";
+        safeSetText("dash-neglect-text", neglect.isNever
+          ? `${neglect.chapter} has NEVER been tested in completed mocks.`
+          : `${neglect.chapter} untouched for ${neglect.days} days.`);
+        const drillBtn = document.getElementById("btn-neglect-drill");
+        if (drillBtn) {
+          drillBtn.onclick = () => launchDirectChapterDrill(neglect.subject, neglect.chapter);
+        }
+      } else {
+        negAlert.style.display = "none";
+      }
+    }
+
+    await renderDashboardBlueprints();
+    await renderRecentHistory(await PerformanceService.getHistoricalAttempts());
+    await renderDrilldownSubjectLevel();
+  }
+
+  function launchContinueTrainingDrill() {
+    PerformanceService.getWeakChapters().then(weaks => {
+      if (weaks.length > 0) {
+        launchDirectChapterDrill(weaks[0].subject, weaks[0].chapter);
+      } else {
+        MockService.generate({ mode: "RANDOM", count: 25 }).then(inst => MockService.launchMockSession(inst));
+      }
+    });
+  }
+
+  function renderDashboardSubjectBatteries(completed) {
+    const container = document.getElementById("dash-subject-batteries");
+    if (!container) return;
+    container.innerHTML = "";
+
+    Object.keys(TAXONOMY).forEach(subKey => {
+      let subAtt = 0, subCor = 0;
+      completed.forEach(c => {
+        if (c.questions && Array.isArray(c.questions)) {
+          c.questions.forEach(q => {
+            if (q.subject === subKey) {
+              const resp = (c.userResponses && typeof c.userResponses === "object") ? c.userResponses[q.id] : null;
+              if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
+                subAtt++;
+                if (resp.selectedOption === q.correctIndex) subCor++;
+              }
+            }
+          });
+        }
+      });
+
+      const acc = subAtt > 0 ? Math.round((subCor / subAtt) * 100) : 0;
+      const div = document.createElement("div");
+      div.style.marginBottom = "8px";
+      div.style.cursor = "pointer";
+      div.innerHTML = `
+        <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:2px;">
+          <span style="font-weight:700;">${TAXONOMY[subKey].name} (${subKey})</span>
+          <span style="font-family:var(--font-mono); color:${acc >= 80 ? 'var(--status-green)' : (acc >= 60 ? 'var(--status-amber)' : 'var(--text-muted)')};">${subAtt > 0 ? `${acc}% (${subAtt} Qs)` : '0%'}</span>
+        </div>
+        <div class="battery-bar-container">
+          <div class="battery-bar-fill" style="width:${acc}%; background:${acc >= 80 ? 'var(--status-green)' : (acc >= 60 ? 'var(--status-amber)' : 'var(--accent-blue)')};"></div>
+        </div>
+      `;
+      div.addEventListener("click", () => openSubjectDiagnosticModal(subKey));
+      container.appendChild(div);
+    });
+  }
+
+  async function renderDashboardBlueprints() {
+    const pillsContainer = document.getElementById("dash-blueprints-pills");
+    if (!pillsContainer) return;
+    pillsContainer.innerHTML = "";
+    const blueprints = await getAllRecords("store_saved_mocks");
+
+    if (blueprints.length === 0) {
+      pillsContainer.innerHTML = `<span style="font-size:11px; color:var(--text-muted);">Zero saved setups. Blueprints created via Console or Builder will appear here.</span>`;
+      return;
+    }
+
+    blueprints.forEach(bp => {
+      const pill = document.createElement("button");
+      pill.className = "anchor-pill";
+      const icon = bp.type === "FIXED_PAPER" ? "📌" : "⚡";
+      pill.innerHTML = `<span>${icon} ${bp.title}</span><span style="opacity:0.6; font-size:9px;" onclick="event.stopPropagation(); CGL_OS.deleteSavedPreset('${bp.id}')">✕</span>`;
+      pill.onclick = () => launchSavedPreset(bp.id);
+      pillsContainer.appendChild(pill);
+    });
+  }
+
+  async function renderRecentHistory(completed) {
+    const container = document.getElementById("mock-history-container");
+    if (!container) return;
+    if (completed.length === 0) {
+      container.innerHTML = `<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">No mocks submitted yet. Launch your first mock above.</p>`;
+      return;
+    }
+
+    container.innerHTML = "";
+    const sorted = completed.slice().sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+    sorted.slice(0, 3).forEach(att => {
+      const secScores = {};
+      if (att.questions && Array.isArray(att.questions) && att.userResponses) {
+        att.questions.forEach(q => {
+          const secName = q.subject || "GEN";
+          if (!secScores[secName]) secScores[secName] = 0;
+          const resp = att.userResponses[q.id];
+          if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
+            if (resp.selectedOption === q.correctIndex) secScores[secName] += 2.0;
+            else secScores[secName] -= 0.5;
+          }
+        });
+      }
+
+      const card = document.createElement("div");
+      card.className = "ticket-card";
+      card.innerHTML = `
+        <div class="ticket-header">
+          <div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <b style="font-size:14px; color:#fff;">${att.title || 'SSC CGL Mock'}</b>
+              ${att.attemptNumber > 1 ? `<span class="badge" style="background:#8957e5; font-size:9px;">Attempt ${att.attemptNumber}</span>` : ''}
+              <span class="badge-slot slot-${(att.diurnalSlot || 'morning').toLowerCase()}">${att.diurnalSlot || 'DAY'}</span>
+            </div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">${att.timeIST || formatISTDate(att.timestamp)}</div>
+          </div>
+          <div style="text-align:right;">
+            <span style="font-size:16px; font-weight:800; color:var(--accent-cyan);">${(att.finalScore || 0).toFixed(2)} pts</span>
+          </div>
+        </div>
+        <div class="ticket-pills-row">
+          ${Object.keys(secScores).map(k => `<span class="ticket-sec-pill"><b>${k}:</b> ${secScores[k].toFixed(1)}</span>`).join('')}
+          <span class="ticket-sec-pill" style="color:var(--status-red);">Traps: ${att.q4Traps || 0}</span>
+        </div>
+        <div class="ticket-actions-bar">
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.exportMockByIdJson('${att.sessionId}')">📥 Export</button>
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--status-green);" onclick="CGL_OS.reattemptMock('${att.sessionId}')">🔁 Re-attempt</button>
+          <button class="btn btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openMockReview('${att.sessionId}')">Inspect Solutions</button>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  async function renderDrilldownSubjectLevel() {
+    safeSetText("drilldown-breadcrumb", "Global");
+    safeSetText("drill-level-tag", "LEVEL: SUBJECT");
+    const list = document.getElementById("drilldown-list");
+    if (!list) return;
+    list.innerHTML = "";
+
+    const attempts = await getAllRecords("store_attempts");
+    const completed = attempts.filter(a => a.completed);
+
+    Object.keys(TAXONOMY).forEach(subKey => {
+      const sub = TAXONOMY[subKey];
+      let subAtt = 0, subCor = 0;
+      completed.forEach(c => {
+        if (c.questions && Array.isArray(c.questions)) {
+          c.questions.forEach(q => {
+            if (q.subject === subKey) {
+              const resp = (c.userResponses && typeof c.userResponses === "object") ? c.userResponses[q.id] : null;
+              if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
+                subAtt++;
+                if (resp.selectedOption === q.correctIndex) subCor++;
+              }
+            }
+          });
+        }
+      });
+
+      const div = document.createElement("div");
+      div.className = "card";
+      div.style.padding = "12px";
+      div.style.marginBottom = "8px";
+      div.style.cursor = "pointer";
+      div.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div style="font-weight:700;">${sub.name} (${subKey})</div>
+            <div style="font-size:11px; color:var(--text-muted);">${sub.chapters.length} Standard Chapters</div>
+          </div>
+          <div style="text-align:right;">
+            <span class="badge" style="background:#151a24; color:#38bdf8;">
+              ${subAtt > 0 ? `Acc: ${Math.round((subCor / subAtt) * 100)}%` : "Unattempted"}
+            </span>
+          </div>
+        </div>
+      `;
+      div.addEventListener("click", () => renderDrilldownChapterLevel(subKey));
+      list.appendChild(div);
+    });
+  }
+
+  async function renderDrilldownChapterLevel(subKey) {
+    const sub = TAXONOMY[subKey];
+    safeSetHtml("drilldown-breadcrumb", `<span onclick="CGL_OS.renderDashboard()">Global</span> &gt; <b>${subKey}</b>`);
+    safeSetText("drill-level-tag", "LEVEL: CHAPTERS");
+
+    const list = document.getElementById("drilldown-list");
+    if (!list) return;
+    list.innerHTML = "";
+
+    const attempts = await getAllRecords("store_attempts");
+    const completed = attempts.filter(a => a.completed);
+    const allQuestions = await getAllRecords("store_questions");
+
+    sub.chapters.forEach(chap => {
+      let chapAtt = 0, chapCor = 0, chapSec = 0;
+      completed.forEach(c => {
+        if (c.questions && Array.isArray(c.questions)) {
+          c.questions.forEach(q => {
+            if (q.chapter === chap) {
+              const resp = (c.userResponses && typeof c.userResponses === "object") ? c.userResponses[q.id] : null;
+              if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
+                chapAtt++;
+                chapSec += (resp.timeSpentSec || 0);
+                if (resp.selectedOption === q.correctIndex) chapCor++;
+              }
+            }
+          });
+        }
+      });
+
+      const totalInBank = allQuestions.filter(q => q.chapter === chap).length;
+      const div = document.createElement("div");
+      div.className = "card";
+      div.style.padding = "12px";
+      div.style.marginBottom = "8px";
+      div.style.cursor = "pointer";
+
+      div.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div style="font-weight:700; font-family:var(--font-mono); font-size:13px;">${chap}</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
+              Bank: ${totalInBank} Qs • ${chapAtt > 0 ? `Speed: ${Math.round(chapSec / chapAtt)}s` : "No solve data"}
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <span class="badge" style="background:${chapAtt > 0 ? '#1b4d2e' : '#151a24'}; color:${chapAtt > 0 ? '#4ade80' : '#8b949e'};">
+              ${chapAtt > 0 ? `Acc: ${Math.round((chapCor / chapAtt) * 100)}%` : "Unattempted"}
+            </span>
+          </div>
+        </div>
+      `;
+      div.addEventListener("click", () => openChapterInspector(subKey, chap, chapAtt, chapCor, chapSec));
+      list.appendChild(div);
+    });
+  }
+
+  async function openChapterInspector(subKey, chap, attCount, corCount, secCount) {
+    safeSetText("insp-chapter-title", chap);
+    safeSetText("insp-subject-title", TAXONOMY[subKey] ? TAXONOMY[subKey].name : subKey);
+
+    const acc = attCount > 0 ? Math.round((corCount / attCount) * 100) : 0;
+    const avgSpeed = attCount > 0 ? Math.round(secCount / attCount) : 0;
+    safeSetText("insp-acc", attCount > 0 ? `${acc}%` : "--");
+    safeSetText("insp-speed", attCount > 0 ? `${avgSpeed}s` : "--");
+
+    const nc = attCount > 0 ? Math.max(0, (1 - (attCount / 50))).toFixed(2) : "1.00";
+    safeSetText("insp-nc", nc);
+
+    const blitzBtn = document.getElementById("btn-launch-chapter-blitz");
+    if (blitzBtn) {
+      blitzBtn.onclick = () => {
+        const m = document.getElementById("modal-chapter-inspector");
+        if (m) m.classList.remove("active");
+        launchConfiguredMockDirect(subKey, chap, 5, 5);
+      };
+    }
+
+    pushHistoryState("modal-chapter-inspector");
+    const m = document.getElementById("modal-chapter-inspector");
+    if (m) m.classList.add("active");
+  }
+
+  /* ==========================================================================
+   * SECTION 25: FLASHCARD VAULT & ANKI EXPORT ENGINE (EXPORT & STUDY ONLY)
+   * ========================================================================== */
+  async function renderVault() {
+    await renderVaultTagPills();
+    const flashcards = await getAllRecords("store_flashcards");
+    const container = document.getElementById("flashcard-list-container");
+    if (!container) return;
+    container.innerHTML = "";
+
+    safeSetText("vault-count-total", flashcards.length);
+    let diagramCount = 0, extraCount = 0;
+    flashcards.forEach(f => {
+      if (f.frontImageUrl || f.backImageUrl) diagramCount++;
+      if (f.extra && f.extra.trim()) extraCount++;
+    });
+    safeSetText("vault-count-diagrams", diagramCount);
+    safeSetText("vault-count-extra", extraCount);
+
+    const filterSub = document.getElementById("vault-deck-filter-sub")?.value || "ALL";
+
+    const filtered = flashcards.filter(f => {
+      if (filterSub !== "ALL" && f.subject !== filterSub) return false;
+      if (vaultActiveTag !== "ALL" && (!Array.isArray(f.tags) || !f.tags.includes(vaultActiveTag))) return false;
+      if (vaultSearchQuery) {
+        const inFront = f.front.toLowerCase().includes(vaultSearchQuery);
+        const inBack = f.back.toLowerCase().includes(vaultSearchQuery);
+        const inExtra = (f.extra || "").toLowerCase().includes(vaultSearchQuery);
+        if (!inFront && !inBack && !inExtra) return false;
+      }
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      container.innerHTML = `<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:16px;">Zero flashcards match current criteria.</div>`;
+      return;
+    }
+
+    filtered.forEach(f => {
+      const tile = document.createElement("div");
+      tile.className = "vault-compact-tile";
+      tile.innerHTML = `
+        <div class="vault-compact-header" onclick="this.parentElement.classList.toggle('open')">
+          <div style="overflow:hidden; padding-right:8px;">
+            <div style="display:flex; align-items:center; gap:6px; margin-bottom:2px;">
+              <span class="badge" style="background:#151a24; color:var(--accent-cyan); font-size:10px;">${f.subject} • ${f.chapter}</span>
+              <span class="anki-type-tag">${f.cardType || 'BASIC'}</span>
+            </div>
+            <div style="font-size:12.5px; font-weight:600; color:#fff; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">
+              ${f.front.replace(/\$+/g, '').slice(0, 75)}...
+            </div>
+          </div>
+          <span style="font-size:12px; color:var(--text-muted); font-family:var(--font-mono);">▼</span>
+        </div>
+        <div class="vault-compact-drawer">
+          <div style="font-size:14px; line-height:1.6; color:#fff; margin-bottom:8px;"><b>Prompt:</b><br>${formatRichText(f.front)}</div>
+          <div style="font-size:13.5px; line-height:1.6; color:var(--accent-cyan); margin-bottom:8px;"><b>Answer:</b><br>${formatRichText(f.back)}</div>
+          ${f.extra ? `<div class="callout-box" style="margin-top:6px; font-size:12px;"><b>Notes:</b><br>${formatRichText(f.extra)}</div>` : ''}
+          <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:8px;">
+            <button class="btn btn-secondary" style="padding:2px 8px; font-size:10px;" onclick="CGL_OS.openFlashcardEditorModal(false, '${f.id}')">Edit</button>
+            <button class="btn btn-danger" style="padding:2px 8px; font-size:10px;" onclick="CGL_OS.deleteCurrentEditingFlashcard('${f.id}')">Delete</button>
+          </div>
+        </div>
+      `;
+      container.appendChild(tile);
+    });
+  }
+
+  async function renderVaultTagPills() {
+    const container = document.getElementById("vault-tag-scroll-pills");
+    if (!container) return;
+    container.innerHTML = "";
+
+    const flashcards = await getAllRecords("store_flashcards");
+    const allTags = new Set();
+    flashcards.forEach(f => {
+      (f.tags || []).forEach(t => allTags.add(t));
+    });
+
+    const createPill = (label, tagVal) => {
+      const btn = document.createElement("button");
+      btn.className = "anchor-pill" + (vaultActiveTag === tagVal ? " active" : "");
+      btn.innerText = label;
+      btn.onclick = () => {
+        vaultActiveTag = tagVal;
+        renderVaultTagPills();
+        renderVault();
+      };
+      return btn;
+    };
+
+    container.appendChild(createPill("All Tags", "ALL"));
+    allTags.forEach(tag => {
+      container.appendChild(createPill(`#${tag}`, tag));
+    });
+  }
+
+  function handleVaultSearchInput(val) {
+    vaultSearchQuery = val.trim().toLowerCase();
+    renderVault();
+  }
+
+  function renderFlashcardList() {
+    renderVault();
+  }
+
+  function toggleVaultCardAccordion(id) {
+    const tile = document.getElementById(`vault-tile-${id}`);
+    if (tile) tile.classList.toggle("open");
+  }
+
+  async function launchUntimedQuickCarousel() {
+    const flashcards = await getAllRecords("store_flashcards");
+    const filterSub = document.getElementById("vault-deck-filter-sub")?.value || "ALL";
+    const filtered = flashcards.filter(f => filterSub === "ALL" || f.subject === filterSub);
+
+    if (filtered.length === 0) {
+      alert("No cards in vault matching this selection.");
+      return;
+    }
+
+    activeVaultDeck = filtered;
+    activeVaultIndex = 0;
+    activeVaultFlipped = false;
+
+    pushNavLayer("modal-flashcard-study", () => {
+      const m = document.getElementById("modal-flashcard-study");
+      if (m) m.classList.remove("active");
+    });
+    const m = document.getElementById("modal-flashcard-study");
+    if (m) m.classList.add("active");
+    renderCurrentVaultCard();
+  }
+
+  function renderCurrentVaultCard() {
+    const card = activeVaultDeck[activeVaultIndex];
+    if (!card) return;
+
+    activeVaultFlipped = false;
+    safeSetText("fc-study-progress", `Card ${activeVaultIndex + 1} of ${activeVaultDeck.length}`);
+    safeSetText("fc-card-chapter", `${card.subject} • ${card.chapter}`);
+    safeSetText("fc-card-type-tag", card.cardType || (card.extra ? 'BASIC_EXTRA' : 'BASIC'));
+    safeSetHtml("fc-card-body", formatRichText(card.front));
+
+    const fBox = document.getElementById("fc-card-front-img-box");
+    if (fBox) {
+      if (card.frontImageUrl && card.frontImageUrl.trim().length > 0) {
+        fBox.style.display = "block";
+        fBox.innerHTML = `<img src="${card.frontImageUrl}" alt="Front Diagram">`;
+      } else {
+        fBox.style.display = "none";
+        fBox.innerHTML = "";
+      }
+    }
+
+    const bBox = document.getElementById("fc-card-back-img-box");
+    if (bBox) {
+      bBox.style.display = "none";
+      bBox.innerHTML = "";
+    }
+
+    safeSetText("fc-card-cue", "[ TAP TO REVEAL ]");
+  }
+
+  function flipStudyFlashcard() {
+    if (activeVaultFlipped) return;
+    const card = activeVaultDeck[activeVaultIndex];
+    if (!card) return;
+
+    activeVaultFlipped = true;
+
+    const bBox = document.getElementById("fc-card-back-img-box");
+    if (bBox) {
+      if (card.backImageUrl && card.backImageUrl.trim().length > 0) {
+        bBox.style.display = "block";
+        bBox.innerHTML = `<img src="${card.backImageUrl}" alt="Back Proof">`;
+      } else {
+        bBox.style.display = "none";
+        bBox.innerHTML = "";
+      }
+    }
+
+    let extraHtml = "";
+    if (card.extra && card.extra.trim().length > 0) {
+      extraHtml = `<div class="callout-box" style="margin-top:10px; font-size:12px;"><b>Notes:</b><br>${formatRichText(card.extra)}</div>`;
+    }
+
+    safeSetHtml("fc-card-body", `
+      <div style="color:var(--text-muted); font-size:12px; margin-bottom:8px;">${formatRichText(card.front)}</div>
+      <hr style="border:0; border-top:1px solid var(--border-color); margin:8px 0;">
+      <div style="font-weight:700; color:#fff;">${formatRichText(card.back)}</div>
+      ${extraHtml}
+    `);
+    safeSetText("fc-card-cue", "Revealed. Rate above or navigate below.");
+  }
+
+  function navStudyCard(step) {
+    if (activeVaultDeck.length === 0) return;
+    activeVaultIndex += step;
+    if (activeVaultIndex < 0) activeVaultIndex = activeVaultDeck.length - 1;
+    if (activeVaultIndex >= activeVaultDeck.length) activeVaultIndex = 0;
+    renderCurrentVaultCard();
+  }
+
+  function openAnkiExportModal() {
+    pushHistoryState("modal-anki-export");
+    const m = document.getElementById("modal-anki-export");
+    if (m) m.classList.add("active");
+  }
+
+  async function generateAndDownloadAnkiTsv() {
+    const sub = document.getElementById("anki-export-subject")?.value || "ALL";
+    const fieldMapping = document.getElementById("anki-export-fields")?.value || "THREE_FIELD";
+    const deckName = document.getElementById("anki-export-deck-name")?.value.trim() || "SSC CGL 2026";
+    const convertMath = document.getElementById("anki-convert-mathjax")?.checked ?? true;
+    const includeImages = document.getElementById("anki-include-data-images")?.checked ?? true;
+
+    const allCards = await getAllRecords("store_flashcards");
+    const pool = sub === "ALL" ? allCards : allCards.filter(c => c.subject === sub);
+
+    if (pool.length === 0) {
+      alert("Zero cards match the chosen Anki export criteria.");
+      return;
+    }
+
+    let tsv = `#separator:Tab\n#html:true\n#deck:${deckName}\n#notetype:CGL-Master-Card\n`;
+    tsv += fieldMapping === "THREE_FIELD" ? `#columns:Front\tBack\tExtra\tTags\n` : `#columns:Front\tBack\tTags\n`;
+
+    pool.forEach(c => {
+      let frontText = convertMath ? convertKatexToAnkiMathJax(c.front) : c.front;
+      let backText = convertMath ? convertKatexToAnkiMathJax(c.back) : c.back;
+      let extraText = c.extra ? (convertMath ? convertKatexToAnkiMathJax(c.extra) : c.extra) : "";
+
+      frontText = frontText.replace(/\n/g, "<br>").replace(/\t/g, " ");
+      backText = backText.replace(/\n/g, "<br>").replace(/\t/g, " ");
+      extraText = extraText.replace(/\n/g, "<br>").replace(/\t/g, " ");
+
+      if (includeImages) {
+        if (c.frontImageUrl) frontText += `<br><img src="${c.frontImageUrl}">`;
+        if (c.backImageUrl) backText += `<br><img src="${c.backImageUrl}">`;
+      }
+
+      const tags = (Array.isArray(c.tags) ? c.tags : []).join(' ') + ` ${c.subject} ${c.chapter}`;
+      tsv += fieldMapping === "THREE_FIELD" ? `${frontText}\t${backText}\t${extraText}\t${tags}\n` : `${frontText}\t${backText}<br>${extraText}\t${tags}\n`;
+    });
+
+    const blob = new Blob([tsv], { type: "text/tab-separated-values;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `Anki_${sub}_Export_${Date.now()}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+    const m = document.getElementById("modal-anki-export");
+    if (m) m.classList.remove("active");
+  }
+
+  async function openFlashcardEditorModal(isNew = true, cardId = null) {
+    currentFcFrontImgBase64 = "";
+    currentFcBackImgBase64 = "";
+
+    if (isNew) {
+      safeSetText("flashcard-editor-title", "Add New Card to Vault");
+      safeSetValue("edit-fc-id", "fc_" + Date.now());
+      safeSetValue("edit-fc-subject", "QA");
+      safeSetValue("edit-fc-chapter", "QA_PERCENTAGE");
+      safeSetValue("edit-fc-type", "BASIC_EXTRA");
+      safeSetValue("edit-fc-front", "");
+      safeSetValue("edit-fc-front-img-url", "");
+      safeSetValue("edit-fc-front-img-file", "");
+      safeSetValue("edit-fc-back", "");
+      safeSetValue("edit-fc-back-img-url", "");
+      safeSetValue("edit-fc-back-img-file", "");
+      safeSetValue("edit-fc-extra", "");
+      safeSetValue("edit-fc-tags", "");
+      safeSetDisplay("btn-delete-fc", "none");
+    } else {
+      const card = await getRecord("store_flashcards", cardId);
+      if (!card) return;
+      safeSetText("flashcard-editor-title", "Edit Vault Card");
+      safeSetValue("edit-fc-id", card.id);
+      safeSetValue("edit-fc-subject", card.subject);
+      safeSetValue("edit-fc-chapter", card.chapter);
+      safeSetValue("edit-fc-type", card.cardType || (card.extra ? "BASIC_EXTRA" : "BASIC"));
+      safeSetValue("edit-fc-front", card.front);
+      safeSetValue("edit-fc-front-img-url", card.frontImageUrl || "");
+      safeSetValue("edit-fc-front-img-file", "");
+      safeSetValue("edit-fc-back", card.back);
+      safeSetValue("edit-fc-back-img-url", card.backImageUrl || "");
+      safeSetValue("edit-fc-back-img-file", "");
+      safeSetValue("edit-fc-extra", card.extra || "");
+      safeSetValue("edit-fc-tags", Array.isArray(card.tags) ? card.tags.join(', ') : "");
+      safeSetDisplay("btn-delete-fc", "block");
+    }
+
+    pushHistoryState("modal-flashcard-editor");
+    const m = document.getElementById("modal-flashcard-editor");
+    if (m) m.classList.add("active");
+  }
+
+  async function handleFlashcardFrontImageUpload(input) {
+    if (input.files && input.files[0]) {
+      currentFcFrontImgBase64 = await compressImageFile(input.files[0]);
+    }
+  }
+
+  async function handleFlashcardBackImageUpload(input) {
+    if (input.files && input.files[0]) {
+      currentFcBackImgBase64 = await compressImageFile(input.files[0]);
+    }
+  }
+
+  async function saveFlashcardEditor() {
+    const id = document.getElementById("edit-fc-id")?.value;
+    const subject = document.getElementById("edit-fc-subject")?.value;
+    const chapter = document.getElementById("edit-fc-chapter")?.value.trim().toUpperCase();
+    const cardType = document.getElementById("edit-fc-type")?.value;
+    const front = document.getElementById("edit-fc-front")?.value.trim();
+    const back = document.getElementById("edit-fc-back")?.value.trim();
+    const extra = document.getElementById("edit-fc-extra")?.value.trim();
+    const frontUrl = document.getElementById("edit-fc-front-img-url")?.value.trim();
+    const backUrl = document.getElementById("edit-fc-back-img-url")?.value.trim();
+    const tagsRaw = document.getElementById("edit-fc-tags")?.value.trim();
+
+    if (!front || !back || !chapter) {
+      alert("Front Prompt, Back Target Fact, and Chapter are required.");
+      return;
+    }
+
+    const existing = await getRecord("store_flashcards", id);
+    const cardObj = {
+      id: id,
+      cardType: cardType,
+      subject: subject,
+      chapter: chapter,
+      front: front,
+      frontImageUrl: currentFcFrontImgBase64 || frontUrl || (existing ? existing.frontImageUrl : ""),
+      back: back,
+      backImageUrl: currentFcBackImgBase64 || backUrl || (existing ? existing.backImageUrl : ""),
+      extra: extra,
+      tags: tagsRaw ? tagsRaw.split(',').map(t => t.trim()) : ["Manual"]
+    };
+
+    await putRecord("store_flashcards", cardObj);
+    const m = document.getElementById("modal-flashcard-editor");
+    if (m) m.classList.remove("active");
+    renderVault();
+  }
+
+  async function deleteCurrentEditingFlashcard(id = null) {
+    const targetId = id || document.getElementById("edit-fc-id")?.value;
+    if (confirm("Permanently delete this card from the vault?")) {
+      await deleteRecordFromStore("store_flashcards", targetId);
+      const m = document.getElementById("modal-flashcard-editor");
+      if (m) m.classList.remove("active");
+      renderVault();
+    }
+  }
+
+  /* ==========================================================================
+   * SECTION 26: PUBLISHING PRINT ENGINE
    * ========================================================================== */
   async function openPrintConfigModal() {
     await updatePrintChapters();
     await populatePrintMockDropdown();
     pushHistoryState("modal-print-config");
-    document.getElementById("modal-print-config").classList.add("active");
+    const m = document.getElementById("modal-print-config");
+    if (m) m.classList.add("active");
   }
 
   async function populatePrintMockDropdown() {
     const attempts = await getAllRecords("store_attempts");
     const select = document.getElementById("print-mock-select");
+    if (!select) return;
     select.innerHTML = "";
     attempts.forEach(a => {
       const opt = document.createElement("option");
@@ -4508,14 +6247,15 @@ const CGL_OS = (() => {
   function handlePrintTypeChange(type) {
     const isQ = type === "QUESTIONS" || type === "COMPENDIUM";
     const isMock = type === "PAST_MOCK";
-    document.getElementById("print-sub-wrap").style.display = isQ ? "block" : "none";
-    document.getElementById("print-chap-wrap").style.display = isQ ? "block" : "none";
-    document.getElementById("print-mock-select-wrap").style.display = isMock ? "block" : "none";
+    safeSetDisplay("print-sub-wrap", isQ ? "block" : "none");
+    safeSetDisplay("print-chap-wrap", isQ ? "block" : "none");
+    safeSetDisplay("print-mock-select-wrap", isMock ? "block" : "none");
   }
 
   async function updatePrintChapters() {
-    const sub = document.getElementById("print-subject").value;
+    const sub = document.getElementById("print-subject")?.value || "ALL";
     const chapSelect = document.getElementById("print-chapter");
+    if (!chapSelect) return;
     chapSelect.innerHTML = `<option value="ALL">All Chapters</option>`;
 
     const allQs = await getAllRecords("store_questions");
@@ -4530,13 +6270,15 @@ const CGL_OS = (() => {
   }
 
   async function generateAndPrintSheet() {
-    document.getElementById("modal-print-config").classList.remove("active");
-    const pType = document.getElementById("print-type").value;
-    const sub = document.getElementById("print-subject").value;
-    const chap = document.getElementById("print-chapter").value;
-    const ansMode = document.getElementById("print-include-ans").value;
+    const modal = document.getElementById("modal-print-config");
+    if (modal) modal.classList.remove("active");
+    const pType = document.getElementById("print-type")?.value || "COMPENDIUM";
+    const sub = document.getElementById("print-subject")?.value || "ALL";
+    const chap = document.getElementById("print-chapter")?.value || "ALL";
+    const ansMode = document.getElementById("print-include-ans")?.value || "APPENDIX";
 
     const root = document.getElementById("print-sheet-root");
+    if (!root) return;
     root.innerHTML = "";
 
     const timestampIST = formatISTDate(Date.now());
@@ -4672,7 +6414,7 @@ const CGL_OS = (() => {
 
       root.innerHTML = content;
     } else if (pType === "PAST_MOCK") {
-      const mockId = document.getElementById("print-mock-select").value;
+      const mockId = document.getElementById("print-mock-select")?.value;
       const attempts = await getAllRecords("store_attempts");
       const targetMock = attempts.find(a => a.sessionId === mockId);
       if (!targetMock) return;
@@ -4746,7 +6488,7 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * SECTION 22: DATA EXPORT MATRIX (UNIVERSAL TELEMETRY EXTRACTION)
+   * SECTION 27: UNIVERSAL DATA EXTRACTION MATRIX & DATABASE STUDIO
    * ========================================================================== */
   function exportCurrentReviewMockJson() {
     if (!activeReviewAttempt) {
@@ -4843,7 +6585,8 @@ const CGL_OS = (() => {
   }
 
   async function exportCurrentSelectedStoreJson() {
-    const storeName = document.getElementById("db-store-select").value;
+    const storeName = document.getElementById("db-store-select")?.value;
+    if (!storeName) return;
     const records = await getAllRecords(storeName);
     const now = Date.now();
 
@@ -4869,6 +6612,150 @@ const CGL_OS = (() => {
     URL.revokeObjectURL(a.href);
   }
 
+  async function exportScopedForensicDossier() {
+    const sub = document.getElementById("scoped-export-subject")?.value || "ALL";
+    const timeframe = document.getElementById("scoped-export-timeframe")?.value || "15D";
+    const filter = document.getElementById("scoped-export-filter")?.value || "ALL";
+    const encoding = document.getElementById("scoped-export-encoding")?.value || "HYBRID_CSV";
+    await exportDossierInternal(sub, timeframe, filter, encoding, false);
+  }
+
+  async function exportGlobalMasterDossier() {
+    await exportDossierInternal("ALL", "ALL", "ALL", "HYBRID_CSV", true);
+  }
+
+  async function exportDossierInternal(sub, timeframe, filter, encoding, isGlobalMaster = false) {
+    const allAttempts = await getAllRecords("store_attempts");
+    const allFlashcards = await getAllRecords("store_flashcards");
+    const consultations = await getAllRecords("store_ai_consultations");
+
+    const now = Date.now();
+    let cutoff = 0;
+    if (timeframe === "7D") cutoff = now - (7 * 24 * 60 * 60 * 1000);
+    else if (timeframe === "15D") cutoff = now - (15 * 24 * 60 * 60 * 1000);
+    else if (timeframe === "30D") cutoff = now - (30 * 24 * 60 * 60 * 1000);
+
+    const filteredAttempts = allAttempts.filter(a => a.completed && a.timestamp >= cutoff);
+    const exposureMap = {};
+
+    allAttempts.filter(a => a.completed).sort((a, b) => a.timestamp - b.timestamp).forEach(att => {
+      if (att.questions && Array.isArray(att.questions) && att.userResponses) {
+        att.questions.forEach(q => {
+          if (sub === "ALL" || q.subject === sub) {
+            const resp = att.userResponses[q.id];
+            if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
+              if (!exposureMap[q.id]) {
+                exposureMap[q.id] = {
+                  totalExposures: 0,
+                  firstSeenIST: att.timeIST || formatISTDate(att.timestamp),
+                  lastSeenIST: att.timeIST || formatISTDate(att.timestamp),
+                  spacingHistory: []
+                };
+              }
+              const hist = exposureMap[q.id];
+              const priorEpoch = hist.spacingHistory.length > 0 ? hist.spacingHistory[hist.spacingHistory.length - 1].epochMs : 0;
+              hist.totalExposures++;
+              hist.lastSeenIST = att.timeIST || formatISTDate(att.timestamp);
+              hist.spacingHistory.push({
+                attemptNum: hist.totalExposures,
+                epochMs: att.timestamp,
+                dateIST: att.timeIST || formatISTDate(att.timestamp),
+                timeSpentSec: resp.timeSpentSec || 0,
+                outcome: resp.selectedOption === q.correctIndex ? 1 : 0,
+                gapDays: calcGapDays(att.timestamp, priorEpoch)
+              });
+            }
+          }
+        });
+      }
+    });
+
+    const telemetryRows = [];
+    const decisionTrails = {};
+
+    filteredAttempts.forEach(att => {
+      if (att.questions && Array.isArray(att.questions) && att.userResponses) {
+        att.questions.forEach(q => {
+          if (sub === "ALL" || q.subject === sub) {
+            const resp = att.userResponses[q.id];
+            if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
+              const isCor = resp.selectedOption === q.correctIndex ? 1 : 0;
+              const isTrap = (resp.timeSpentSec > 90 && isCor === 0) || (resp.isPanicSlip) || (resp.switches > 0 && isCor === 0);
+
+              if (filter === "ALL" || (filter === "TRAPS_ONLY" && isTrap) || (filter === "PANIC_ONLY" && resp.isPanicSlip)) {
+                telemetryRows.push({
+                  mockId: att.sessionId,
+                  mockIST: att.timeIST || formatISTDate(att.timestamp),
+                  slot: att.diurnalSlot || getDiurnalSlot(att.timestamp),
+                  qId: q.id,
+                  subject: q.subject,
+                  chapter: q.chapter,
+                  sel: resp.selectedOption,
+                  cor: q.correctIndex,
+                  t: resp.timeSpentSec || 0,
+                  sw: resp.switches || 0,
+                  panic: resp.isPanicSlip ? 1 : 0,
+                  tag: resp.errorTag || "UNCLASSIFIED"
+                });
+
+                if (resp.decisionTrail && resp.decisionTrail.length > 0) {
+                  decisionTrails[`${att.sessionId}_${q.id}`] = resp.decisionTrail;
+                }
+              }
+            }
+          }
+        });
+      }
+    });
+
+    const scopedFlashcards = allFlashcards.filter(f => sub === "ALL" || f.subject === sub);
+    let telemetryPayload;
+
+    if (encoding === "HYBRID_CSV") {
+      let csv = "mockId,mockIST,slot,qId,subject,chapter,sel,cor,t,sw,panic,tag\n";
+      telemetryRows.forEach(r => {
+        csv += `${r.mockId},${r.mockIST},${r.slot},${r.qId},${r.subject},${r.chapter},${r.sel},${r.cor},${r.t},${r.sw},${r.panic},${r.tag}\n`;
+      });
+      telemetryPayload = csv;
+    } else {
+      telemetryPayload = telemetryRows;
+    }
+
+    const dossierEnvelope = {
+      __os_manifest: {
+        engine: "SSC_CGL_INTELLIGENCE_OS",
+        version: DB_VERSION,
+        exportedAtEpoch: now,
+        exportedAtIST: formatISTDate(now),
+        diurnalSlot: getDiurnalSlot(now),
+        exportScope: isGlobalMaster ? "GLOBAL_360_MASTER_DOSSIER" : `${sub}_${timeframe}_${filter}`,
+        encoding: encoding
+      },
+      cumulativeClinicalNarrative: consultations.length > 0 ? consultations[consultations.length - 1].cumulativeNarrative || "Baseline initialized." : "No prior consultations logged.",
+      recentConsultationLogs: consultations.slice(-5),
+      candidateProfile: {
+        target: "SSC CGL 2026 Tier 1 & Tier 2 Master Preparation",
+        scopedAttemptsEvaluated: filteredAttempts.length,
+        scopedTelemetryCount: telemetryRows.length,
+        vaultCardCount: scopedFlashcards.length
+      },
+      questionExposuresAndSpacing: exposureMap,
+      telemetryData: telemetryPayload,
+      decisionTrails: decisionTrails
+    };
+
+    const blob = new Blob([JSON.stringify(dossierEnvelope, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = isGlobalMaster 
+      ? `cgl_master_forensic_dossier_360_${now}.json`
+      : `cgl_forensic_dossier_${sub}_${timeframe}_${now}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+  }
+
   async function exportUnifiedAiHandoffPackage() {
     const now = Date.now();
     const allAttempts = await getAllRecords("store_attempts");
@@ -4877,55 +6764,6 @@ const CGL_OS = (() => {
     const allFlashcards = await getAllRecords("store_flashcards");
     const consultations = await getAllRecords("store_ai_consultations");
     const completedAttempts = allAttempts.filter(a => a.completed);
-
-    const telemetryRows = [];
-    const decisionTrails = {};
-    const exposureMap = {};
-
-    completedAttempts.sort((a, b) => a.timestamp - b.timestamp).forEach(att => {
-      if (att.questions && Array.isArray(att.questions) && att.userResponses) {
-        att.questions.forEach(q => {
-          const resp = att.userResponses[q.id];
-          if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
-            if (!exposureMap[q.id]) {
-              exposureMap[q.id] = {
-                totalExposures: 0,
-                firstSeenIST: att.timeIST || formatISTDate(att.timestamp),
-                lastSeenIST: att.timeIST || formatISTDate(att.timestamp),
-                history: []
-              };
-            }
-            exposureMap[q.id].totalExposures++;
-            exposureMap[q.id].lastSeenIST = att.timeIST || formatISTDate(att.timestamp);
-            exposureMap[q.id].history.push({
-              mockId: att.sessionId,
-              dateIST: att.timeIST || formatISTDate(att.timestamp),
-              t: resp.timeSpentSec || 0,
-              correct: resp.selectedOption === q.correctIndex ? 1 : 0
-            });
-
-            telemetryRows.push({
-              mockId: att.sessionId,
-              mockIST: att.timeIST || formatISTDate(att.timestamp),
-              slot: att.diurnalSlot || getDiurnalSlot(att.timestamp),
-              qId: q.id,
-              subject: q.subject,
-              chapter: q.chapter,
-              sel: resp.selectedOption,
-              cor: q.correctIndex,
-              t: resp.timeSpentSec || 0,
-              sw: resp.switches || 0,
-              panic: resp.isPanicSlip ? 1 : 0,
-              tag: resp.errorTag || "UNCLASSIFIED"
-            });
-
-            if (resp.decisionTrail && resp.decisionTrail.length > 0) {
-              decisionTrails[`${att.sessionId}_${q.id}`] = resp.decisionTrail;
-            }
-          }
-        });
-      }
-    });
 
     const masterPackage = {
       cgl_os_master_handoff: {
@@ -4944,17 +6782,10 @@ const CGL_OS = (() => {
         consultationsCount: consultations.length,
         taxonomy: TAXONOMY
       },
-      performanceTelemetry: {
-        totalEvaluatedAttempts: completedAttempts.length,
-        totalResponseLogs: telemetryRows.length,
-        telemetryRows: telemetryRows,
-        decisionTrails: decisionTrails,
-        questionExposureMap: exposureMap
-      },
       knowledgeCompendium: allConcepts,
       masterQuestionBank: sortQuestionsHierarchical(allQuestions),
       flashcardVault: allFlashcards,
-      recentConsultations: consultations.slice(-5)
+      recentConsultations: consultations.slice(-10)
     };
 
     const blob = new Blob([JSON.stringify(masterPackage, null, 2)], { type: "application/json" });
@@ -4967,25 +6798,19 @@ const CGL_OS = (() => {
     URL.revokeObjectURL(a.href);
   }
 
-  /* ==========================================================================
-   * SECTION 23: DIRECT DATABASE STUDIO & RECOVERY OPERATIONS
-   * ========================================================================== */
   async function refreshDbInspector() {
     const storeSelect = document.getElementById("db-store-select");
     if (!storeSelect) return;
     const storeName = storeSelect.value;
     const records = await getAllRecords(storeName);
     const list = document.getElementById("db-inspector-list");
+    if (!list) return;
     list.innerHTML = "";
 
     records.forEach(rec => {
       const key = rec.id || rec.sessionId || rec.questionId || rec.key;
       const row = document.createElement("div");
-      row.style.display = "flex";
-      row.style.justifyContent = "space-between";
-      row.style.alignItems = "center";
-      row.style.padding = "6px 0";
-      row.style.borderBottom = "1px solid var(--border-color)";
+      row.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid var(--border-color);";
       row.innerHTML = `
         <span style="font-family:var(--font-mono); font-size:11.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:70%;">${key}</span>
         <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.editDbRecordModal('${storeName}', '${key}')">Inspect</button>
@@ -5008,14 +6833,16 @@ const CGL_OS = (() => {
       openFlashcardEditorModal(false, rec.id);
     } else {
       activeInspectedJsonString = JSON.stringify(rec, null, 2);
-      document.getElementById("db-inspect-modal-title").innerText = `${sName} Record`;
-      document.getElementById("db-inspect-modal-key").innerText = `KEY: ${key}`;
-      document.getElementById("db-inspect-code-content").innerText = activeInspectedJsonString;
+      safeSetText("db-inspect-modal-title", `${sName} Record`);
+      safeSetText("db-inspect-modal-key", `KEY: ${key}`);
+      safeSetText("db-inspect-code-content", activeInspectedJsonString);
 
       pushNavLayer("modal-db-inspector-viewer", () => {
-        document.getElementById("modal-db-inspector-viewer").classList.remove("active");
+        const m = document.getElementById("modal-db-inspector-viewer");
+        if (m) m.classList.remove("active");
       });
-      document.getElementById("modal-db-inspector-viewer").classList.add("active");
+      const m = document.getElementById("modal-db-inspector-viewer");
+      if (m) m.classList.add("active");
     }
   }
 
@@ -5029,7 +6856,7 @@ const CGL_OS = (() => {
     if (confirm("Permanently clear mock test history? (Question bank and Living Sheets remain 100% intact)")) {
       await clearStore("store_attempts");
       alert("Test history cleared.");
-      renderDashboard();
+      await renderDashboard();
       refreshDbInspector();
     }
   }
@@ -5056,513 +6883,23 @@ const CGL_OS = (() => {
       alert("Factory reset complete.");
       SearchService.invalidate();
       await syncAllTaxonomyDropdowns();
-      renderDashboard();
+      await renderDashboard();
       refreshDbInspector();
     }
   }
 
-  /* ==========================================================================
-   * SECTION 24: GLOBAL RESEARCH & OMNI SEARCH DRAWERS
-   * ========================================================================== */
-  function openOmniResearchForCurrentQuestion() {
-    if (!activeExam) return;
-    const q = activeExam.questions[activeExam.currentQuestionIndex];
-    triggerOmniResearchDrawer(q);
-  }
-
-  function openOmniResearchForDojoQuestion() {
-    if (!dojoExam) return;
-    const q = dojoExam.questions[dojoExam.currentIndex];
-    triggerOmniResearchDrawer(q);
-  }
-
-  function triggerOmniResearchDrawer(q) {
-    if (!q) return;
-    const queryText = (q.subtopic || q.method || q.chapter).replace(/_/g, " ");
-    document.getElementById("omni-research-query-sub").innerText = `${q.subject} • ${q.chapter}`;
-    document.getElementById("omni-research-prompt-preview").innerText = q.questionText.slice(0, 160) + "...";
-
-    const wikiUrl = `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(queryText + " SSC CGL")}`;
-    const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(q.questionText.slice(0, 100) + " " + queryText)}`;
-
-    let wolframQuery = queryText;
-    const mathMatch = q.questionText.match(/\$([^\$]+)\$/);
-    if (mathMatch && mathMatch[1]) {
-      wolframQuery = mathMatch[1].replace(/\\text\{.*?\}/g, "").replace(/\\/g, "");
-    }
-    const wolframUrl = `https://www.wolframalpha.com/input?i=${encodeURIComponent(wolframQuery)}`;
-
-    document.getElementById("omni-link-wiki").href = wikiUrl;
-    document.getElementById("omni-link-google").href = googleUrl;
-    document.getElementById("omni-link-wolfram").href = wolframUrl;
-
-    pushHistoryState("modal-omni-research");
-    document.getElementById("modal-omni-research").classList.add("active");
-  }
-
-  function jumpToConceptFromReview(conceptId) {
-    const q = activeExam.questions[activeExam.currentQuestionIndex];
-    openCompendiumToSheet(conceptId, q.subject, q.chapter);
-  }
-
-  function jumpToConceptFromDojo() {
-    if (!dojoExam) return;
-    const q = dojoExam.questions[dojoExam.currentIndex];
-    const targetCId = (Array.isArray(q.conceptIds) && q.conceptIds.length > 0) ? q.conceptIds[0] : q.conceptId;
-    openCompendiumToSheet(targetCId, q.subject, q.chapter);
-  }
-
-  function openOmniSearchModal() {
-    pushHistoryState("modal-comp-omni-search");
-    document.getElementById("modal-comp-omni-search").classList.add("active");
-    document.getElementById("comp-omni-search-input").value = "";
-    document.getElementById("comp-omni-results-list").innerHTML = `<p style="color:var(--text-muted); text-align:center; padding:20px;">Type keywords above to query across all living sheets.</p>`;
-    setTimeout(() => document.getElementById("comp-omni-search-input").focus(), 150);
-  }
-
-  async function executeOmniSearch(keyword) {
-    const list = document.getElementById("comp-omni-results-list");
-    const term = keyword.trim().toLowerCase();
-    if (!term) {
-      list.innerHTML = `<p style="color:var(--text-muted); text-align:center; padding:20px;">Type keywords above to query across all living sheets.</p>`;
-      return;
-    }
-
-    const allDossiers = await ConceptService.getAll();
-    const results = allDossiers.filter(d => 
-      (d.title && d.title.toLowerCase().includes(term)) ||
-      (d.subtitle && d.subtitle.toLowerCase().includes(term)) ||
-      (d.chapter && d.chapter.toLowerCase().includes(term)) ||
-      (d.content && d.content.toLowerCase().includes(term))
-    );
-
-    list.innerHTML = "";
-    if (results.length === 0) {
-      list.innerHTML = `<p style="color:var(--text-muted); text-align:center; padding:20px;">No matching formulas, traps, or sheets found.</p>`;
-      return;
-    }
-
-    results.forEach(res => {
-      const div = document.createElement("div");
-      div.className = "card";
-      div.style.padding = "10px";
-      div.style.marginBottom = "8px";
-      div.style.cursor = "pointer";
-      div.innerHTML = `
-        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-          <span class="badge" style="background:#1f6feb;">${res.subject} • ${res.chapter}</span>
-        </div>
-        <b style="font-size:14px; color:#fff;">${res.title}</b>
-        <div style="font-size:11px; color:var(--accent-cyan); font-family:var(--font-mono); margin-bottom:4px;">${res.subtitle || ''}</div>
-        <div style="font-size:12px; color:var(--text-muted); max-height:40px; overflow:hidden; text-overflow:ellipsis;">${res.content.slice(0, 100)}...</div>
-      `;
-      div.addEventListener("click", () => {
-        document.getElementById("modal-comp-omni-search").classList.remove("active");
-        openCompendiumToSheet(res.id, res.subject, res.chapter);
-      });
-      list.appendChild(div);
-    });
-  }
-
-  /* ==========================================================================
-   * SECTION 25: LIVING KNOWLEDGE STUDIO CONCEPT CARD AUTHORING
-   * ========================================================================== */
-  function openConceptEditorModal(isNew = true) {
-    currentConceptImageBase64 = "";
-    document.getElementById("concept-editor-title").innerText = isNew ? "Add Topic Sheet" : "Edit Topic Sheet";
-
-    if (isNew || currentCompSheets.length === 0) {
-      document.getElementById("concept-edit-id").value = "top_" + Date.now();
-      document.getElementById("concept-edit-subject").value = activeCompSubject || "QA";
-      document.getElementById("concept-edit-chapter").value = activeCompChapter || "QA_PERCENTAGE";
-      document.getElementById("concept-edit-title").value = "";
-      document.getElementById("concept-edit-sub").value = "";
-      document.getElementById("concept-edit-body").value = "";
-      document.getElementById("concept-edit-img-url").value = "";
-      document.getElementById("concept-edit-img-file").value = "";
-    } else {
-      const curr = currentCompSheets[activeCompSheetIndex];
-      document.getElementById("concept-edit-id").value = curr.id;
-      document.getElementById("concept-edit-subject").value = curr.subject;
-      document.getElementById("concept-edit-chapter").value = curr.chapter;
-      document.getElementById("concept-edit-title").value = curr.title;
-      document.getElementById("concept-edit-sub").value = curr.subtitle || "";
-      document.getElementById("concept-edit-body").value = curr.content;
-      document.getElementById("concept-edit-img-url").value = curr.imageUrl || "";
-      document.getElementById("concept-edit-img-file").value = "";
-    }
-
-    pushHistoryState("modal-concept-editor");
-    document.getElementById("modal-concept-editor").classList.add("active");
-  }
-
-  async function handleConceptImageUpload(input) {
-    if (input.files && input.files[0]) {
-      currentConceptImageBase64 = await compressImageFile(input.files[0]);
-    }
-  }
-
-  async function saveConceptCard() {
-    const id = document.getElementById("concept-edit-id").value;
-    const subject = document.getElementById("concept-edit-subject").value;
-    const chapter = document.getElementById("concept-edit-chapter").value.trim().toUpperCase();
-    const title = document.getElementById("concept-edit-title").value.trim();
-    const subtitle = document.getElementById("concept-edit-sub").value.trim();
-    const content = document.getElementById("concept-edit-body").value.trim();
-    const urlInput = document.getElementById("concept-edit-img-url").value.trim();
-
-    if (!title || !content || !chapter) {
-      alert("Chapter, Topic Title, and Content are required.");
-      return;
-    }
-
-    const obj = {
-      id: id,
-      subject: subject,
-      chapter: chapter,
-      title: title,
-      subtitle: subtitle,
-      content: content,
-      imageUrl: currentConceptImageBase64 || urlInput,
-      timestamp: Date.now()
-    };
-
-    const existing = await ConceptService.get(id);
-    if (existing) {
-      await ConceptService.update(id, obj);
-    } else {
-      await ConceptService.create(obj);
-    }
-
-    document.getElementById("modal-concept-editor").classList.remove("active");
-    openCompendiumToSheet(id, subject, chapter);
-  }
-
-  async function deleteCurrentCompendiumSheet() {
-    if (!currentCompSheets || currentCompSheets.length === 0) return;
-    const curr = currentCompSheets[activeCompSheetIndex];
-    if (confirm(`Permanently delete living sheet: "${curr.title}"?`)) {
-      await ConceptService.delete(curr.id);
-      await renderCompStudioSheets();
-    }
-  }
-
-  async function autoSaveCompScratchpad(val) {
-    const sheet = currentCompSheets[activeCompSheetIndex];
-    if (!sheet) return;
-    await putRecord("store_notes", { id: `scratch_${sheet.id}`, content: val, timestamp: Date.now() });
-    const st = document.getElementById("comp-scratchpad-status");
-    if (st) {
-      st.style.display = "inline";
-      setTimeout(() => { st.style.display = "none"; }, 1500);
-    }
-  }
-
-  async function promptCreateNewChapter() {
-    const chapName = prompt(`Enter new chapter tag for ${activeCompSubject} (e.g. ${activeCompSubject}_NEW_TOPIC):`);
-    if (!chapName || !chapName.trim()) return;
-
-    try {
-      const formatted = await TaxonomyService.addChapter(activeCompSubject, chapName);
-      await handleCompStudioSubjectChange(activeCompSubject);
-      document.getElementById("comp-studio-chapter-select").value = formatted;
-      await handleCompStudioChapterChange(formatted);
-    } catch (err) {
-      alert(err.message);
-    }
-  }
-
-  function insertDossierSnippet(type) {
-    const textarea = document.getElementById("concept-edit-body");
-    let snippet = "";
-    if (type === "FORMULA") snippet = "\n> [!formula] Key Identity\n> $$a^2 + b^2 = c^2$$\n";
-    if (type === "TRAP") snippet = "\n> [!trap] Critical TCS Deduction\n> Verify whether radius or diameter is specified.\n";
-    if (type === "TABLE") snippet = "\n| Condition | Method | Shortcut |\n| :--- | :--- | :--- |\n| Case 1 | Direct Tangent | $2\\sqrt{r_1 r_2}$ |\n";
-    textarea.value += snippet;
-    textarea.focus();
-  }
-
-  async function launchCurrentSheetQuestionsDrill() {
-    const sheet = currentCompSheets[activeCompSheetIndex];
-    if (!sheet) return;
-
-    closeCompendiumStudio();
-    const linked = await ConceptService.getLinkedQuestions(sheet.id, sheet.chapter);
-
-    if (linked.length === 0) {
-      alert(`No questions in bank for ${sheet.chapter}.`);
-      return;
-    }
-
-    const instance = await MockService.generate({
-      title: `Sheet Practice: ${sheet.title}`,
-      explicitQuestionIds: linked.map(q => q.id),
-      count: Math.min(25, linked.length),
-      mode: "RANDOM"
-    });
-    await MockService.launchMockSession(instance);
-  }
-
-  function openCompendiumStudio() {
-    pushNavLayer("compendium-fullscreen-view", () => {
-      document.getElementById("compendium-fullscreen-view").style.display = "none";
-    });
-    document.getElementById("compendium-fullscreen-view").style.display = "flex";
-    handleCompStudioSubjectChange(activeCompSubject || "QA");
-  }
-
-  function closeCompendiumStudio() {
-    document.getElementById("compendium-fullscreen-view").style.display = "none";
-  }
-
-  /* ==========================================================================
-   * SECTION 26: FLASHCARD VAULT AUTHORING (ANKI EXPORT ORIENTED)
-   * ========================================================================== */
-  async function renderVaultTagPills() {
-    const container = document.getElementById("vault-tag-scroll-pills");
-    if (!container) return;
-    container.innerHTML = "";
-
-    const flashcards = await getAllRecords("store_flashcards");
-    const allTags = new Set();
-    flashcards.forEach(f => {
-      (f.tags || []).forEach(t => allTags.add(t));
-    });
-
-    const createPill = (label, tagVal) => {
-      const btn = document.createElement("button");
-      btn.className = "anchor-pill" + (vaultActiveTag === tagVal ? " active" : "");
-      btn.innerText = label;
-      btn.onclick = () => {
-        vaultActiveTag = tagVal;
-        renderVaultTagPills();
-        renderFlashcardList();
-      };
-      return btn;
-    };
-
-    container.appendChild(createPill("All Tags", "ALL"));
-    allTags.forEach(tag => {
-      container.appendChild(createPill(`#${tag}`, tag));
-    });
-  }
-
-  function handleVaultSearchInput(val) {
-    vaultSearchQuery = val.trim().toLowerCase();
-    renderFlashcardList();
-  }
-
-  async function renderFlashcardList() {
-    await renderVault();
-  }
-
-  function toggleVaultCardAccordion(id) {
-    const tile = document.getElementById(`vault-tile-${id}`);
-    if (tile) tile.classList.toggle("open");
-  }
-
-  async function launchUntimedQuickCarousel() {
-    const flashcards = await getAllRecords("store_flashcards");
-    const filterSub = document.getElementById("vault-deck-filter-sub") ? document.getElementById("vault-deck-filter-sub").value : "ALL";
-    const filtered = flashcards.filter(f => filterSub === "ALL" || f.subject === filterSub);
-
-    if (filtered.length === 0) {
-      alert("No cards in vault matching this selection.");
-      return;
-    }
-
-    activeVaultDeck = filtered;
-    activeVaultIndex = 0;
-    activeVaultFlipped = false;
-
-    pushNavLayer("modal-flashcard-study", () => {
-      document.getElementById("modal-flashcard-study").classList.remove("active");
-    });
-    document.getElementById("modal-flashcard-study").classList.add("active");
-    renderCurrentVaultCard();
-  }
-
-  function renderCurrentVaultCard() {
-    const card = activeVaultDeck[activeVaultIndex];
-    if (!card) return;
-
-    activeVaultFlipped = false;
-    document.getElementById("fc-study-progress").innerText = `Card ${activeVaultIndex + 1} of ${activeVaultDeck.length}`;
-    document.getElementById("fc-card-chapter").innerText = `${card.subject} • ${card.chapter}`;
-    document.getElementById("fc-card-type-tag").innerText = card.cardType || (card.extra ? 'BASIC_EXTRA' : 'BASIC');
-    document.getElementById("fc-card-body").innerHTML = formatRichText(card.front);
-
-    const fBox = document.getElementById("fc-card-front-img-box");
-    if (card.frontImageUrl && card.frontImageUrl.trim().length > 0) {
-      fBox.style.display = "block";
-      fBox.innerHTML = `<img src="${card.frontImageUrl}" alt="Front Diagram">`;
-    } else {
-      fBox.style.display = "none";
-      fBox.innerHTML = "";
-    }
-
-    const bBox = document.getElementById("fc-card-back-img-box");
-    bBox.style.display = "none";
-    bBox.innerHTML = "";
-
-    document.getElementById("fc-card-cue").innerText = "Tap card to flip answer";
-  }
-
-  function flipStudyFlashcard() {
-    if (activeVaultFlipped) return;
-    const card = activeVaultDeck[activeVaultIndex];
-    if (!card) return;
-
-    activeVaultFlipped = true;
-
-    const bBox = document.getElementById("fc-card-back-img-box");
-    if (card.backImageUrl && card.backImageUrl.trim().length > 0) {
-      bBox.style.display = "block";
-      bBox.innerHTML = `<img src="${card.backImageUrl}" alt="Back Proof">`;
-    } else {
-      bBox.style.display = "none";
-      bBox.innerHTML = "";
-    }
-
-    let extraHtml = "";
-    if (card.extra && card.extra.trim().length > 0) {
-      extraHtml = `<div class="callout-box" style="margin-top:10px; font-size:12px;"><b>Extra Derivation:</b><br>${formatRichText(card.extra)}</div>`;
-    }
-
-    document.getElementById("fc-card-body").innerHTML = `
-      <div style="color:var(--text-muted); font-size:12px; margin-bottom:8px;">${formatRichText(card.front)}</div>
-      <hr style="border:0; border-top:1px solid var(--border-color); margin:8px 0;">
-      <div style="font-weight:700; color:#fff;">${formatRichText(card.back)}</div>
-      ${extraHtml}
-    `;
-    document.getElementById("fc-card-cue").innerText = "Revealed. Use arrows below to navigate.";
-  }
-
-  function navStudyCard(step) {
-    activeVaultIndex += step;
-    if (activeVaultIndex < 0) activeVaultIndex = activeVaultDeck.length - 1;
-    if (activeVaultIndex >= activeVaultDeck.length) activeVaultIndex = 0;
-    renderCurrentVaultCard();
-  }
-
-  function openAnkiExportModal() {
-    pushHistoryState("modal-anki-export");
-    document.getElementById("modal-anki-export").classList.add("active");
-  }
-
-  async function openFlashcardEditorModal(isNew = true, cardId = null) {
-    currentFcFrontImgBase64 = "";
-    currentFcBackImgBase64 = "";
-
-    if (isNew) {
-      document.getElementById("flashcard-editor-title").innerText = "Add New Card to Vault";
-      document.getElementById("edit-fc-id").value = "fc_" + Date.now();
-      document.getElementById("edit-fc-subject").value = "QA";
-      document.getElementById("edit-fc-chapter").value = "QA_PERCENTAGE";
-      document.getElementById("edit-fc-type").value = "BASIC_EXTRA";
-      document.getElementById("edit-fc-front").value = "";
-      document.getElementById("edit-fc-front-img-url").value = "";
-      document.getElementById("edit-fc-front-img-file").value = "";
-      document.getElementById("edit-fc-back").value = "";
-      document.getElementById("edit-fc-back-img-url").value = "";
-      document.getElementById("edit-fc-back-img-file").value = "";
-      document.getElementById("edit-fc-extra").value = "";
-      document.getElementById("edit-fc-tags").value = "";
-      document.getElementById("btn-delete-fc").style.display = "none";
-    } else {
-      const card = await getRecord("store_flashcards", cardId);
-      if (!card) return;
-      document.getElementById("flashcard-editor-title").innerText = "Edit Vault Card";
-      document.getElementById("edit-fc-id").value = card.id;
-      document.getElementById("edit-fc-subject").value = card.subject;
-      document.getElementById("edit-fc-chapter").value = card.chapter;
-      document.getElementById("edit-fc-type").value = card.cardType || (card.extra ? "BASIC_EXTRA" : "BASIC");
-      document.getElementById("edit-fc-front").value = card.front;
-      document.getElementById("edit-fc-front-img-url").value = card.frontImageUrl || "";
-      document.getElementById("edit-fc-front-img-file").value = "";
-      document.getElementById("edit-fc-back").value = card.back;
-      document.getElementById("edit-fc-back-img-url").value = card.backImageUrl || "";
-      document.getElementById("edit-fc-back-img-file").value = "";
-      document.getElementById("edit-fc-extra").value = card.extra || "";
-      document.getElementById("edit-fc-tags").value = Array.isArray(card.tags) ? card.tags.join(', ') : "";
-      document.getElementById("btn-delete-fc").style.display = "block";
-    }
-
-    pushHistoryState("modal-flashcard-editor");
-    document.getElementById("modal-flashcard-editor").classList.add("active");
-  }
-
-  async function handleFlashcardFrontImageUpload(input) {
-    if (input.files && input.files[0]) {
-      currentFcFrontImgBase64 = await compressImageFile(input.files[0]);
-    }
-  }
-
-  async function handleFlashcardBackImageUpload(input) {
-    if (input.files && input.files[0]) {
-      currentFcBackImgBase64 = await compressImageFile(input.files[0]);
-    }
-  }
-
-  async function saveFlashcardEditor() {
-    const id = document.getElementById("edit-fc-id").value;
-    const subject = document.getElementById("edit-fc-subject").value;
-    const chapter = document.getElementById("edit-fc-chapter").value.trim().toUpperCase();
-    const cardType = document.getElementById("edit-fc-type").value;
-    const front = document.getElementById("edit-fc-front").value.trim();
-    const back = document.getElementById("edit-fc-back").value.trim();
-    const extra = document.getElementById("edit-fc-extra").value.trim();
-    const frontUrl = document.getElementById("edit-fc-front-img-url").value.trim();
-    const backUrl = document.getElementById("edit-fc-back-img-url").value.trim();
-    const tagsRaw = document.getElementById("edit-fc-tags").value.trim();
-
-    if (!front || !back || !chapter) {
-      alert("Front Prompt, Back Target Fact, and Chapter are required.");
-      return;
-    }
-
-    const existing = await getRecord("store_flashcards", id);
-    const cardObj = {
-      id: id,
-      cardType: cardType,
-      subject: subject,
-      chapter: chapter,
-      front: front,
-      frontImageUrl: currentFcFrontImgBase64 || frontUrl || (existing ? existing.frontImageUrl : ""),
-      back: back,
-      backImageUrl: currentFcBackImgBase64 || backUrl || (existing ? existing.backImageUrl : ""),
-      extra: extra,
-      tags: tagsRaw ? tagsRaw.split(',').map(t => t.trim()) : ["Manual"]
-    };
-
-    await putRecord("store_flashcards", cardObj);
-    document.getElementById("modal-flashcard-editor").classList.remove("active");
-    renderVault();
-  }
-
-  async function deleteCurrentEditingFlashcard(id = null) {
-    const targetId = id || document.getElementById("edit-fc-id").value;
-    if (confirm("Permanently delete this card from the vault?")) {
-      await deleteRecordFromStore("store_flashcards", targetId);
-      const modal = document.getElementById("modal-flashcard-editor");
-      if (modal) modal.classList.remove("active");
-      renderVault();
-    }
-  }
-
-  /* ==========================================================================
-   * SECTION 27: AI EXPORT & LEDGER EXTRACTION HELPERS
-   * ========================================================================== */
   function openAiExportModal() {
     if (!activeReviewAttempt) return;
     pushHistoryState("modal-ai-export");
-    document.getElementById("modal-ai-export").classList.add("active");
+    const m = document.getElementById("modal-ai-export");
+    if (m) m.classList.add("active");
     updateAiExportPreview();
   }
 
   async function updateAiExportPreview() {
-    const mode = document.getElementById("ai-export-mode").value;
+    const mode = document.getElementById("ai-export-mode")?.value || "LEAN_GEM";
     const att = activeReviewAttempt;
+    if (!att) return;
     let payload = "";
 
     if (mode === "LEAN_GEM") {
@@ -5621,19 +6958,21 @@ const CGL_OS = (() => {
         `• Vault Flashcards Registered: ${flashcards.length}\n`;
     }
 
-    document.getElementById("ai-export-preview").value = payload;
+    safeSetValue("ai-export-preview", payload);
   }
 
   function copyAiExportToClipboard() {
-    const text = document.getElementById("ai-export-preview").value;
+    const text = document.getElementById("ai-export-preview")?.value || "";
     navigator.clipboard.writeText(text);
     alert("Payload copied! Paste into chat with Gemini to diagnose vulnerabilities.");
-    document.getElementById("modal-ai-export").classList.remove("active");
+    const m = document.getElementById("modal-ai-export");
+    if (m) m.classList.remove("active");
   }
 
   function openMasterLedgerExportModal() {
     pushHistoryState("modal-ledger-export");
-    document.getElementById("modal-ledger-export").classList.add("active");
+    const m = document.getElementById("modal-ledger-export");
+    if (m) m.classList.add("active");
   }
 
   function sortQuestionsHierarchical(questions) {
@@ -5649,7 +6988,7 @@ const CGL_OS = (() => {
   }
 
   async function downloadLedgerJson() {
-    const includeImages = document.getElementById("ledger-include-images").checked;
+    const includeImages = document.getElementById("ledger-include-images")?.checked ?? false;
     const allQs = await getAllRecords("store_questions");
     const sorted = sortQuestionsHierarchical(allQs);
 
@@ -5672,7 +7011,8 @@ const CGL_OS = (() => {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(a.href);
-    document.getElementById("modal-ledger-export").classList.remove("active");
+    const m = document.getElementById("modal-ledger-export");
+    if (m) m.classList.remove("active");
   }
 
   async function downloadLedgerMarkdown() {
@@ -5680,7 +7020,6 @@ const CGL_OS = (() => {
     const sorted = sortQuestionsHierarchical(allQs);
 
     let txt = `# SSC CGL MASTER QUESTION BANK REFERENCE LEDGER\nGenerated on: ${formatISTDate(Date.now())}\nTotal Questions: ${sorted.length}\n\n`;
-
     let curSubject = "";
     let curChapter = "";
 
@@ -5713,7 +7052,8 @@ const CGL_OS = (() => {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(a.href);
-    document.getElementById("modal-ledger-export").classList.remove("active");
+    const m = document.getElementById("modal-ledger-export");
+    if (m) m.classList.remove("active");
   }
 
   async function exportCleanMarkdownFlashcards() {
@@ -5742,7 +7082,7 @@ const CGL_OS = (() => {
     const questions = await getAllRecords("store_questions");
     const attempts = await getAllRecords("store_attempts");
     const flashcards = await getAllRecords("store_flashcards");
-    const concepts = await getAllRecords("store_concepts");
+    const concepts = await ConceptService.getAll();
     const consultations = await getAllRecords("store_ai_consultations");
 
     const manifest = `# SSC CGL Intelligence OS - Live Runtime Introspection Manifest
@@ -5766,6 +7106,9 @@ ${JSON.stringify(TAXONOMY, null, 2)}
 - CREATE_QUESTION
 - UPDATE_QUESTION
 - DELETE_QUESTION
+- SAVE_AI_INSIGHT (Persistent AI finding memory)
+- SAVE_AI_PLAN (Multi-step remediation plan)
+- GET_AI_CONTEXT (Bidirectional preparation context)
 - INGEST_AND_ASSEMBLE_COMPLETE_MOCK
 - CREATE_AND_SAVE_FIXED_MOCK
 - EXECUTE_AI_CONSULTATION_BUNDLE
@@ -5783,7 +7126,85 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   /* ==========================================================================
-   * SECTION 28: NAVIGATION, TAB SWITCHING & SYSTEM INITIALIZATION
+   * SECTION 28: GLOBAL SEARCH COCKPIT MODAL CONTROLLER
+   * ========================================================================== */
+  function openGlobalSearchModal() {
+    pushHistoryState("modal-global-search");
+    const m = document.getElementById("modal-global-search");
+    if (m) m.classList.add("active");
+    safeSetValue("global-search-input", "");
+    safeSetHtml("global-search-results-list", `<p style="color:var(--text-muted); text-align:center; padding:30px;">Type keywords above to query the complete database.</p>`);
+    setTimeout(() => {
+      const inp = document.getElementById("global-search-input");
+      if (inp) inp.focus();
+    }, 150);
+  }
+
+  async function handleGlobalSearchInput(val) {
+    const list = document.getElementById("global-search-results-list");
+    if (!list) return;
+    const term = String(val || "").trim();
+    if (!term) {
+      list.innerHTML = `<p style="color:var(--text-muted); text-align:center; padding:30px;">Type keywords above to query the complete database.</p>`;
+      return;
+    }
+
+    const subFilter = document.getElementById("global-search-filter-sub")?.value || "ALL";
+    const res = await SearchService.searchAll(term, { subject: subFilter }, 40);
+
+    list.innerHTML = "";
+    if (res.totalQuestions === 0 && res.totalConcepts === 0) {
+      list.innerHTML = `<p style="color:var(--text-muted); text-align:center; padding:30px;">Zero matching items found across questions or sheets.</p>`;
+      return;
+    }
+
+    // Render Question Matches
+    if (res.questions.length > 0) {
+      const qHead = document.createElement("div");
+      qHead.style.cssText = "font-size:11px; font-weight:800; color:var(--accent-cyan); text-transform:uppercase; margin:8px 0 4px 0;";
+      qHead.innerText = `// Question Matches (${res.questions.length})`;
+      list.appendChild(qHead);
+
+      res.questions.forEach(q => {
+        const div = document.createElement("div");
+        div.className = "card";
+        div.style.padding = "10px";
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <span class="badge" style="background:#1f6feb;">${q.subject} • ${q.chapter}</span>
+            <button class="btn btn-secondary" style="padding:2px 8px; font-size:10px;" onclick="CGL_OS.launchSingleQuestionPractice('${q.id}')">⚡ Solve</button>
+          </div>
+          <div style="font-size:13px; line-height:1.5; color:#fff;">${formatRichText(q.questionText)}</div>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    // Render Concept Matches
+    if (res.concepts.length > 0) {
+      const cHead = document.createElement("div");
+      cHead.style.cssText = "font-size:11px; font-weight:800; color:var(--accent-purple-light); text-transform:uppercase; margin:14px 0 4px 0;";
+      cHead.innerText = `// Knowledge Sheet Matches (${res.concepts.length})`;
+      list.appendChild(cHead);
+
+      res.concepts.forEach(c => {
+        const div = document.createElement("div");
+        div.className = "card";
+        div.style.padding = "10px";
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <b style="font-size:13.5px; color:#fff;">📖 ${c.title}</b>
+            <button class="btn btn-secondary" style="padding:2px 8px; font-size:10px;" onclick="CGL_OS.openCompendiumToSheet('${c.id}', '${c.subject}', '${c.chapter}')">Read Sheet</button>
+          </div>
+          <div style="font-size:11px; color:var(--text-muted);">${c.subtitle || ''}</div>
+        `;
+        list.appendChild(div);
+      });
+    }
+  }
+
+  /* ==========================================================================
+   * SECTION 29: NAVIGATION, TOUCH GESTURES & SYSTEM INITIALIZATION
    * ========================================================================== */
   function switchTab(tId, btn) {
     document.querySelectorAll(".view-container").forEach(el => el.classList.remove("active"));
@@ -5796,7 +7217,10 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     if (targetNavBtn) targetNavBtn.classList.add("active");
 
     if (tId === "tab-dashboard") renderDashboard();
-    if (tId === "tab-dojo") updateDojoChapters();
+    if (tId === "tab-dojo") {
+      updateDojoChapters();
+      renderPracticeQuestionsTable();
+    }
     if (tId === "tab-console") refreshDbInspector();
     if (tId === "tab-vault") renderVault();
   }
@@ -5824,8 +7248,8 @@ ${JSON.stringify(TAXONOMY, null, 2)}
       }, { passive: true });
     };
 
-    // Swipe attached ONLY to Arena body
-    attachSwipeHandler("arena-body", () => document.getElementById("btn-q-save-next").click(), () => document.getElementById("btn-q-prev").click());
+    // Swipe attached ONLY to Exam Arena body
+    attachSwipeHandler("arena-body", () => document.getElementById("btn-q-save-next")?.click(), () => document.getElementById("btn-q-prev")?.click());
 
     // CRITICAL: Knowledge Studio canvas swipe handler is omitted to prevent vertical reading interruptions!
 
@@ -5836,7 +7260,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
         const arenaView = document.getElementById("exam-arena");
         if (arenaView && arenaView.style.display === "flex") {
           if (activeExam && activeExam.isReviewMode) exitReviewArena();
-          else document.getElementById("btn-arena-pause").click();
+          else document.getElementById("btn-arena-pause")?.click();
           return;
         }
 
@@ -5873,7 +7297,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
         updateMiniPlayerDock();
       }
     } catch (e) {
-      console.error("CGL_OS bootstrap notice:", e);
+      console.error("CGL_OS boot notice:", e);
     }
   }
 
@@ -5884,7 +7308,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   }
 
   /* ==========================================================================
-   * SECTION 29: COMPLETE PUBLIC API REGISTRATION
+   * SECTION 30: COMPLETE PUBLIC API REGISTRATION
    * ========================================================================== */
   return {
     // Services
@@ -5900,7 +7324,35 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     pushNavLayer,
     popNavLayer,
 
-    // Mock Builder & Execution
+    // Practice Lab
+    handlePracticeSearchInput,
+    handlePracticeSubjectChange,
+    setPracticeQuickFilter,
+    togglePracticeQuestionSelection,
+    selectAllVisiblePractice,
+    renderPracticeQuestionsTable,
+    launchPracticeSelectedSession,
+    buildMockFromPracticeSelection,
+    launchSingleQuestionPractice,
+
+    // Question GUI Creator & Editor
+    openNewQuestionCreatorModal,
+    handleNewQuestionImageUpload,
+    submitNewQuestionCreator,
+    syncNewQuestionChapterSelect,
+    openEditQuestionModal,
+    openEditCurrentDojoQuestion,
+    handleQuestionImageUpload,
+    saveQuestionEditor,
+    duplicateCurrentEditingQuestion,
+    duplicateCurrentEditingQuestionFromId,
+    deleteCurrentEditingQuestion,
+
+    // Mock Lab & Builder
+    setMockStrategy,
+    updateBuilderChapters,
+    updateBuilderPoolEstimate,
+    previewMockSelection,
     openCustomMockModal,
     addCustomSectionRow,
     removeCustomSectionRow,
@@ -5913,12 +7365,15 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     launchSavedPreset,
     deleteSavedPreset,
     launchConfiguredMock,
+
+    // Exam Arena & Execution
     requestEndSectionEarly,
     confirmEndSectionEarly,
     resumeFromMiniPlayer,
     reattemptMock,
     enterFullScreenReviewArena,
     exitReviewArena,
+    toggleExamPalette,
 
     // Living Knowledge Studio
     openCompendiumStudio,
@@ -5926,17 +7381,19 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     openCompendiumToSheet,
     handleCompStudioSubjectChange,
     handleCompStudioChapterChange,
+    renderCompStudioSheets,
+    renderActiveCompSheet,
     navCompStudioSheet,
     autoSaveCompScratchpad,
     deleteCurrentCompendiumSheet,
     promptCreateNewChapter,
+    insertDossierSnippet,
+    launchCurrentSheetQuestionsDrill,
     openConceptEditorModal,
     handleConceptImageUpload,
     saveConceptCard,
-    insertDossierSnippet,
-    launchCurrentSheetQuestionsDrill,
 
-    // Research & Links
+    // Research & Omni-Search
     openOmniResearchForCurrentQuestion,
     openOmniResearchForDojoQuestion,
     triggerOmniResearchDrawer,
@@ -5944,6 +7401,8 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     jumpToConceptFromDojo,
     openOmniSearchModal,
     executeOmniSearch,
+    openGlobalSearchModal,
+    handleGlobalSearchInput,
 
     // Synapse Explorer
     openSynapseGraphModal,
@@ -5961,17 +7420,8 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     toggleDojoMethod,
     autoSaveDojoAnnotation,
     toggleDojoPalette,
-    toggleExamPalette,
 
-    // Question GUI Editor
-    openEditQuestionModal,
-    openEditCurrentDojoQuestion,
-    handleQuestionImageUpload,
-    saveQuestionEditor,
-    duplicateCurrentEditingQuestion,
-    deleteCurrentEditingQuestion,
-
-    // Review & Diagnostics
+    // Review, Diagnostics & History
     openMockReview,
     switchReviewAttempt,
     handleMistakeTagSelect,
@@ -5981,6 +7431,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     openSubjectDiagnosticModal,
     openHistoryArchiveModal,
     renderArchiveList,
+    deleteAttemptSession,
 
     // Taxonomy Management
     openTaxonomyManagerModal,
@@ -5993,7 +7444,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     syncEditorChapterDropdown,
     syncFlashcardChapterDropdown,
 
-    // Flashcard Vault & Anki
+    // Flashcard Vault
     renderVault,
     renderVaultTagPills,
     handleVaultSearchInput,
@@ -6039,15 +7490,18 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     exportKnowledgeBankJson,
     exportFlashcardVaultJson,
     exportCurrentSelectedStoreJson,
+    exportScopedForensicDossier,
+    exportGlobalMasterDossier,
     exportUnifiedAiHandoffPackage,
     refreshDbInspector,
     editDbRecordModal,
     copyInspectedJsonToClipboard,
     wipeTestAttempts,
     factoryResetAll,
-    renderDashboard
+    renderDashboard,
+    launchContinueTrainingDrill
   };
 })();
 
-// Re-bind to global window object
+// Re-bind to global window anchor
 window.CGL_OS = CGL_OS;
