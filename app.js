@@ -2592,58 +2592,302 @@ const CGL_OS = (() => {
             handledPassageIds.add(q.parentPassageId);
             // Query and assemble all sibling questions sharing this passage ID
             const siblings = allBankQuestions
-              .filter(item => item.parentPassageId === q.parentPassageId)
-              .sort((a, b) => (a.setOrder || 1) - (b.setOrder || 1));
+    async generate(config) {
+      const {
+        title = "SSC CGL Practice Mock",
+        count = 25,
+        durationMin = 15,
+        subject = "ALL",
+        chapter = "ALL",
+        chapters = [],
+        method = "ALL",
+        difficulty = "ALL",
+        mode = "RANDOM",
+        excludeRecentMocks = false,
+        recentMockWindow = 3,
+        randomizeOrder = true,
+        patternBalanced = false,
+        isSectionLocked = false,
+        ephemeral = false,
+        persistQuestions = true,
+        explicitQuestionIds = [],
+        customQuestions = [],
+        sections = null,
+        seed = null
+      } = config;
 
-            siblings.forEach(sib => {
-              if (!addedQuestionIds.has(sib.id)) {
-                clusteredSelection.push(sib);
-                addedQuestionIds.add(sib.id);
+      const isEphemeralMock = (ephemeral === true || persistQuestions === false);
+      const isLocked = (isSectionLocked === true || isSectionLocked === "YES");
+      const allBankQuestions = await getAllRecords("store_questions");
+      const attempts = await getAllRecords("store_attempts");
+      const completed = attempts.filter(a => a.completed).sort((a, b) => b.timestamp - a.timestamp);
+      const perfMap = await PerformanceService.getQuestionPerformanceMap();
+
+      // 1. Resolve Section Partitioning
+      let sectionConfigs = [];
+      if (Array.isArray(sections) && sections.length > 0) {
+        sectionConfigs = sections.map((s, idx) => ({
+          id: s.id || `SEC_${idx + 1}_${s.subject || 'GEN'}`,
+          subject: s.subject || "QA",
+          name: s.name || `${TAXONOMY[s.subject]?.name || s.subject || 'Section'} (Part ${idx + 1})`,
+          count: parseInt(s.count, 10) || Math.round(count / sections.length),
+          durationMin: parseInt(s.durationMin, 10) || Math.round(durationMin / sections.length),
+          explicitQuestionIds: Array.isArray(s.explicitQuestionIds) ? s.explicitQuestionIds : [],
+          customQuestions: Array.isArray(s.customQuestions) ? s.customQuestions : [],
+          chapter: s.chapter || "ALL",
+          chapters: Array.isArray(s.chapters) ? s.chapters : [],
+          mode: s.mode || mode,
+          difficulty: s.difficulty || difficulty
+        }));
+      } else if (subject === "ALL" && (count === 100 || count >= 80)) {
+        // Standard Tier-1 4-Section Queue
+        const tier1Subs = ["REAS", "GA", "QA", "ENG"];
+        const secDuration = Math.round(durationMin / tier1Subs.length);
+        const secCount = Math.round(count / tier1Subs.length);
+        sectionConfigs = tier1Subs.map((subKey, idx) => ({
+          id: `SEC_${idx + 1}_${subKey}`,
+          subject: subKey,
+          name: `${TAXONOMY[subKey]?.name || subKey}`,
+          count: secCount,
+          durationMin: secDuration,
+          explicitQuestionIds: [],
+          customQuestions: [],
+          chapter: "ALL",
+          chapters: [],
+          mode: mode,
+          difficulty: difficulty
+        }));
+      } else {
+        // Single Section Queue
+        sectionConfigs = [{
+          id: "SEC_1",
+          subject: subject === "ALL" ? "QA" : subject,
+          name: title,
+          count: count,
+          durationMin: durationMin,
+          explicitQuestionIds: Array.isArray(explicitQuestionIds) ? explicitQuestionIds : [],
+          customQuestions: Array.isArray(customQuestions) ? customQuestions : [],
+          chapter: chapter,
+          chapters: chapters,
+          mode: mode,
+          difficulty: difficulty
+        }];
+      }
+
+      // Distribute top-level explicit IDs and custom questions across multi-section queues
+      if (sectionConfigs.length > 1) {
+        if (Array.isArray(explicitQuestionIds) && explicitQuestionIds.length > 0) {
+          explicitQuestionIds.forEach(id => {
+            const found = allBankQuestions.find(q => q.id === id);
+            if (found) {
+              const targetSec = sectionConfigs.find(s => s.subject === found.subject) || sectionConfigs[0];
+              if (!targetSec.explicitQuestionIds.includes(id)) {
+                targetSec.explicitQuestionIds.push(id);
               }
-            });
-          }
-        } else {
-          clusteredSelection.push(q);
-          addedQuestionIds.add(q.id);
+            }
+          });
+        }
+        if (Array.isArray(customQuestions) && customQuestions.length > 0) {
+          customQuestions.forEach(cq => {
+            const targetSec = sectionConfigs.find(s => s.subject === cq.subject) || sectionConfigs[0];
+            targetSec.customQuestions.push(cq);
+          });
         }
       }
 
-      const finalSelectedQuestions = clusteredSelection.slice(0, Math.max(count, clusteredSelection.length));
+      const allFinalQuestions = [];
+      const configuredSections = [];
+      let globalCounter = 1;
+      const sessionGlobalUsedIds = new Set();
 
-      // 5. Final Display Randomization (Passage sets remain internally contiguous)
-      if (randomizeOrder) {
-        // Group passage siblings into atomic blocks prior to overall shuffle
-        const blocks = [];
-        const visitedPassages = new Set();
+      // 2. Process Each Section Queue Additively
+      for (let sIdx = 0; sIdx < sectionConfigs.length; sIdx++) {
+        const secCfg = sectionConfigs[sIdx];
+        const secQuestions = [];
+        const secUsedIds = new Set();
+        const secTarget = Math.max(secCfg.count, secCfg.explicitQuestionIds.length + secCfg.customQuestions.length);
 
-        finalSelectedQuestions.forEach(q => {
-          if (q.parentPassageId) {
-            if (!visitedPassages.has(q.parentPassageId)) {
-              visitedPassages.add(q.parentPassageId);
-              const siblings = finalSelectedQuestions.filter(item => item.parentPassageId === q.parentPassageId);
-              blocks.push(siblings);
-            }
-          } else {
-            blocks.push([q]);
+        // Stage A: Explicit Bank Question IDs
+        for (const id of secCfg.explicitQuestionIds) {
+          if (secQuestions.length >= secTarget) break;
+          const found = allBankQuestions.find(q => q.id === id);
+          if (found && !sessionGlobalUsedIds.has(found.id) && !secUsedIds.has(found.id)) {
+            secQuestions.push({ ...found });
+            secUsedIds.add(found.id);
+            sessionGlobalUsedIds.add(found.id);
           }
+        }
+
+        // Stage B: Inline Questions (Handling Ephemeral vs. Bank Ingestion)
+        for (const rawCustom of secCfg.customQuestions) {
+          if (secQuestions.length >= secTarget) break;
+          const item = sanitizeQuestion(rawCustom);
+          const shouldPersist = (item.ephemeral === false || item.persist === true) && !isEphemeralMock;
+
+          if (shouldPersist) {
+            await putRecord("store_questions", item);
+            SearchService.invalidate();
+          } else {
+            item.ephemeral = true;
+          }
+
+          if (!sessionGlobalUsedIds.has(item.id) && !secUsedIds.has(item.id)) {
+            secQuestions.push(item);
+            secUsedIds.add(item.id);
+            sessionGlobalUsedIds.add(item.id);
+          }
+        }
+
+        // Stage C: Additive Backfill from Question Bank
+        const needed = secTarget - secQuestions.length;
+        if (needed > 0) {
+          const targetChapters = (secCfg.chapters && secCfg.chapters.length > 0)
+            ? secCfg.chapters
+            : (secCfg.chapter !== "ALL" ? [secCfg.chapter] : []);
+
+          let candidatePool = allBankQuestions.filter(q => {
+            if (secCfg.subject !== "ALL" && q.subject !== secCfg.subject) return false;
+            if (targetChapters.length > 0 && !targetChapters.includes(q.chapter)) return false;
+            if (secCfg.difficulty !== "ALL" && q.difficulty !== secCfg.difficulty) return false;
+            if (sessionGlobalUsedIds.has(q.id) || secUsedIds.has(q.id)) return false;
+            return true;
+          });
+
+          if (excludeRecentMocks && completed.length > 0) {
+            const recentQIds = new Set();
+            completed.slice(0, recentMockWindow).forEach(att => {
+              (att.questions || []).forEach(q => recentQIds.add(q.id));
+            });
+            const filteredPool = candidatePool.filter(q => !recentQIds.has(q.id));
+            if (filteredPool.length >= needed) {
+              candidatePool = filteredPool;
+            }
+          }
+
+          let prioritized = candidatePool;
+          if (secCfg.mode === "UNATTEMPTED" || secCfg.mode === "UNSEEN") {
+            const p = candidatePool.filter(q => !perfMap[q.id] || perfMap[q.id].attempts === 0);
+            if (p.length > 0) prioritized = p;
+          } else if (secCfg.mode === "INCORRECT") {
+            const p = candidatePool.filter(q => perfMap[q.id] && (perfMap[q.id].lastWasIncorrect || perfMap[q.id].incorrect > 0));
+            if (p.length > 0) prioritized = p;
+          } else if (secCfg.mode === "WEAKNESS") {
+            const p = candidatePool.filter(q => {
+              const st = perfMap[q.id];
+              return st && st.attempts > 0 && (Math.round((st.correct / st.attempts) * 100) < 65 || st.traps.length > 0);
+            });
+            if (p.length > 0) prioritized = p;
+          }
+
+          const shuffledCandidates = this.shuffle([...prioritized], seed);
+
+          // Atomic Passage Set Ingestion with Quota Clamping (Eliminates Overshoot)
+          for (const q of shuffledCandidates) {
+            if (secQuestions.length >= secTarget) break;
+            if (sessionGlobalUsedIds.has(q.id) || secUsedIds.has(q.id)) continue;
+
+            if (q.parentPassageId) {
+              const siblings = allBankQuestions
+                .filter(item => item.parentPassageId === q.parentPassageId)
+                .sort((a, b) => (a.setOrder || 1) - (b.setOrder || 1));
+              const unadded = siblings.filter(s => !sessionGlobalUsedIds.has(s.id) && !secUsedIds.has(s.id));
+
+              if (secQuestions.length + unadded.length <= secTarget || secQuestions.length === 0) {
+                for (const sib of unadded) {
+                  if (secQuestions.length < secTarget) {
+                    secQuestions.push({ ...sib });
+                    secUsedIds.add(sib.id);
+                    sessionGlobalUsedIds.add(sib.id);
+                  }
+                }
+              }
+            } else {
+              secQuestions.push({ ...q });
+              secUsedIds.add(q.id);
+              sessionGlobalUsedIds.add(q.id);
+            }
+          }
+
+          // Dynamic Exhaustive Subject Drain (Eliminates Undershoot)
+          if (secQuestions.length < secTarget) {
+            const fallbackBank = allBankQuestions.filter(q => {
+              if (secCfg.subject !== "ALL" && q.subject !== secCfg.subject) return false;
+              return !sessionGlobalUsedIds.has(q.id) && !secUsedIds.has(q.id);
+            });
+            const shuffledFallback = this.shuffle([...fallbackBank], seed);
+            for (const fq of shuffledFallback) {
+              if (secQuestions.length >= secTarget) break;
+              secQuestions.push({ ...fq });
+              secUsedIds.add(fq.id);
+              sessionGlobalUsedIds.add(fq.id);
+            }
+          }
+
+          // Universal Emergency Cross-Subject Drain (Guarantees Exact Target)
+          if (secQuestions.length < secTarget) {
+            const emergencyBank = allBankQuestions.filter(q => !sessionGlobalUsedIds.has(q.id) && !secUsedIds.has(q.id));
+            const shuffledEmergency = this.shuffle([...emergencyBank], seed);
+            for (const eq of shuffledEmergency) {
+              if (secQuestions.length >= secTarget) break;
+              secQuestions.push({ ...eq });
+              secUsedIds.add(eq.id);
+              sessionGlobalUsedIds.add(eq.id);
+            }
+          }
+        }
+
+        // Stage D: Atomic Passage Contiguity Shuffling
+        let finalSectionList = secQuestions;
+        if (randomizeOrder) {
+          const blocks = [];
+          const seenPassages = new Set();
+          secQuestions.forEach(q => {
+            if (q.parentPassageId) {
+              if (!seenPassages.has(q.parentPassageId)) {
+                seenPassages.add(q.parentPassageId);
+                const s = secQuestions.filter(item => item.parentPassageId === q.parentPassageId);
+                blocks.push(s);
+              }
+            } else {
+              blocks.push([q]);
+            }
+          });
+          this.shuffle(blocks, seed);
+          finalSectionList = [];
+          blocks.forEach(b => finalSectionList.push(...b));
+        }
+
+        // Tag Section Metadata
+        finalSectionList.forEach((q, lIdx) => {
+          q.sectionIndex = sIdx;
+          q.sectionName = secCfg.name;
+          q.localNumber = lIdx + 1;
+          q.globalNumber = globalCounter++;
+          allFinalQuestions.push(q);
         });
 
-        this.shuffle(blocks, seed);
-        finalSelectedQuestions.length = 0;
-        blocks.forEach(b => finalSelectedQuestions.push(...b));
+        configuredSections.push({
+          id: secCfg.id,
+          subject: secCfg.subject,
+          name: secCfg.name,
+          durationSec: secCfg.durationMin * 60,
+          questionCount: finalSectionList.length,
+          locked: false
+        });
       }
 
       return {
         title: title,
         durationMin: durationMin,
-        isSectionLocked: !!isSectionLocked,
+        isSectionLocked: isLocked,
         isEphemeral: isEphemeralMock,
-        sections: sections,
-        questions: finalSelectedQuestions,
+        sections: configuredSections,
+        questions: allFinalQuestions,
         seed: seed || Date.now().toString(),
-        totalSelected: finalSelectedQuestions.length
+        totalSelected: allFinalQuestions.length
       };
     },
+
 
     async saveMockDefinition(mockData) {
       const clean = sanitizeSavedMock(mockData);
@@ -3879,15 +4123,16 @@ const CGL_OS = (() => {
     clearInterval(examTimerInterval);
     clearInterval(questionTimerInterval);
 
+    const lockActive = (isSectionLocked === true || isSectionLocked === "YES");
     let configuredSections = [];
     let flattenedQuestions = [];
     let globalCounter = 1;
 
     if (Array.isArray(customSections) && customSections.length > 0) {
-      // PRESERVE CUSTOM SECTIONAL CLOCKS
       configuredSections = customSections.map((sec, sIdx) => ({
         id: sec.id || `SEC_${sIdx + 1}`,
-        name: sec.name || `${TAXONOMY[sec.subject] ? TAXONOMY[sec.subject].name : sec.subject} (Sec ${sIdx + 1})`,
+        subject: sec.subject || "QA",
+        name: sec.name || `${TAXONOMY[sec.subject]?.name || sec.subject} (Part ${sIdx + 1})`,
         durationSec: sec.durationSec || (sec.durationMin ? sec.durationMin * 60 : Math.round((durationMin * 60) / customSections.length)),
         questionCount: sec.questionCount || 0,
         locked: false
@@ -3908,6 +4153,7 @@ const CGL_OS = (() => {
           : `sub_${q.subject || 'GEN'}`;
         if (!rawSections[sKey]) {
           rawSections[sKey] = {
+            subject: q.subject || "QA",
             name: q.sectionName || (TAXONOMY[q.subject] ? TAXONOMY[q.subject].name : q.subject || "Section"),
             questions: []
           };
@@ -3923,6 +4169,7 @@ const CGL_OS = (() => {
           const secData = rawSections[sKey];
           const secObj = {
             id: `SEC_${sIdx + 1}`,
+            subject: secData.subject,
             name: secData.name,
             durationSec: secDuration,
             questionCount: secData.questions.length,
@@ -3943,6 +4190,7 @@ const CGL_OS = (() => {
       } else {
         configuredSections = [{
           id: "SEC_1",
+          subject: questionsPool[0]?.subject || "QA",
           name: title || "Diagnostic Arena",
           durationSec: durationMin * 60,
           questionCount: questionsPool.length,
@@ -3968,7 +4216,7 @@ const CGL_OS = (() => {
       diurnalSlot: getDiurnalSlot(now),
       title: title || "AI Practice Arena",
       mockType: configuredSections.length > 1 ? "CUSTOM" : "SECTIONAL",
-      isSectionLocked: !!isSectionLocked,
+      isSectionLocked: lockActive,
       isEphemeral: !!isEphemeral,
       sections: configuredSections,
       activeSectionIndex: 0,
@@ -4016,12 +4264,15 @@ const CGL_OS = (() => {
   const COMMAND_REGISTRY = {
     // 1. Symmetrical Mock Creation (Dynamic, Explicit IDs, or Ephemeral Generation)
     CREATE_MOCK: async (payload) => {
-      const isEphemeral = payload.ephemeral === true || payload.persistQuestions === false;
-      const instance = await MockService.generate({
+      const isEphemeral = (payload.ephemeral === true || payload.persistQuestions === false);
+      const isLocked = (payload.isSectionLocked === true || payload.isSectionLocked === "YES");
+      const config = {
         ...(payload.selection || payload),
+        isSectionLocked: isLocked,
         ephemeral: isEphemeral,
         persistQuestions: !isEphemeral
-      });
+      };
+      const instance = await MockService.generate(config);
 
       let savedRecord = null;
       if (!isEphemeral && (payload.saveAsPreset || payload.saveBlueprint)) {
@@ -4030,7 +4281,7 @@ const CGL_OS = (() => {
           type: payload.selection ? "DYNAMIC_BLUEPRINT" : "FIXED_PAPER",
           selectionRule: payload.selection || null,
           isSectionLocked: instance.isSectionLocked,
-          sections: [{ id: 1, subject: payload.selection ? payload.selection.subject : "QA", count: instance.totalSelected, durationMin: instance.durationMin }],
+          sections: instance.sections,
           questions: instance.questions
         });
       }
@@ -4043,11 +4294,105 @@ const CGL_OS = (() => {
         mockId: savedRecord ? savedRecord.id : `instance_${Date.now()}`,
         title: instance.title,
         questionCount: instance.totalSelected,
+        isSectionLocked: instance.isSectionLocked,
+        sectionsCount: instance.sections ? instance.sections.length : 1,
         isEphemeral: isEphemeral,
         questionIds: instance.questions.map(q => q.id),
         launched: !!payload.launchImmediately
       };
     },
+
+    // 1B. Full AI Database Introspection Suite
+    GET_SYSTEM_STATS: async () => {
+      const allQs = await getAllRecords("store_questions");
+      const allAttempts = await getAllRecords("store_attempts");
+      const allFlashcards = await getAllRecords("store_flashcards");
+      const allConcepts = await ConceptService.getAll();
+      const allPresets = await getAllRecords("store_saved_mocks");
+      const allConsultations = await getAllRecords("store_ai_consultations");
+
+      const bySubject = {};
+      const byChapter = {};
+      allQs.forEach(q => {
+        const s = q.subject || "UNKNOWN";
+        const c = q.chapter || "UNKNOWN";
+        bySubject[s] = (bySubject[s] || 0) + 1;
+        byChapter[c] = (byChapter[c] || 0) + 1;
+      });
+
+      return {
+        totalQuestions: allQs.length,
+        questionsBySubject: bySubject,
+        questionsByChapter: byChapter,
+        completedMocksCount: allAttempts.filter(a => a.completed).length,
+        totalAttemptsCount: allAttempts.length,
+        cardVaultCount: allFlashcards.length,
+        livingSheetsCount: allConcepts.length,
+        savedMocksCount: allPresets.length,
+        consultationsCount: allConsultations.length,
+        schemaVersion: DB_VERSION,
+        taxonomy: TAXONOMY
+      };
+    },
+
+    FETCH_QUESTIONS: async (payload) => {
+      const allQs = await getAllRecords("store_questions");
+      const { ids, subject, chapter, difficulty, limit = 50, offset = 0, idsOnly = false } = payload || {};
+
+      let filtered = allQs;
+      if (Array.isArray(ids) && ids.length > 0) {
+        const idSet = new Set(ids);
+        filtered = allQs.filter(q => idSet.has(q.id));
+      } else {
+        if (subject && subject !== "ALL") filtered = filtered.filter(q => q.subject === subject);
+        if (chapter && chapter !== "ALL") filtered = filtered.filter(q => q.chapter === chapter);
+        if (difficulty && difficulty !== "ALL") filtered = filtered.filter(q => q.difficulty === difficulty);
+      }
+
+      const totalMatching = filtered.length;
+      const numLimit = (limit === "ALL" || limit === -1) ? totalMatching : parseInt(limit, 10);
+      const sliced = filtered.slice(offset, offset + numLimit);
+
+      return {
+        totalMatching: totalMatching,
+        returnedCount: sliced.length,
+        offset: offset,
+        questions: idsOnly ? sliced.map(q => q.id) : sliced
+      };
+    },
+
+    FETCH_STORE_RECORDS: async (payload) => {
+      const { store, keys, limit = 50, offset = 0 } = payload || {};
+      if (!store) throw new Error("A valid store name is required.");
+      const records = await getAllRecords(store);
+
+      let filtered = records;
+      if (Array.isArray(keys) && keys.length > 0) {
+        const keySet = new Set(keys);
+        filtered = records.filter(r => keySet.has(r.id || r.sessionId || r.key));
+      }
+
+      const totalRecords = filtered.length;
+      const numLimit = (limit === "ALL" || limit === -1) ? totalRecords : parseInt(limit, 10);
+      const sliced = filtered.slice(offset, offset + numLimit);
+
+      return {
+        store: store,
+        totalRecords: totalRecords,
+        returnedCount: sliced.length,
+        records: sliced
+      };
+    },
+
+    VERIFY_QUESTION_EXISTS: async (payload) => {
+      const { ids = [] } = payload || {};
+      const allQs = await getAllRecords("store_questions");
+      const existingSet = new Set(allQs.map(q => q.id));
+      const found = ids.filter(id => existingSet.has(id));
+      const missing = ids.filter(id => !existingSet.has(id));
+      return { totalQueried: ids.length, foundCount: found.length, missingCount: missing.length, found, missing };
+    },
+
 
     // 2. Safe Read & Telemetry Queries
     SEARCH_QUESTIONS: async (payload) => {
@@ -4318,6 +4663,132 @@ const CGL_OS = (() => {
       SearchService.invalidate();
       return { success: true, actionsExecuted: actions.length };
     },
+    INGEST_AND_ASSEMBLE_COMPLETE_MOCK: async (payload) => {
+      const {
+        title = "Curated Practice Mock",
+        launchImmediately = false,
+        isSectionLocked = false,
+        durationMin = 20,
+        dossiers = [],
+        newQuestions = [],
+        linkExistingQuestions = [],
+        orderedMockQuestionIds = [],
+        sections = null
+      } = payload;
+
+      const isLocked = (isSectionLocked === true || isSectionLocked === "YES");
+
+      if (dossiers.length > 0) {
+        await runTx(["store_concepts"], "readwrite", (tx) => {
+          const st = tx.objectStore("store_concepts");
+          dossiers.forEach(d => st.put(sanitizeDossier(d)));
+        });
+      }
+      if (newQuestions.length > 0) {
+        for (const nq of newQuestions) {
+          const item = sanitizeQuestion(nq);
+          if (item.ephemeral !== true && item.persist !== false) {
+            await putRecord("store_questions", item);
+          }
+        }
+      }
+      if (linkExistingQuestions.length > 0) {
+        for (const link of linkExistingQuestions) {
+          const oldQ = await QuestionService.get(link.questionId);
+          if (oldQ) {
+            const newCIds = Array.isArray(link.assignConceptIds) ? link.assignConceptIds : [link.assignConceptId];
+            oldQ.conceptIds = [...new Set([...(oldQ.conceptIds || []), ...newCIds])];
+            oldQ.conceptId = oldQ.conceptIds[0] || "";
+            await putRecord("store_questions", oldQ);
+          }
+        }
+      }
+
+      const allQs = await getAllRecords("store_questions");
+      const resolved = [];
+      const addedIds = new Set();
+
+      // Resolve from explicit IDs
+      orderedMockQuestionIds.forEach(id => {
+        const found = allQs.find(q => q.id === id);
+        if (found && !addedIds.has(found.id)) {
+          resolved.push({ ...found });
+          addedIds.add(found.id);
+        }
+      });
+
+      // Append new questions
+      newQuestions.forEach(nq => {
+        const item = sanitizeQuestion(nq);
+        if (!addedIds.has(item.id)) {
+          resolved.push(item);
+          addedIds.add(item.id);
+        }
+      });
+
+      // Build Discrete Sections for Timers & Locking
+      let resolvedSections = sections;
+      if (!resolvedSections || resolvedSections.length === 0) {
+        const rawSecMap = {};
+        resolved.forEach(q => {
+          const sub = q.subject || "QA";
+          if (!rawSecMap[sub]) rawSecMap[sub] = [];
+          rawSecMap[sub].push(q);
+        });
+
+        const subKeys = Object.keys(rawSecMap);
+        const secDuration = Math.round(durationMin / Math.max(1, subKeys.length));
+        resolvedSections = subKeys.map((sKey, idx) => ({
+          id: `SEC_${idx + 1}_${sKey}`,
+          subject: sKey,
+          name: `${TAXONOMY[sKey]?.name || sKey}`,
+          count: rawSecMap[sKey].length,
+          durationMin: secDuration
+        }));
+      }
+
+      const paper = await MockService.saveMockDefinition({
+        title: title,
+        type: "FIXED_PAPER",
+        isSectionLocked: isLocked,
+        sections: resolvedSections,
+        questions: resolved
+      });
+
+      SearchService.invalidate();
+
+      if (launchImmediately) {
+        await compileAndLaunchArena(title, resolved, durationMin, isLocked, resolvedSections, false);
+      }
+
+      return {
+        success: true,
+        mockId: paper.id,
+        questionsCount: resolved.length,
+        isSectionLocked: isLocked,
+        sectionsCount: resolvedSections.length
+      };
+    },
+
+    EXECUTE_AI_CONSULTATION_BUNDLE: async (payload) => {
+      const { consultationDossier, actions = [] } = payload;
+      if (consultationDossier) {
+        const now = Date.now();
+        consultationDossier.id = consultationDossier.consultationId || `consult_${now}`;
+        consultationDossier.timestamp = now;
+        consultationDossier.timeIST = formatISTDate(now);
+        await putRecord("store_ai_consultations", consultationDossier);
+      }
+
+      for (const act of actions) {
+        const handler = COMMAND_REGISTRY[act.action];
+        if (handler) {
+          await handler(act.payload || {});
+        }
+      }
+      SearchService.invalidate();
+      return { success: true, actionsExecuted: actions.length };
+    },
 
     REQUEST_HISTORICAL_DUMP: async (payload) => {
       const { targetSubject, timeframeDays = 30 } = payload;
@@ -4338,16 +4809,54 @@ const CGL_OS = (() => {
     },
 
     INGEST_AND_LAUNCH_MOCK: async (payload) => {
-      const isEphemeral = payload.ephemeral === true || payload.persistQuestions === false;
-      const questions = (payload.questions || []).map(sanitizeQuestion);
+      const isEphemeral = (payload.ephemeral === true || payload.persistQuestions === false);
+      const isLocked = (payload.isSectionLocked === true || payload.isSectionLocked === "YES");
+      const rawQuestions = Array.isArray(payload.questions) ? payload.questions : [];
+      const questions = [];
 
-      if (!isEphemeral) {
-        await QuestionService.bulkCreate(questions, "Ingest & Launch");
-        SearchService.invalidate();
+      for (const q of rawQuestions) {
+        const item = sanitizeQuestion(q);
+        const itemEphemeral = item.ephemeral === true || isEphemeral;
+        if (!itemEphemeral) {
+          await putRecord("store_questions", item);
+        } else {
+          item.ephemeral = true;
+        }
+        questions.push(item);
       }
 
-      await compileAndLaunchArena(payload.title || "AI Practice Mock", questions, payload.durationMin || 15, !!payload.isSectionLocked, null, isEphemeral);
-      return { success: true, launched: true, isEphemeral, questionCount: questions.length };
+      if (!isEphemeral) SearchService.invalidate();
+
+      // Resolve Multi-Section Wiring
+      let resolvedSections = payload.sections;
+      if (!resolvedSections || resolvedSections.length === 0) {
+        const rawSecMap = {};
+        questions.forEach(q => {
+          const sub = q.subject || "QA";
+          if (!rawSecMap[sub]) rawSecMap[sub] = [];
+          rawSecMap[sub].push(q);
+        });
+
+        const subKeys = Object.keys(rawSecMap);
+        const secDuration = Math.round((payload.durationMin || 15) / Math.max(1, subKeys.length));
+        resolvedSections = subKeys.map((sKey, idx) => ({
+          id: `SEC_${idx + 1}_${sKey}`,
+          subject: sKey,
+          name: `${TAXONOMY[sKey]?.name || sKey}`,
+          count: rawSecMap[sKey].length,
+          durationMin: secDuration
+        }));
+      }
+
+      await compileAndLaunchArena(payload.title || "AI Practice Mock", questions, payload.durationMin || 15, isLocked, resolvedSections, isEphemeral);
+      return {
+        success: true,
+        launched: true,
+        isEphemeral: isEphemeral,
+        isSectionLocked: isLocked,
+        sectionsCount: resolvedSections.length,
+        questionCount: questions.length
+      };
     },
 
     AI_PRESCRIBE_REMEDY: async (payload) => {
