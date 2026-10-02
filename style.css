@@ -1,6 +1,7 @@
 /* ==========================================================================
-   SSC CGL INTELLIGENCE OS - TACTICAL COMMAND CENTER (V4.0)
+   SSC CGL INTELLIGENCE OS - TACTICAL COMMAND CENTER (V5.0)
    Architecture: High-Precision Cyber-Obsidian / Glassmorphic Telemetry HUD
+   Engine: Responsive Local-First Intelligence & Publishing Platform
    ========================================================================== */
 
 /* === ZONE 1: DESIGN TOKENS & SYSTEM PALETTE === */
@@ -962,7 +963,7 @@ body {
 .palette-cell.rev-incorrect { background: var(--status-red); color: #fff; border-color: #f87171; }
 .palette-cell.rev-unanswered { background: #111728; color: var(--text-muted); border-color: var(--border-color); }
 
-/* === ZONE 14: LIVING COMPENDIUM STUDIO === */
+/* === ZONE 14: LIVING COMPENDIUM STUDIO (GESTURE-SAFE READING) === */
 .comp-tabs-bar {
   display: flex;
   align-items: center;
@@ -992,13 +993,41 @@ body {
   border-color: var(--accent-cyan);
   color: #fff;
 }
+
+/* Strictly vertical reading canvas with touch-action isolation */
 .comp-document-canvas {
   flex: 1;
   overflow-y: auto;
   padding: 24px 20px 80px 20px;
   background: var(--bg-document);
   line-height: 1.75;
+  touch-action: pan-y !important;
 }
+
+/* In-Sheet TOC pill wrap for smooth intra-sheet jump links */
+.sheet-toc-pill-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  background: #0b101d;
+  padding: 10px 14px;
+  border-radius: 9px;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  margin-bottom: 18px;
+}
+.sheet-toc-pill-wrap a.anchor-pill {
+  font-size: 11px;
+  padding: 4px 10px;
+  background: #101828;
+  border-color: rgba(56, 189, 248, 0.2);
+  color: #cbd5e1;
+}
+.sheet-toc-pill-wrap a.anchor-pill:hover {
+  background: var(--accent-blue);
+  color: #fff;
+  border-color: var(--accent-blue);
+}
+
 .callout-box {
   border-left: 3px solid var(--accent-cyan);
   background: rgba(56, 189, 248, 0.08);
@@ -1010,11 +1039,29 @@ body {
 .callout-box.trap { border-left-color: var(--status-red); background: rgba(244, 63, 94, 0.08); }
 .callout-box.formula { border-left-color: var(--accent-purple-light); background: rgba(139, 92, 246, 0.08); }
 
-.document-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin: 16px 0; }
-.document-table th, .document-table td { border: 1px solid var(--border-color); padding: 9px 12px; text-align: left; }
-.document-table th { background: #111828; color: var(--accent-cyan); font-weight: 800; }
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  margin: 16px 0;
+}
+.document-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  min-width: 480px;
+}
+.document-table th, .document-table td {
+  border: 1px solid var(--border-color);
+  padding: 9px 12px;
+  text-align: left;
+}
+.document-table th {
+  background: #111828;
+  color: var(--accent-cyan);
+  font-weight: 800;
+}
 
-/* === ZONE 15: SYNAPSE TREE === */
+/* === ZONE 15: SYNAPSE TREE & EXPLORER === */
 .synapse-tree-container { max-height: 72vh; overflow-y: auto; padding: 8px 4px; }
 .tree-node-item { position: relative; margin: 6px 0; padding-left: 14px; }
 .tree-node-item::before { content: ""; position: absolute; left: 0; top: 18px; width: 10px; height: 2px; background: rgba(56, 189, 248, 0.35); }
@@ -1028,6 +1075,7 @@ body {
   border-radius: 9px;
   cursor: pointer;
   gap: 8px;
+  transition: all 0.16s ease;
 }
 .tree-node-row:hover { border-color: var(--border-glow); background: #141e35; }
 .tree-node-row.subject-row { background: #131c32; border-color: rgba(56, 139, 253, 0.45); }
@@ -1137,11 +1185,9 @@ body {
 .katex * {
   box-sizing: content-box !important;
 }
-
 .katex .katex-html {
   display: inline-block;
 }
-
 .katex .katex-mathml {
   position: absolute;
   clip: rect(1px, 1px, 1px, 1px);
@@ -1150,4 +1196,28 @@ body {
   height: 1px;
   width: 1px;
   overflow: hidden;
+}
+
+/* === ZONE 20: GLOBAL SEARCH COCKPIT & TERMINAL OUTPUT (V5.0 ADDITIONS) === */
+#global-search-results-list {
+  padding: 4px 2px;
+}
+#global-search-results-list .card {
+  margin-bottom: 10px;
+  border-left: 3px solid var(--accent-cyan);
+}
+#global-search-results-list .card:hover {
+  border-color: var(--border-glow);
+  transform: translateY(-1px);
+}
+
+#console-output-box {
+  background: #020409;
+  border: 1px solid var(--accent-blue);
+  color: #38bdf8;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  padding: 12px;
+  border-radius: 9px;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8), 0 0 14px rgba(37, 99, 235, 0.2);
 }
