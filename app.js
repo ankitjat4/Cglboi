@@ -6,21 +6,21 @@
  * Candidate: Ankit Kumar (SSC CGL 2026 Tier 1 & Tier 2 Master Preparation)
  * 
  * Scope of Part 1:
- * - Immediate Global Namespace Anchoring & Safe Defensive DOM Wrappers
- * - Complete Runtime State & Variables
- * - Canonical Initial Seed Taxonomy (22 Arithmetic Chapters + Advanced + Full Syllabi)
+ * - Immediate Global Namespace Anchoring & Defensive DOM Helpers (Crash Guards)
+ * - Complete Runtime State, Clocks & Memory Variables
+ * - Canonical Initial Seed Taxonomy (Full 22 Arithmetic Chapters + All Modules)
  * - Complete Pre-Seeded Question Bank, Topic Dossiers, Blueprints & Flashcards
  * - Dual-Temporal IST Clock & KaTeX Formula Token Isolator / Typesetter
- * - LIFO Navigation Stack & Touch Controller (Canvas Swipe Hijack Removed)
- * - Non-Destructive IndexedDB Harness & Authority Protection
+ * - LIFO Navigation Stack & Touch Controller (Canvas Swipe Conflict Removed)
+ * - Hardened IndexedDB Harness & Non-Destructive Seed Logic
  * - Full System Backup, Restoration & Multi-Store Schema Normalizers
  * - Shared Services: TaxonomyService, QuestionService, ConceptService, SearchService
- * - Taxonomy Management UI & Safe Chapter Reassignment / Merging
- * - Native Question Creator & Editor UI (Manual Entry, Image Compression, Duplication)
+ * - Dynamic Taxonomy Management UI & Safe Chapter Reassignment / Merging
+ * - Native Question Creator & Editor UI (Manual Add, Edit, Image Upload, Duplicate)
  * ============================================================================
  */
 
-// Immediate Global Registration to prevent any "CGL_OS is not defined" reference errors
+// Immediate Global Registration to prevent "CGL_OS is not defined" reference errors
 window.CGL_OS = window.CGL_OS || {};
 
 const CGL_OS = (() => {
@@ -71,10 +71,12 @@ const CGL_OS = (() => {
   let dojoExam = null;
   let activeReviewAttempt = null;
 
-  // Practice Lab / Question Control Center State
+  // Practice Lab / Question Control Center State & Pagination
   let practiceSearchQuery = "";
   let practiceSelectedIds = new Set();
   let practiceActiveQuickFilter = "ALL";
+  let practiceCurrentPage = 1;
+  const PRACTICE_PAGE_SIZE = 25;
 
   // Full-Screen Living Compendium Studio State
   let activeCompSubject = "QA";
@@ -122,9 +124,9 @@ const CGL_OS = (() => {
   /**
    * CANONICAL INITIAL TAXONOMY SEED
    * Contains all 22 Arithmetic chapters + Advanced + full Reasoning, English, and GA.
-   * CRITICAL GUARANTEE:
-   * Used ONLY on fresh/blank database initialization. Once saved into store_config,
-   * the database record is the 100% authoritative master. Deleted chapters are NEVER revived!
+   * CRITICAL ARCHITECTURAL GUARANTEE:
+   * Used strictly as a fallback on a fresh database. Once saved to store_config,
+   * the database record is 100% authoritative. Deleted chapters are NEVER revived!
    */
   const DEFAULT_TAXONOMY = {
     QA: {
@@ -598,7 +600,7 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * SECTION 5: LIFO NAVIGATION STACK & GESTURE CONTROLLER
+   * SECTION 5: LIFO NAVIGATION STACK & TOUCH GESTURE CONTROLLER
    * ========================================================================== */
   const navStack = [];
 
@@ -2661,6 +2663,18 @@ const CGL_OS = (() => {
     }
   }
 
+  async function launchConfiguredMockDirect(sub, chap, count, durMin) {
+    const instance = await MockService.generate({
+      title: `${chap === 'ALL' ? sub : chap} Blitz Drill`,
+      subject: sub,
+      chapter: chap,
+      count: count,
+      durationMin: durMin,
+      mode: "RANDOM"
+    });
+    await MockService.launchMockSession(instance);
+  }
+
   /* ==========================================================================
    * SECTION 17: TIMED EXAM ARENA CONTROLLER & PALETTE
    * ========================================================================== */
@@ -3969,10 +3983,11 @@ const CGL_OS = (() => {
   // --- End of Part 2 ---
   /* ==========================================================================
    * SECTION 19: PRACTICE LAB // QUESTION CONTROL CENTER CONTROLLER
-   * Live Search, Multi-Filter Engine, Checkbox Selection & Batch Launching
+   * Live Search, Multi-Filter Engine, Paged Virtual Slices & Batch Selection
    * ========================================================================== */
   function handlePracticeSearchInput(val) {
     practiceSearchQuery = String(val || "").trim().toLowerCase();
+    practiceCurrentPage = 1;
     renderPracticeQuestionsTable();
   }
 
@@ -3989,6 +4004,7 @@ const CGL_OS = (() => {
         chapSelect.appendChild(opt);
       });
     }
+    practiceCurrentPage = 1;
     renderPracticeQuestionsTable();
   }
 
@@ -3996,6 +4012,7 @@ const CGL_OS = (() => {
     practiceActiveQuickFilter = filterType;
     document.querySelectorAll('[id^="pill-filter-"]').forEach(el => el.classList.remove("active"));
     if (btnEl) btnEl.classList.add("active");
+    practiceCurrentPage = 1;
     renderPracticeQuestionsTable();
   }
 
@@ -4025,6 +4042,11 @@ const CGL_OS = (() => {
       const qId = c.dataset.id;
       c.classList.toggle("selected", practiceSelectedIds.has(qId));
     });
+  }
+
+  function navPracticePage(direction) {
+    practiceCurrentPage += direction;
+    renderPracticeQuestionsTable();
   }
 
   async function renderPracticeQuestionsTable() {
@@ -4078,14 +4100,27 @@ const CGL_OS = (() => {
     });
 
     safeSetText("practice-filtered-count", filtered.length);
+
+    // Pagination calculations (Prevents mobile CPU freeze on 2,300+ items)
+    const totalPages = Math.ceil(filtered.length / PRACTICE_PAGE_SIZE) || 1;
+    if (practiceCurrentPage < 1) practiceCurrentPage = 1;
+    if (practiceCurrentPage > totalPages) practiceCurrentPage = totalPages;
+
+    safeSetText("practice-page-info", `Page ${practiceCurrentPage} of ${totalPages}`);
+    const prevBtn = document.getElementById("btn-practice-prev-page");
+    if (prevBtn) prevBtn.disabled = practiceCurrentPage <= 1;
+    const nextBtn = document.getElementById("btn-practice-next-page");
+    if (nextBtn) nextBtn.disabled = practiceCurrentPage >= totalPages;
+
+    const pagedSlice = filtered.slice((practiceCurrentPage - 1) * PRACTICE_PAGE_SIZE, practiceCurrentPage * PRACTICE_PAGE_SIZE);
     container.innerHTML = "";
 
-    if (filtered.length === 0) {
+    if (pagedSlice.length === 0) {
       container.innerHTML = `<div style="text-align:center; padding:40px 14px; color:var(--text-muted); font-size:12.5px;">No questions match current criteria. Adjust filters or add a new question.</div>`;
       return;
     }
 
-    filtered.forEach(q => {
+    pagedSlice.forEach(q => {
       const pStats = perfMap[q.id];
       const attempts = pStats ? pStats.attempts : 0;
       const acc = attempts > 0 ? Math.round((pStats.correct / attempts) * 100) : 0;
@@ -4111,7 +4146,7 @@ const CGL_OS = (() => {
               ${statusBadge}
             </div>
             <div class="practice-q-actions">
-              <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px;" onclick="CGL_OS.openEditQuestionModal(CGL_OS.QuestionService.get('${q.id}').then(q => CGL_OS.openEditQuestionModal(q)))">Edit</button>
+              <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px;" onclick="CGL_OS.QuestionService.get('${q.id}').then(q => CGL_OS.openEditQuestionModal(q))">Edit</button>
               <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px; color:var(--accent-cyan);" onclick="CGL_OS.duplicateCurrentEditingQuestionFromId('${q.id}')">Clone</button>
               <button class="btn btn-cyan" style="padding:2px 8px; font-size:10px; font-weight:700;" onclick="CGL_OS.launchSingleQuestionPractice('${q.id}')">⚡ Solve</button>
             </div>
@@ -7331,6 +7366,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     togglePracticeQuestionSelection,
     selectAllVisiblePractice,
     renderPracticeQuestionsTable,
+    navPracticePage,
     launchPracticeSelectedSession,
     buildMockFromPracticeSelection,
     launchSingleQuestionPractice,
