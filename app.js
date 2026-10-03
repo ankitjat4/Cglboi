@@ -12,8 +12,79 @@ window.CGL_OS = window.CGL_OS || {};
 
 const CGL_OS = (() => {
   /* ==========================================================================
-   * SECTION 1: DEFENSIVE DOM BINDING HELPERS (CRASH-PROOF GUARDS)
+   * SECTION 1: DEFENSIVE DOM BINDING HELPERS & UNIVERSAL MOJIBAKE HEALER
    * ========================================================================== */
+  // Universal byte-corruption dictionary mapping mangled ANSI sequences to exact UTF-8 symbols
+  const MOJIBAKE_MAP = {
+    'âš¡': '\u26A1',      // ⚡ Solve
+    'â‡„': '\u21C4',      // ⇄ Reassign / Merge
+    'âœ•': '\u2715',      // ✕ Delete / Close
+    'â–¼': '\u25BC',      // ▼ Dropdown / Expand
+    'â–²': '\u25B2',      // ▲ Collapse
+    'Â€¢': '\u2022',      // • Bullet delimiter
+    'â€¢': '\u2022',      // • Bullet delimiter
+    'âœ“': '\u2713',      // ✓ Correct
+    'âœ—': '\u2717',      // ✗ Incorrect
+    'âž”': '\u2794',      // ➔ Transition
+    'â³': '\u23F3',      // ⏳ Locked section timer
+    'âš ': '\u26A0',      // ⚠️ Warning
+    'ðŸ”’': '\uD83D\uDD12', // 🔒 Lock
+    'ðŸŸ¢': '\uD83D\uDFE2', // 🟢 Green
+    'ðŸ”´': '\uD83D\uDD34', // 🔴 Red
+    'âšª': '\u26AA',      // ⚪ Unanswered
+    'ðŸŸ£': '\uD83D\uDFE3', // 🟣 Marked review
+    'ðŸŸ¡': '\uD83D\uDFE1', // 🟡 Amber
+    'ðŸŸ': '\uD83D\uDFE0', // 🟠 Orange
+    'ðŸ’¡': '\uD83D\uDCA1', // 💡 Tip
+    'ðŸ“–': '\uD83D\uDCD6', // 📖 Knowledge Sheet
+    'ðŸ§ ': '\uD83E\uDDE0', // 🧠 Synapse
+    'ðŸƒ': '\uD83C\uDCCF', // 🃏 Vault
+    'ðŸ¤–': '\uD83E\uDD16', // 🤖 AI Console
+    'ðŸ“¦': '\uD83D\uDCE6', // 📦 Build Mock
+    'ðŸ“‹': '\uD83D\uDCCB', // 📋 Statements
+    'ðŸŽ¯': '\uD83C\uDFAF', // 🎯 Target
+    'ðŸ‘': '\uD83D\uDC41\uFE0F', // 👁️ See Questions
+    'ðŸ“Œ': '\uD83D\uDCCC', // 📌 Freeze
+    'ðŸ”': '\uD83D\uDD01', // 🔁 Reattempt
+    'ðŸ’¾': '\uD83D\uDCBE', // 💾 Save
+    'ðŸ—‘': '\uD83D\uDDD1', // 🗑 Delete
+    'âœŽ': '\u270E',      // ✎ Edit
+    'ðŸ”': '\uD83D\uDD0D'  // 🔍 Search
+  };
+
+  const MOJIBAKE_REGEX = new RegExp(Object.keys(MOJIBAKE_MAP).join('|'), 'g');
+
+  function cleanMojibake(str) {
+    if (!str || typeof str !== 'string') return str;
+    return str.replace(MOJIBAKE_REGEX, match => MOJIBAKE_MAP[match] || match);
+  }
+
+  // Global MutationObserver: Self-heals every rendered text node across the entire DOM in real-time
+  if (typeof window !== 'undefined' && window.MutationObserver) {
+    const mojibakeObserver = new MutationObserver(mutations => {
+      for (let i = 0; i < mutations.length; i++) {
+        const m = mutations[i];
+        for (let j = 0; j < m.addedNodes.length; j++) {
+          const node = m.addedNodes[j];
+          if (node.nodeType === 3) { // Text Node
+            if (node.nodeValue && MOJIBAKE_REGEX.test(node.nodeValue)) {
+              node.nodeValue = cleanMojibake(node.nodeValue);
+            }
+          } else if (node.nodeType === 1) { // Element Node
+            const walker = document.createTreeWalker(node, 4 /* SHOW_TEXT */);
+            let textNode;
+            while (textNode = walker.nextNode()) {
+              if (textNode.nodeValue && MOJIBAKE_REGEX.test(textNode.nodeValue)) {
+                textNode.nodeValue = cleanMojibake(textNode.nodeValue);
+              }
+            }
+          }
+        }
+      }
+    });
+    mojibakeObserver.observe(document.documentElement, { childList: true, subtree: true });
+  }
+
   function safeBind(id, event, handler) {
     const el = document.getElementById(id);
     if (el) {
@@ -25,12 +96,12 @@ const CGL_OS = (() => {
 
   function safeSetText(id, text) {
     const el = document.getElementById(id);
-    if (el) el.innerText = (text === undefined || text === null) ? "" : text;
+    if (el) el.innerText = (text === undefined || text === null) ? "" : cleanMojibake(String(text));
   }
 
   function safeSetHtml(id, html) {
     const el = document.getElementById(id);
-    if (el) el.innerHTML = (html === undefined || html === null) ? "" : html;
+    if (el) el.innerHTML = (html === undefined || html === null) ? "" : cleanMojibake(String(html));
   }
 
   function safeSetValue(id, val) {
