@@ -12,73 +12,58 @@ window.CGL_OS = window.CGL_OS || {};
 
 const CGL_OS = (() => {
   /* ==========================================================================
-   * SECTION 1: DEFENSIVE DOM BINDING HELPERS & UNIVERSAL MOJIBAKE HEALER
+   * SECTION 1: PURE-ASCII DOM BINDING HELPERS & AUTO-HEALING SANITIZER
    * ========================================================================== */
-  // Universal byte-corruption dictionary mapping mangled ANSI sequences to exact UTF-8 symbols
-  const MOJIBAKE_MAP = {
-    'âš¡': '\u26A1',      // ⚡ Solve
-    'â‡„': '\u21C4',      // ⇄ Reassign / Merge
-    'âœ•': '\u2715',      // ✕ Delete / Close
-    'â–¼': '\u25BC',      // ▼ Dropdown / Expand
-    'â–²': '\u25B2',      // ▲ Collapse
-    'Â€¢': '\u2022',      // • Bullet delimiter
-    'â€¢': '\u2022',      // • Bullet delimiter
-    'âœ“': '\u2713',      // ✓ Correct
-    'âœ—': '\u2717',      // ✗ Incorrect
-    'âž”': '\u2794',      // ➔ Transition
-    'â³': '\u23F3',      // ⏳ Locked section timer
-    'âš ': '\u26A0',      // ⚠️ Warning
-    'ðŸ”’': '\uD83D\uDD12', // 🔒 Lock
-    'ðŸŸ¢': '\uD83D\uDFE2', // 🟢 Green
-    'ðŸ”´': '\uD83D\uDD34', // 🔴 Red
-    'âšª': '\u26AA',      // ⚪ Unanswered
-    'ðŸŸ£': '\uD83D\uDFE3', // 🟣 Marked review
-    'ðŸŸ¡': '\uD83D\uDFE1', // 🟡 Amber
-    'ðŸŸ': '\uD83D\uDFE0', // 🟠 Orange
-    'ðŸ’¡': '\uD83D\uDCA1', // 💡 Tip
-    'ðŸ“–': '\uD83D\uDCD6', // 📖 Knowledge Sheet
-    'ðŸ§ ': '\uD83E\uDDE0', // 🧠 Synapse
-    'ðŸƒ': '\uD83C\uDCCF', // 🃏 Vault
-    'ðŸ¤–': '\uD83E\uDD16', // 🤖 AI Console
-    'ðŸ“¦': '\uD83D\uDCE6', // 📦 Build Mock
-    'ðŸ“‹': '\uD83D\uDCCB', // 📋 Statements
-    'ðŸŽ¯': '\uD83C\uDFAF', // 🎯 Target
-    'ðŸ‘': '\uD83D\uDC41\uFE0F', // 👁️ See Questions
-    'ðŸ“Œ': '\uD83D\uDCCC', // 📌 Freeze
-    'ðŸ”': '\uD83D\uDD01', // 🔁 Reattempt
-    'ðŸ’¾': '\uD83D\uDCBE', // 💾 Save
-    'ðŸ—‘': '\uD83D\uDDD1', // 🗑 Delete
-    'âœŽ': '\u270E',      // ✎ Edit
-    'ðŸ”': '\uD83D\uDD0D'  // 🔍 Search
-  };
-
-  const MOJIBAKE_REGEX = new RegExp(Object.keys(MOJIBAKE_MAP).join('|'), 'g');
+  // Pure ASCII replacement pairs: immune to mobile encoding corruption
+  const MOJIBAKE_PAIRS = [
+    ['\u00E2\u0161\u00A1', '\u26A1'],        // âš¡ -> ⚡
+    ['\u00E2\u2021\u201E', '\u21C4'],        // â‡„ -> ⇄
+    ['\u00E2\u0153\u2022', '\u2715'],        // âœ• -> ✕
+    ['\u00E2\u2013\u00BC', '\u25BC'],        // â–¼ -> ▼
+    ['\u00E2\u2013\u00B2', '\u25B2'],        // â–² -> ▲
+    ['\u00C2\u20AC\u00A2', '\u2022'],        // Â€¢ -> •
+    ['\u00E2\u20AC\u00A2', '\u2022'],        // â€¢ -> •
+    ['\u00E2\u0153\u201C', '\u2713'],        // âœ“ -> ✓
+    ['\u00E2\u0153\u2017', '\u2717'],        // âœ— -> ✗
+    ['\u00E2\u017E\u201D', '\u2794'],        // âž” -> ➔
+    ['\u00E2\u20AC\u201D', '\u2014'],        // â€” -> —
+    ['\u00C2\u0161', '']                     // Âš -> clean
+  ];
 
   function cleanMojibake(str) {
     if (!str || typeof str !== 'string') return str;
-    return str.replace(MOJIBAKE_REGEX, match => MOJIBAKE_MAP[match] || match);
+    let s = str;
+    for (let i = 0; i < MOJIBAKE_PAIRS.length; i++) {
+      s = s.split(MOJIBAKE_PAIRS[i][0]).join(MOJIBAKE_PAIRS[i][1]);
+    }
+    return s;
   }
 
-  // Global MutationObserver: Self-heals every rendered text node across the entire DOM in real-time
+  function sanitizeNodeTree(rootNode) {
+    if (!rootNode) return;
+    if (rootNode.nodeType === 3) {
+      if (rootNode.nodeValue) {
+        const cleaned = cleanMojibake(rootNode.nodeValue);
+        if (cleaned !== rootNode.nodeValue) rootNode.nodeValue = cleaned;
+      }
+    } else if (rootNode.nodeType === 1) {
+      const walker = document.createTreeWalker(rootNode, 4 /* SHOW_TEXT */);
+      let curr;
+      while ((curr = walker.nextNode())) {
+        if (curr.nodeValue) {
+          const cleaned = cleanMojibake(curr.nodeValue);
+          if (cleaned !== curr.nodeValue) curr.nodeValue = cleaned;
+        }
+      }
+    }
+  }
+
   if (typeof window !== 'undefined' && window.MutationObserver) {
     const mojibakeObserver = new MutationObserver(mutations => {
       for (let i = 0; i < mutations.length; i++) {
         const m = mutations[i];
         for (let j = 0; j < m.addedNodes.length; j++) {
-          const node = m.addedNodes[j];
-          if (node.nodeType === 3) { // Text Node
-            if (node.nodeValue && MOJIBAKE_REGEX.test(node.nodeValue)) {
-              node.nodeValue = cleanMojibake(node.nodeValue);
-            }
-          } else if (node.nodeType === 1) { // Element Node
-            const walker = document.createTreeWalker(node, 4 /* SHOW_TEXT */);
-            let textNode;
-            while (textNode = walker.nextNode()) {
-              if (textNode.nodeValue && MOJIBAKE_REGEX.test(textNode.nodeValue)) {
-                textNode.nodeValue = cleanMojibake(textNode.nodeValue);
-              }
-            }
-          }
+          sanitizeNodeTree(m.addedNodes[j]);
         }
       }
     });
