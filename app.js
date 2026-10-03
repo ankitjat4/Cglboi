@@ -11,7 +11,7 @@
 window.CGL_OS = window.CGL_OS || {};
 
 const CGL_OS = (() => {
-  /* ==========================================================================
+    /* ==========================================================================
    * SECTION 1: PURE-ASCII CONTEXTUAL AUTO-HEALER & DOM SWEEPER
    * ========================================================================== */
   function cleanMojibake(str) {
@@ -104,7 +104,6 @@ const CGL_OS = (() => {
       setInterval(() => sweepMojibake(document.body), 1500);
     });
   }
-
 
   function safeBind(id, event, handler) {
     const el = document.getElementById(id);
