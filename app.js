@@ -12,63 +12,99 @@ window.CGL_OS = window.CGL_OS || {};
 
 const CGL_OS = (() => {
   /* ==========================================================================
-   * SECTION 1: PURE-ASCII DOM BINDING HELPERS & AUTO-HEALING SANITIZER
+   * SECTION 1: PURE-ASCII CONTEXTUAL AUTO-HEALER & DOM SWEEPER
    * ========================================================================== */
-  // Pure ASCII replacement pairs: immune to mobile encoding corruption
-  const MOJIBAKE_PAIRS = [
-    ['\u00E2\u0161\u00A1', '\u26A1'],        // âš¡ -> ⚡
-    ['\u00E2\u2021\u201E', '\u21C4'],        // â‡„ -> ⇄
-    ['\u00E2\u0153\u2022', '\u2715'],        // âœ• -> ✕
-    ['\u00E2\u2013\u00BC', '\u25BC'],        // â–¼ -> ▼
-    ['\u00E2\u2013\u00B2', '\u25B2'],        // â–² -> ▲
-    ['\u00C2\u20AC\u00A2', '\u2022'],        // Â€¢ -> •
-    ['\u00E2\u20AC\u00A2', '\u2022'],        // â€¢ -> •
-    ['\u00E2\u0153\u201C', '\u2713'],        // âœ“ -> ✓
-    ['\u00E2\u0153\u2017', '\u2717'],        // âœ— -> ✗
-    ['\u00E2\u017E\u201D', '\u2794'],        // âž” -> ➔
-    ['\u00E2\u20AC\u201D', '\u2014'],        // â€” -> —
-    ['\u00C2\u0161', '']                     // Âš -> clean
-  ];
-
   function cleanMojibake(str) {
     if (!str || typeof str !== 'string') return str;
     let s = str;
-    for (let i = 0; i < MOJIBAKE_PAIRS.length; i++) {
-      s = s.split(MOJIBAKE_PAIRS[i][0]).join(MOJIBAKE_PAIRS[i][1]);
-    }
+
+    // 1. Contextual Action Healers (immune to corrupted quotes/spaces/bytes)
+    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\u0027\u00A5\uFFFD\s]*Export/g, '\uD83D\uDCE5 Export'); // 📥 Export
+    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\u0027\u00A5\uFFFD\s]*Re-attempt/g, '\uD83D\uDD01 Re-attempt'); // 🔁 Re-attempt
+    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\u0027\uFFFD\s]*(Submit Final Section)/g, '\uD83D\uDD12 $1'); // 🔒 Submit Final Section
+    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\u0027\uFFFD\s]*(End Section Early)/g, '\uD83D\uDD12 $1'); // 🔒 End Section Early
+    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\u0027\uFFFD\s]*(Lock &amp; Submit|Lock & Submit|End &amp; Advance|End & Advance)/g, '\uD83D\uDD12 $1'); // 🔒 Lock ...
+    s = s.replace(/[\u00E2\u008F\u00B3\uFFFD\s]*English/g, (m) => m.includes('\u00E2') ? '\u23F3 English' : m); // ⏳ English
+    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\uFFFD\s]*Solve/g, '\u26A1 Solve'); // ⚡ Solve
+    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\uFFFD\s]*Drill/g, (m) => (m.includes('\u00F0') || m.includes('\u00E2')) ? '\u26A1 Drill' : m); // ⚡ Drill
+    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\uFFFD\s]*(Browse Sheets|Sheet:)/g, '\uD83D\uDCD6 $1'); // 📖 Browse Sheets / Sheet:
+    s = s.replace(/[\u00E2\u201C\u2713\uFFFD\s]*CORRECT/g, '\u2713 CORRECT'); // ✓ CORRECT
+    s = s.replace(/[\u00E2\u2014\u2717\uFFFD\s]*INCORRECT/g, '\u2717 INCORRECT'); // ✗ INCORRECT
+    s = s.replace(/[\u00E2\u26AA\uFFFD\s]*UNATTEMPTED/g, '\u26AA UNATTEMPTED'); // ⚪ UNATTEMPTED
+    s = s.replace(/[\u00E2\u201C\u2713\uFFFD\s]*(Valid Calculated Risk)/g, '\u2713 $1'); // ✓ Valid Calculated Risk
+    s = s.replace(/[\u00E2\u201C\u2713\uFFFD\s]*(Zero weak chapters)/g, '\u2713 $1'); // ✓ Zero weak chapters
+
+    // 2. Direct Pure-ASCII Symbol Equivalents
+    s = s.replace(/\u00E2\u0161\u00A1/g, '\u26A1'); // ⚡
+    s = s.replace(/\u00E2\u2021\u201E/g, '\u21C4'); // ⇄
+    s = s.replace(/\u00E2\u0153\u2022/g, '\u2715'); // ✕
+    s = s.replace(/\u00E2\u2013\u00BC/g, '\u25BC'); // ▼
+    s = s.replace(/\u00E2\u2013\u00B2/g, '\u25B2'); // ▲
+    s = s.replace(/\u00C2\u20AC\u00A2|\u00E2\u20AC\u00A2|\u00E2\u00A0\u00A2/g, '\u2022'); // •
+    s = s.replace(/\u00E2\u017E\u201D/g, '\u2794'); // ➔
+    s = s.replace(/\u00E2\u20AC\u201D/g, '\u2014'); // —
+    s = s.replace(/\u00C2\u0161/g, '');             // Âš artifact
+
+    // 3. Fallback Isolated Corrupt Sequences
+    s = s.replace(/\u00F0\u0178[\u201D\u2019\u0027]{1,3}/g, '\uD83D\uDD12'); // 🔒
+    s = s.replace(/\u00F0\u0178\u0094\u0092|\u00F0\u0178\u201D\u0092/g, '\uD83D\uDD12'); // 🔒
+    s = s.replace(/\u00F0\u0178\u0178\u00A2/g, '\uD83D\uDFE2'); // 🟢
+    s = s.replace(/\u00F0\u0178\u201D\u00B4/g, '\uD83D\uDD34'); // 🔴
+    s = s.replace(/\u00F0\u0178\u0178\u00A1/g, '\uD83D\uDFE1'); // 🟡
+    s = s.replace(/\u00F0\u0178\u0178\u00A0/g, '\uD83D\uDFE0'); // 🟠
+    s = s.replace(/\u00F0\u0178\u0178\u00A3/g, '\uD83D\uDFE3'); // 🟣
+    s = s.replace(/\u00F0\u0178\u201C\u0152/g, '\uD83D\uDCCC'); // 📌
+    s = s.replace(/\u00F0\u0178\u201C\u2013/g, '\uD83D\uDCD6'); // 📖
+    s = s.replace(/\u00F0\u0178\u201D\uFFFD/g, '\uD83D\uDD01'); // 🔁
+    s = s.replace(/\u00F0\u0178\u2014\u2018/g, '\uD83D\uDDD1'); // 🗑
+    s = s.replace(/\u00E2\u008F\u00B3|\u00E2\u00A0\u00B3/g, '\u23F3'); // ⏳
+    s = s.replace(/\u00E2\u0161\u00AA/g, '\u26AA'); // ⚪
+
     return s;
   }
 
-  function sanitizeNodeTree(rootNode) {
+  // Active DOM Node Sanitizer
+  function sweepMojibake(rootNode) {
     if (!rootNode) return;
-    if (rootNode.nodeType === 3) {
-      if (rootNode.nodeValue) {
-        const cleaned = cleanMojibake(rootNode.nodeValue);
-        if (cleaned !== rootNode.nodeValue) rootNode.nodeValue = cleaned;
-      }
-    } else if (rootNode.nodeType === 1) {
-      const walker = document.createTreeWalker(rootNode, 4 /* SHOW_TEXT */);
-      let curr;
-      while ((curr = walker.nextNode())) {
-        if (curr.nodeValue) {
-          const cleaned = cleanMojibake(curr.nodeValue);
-          if (cleaned !== curr.nodeValue) curr.nodeValue = cleaned;
-        }
+    const walker = document.createTreeWalker(rootNode, 4 /* SHOW_TEXT */, null, false);
+    let textNode;
+    while ((textNode = walker.nextNode())) {
+      if (textNode.nodeValue && /[\u00F0\u00E2\u00C2]/.test(textNode.nodeValue)) {
+        const fixed = cleanMojibake(textNode.nodeValue);
+        if (fixed !== textNode.nodeValue) textNode.nodeValue = fixed;
       }
     }
   }
 
+  // Persistent Mutation Observer + Active DOM Sweep
   if (typeof window !== 'undefined' && window.MutationObserver) {
     const mojibakeObserver = new MutationObserver(mutations => {
       for (let i = 0; i < mutations.length; i++) {
         const m = mutations[i];
-        for (let j = 0; j < m.addedNodes.length; j++) {
-          sanitizeNodeTree(m.addedNodes[j]);
+        if (m.type === 'characterData' && m.target) {
+          if (/[\u00F0\u00E2\u00C2]/.test(m.target.nodeValue)) {
+            const fixed = cleanMojibake(m.target.nodeValue);
+            if (fixed !== m.target.nodeValue) m.target.nodeValue = fixed;
+          }
+        } else if (m.type === 'childList') {
+          for (let j = 0; j < m.addedNodes.length; j++) {
+            sweepMojibake(m.addedNodes[j]);
+          }
         }
       }
     });
-    mojibakeObserver.observe(document.documentElement, { childList: true, subtree: true });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      mojibakeObserver.observe(document.documentElement, {
+        childList: true,
+        subtree: true,
+        characterData: true
+      });
+      sweepMojibake(document.body);
+      setInterval(() => sweepMojibake(document.body), 1500);
+    });
   }
+
 
   function safeBind(id, event, handler) {
     const el = document.getElementById(id);
