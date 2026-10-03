@@ -11,28 +11,30 @@
 window.CGL_OS = window.CGL_OS || {};
 
 const CGL_OS = (() => {
-    /* ==========================================================================
-   * SECTION 1: PURE-ASCII CONTEXTUAL AUTO-HEALER & DOM SWEEPER
+  /* ==========================================================================
+   * SECTION 1: PURE-ASCII CONTEXTUAL AUTO-HEALER & SAFE DOM SWEEPER
    * ========================================================================== */
   function cleanMojibake(str) {
     if (!str || typeof str !== 'string') return str;
+    // Fast-path: return immediately if no corrupted sentinel bytes exist
+    if (!/[\u00F0\u00E2\u00C2]/.test(str)) return str;
     let s = str;
 
-    // 1. Contextual Action Healers (immune to corrupted quotes/spaces/bytes)
-    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\u0027\u00A5\uFFFD\s]*Export/g, '\uD83D\uDCE5 Export'); // 📥 Export
-    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\u0027\u00A5\uFFFD\s]*Re-attempt/g, '\uD83D\uDD01 Re-attempt'); // 🔁 Re-attempt
-    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\u0027\uFFFD\s]*(Submit Final Section)/g, '\uD83D\uDD12 $1'); // 🔒 Submit Final Section
-    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\u0027\uFFFD\s]*(End Section Early)/g, '\uD83D\uDD12 $1'); // 🔒 End Section Early
-    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\u0027\uFFFD\s]*(Lock &amp; Submit|Lock & Submit|End &amp; Advance|End & Advance)/g, '\uD83D\uDD12 $1'); // 🔒 Lock ...
-    s = s.replace(/[\u00E2\u008F\u00B3\uFFFD\s]*English/g, (m) => m.includes('\u00E2') ? '\u23F3 English' : m); // ⏳ English
-    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\uFFFD\s]*Solve/g, '\u26A1 Solve'); // ⚡ Solve
-    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\uFFFD\s]*Drill/g, (m) => (m.includes('\u00F0') || m.includes('\u00E2')) ? '\u26A1 Drill' : m); // ⚡ Drill
-    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\uFFFD\s]*(Browse Sheets|Sheet:)/g, '\uD83D\uDCD6 $1'); // 📖 Browse Sheets / Sheet:
-    s = s.replace(/[\u00E2\u201C\u2713\uFFFD\s]*CORRECT/g, '\u2713 CORRECT'); // ✓ CORRECT
-    s = s.replace(/[\u00E2\u2014\u2717\uFFFD\s]*INCORRECT/g, '\u2717 INCORRECT'); // ✗ INCORRECT
-    s = s.replace(/[\u00E2\u26AA\uFFFD\s]*UNATTEMPTED/g, '\u26AA UNATTEMPTED'); // ⚪ UNATTEMPTED
-    s = s.replace(/[\u00E2\u201C\u2713\uFFFD\s]*(Valid Calculated Risk)/g, '\u2713 $1'); // ✓ Valid Calculated Risk
-    s = s.replace(/[\u00E2\u201C\u2713\uFFFD\s]*(Zero weak chapters)/g, '\u2713 $1'); // ✓ Zero weak chapters
+    // 1. Contextual Action Healers (Strict: requires at least 1 corrupt byte prefix)
+    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\u0027\u00A5\uFFFD]+\s*Export/g, '\uD83D\uDCE5 Export'); // 📥 Export
+    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\u0027\u00A5\uFFFD]+\s*Re-attempt/g, '\uD83D\uDD01 Re-attempt'); // 🔁 Re-attempt
+    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\u0027\uFFFD]+\s*(Submit Final Section)/g, '\uD83D\uDD12 $1'); // 🔒 Submit Final Section
+    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\u0027\uFFFD]+\s*(End Section Early)/g, '\uD83D\uDD12 $1'); // 🔒 End Section Early
+    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\u0027\uFFFD]+\s*(Lock &amp; Submit|Lock & Submit|End &amp; Advance|End & Advance)/g, '\uD83D\uDD12 $1'); // 🔒 Lock ...
+    s = s.replace(/[\u00E2\u008F\u00B3\uFFFD]+\s*English/g, '\u23F3 English'); // ⏳ English
+    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\uFFFD]+\s*Solve/g, '\u26A1 Solve'); // ⚡ Solve
+    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\uFFFD]+\s*Drill/g, '\u26A1 Drill'); // ⚡ Drill
+    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\uFFFD]+\s*(Browse Sheets|Sheet:)/g, '\uD83D\uDCD6 $1'); // 📖 Browse Sheets / Sheet:
+    s = s.replace(/[\u00E2\u201C\u2713\uFFFD]+\s*CORRECT/g, '\u2713 CORRECT'); // ✓ CORRECT
+    s = s.replace(/[\u00E2\u2014\u2717\uFFFD]+\s*INCORRECT/g, '\u2717 INCORRECT'); // ✗ INCORRECT
+    s = s.replace(/[\u00E2\u26AA\uFFFD]+\s*UNATTEMPTED/g, '\u26AA UNATTEMPTED'); // ⚪ UNATTEMPTED
+    s = s.replace(/[\u00E2\u201C\u2713\uFFFD]+\s*(Valid Calculated Risk)/g, '\u2713 $1'); // ✓ Valid Calculated Risk
+    s = s.replace(/[\u00E2\u201C\u2713\uFFFD]+\s*(Zero weak chapters)/g, '\u2713 $1'); // ✓ Zero weak chapters
 
     // 2. Direct Pure-ASCII Symbol Equivalents
     s = s.replace(/\u00E2\u0161\u00A1/g, '\u26A1'); // ⚡
@@ -55,38 +57,55 @@ const CGL_OS = (() => {
     s = s.replace(/\u00F0\u0178\u0178\u00A3/g, '\uD83D\uDFE3'); // 🟣
     s = s.replace(/\u00F0\u0178\u201C\u0152/g, '\uD83D\uDCCC'); // 📌
     s = s.replace(/\u00F0\u0178\u201C\u2013/g, '\uD83D\uDCD6'); // 📖
+    s = s.replace(/\u00F0\u0178\u201C\u00A5/g, '\uD83D\uDCE5'); // 📥
     s = s.replace(/\u00F0\u0178\u201D\uFFFD/g, '\uD83D\uDD01'); // 🔁
     s = s.replace(/\u00F0\u0178\u2014\u2018/g, '\uD83D\uDDD1'); // 🗑
+    s = s.replace(/\u00F0\u0178\u2019\u00A1/g, '\uD83D\uDCA1'); // 💡
+    s = s.replace(/\u00F0\u0178\u201C\u2039/g, '\uD83D\uDCCB'); // 📋
+    s = s.replace(/\u00F0\u0178\u017D\u00AF/g, '\uD83C\uDFAF'); // 🎯
+    s = s.replace(/\u00E2\u0161\u00A0\u00EF\u00B8\u008F|\u00E2\u0161\u00A0/g, '\u26A0\uFE0F'); // ⚠️
     s = s.replace(/\u00E2\u008F\u00B3|\u00E2\u00A0\u00B3/g, '\u23F3'); // ⏳
     s = s.replace(/\u00E2\u0161\u00AA/g, '\u26AA'); // ⚪
+    s = s.replace(/\u00E2\u0153\u201C/g, '\u2713'); // ✓
+    s = s.replace(/\u00E2\u0153\u2017/g, '\u2717'); // ✗
 
     return s;
   }
 
-  // Active DOM Node Sanitizer
+  // Non-reentrant DOM Sweeper
+  let isSweepingMojibake = false;
+
   function sweepMojibake(rootNode) {
-    if (!rootNode) return;
-    const walker = document.createTreeWalker(rootNode, 4 /* SHOW_TEXT */, null, false);
-    let textNode;
-    while ((textNode = walker.nextNode())) {
-      if (textNode.nodeValue && /[\u00F0\u00E2\u00C2]/.test(textNode.nodeValue)) {
-        const fixed = cleanMojibake(textNode.nodeValue);
-        if (fixed !== textNode.nodeValue) textNode.nodeValue = fixed;
+    if (!rootNode || isSweepingMojibake) return;
+    isSweepingMojibake = true;
+    try {
+      if (rootNode.nodeType === 3 /* SHOW_TEXT */) {
+        if (rootNode.nodeValue && /[\u00F0\u00E2\u00C2]/.test(rootNode.nodeValue)) {
+          const fixed = cleanMojibake(rootNode.nodeValue);
+          if (fixed !== rootNode.nodeValue) rootNode.nodeValue = fixed;
+        }
+        return;
       }
+      const walker = document.createTreeWalker(rootNode, 4 /* SHOW_TEXT */, null, false);
+      let textNode;
+      while ((textNode = walker.nextNode())) {
+        if (textNode.nodeValue && /[\u00F0\u00E2\u00C2]/.test(textNode.nodeValue)) {
+          const fixed = cleanMojibake(textNode.nodeValue);
+          if (fixed !== textNode.nodeValue) textNode.nodeValue = fixed;
+        }
+      }
+    } finally {
+      isSweepingMojibake = false;
     }
   }
 
-  // Persistent Mutation Observer + Active DOM Sweep
+  // Scoped MutationObserver: sweeps newly mounted elements only; ignores characterData & eliminates intervals
   if (typeof window !== 'undefined' && window.MutationObserver) {
     const mojibakeObserver = new MutationObserver(mutations => {
+      if (isSweepingMojibake) return;
       for (let i = 0; i < mutations.length; i++) {
         const m = mutations[i];
-        if (m.type === 'characterData' && m.target) {
-          if (/[\u00F0\u00E2\u00C2]/.test(m.target.nodeValue)) {
-            const fixed = cleanMojibake(m.target.nodeValue);
-            if (fixed !== m.target.nodeValue) m.target.nodeValue = fixed;
-          }
-        } else if (m.type === 'childList') {
+        if (m.type === 'childList') {
           for (let j = 0; j < m.addedNodes.length; j++) {
             sweepMojibake(m.addedNodes[j]);
           }
@@ -95,13 +114,11 @@ const CGL_OS = (() => {
     });
 
     document.addEventListener('DOMContentLoaded', () => {
-      mojibakeObserver.observe(document.documentElement, {
-        childList: true,
-        subtree: true,
-        characterData: true
-      });
       sweepMojibake(document.body);
-      setInterval(() => sweepMojibake(document.body), 1500);
+      mojibakeObserver.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
     });
   }
 
@@ -137,6 +154,7 @@ const CGL_OS = (() => {
   function safeGetElement(id) {
     return document.getElementById(id);
   }
+
 
   /* ==========================================================================
    * SECTION 2: RESILIENT 3-TIER DOWNLOAD PIPELINE (WEBAPK / WEBVIEW SHIELD)
