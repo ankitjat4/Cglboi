@@ -16,6 +16,31 @@
   <link rel="stylesheet" href="style.css?v=6.0">
 </head>
 <body>
+  <!-- MOBILE ON-SCREEN DEBUGGER (Remove once fixed) -->
+  <div id="phone-debug-banner" style="background:#ef4444; color:#fff; padding:12px; font-family:monospace; font-size:12px; z-index:99999; position:relative; word-break:break-word;">
+    ⏳ Waiting for app.js to load...
+  </div>
+  <script>
+    window.addEventListener("error", function(e) {
+      var box = document.getElementById("phone-debug-banner");
+      if (box) {
+        box.style.background = "#dc2626";
+        box.innerHTML = "❌ <b>JS ERROR:</b> " + e.message + "<br>📍 <b>Line:</b> " + e.lineno + " (Col: " + e.colno + ")<br>📄 <b>File:</b> " + (e.filename || "inline");
+      }
+    }, true);
+    window.addEventListener("load", function() {
+      var box = document.getElementById("phone-debug-banner");
+      if (window.CGL_OS && typeof window.CGL_OS.switchTab === "function") {
+        box.style.background = "#10b981";
+        box.innerHTML = "✅ CGL_OS loaded successfully! All buttons active.";
+        setTimeout(function() { box.style.display = "none"; }, 3000);
+      } else if (box && box.innerHTML.indexOf("JS ERROR") === -1) {
+        box.style.background = "#d97706";
+        box.innerHTML = "⚠️ <b>app.js DID NOT LOAD AT ALL!</b><br>Check if your file is named 'app.js' or 'app (16).js', or change script src='app.js?v=99' at the bottom of index.html.";
+      }
+    });
+  </script>
+
 
   <!-- ==================== FLOATING MINI-PLAYER DOCK ==================== -->
   <div id="mini-player-dock">
