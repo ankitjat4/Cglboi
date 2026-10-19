@@ -1,7 +1,7 @@
 /**
  * ============================================================================
- * SSC CGL INTELLIGENCE OS — CORE ENGINE (ARCHITECTURE V6.0)
- * Master Application Controller — PART 1 OF 2 (Sections 1 - 18)
+ * SSC CGL INTELLIGENCE OS — CORE ENGINE (ARCHITECTURE V7.2)
+ * Master Application Controller — PART 1 OF 3 (Sections 1 - 17)
  * Architecture: Mobile + Pad/Tablet Responsive WebAPK | IndexedDB Engine (v16)
  * Candidate: Ankit Kumar (SSC CGL 2026 Tier 1 & Tier 2 Master Preparation)
  * ============================================================================
@@ -84,6 +84,10 @@ const CGL_OS = (() => {
     if (el) el.style.display = displayStyle;
   }
 
+  function escapeRegExp(str) {
+    return String(str).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
   /* ==========================================================================
    * SECTION 2: RESILIENT 3-TIER DOWNLOAD PIPELINE (WEBAPK / WEBVIEW SHIELD)
    * ========================================================================== */
@@ -146,8 +150,6 @@ const CGL_OS = (() => {
 
   /* ==========================================================================
    * SECTION 3: ACCURATE UNIVERSAL ENGAGEMENT & STUDY TIME TRACKER
-   * Fixed: Separates unsynced delta from persisted base so study time is
-   * never double-counted within an active session.
    * ========================================================================== */
   let unsyncedStudySeconds = 0;
   let lastUserInteractionEpoch = Date.now();
@@ -194,14 +196,13 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * SECTION 4: CONSTANTS, SUBJECT PAR MATRIX & RUNTIME EXECUTION STATE
+   * SECTION 4: CONSTANTS, SUBJECT PAR MATRIX & V7.2 RUNTIME EXECUTION STATE
    * ========================================================================== */
   const DB_NAME = "cgl_os_db";
   const DB_VERSION = 16;
   let db = null;
   let dbInitPromise = null;
 
-  // Subject-Calibrated Par Time & Trap Threshold Matrix (Seconds)
   let SUBJECT_PAR_CONFIG = {
     GA:   { parSec: 14, trapSec: 35, masterySec: 8 },
     ENG:  { parSec: 20, trapSec: 45, masterySec: 10 },
@@ -213,14 +214,19 @@ const CGL_OS = (() => {
     return SUBJECT_PAR_CONFIG[subKey] || { parSec: 40, trapSec: 85, masterySec: 12 };
   }
 
-  // Active Timed Exam & Review Arena State
+  // Active Timed Exam, Preview Queue & Dojo Stopwatch State
   let activeExam = null;
   let examTimerInterval = null;
   let lastTimerTickEpoch = 0;
   let dojoExam = null;
+  let dojoStopwatchInterval = null;
+  let dojoStopwatchSec = 0;
+  let dojoSetupSplitSec = null;
   let activeReviewAttempt = null;
+  let previewedMockInstance = null;
+  let showPreviewAnswerKeys = false;
 
-  // Practice Lab / Question Control Center State & Pagination
+  // Practice Lab / Question Control Center State
   let practiceSearchQuery = "";
   let practiceSelectedIds = new Set();
   let practiceActiveQuickFilter = "ALL";
@@ -230,23 +236,42 @@ const CGL_OS = (() => {
   // Granular Multi-Chapter Matrix State in Mock Lab
   let mockLabSelectedMatrixChapters = new Set();
 
-  // Full-Screen Living Compendium Studio State
+  // Full-Screen Living Compendium Studio & User-Defined Recall Masks State
   let activeCompSubject = "QA";
   let activeCompChapter = "QA_PERCENTAGE";
   let activeCompSheetIndex = 0;
   let currentCompSheets = [];
   let currentConceptImageBase64 = "";
   let compendiumRecallMode = false;
+  let compendiumMaskEditMode = false;
+  let compendiumAutoBlurAll = false;
+  let activeSheetCustomMasks = [];
+
+  // Split-Screen Sheet + Question Drawer State
+  let activeSplitSheetId = null;
+  let activeSplitSheetSubject = null;
+  let activeSplitSheetChapter = null;
 
   // Reader Typography Scale
   let readerFontScale = 1.0;
 
-  // Rough Scratchpad Canvas State
+  // Global Scroll-Synchronized Sketchpad State & Per-Item Ink Memory
   let scratchpadActive = false;
+  let scratchpadScrollPassthrough = false;
   let scratchpadMode = "PEN";
   let scratchpadDrawing = false;
   let scratchpadStrokes = [];
   let currentStroke = [];
+  let inkMemoryByContextKey = {};
+  let activeInkContextKey = "global_default";
+
+  // Floating Text Selection Popover State
+  let pendingSelectedText = "";
+  let pendingSelectionContext = null;
+
+  // AI Tutor Modal State
+  let activeAiTutorContext = "DOJO";
+  let lastAiTutorPlainText = "";
 
   // Synapse Knowledge Explorer State
   let synapseCurrentLevel = "SUBJECTS";
@@ -283,82 +308,38 @@ const CGL_OS = (() => {
       name: "Quantitative Aptitude",
       order: 1,
       chapters: [
-        "QA_PERCENTAGE",
-        "QA_PROFIT_LOSS",
-        "QA_DISCOUNT",
-        "QA_SI_CI",
-        "QA_SI_CI_INSTALLMENT",
-        "QA_RATIO_PROP",
-        "QA_AGE",
-        "QA_PARTNERSHIP",
-        "QA_AVERAGE",
-        "QA_MIXTURE_ALLIGATION",
-        "QA_TIME_WORK",
-        "QA_WORK_WAGES",
-        "QA_PIPE_CISTERN",
-        "QA_SPEED_DIST",
-        "QA_BOAT_STREAM",
-        "QA_RACE",
-        "QA_NUM_SYS",
-        "QA_SEQUENCE_SERIES",
-        "QA_SIMPLIFICATION",
-        "QA_SURDS_INDICES",
-        "QA_LCM_HCF",
-        "QA_ALGEBRA",
-        "QA_GEOMETRY",
-        "QA_MENSURATION",
-        "QA_TRIGONOMETRY"
+        "QA_PERCENTAGE", "QA_PROFIT_LOSS", "QA_DISCOUNT", "QA_SI_CI",
+        "QA_SI_CI_INSTALLMENT", "QA_RATIO_PROP", "QA_AGE", "QA_PARTNERSHIP",
+        "QA_AVERAGE", "QA_MIXTURE_ALLIGATION", "QA_TIME_WORK", "QA_WORK_WAGES",
+        "QA_PIPE_CISTERN", "QA_SPEED_DIST", "QA_BOAT_STREAM", "QA_RACE",
+        "QA_NUM_SYS", "QA_SEQUENCE_SERIES", "QA_SIMPLIFICATION", "QA_SURDS_INDICES",
+        "QA_LCM_HCF", "QA_ALGEBRA", "QA_GEOMETRY", "QA_MENSURATION", "QA_TRIGONOMETRY"
       ]
     },
     REAS: {
       name: "General Intelligence & Reasoning",
       order: 2,
       chapters: [
-        "REAS_ANALOGY",
-        "REAS_SERIES",
-        "REAS_CODING",
-        "REAS_BLOOD_REL",
-        "REAS_SYLLOGISM",
-        "REAS_ORDER_RANK",
-        "REAS_FIGURES",
-        "REAS_DICE_CUBE",
-        "REAS_CLOCK_CALENDAR",
-        "REAS_VENN",
-        "REAS_DIRECTION"
+        "REAS_ANALOGY", "REAS_SERIES", "REAS_CODING", "REAS_BLOOD_REL",
+        "REAS_SYLLOGISM", "REAS_ORDER_RANK", "REAS_FIGURES", "REAS_DICE_CUBE",
+        "REAS_CLOCK_CALENDAR", "REAS_VENN", "REAS_DIRECTION"
       ]
     },
     ENG: {
       name: "English Comprehension",
       order: 3,
       chapters: [
-        "ENG_SYN_ANT",
-        "ENG_OWS",
-        "ENG_IDIOMS",
-        "ENG_SPOTTING",
-        "ENG_IMPROVE",
-        "ENG_ACTIVE_PASS",
-        "ENG_DIRECT_INDR",
-        "ENG_CLOZE_TEST",
-        "ENG_READING_COMP",
-        "ENG_PARAJUMBLES"
+        "ENG_SYN_ANT", "ENG_OWS", "ENG_IDIOMS", "ENG_SPOTTING", "ENG_IMPROVE",
+        "ENG_ACTIVE_PASS", "ENG_DIRECT_INDR", "ENG_CLOZE_TEST", "ENG_READING_COMP", "ENG_PARAJUMBLES"
       ]
     },
     GA: {
       name: "General Awareness",
       order: 4,
       chapters: [
-        "GA_POLITY",
-        "GA_HISTORY_MOD",
-        "GA_HISTORY_ANC",
-        "GA_HISTORY_MED",
-        "GA_GEOGRAPHY_IN",
-        "GA_GEOGRAPHY_WORLD",
-        "GA_ECONOMY",
-        "GA_PHYSICS",
-        "GA_CHEMISTRY",
-        "GA_BIOLOGY",
-        "GA_STATIC_GK",
-        "GA_CA_ANNUAL"
+        "GA_POLITY", "GA_HISTORY_MOD", "GA_HISTORY_ANC", "GA_HISTORY_MED",
+        "GA_GEOGRAPHY_IN", "GA_GEOGRAPHY_WORLD", "GA_ECONOMY", "GA_PHYSICS",
+        "GA_CHEMISTRY", "GA_BIOLOGY", "GA_STATIC_GK", "GA_CA_ANNUAL"
       ]
     }
   };
@@ -546,7 +527,7 @@ const CGL_OS = (() => {
       chapter: "QA_GEOMETRY",
       title: "Triangles & Incenters",
       subtitle: "Incenters, Circumcenters & Angle Bisectors",
-      content: "### Internal Angle Bisector Theorem\nIf $AD$ bisects $\\angle A$ and meets $BC$ at $D$:\n$$\\frac{BD}{DC} = \\frac{AB}{AC}$$\n\n> [!formula]\n> **Incenter Angle Rule:**\n> The angle formed at the incenter $I$ satisfies:\n> $$\\angle BIC = 90^\\circ + \\frac{\\angle A}{2}$$\n\n### Right-Angled Triangle Inradius\nFor legs $P, B$ and hypotenuse $H$:\n$$r = \\frac{P + B - H}{2}$$\n\n> [!trap]\n> **Critical TCS Trap:**\n> Always verify whether the problem asks for inradius $r$ or circumradius $R = \\frac{H}{2}$.",
+      content: "### Internal Angle Bisector Theorem\nIf $AD$ bisects $\\angle A$ and meets $BC$ at $D$:\n$${{\\frac{BD}{DC} = \\frac{AB}{AC}}}$$\n\n> [!formula]\n> **Incenter Angle Rule:**\n> The angle formed at the incenter $I$ satisfies:\n> $${{\\angle BIC = 90^\\circ + \\frac{\\angle A}{2}}}$$\n\n### Right-Angled Triangle Inradius\nFor legs $P, B$ and hypotenuse $H$:\n$${{r = \\frac{P + B - H}{2}}}$$\n\n> [!trap]\n> **Critical TCS Trap:**\n> Always verify whether the problem asks for inradius $r$ or {{circumradius $R = \\frac{H}{2}$}}.",
       imageUrl: "",
       timestamp: Date.now()
     },
@@ -556,7 +537,7 @@ const CGL_OS = (() => {
       chapter: "QA_GEOMETRY",
       title: "Circles & Tangents",
       subtitle: "Secants, Power of Point & Tangent Lengths",
-      content: "### Tangent-Secant Theorem (Power of a Point)\nFrom external point $P$, if $PT$ is tangent and $PAB$ is secant:\n$$PT^2 = PA \\cdot PB$$\n\n### Common Tangent Lengths\nFor radii $r_1, r_2$ and center separation $d$:\n* **Direct Common Tangent (DCT):**\n$$DCT = \\sqrt{d^2 - (r_1 - r_2)^2}$$\n* **Transverse Common Tangent (TCT):**\n$$TCT = \\sqrt{d^2 - (r_1 + r_2)^2}$$\n\n> [!trap]\n> **Externally Touching Circles:**\n> When $d = r_1 + r_2$, the transverse tangent drops to $0$ and $DCT = 2\\sqrt{r_1 r_2}$.",
+      content: "### Tangent-Secant Theorem (Power of a Point)\nFrom external point $P$, if $PT$ is tangent and $PAB$ is secant:\n$${{PT^2 = PA \\cdot PB}}$$\n\n### Common Tangent Lengths\nFor radii $r_1, r_2$ and center separation $d$:\n* **Direct Common Tangent (DCT):**\n$${{DCT = \\sqrt{d^2 - (r_1 - r_2)^2}}}$$\n* **Transverse Common Tangent (TCT):**\n$${{TCT = \\sqrt{d^2 - (r_1 + r_2)^2}}}$$\n\n> [!trap]\n> **Externally Touching Circles:**\n> When $d = r_1 + r_2$, the transverse tangent drops to $0$ and {{$DCT = 2\\sqrt{r_1 r_2}$}}.",
       imageUrl: "",
       timestamp: Date.now()
     },
@@ -566,7 +547,7 @@ const CGL_OS = (() => {
       chapter: "GA_POLITY",
       title: "Supreme Court & Writ Jurisdiction",
       subtitle: "Articles 32, 124, 131, 226",
-      content: "### Constitutional Architecture\n* **Article 124:** Establishment and constitution of the Supreme Court of India.\n* **Article 131:** Original jurisdiction of the Supreme Court (Federal inter-state disputes).\n* **Article 143:** Advisory jurisdiction on Presidential references.\n* **Article 226:** High Courts writ jurisdiction for Fundamental and statutory rights.",
+      content: "### Constitutional Architecture\n* **{{Article 124}}:** Establishment and constitution of the Supreme Court of India.\n* **{{Article 131}}:** Original jurisdiction of the Supreme Court (Federal inter-state disputes).\n* **{{Article 143}}:** Advisory jurisdiction on Presidential references.\n* **{{Article 226}}:** High Courts writ jurisdiction for Fundamental and statutory rights.",
       imageUrl: "",
       timestamp: Date.now()
     }
@@ -649,13 +630,17 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * SECTION 7: TYPESETTER, MULTI-LINE CALLOUTS, ITALICS & KATEX ISOLATION
+   * SECTION 7: TYPESETTER, CUSTOM {{RECALL MASKS}} & KATEX ISOLATION
    * ========================================================================== */
-  function formatRichText(str) {
+  function formatRichText(str, customMaskPhrases = []) {
     if (!str) return "";
     let out = stripCitationArtifacts(cleanMojibake(String(str)));
 
-    // 1. Isolate LaTeX math into protected tokens
+    // 1. Convert explicit {{...}} and ==...== user-defined occlusion syntax before math isolation
+    out = out.replace(/\{\{([\s\S]+?)\}\}/g, '<span class="user-recall-mask">$1</span>');
+    out = out.replace(/==([^\n=]+?)==/g, '<span class="user-recall-mask">$1</span>');
+
+    // 2. Isolate LaTeX math into protected tokens
     const mathTokens = [];
     out = out.replace(/\$\$([\s\S]*?)\$\$/g, (match, formula) => {
       mathTokens.push({ display: true, formula: formula.trim() });
@@ -666,10 +651,10 @@ const CGL_OS = (() => {
       return `___CGL_MATH_${mathTokens.length - 1}___`;
     });
 
-    // 2. Escape stray < and > outside blockquote directives
-    out = out.replace(/<(?![\/!]?[a-zA-Z])/g, "&lt;");
+    // 3. Escape stray < and > outside blockquote directives or intentional span tags
+    out = out.replace(/<(?![\/!]?(?:span|div|b|strong|em|i|code|br|h1|h2|h3|h4|table|thead|tbody|tr|th|td)\b)/gi, "&lt;");
 
-    // 3. Multi-Line Callout Blocks ([!trap], [!formula], [!tip])
+    // 4. Multi-Line Callout Blocks ([!trap], [!formula], [!tip])
     out = out.replace(/(?:^|\n)>\s*\[!trap\]([^\n]*(?:\n>[^\n]*)*)/gi, (match, body) => {
       const cleanBody = body.replace(/^\s*>\s?/gm, "").trim();
       return `<div class="callout-box trap"><b>\u26A0\uFE0F Cognitive Trap:</b><br>${cleanBody}</div>`;
@@ -683,7 +668,7 @@ const CGL_OS = (() => {
       return `<div class="callout-box"><b>\uD83D\uDCA1 Tactical Tip:</b><br>${cleanBody}</div>`;
     });
 
-    // 4. Headings with Anchors for Sheet TOC Generation
+    // 5. Headings with Anchors for Sheet TOC Generation
     out = out.replace(/^#### (.*$)/gim, '<h4 style="font-size:14px; font-weight:800; color:var(--accent-purple-light); margin:10px 0 4px 0;">$1</h4>');
     out = out.replace(/^### (.*$)/gim, (match, title) => {
       const anchor = title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
@@ -695,16 +680,16 @@ const CGL_OS = (() => {
     });
     out = out.replace(/^# (.*$)/gim, '<h1 class="comp-heading-h1" style="font-size:19.5px; font-weight:800; color:#fff; margin:18px 0 8px 0;">$1</h1>');
 
-    // 5. Bold, Italics & Inline Code
+    // 6. Bold, Italics & Inline Code
     out = out.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
     out = out.replace(/(?<!\*)\*([^\*\n]+)\*(?!\*)/g, "<em>$1</em>");
     out = out.replace(/`([^`\n]+)`/g, '<code style="background:#111828; color:var(--accent-cyan); padding:1px 5px; border-radius:4px; font-family:var(--font-mono); font-size:0.92em;">$1</code>');
 
-    // 6. Assertions & Reasons
+    // 7. Assertions & Reasons
     out = out.replace(/(?:Assertion\s*\(?A\)?|Assertion\s*:)\s*([^\n]+)/gi, '<div class="q-assertion-box"><b>[A] Assertion:</b> $1</div>');
     out = out.replace(/(?:Reason\s*\(?R\)?|Reason\s*:)\s*([^\n]+)/gi, '<div class="q-reason-box"><b>[R] Reason:</b> $1</div>');
 
-    // 7. Syllogisms & Structured Item Rows (Clean \u2022 Bullet Support)
+    // 8. Syllogisms & Structured Item Rows
     out = out.replace(/(?:Statements?\s*:)\s*([\s\S]+?)(?=(?:Conclusions?\s*:|Conclusions?|$))/i, (match, body) => {
       const items = body.split(/(?:\(\d+\)|\(\w+\)|\d+\.|\n\u2022|\n\*|\n-)/).map(s => s.trim()).filter(Boolean);
       const rows = items.map((item, idx) => `
@@ -728,7 +713,7 @@ const CGL_OS = (() => {
       return `<div class="q-structured-block" style="margin-top:6px;"><div class="q-block-header"><span style="color:var(--accent-purple-light);">\uD83C\uDFAF Conclusions:</span></div>${rows}</div>`;
     });
 
-    // 8. Responsive Markdown Tables
+    // 9. Responsive Markdown Tables
     out = out.replace(/(\|[^\n]+\|\r?\n)((?:\|:?[-]+:?)+\|)(\r?\n(?:\|[^\n]+\|\r?\n?)+)/g, (match, headerLine, alignLine, bodyLines) => {
       const headers = headerLine.trim().split("|").filter(c => c.trim().length > 0).map(c => `<th>${c.trim()}</th>`).join("");
       const rows = bodyLines.trim().split("\n").map(row => {
@@ -738,29 +723,49 @@ const CGL_OS = (() => {
       return `<div class="table-responsive"><table class="document-table"><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table></div>`;
     });
 
-    // 9. Markdown Bullet Lists (*, -, •)
+    // 10. Markdown Bullet Lists (*, -, •)
     out = out.replace(/^(?:\s*[\*\-\u2022]\s+)(.+)$/gm, '<div class="md-bullet-row"><span class="md-bullet-dot">\u2022</span><span>$1</span></div>');
 
-    // 10. Convert regular linebreaks to <br> outside block tags
+    // 11. Convert regular linebreaks to <br> outside block tags
     out = out.replace(/\n/g, "<br>");
     out = out.replace(/(<\/div>|<\/h1>|<\/h2>|<\/h3>|<\/h4>)<br>/g, "$1");
 
-    // 11. Re-inject KaTeX math tokens safely
+    // 12. Re-inject KaTeX math tokens safely
     out = out.replace(/___CGL_MATH_(\d+)___/g, (match, index) => {
       const item = mathTokens[Number(index)];
       if (!item) return "";
+      let innerFormula = item.formula;
+      let isWrappedMask = false;
+      if (/^\{\{[\s\S]+\}\}$/.test(innerFormula)) {
+        innerFormula = innerFormula.slice(2, -2).trim();
+        isWrappedMask = true;
+      }
+      let rendered = "";
       if (window.katex) {
         try {
-          return katex.renderToString(item.formula, {
+          rendered = katex.renderToString(innerFormula, {
             displayMode: item.display,
             throwOnError: false
           });
         } catch (err) {
-          return item.display ? `$$${item.formula}$$` : `$${item.formula}$`;
+          rendered = item.display ? `$$${innerFormula}$$` : `$${innerFormula}$`;
         }
+      } else {
+        rendered = item.display ? `$$${innerFormula}$$` : `$${innerFormula}$`;
       }
-      return item.display ? `$$${item.formula}$$` : `$${item.formula}$`;
+      return isWrappedMask ? `<span class="user-recall-mask">${rendered}</span>` : rendered;
     });
+
+    // 13. Apply persisted per-sheet custom mask phrases (from 🖌️ Edit Masks or Selection Popover)
+    if (Array.isArray(customMaskPhrases) && customMaskPhrases.length > 0) {
+      customMaskPhrases.forEach(phrase => {
+        const cleanP = String(phrase || "").trim();
+        if (cleanP.length >= 2) {
+          const rx = new RegExp(`(?![^<]*>)(${escapeRegExp(cleanP)})`, "g");
+          out = out.replace(rx, '<span class="user-recall-mask" data-mask-phrase="true">$1</span>');
+        }
+      });
+    }
 
     return out;
   }
@@ -829,7 +834,7 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * SECTION 9: HARDENED INDEXEDDB ENGINE & VAULT DECOMMISSIONING PURGE
+   * SECTION 9: HARDENED INDEXEDDB ENGINE
    * ========================================================================== */
   function getDB() {
     if (db) return Promise.resolve(db);
@@ -903,7 +908,6 @@ const CGL_OS = (() => {
   async function seedData(database) {
     const d = database || await getDB();
 
-    // User Decision #1: Wipe all records from decommissioned store_flashcards
     if (d.objectStoreNames.contains("store_flashcards")) {
       try {
         await new Promise((res) => {
@@ -1008,9 +1012,15 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * SECTION 10: FULL BACKUP, DISASTER RECOVERY & HARDENED SANITIZERS
+   * SECTION 10: FULL BACKUP (WITH API KEY PRIVACY SHIELD) & SANITIZERS
    * ========================================================================== */
   async function exportFullBackup() {
+    const includeKeys = document.getElementById("backup-include-api-keys")?.checked ?? false;
+    let configRecords = await getAllRecords("store_config");
+    if (!includeKeys) {
+      configRecords = configRecords.filter(r => r.key !== "ai_api_key_vault");
+    }
+
     const envelope = {
       cgl_os_envelope: {
         magic_header: "CGL_INTELLIGENCE_OS_BACKUP",
@@ -1026,7 +1036,7 @@ const CGL_OS = (() => {
         store_notes: await getAllRecords("store_notes"),
         store_saved_mocks: await getAllRecords("store_saved_mocks"),
         store_ai_consultations: await getAllRecords("store_ai_consultations"),
-        store_config: await getAllRecords("store_config")
+        store_config: configRecords
       }
     };
 
@@ -1222,7 +1232,13 @@ const CGL_OS = (() => {
 
       if (mode === "WIPE_REPLACE") {
         for (const sName of storeKeys) {
-          await clearStore(sName);
+          if (sName === "store_config") {
+            const existingVault = await getRecord("store_config", "ai_api_key_vault");
+            await clearStore(sName);
+            if (existingVault) await putRecord("store_config", existingVault);
+          } else {
+            await clearStore(sName);
+          }
         }
       }
 
@@ -1240,6 +1256,7 @@ const CGL_OS = (() => {
       const modal = document.getElementById("modal-backup-restore");
       if (modal) modal.classList.remove("active");
       SearchService.invalidate();
+      await AiGatewayService.loadVault();
       await syncAllTaxonomyDropdowns();
       await renderDashboard();
       if (typeof renderPracticeQuestionsTable === "function") {
@@ -1390,8 +1407,8 @@ const CGL_OS = (() => {
       if (!q.questionText || !String(q.questionText).trim()) {
         throw new Error("Question text cannot be empty.");
       }
-      if (!Array.isArray(q.options) || q.options.length !== 4) {
-        throw new Error("Questions must contain exactly 4 options.");
+      if (!Array.isArray(q.options) || q.options.length !== 4 || q.options.some(o => !String(o).trim())) {
+        throw new Error("Questions must contain exactly 4 non-empty options.");
       }
       if (typeof q.correctIndex !== "number" || q.correctIndex < 0 || q.correctIndex > 3) {
         throw new Error("A valid correct answer option (0-3) must be designated.");
@@ -1432,7 +1449,6 @@ const CGL_OS = (() => {
       const existing = await getRecord("store_questions", id);
       if (!existing) throw new Error(`Question ${id} not found.`);
 
-      // Reconcile conceptId vs conceptIds when updating partially
       const merged = { ...existing, ...questionData, id: id };
       if (questionData.conceptId !== undefined && questionData.conceptIds === undefined) {
         merged.conceptIds = questionData.conceptId ? [String(questionData.conceptId).trim()] : [];
@@ -1655,6 +1671,409 @@ const CGL_OS = (() => {
   };
 
   /* ==========================================================================
+   * SECTION 14B: PRIORITY WATERFALL API KEY VAULT & MICRO-TASK ROUTER
+   * - Local storage in store_config ("ai_api_key_vault")
+   * - Priority Tiers: HIGH ➔ MEDIUM ➔ LOW with Round-Robin + Reordering
+   * - Task-Specific Key Allocation & Manual Key Override per UI action
+   * - Auto-repair of JSON/LaTeX backslashes + Graceful Clipboard Degradation
+   * ========================================================================== */
+  const AiGatewayService = {
+    keys: [],
+    taskRoutes: {
+      SHORTCUT: "WATERFALL_AUTO",
+      MUTANT: "WATERFALL_AUTO",
+      SMART_PARSE: "WATERFALL_AUTO",
+      SHEET_EDIT: "WATERFALL_AUTO"
+    },
+    roundRobinIndex: 0,
+
+    async loadVault() {
+      const rec = await getRecord("store_config", "ai_api_key_vault");
+      if (rec && rec.value && typeof rec.value === "object") {
+        this.keys = Array.isArray(rec.value.keys) ? rec.value.keys : [];
+        if (rec.value.taskRoutes) {
+          this.taskRoutes = { ...this.taskRoutes, ...rec.value.taskRoutes };
+        }
+      }
+      renderApiVaultUI();
+      return this.keys;
+    },
+
+    async saveVault() {
+      await putRecord("store_config", {
+        key: "ai_api_key_vault",
+        value: {
+          keys: this.keys,
+          taskRoutes: this.taskRoutes
+        }
+      });
+      renderApiVaultUI();
+    },
+
+    repairAiJson(rawText) {
+      if (!rawText) throw new Error("Empty AI response.");
+      let cleaned = String(rawText).trim();
+      cleaned = cleaned.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+
+      const firstBrace = cleaned.indexOf("{");
+      const lastBrace = cleaned.lastIndexOf("}");
+      if (firstBrace !== -1 && lastBrace > firstBrace) {
+        cleaned = cleaned.slice(firstBrace, lastBrace + 1);
+      }
+
+      try {
+        return JSON.parse(cleaned);
+      } catch (initialErr) {
+        // Auto-heal unescaped LaTeX backslashes inside JSON string literals
+        const healed = cleaned.replace(/\\(?!["\\/bfnrtu])/g, "\\\\");
+        return JSON.parse(healed);
+      }
+    },
+
+    buildOrderedKeyQueue(taskType, manualKeyId = null) {
+      const now = Date.now();
+      const available = this.keys.filter(k => k.enabled !== false && (!k.cooldownUntil || k.cooldownUntil <= now));
+      const queue = [];
+      const seen = new Set();
+
+      const pushUnique = (k) => {
+        if (k && !seen.has(k.id)) {
+          seen.add(k.id);
+          queue.push(k);
+        }
+      };
+
+      // 1. Explicit Manual Override from UI Dropdown
+      if (manualKeyId && manualKeyId !== "WATERFALL_AUTO") {
+        const manualKey = this.keys.find(k => k.id === manualKeyId);
+        if (manualKey) pushUnique(manualKey);
+      }
+
+      // 2. Task-Specific Allocated Key
+      const mappedId = this.taskRoutes[taskType];
+      if (mappedId && mappedId !== "WATERFALL_AUTO") {
+        const taskKey = available.find(k => k.id === mappedId) || this.keys.find(k => k.id === mappedId);
+        if (taskKey) pushUnique(taskKey);
+      }
+
+      // 3. Priority Waterfall: HIGH -> MEDIUM -> LOW
+      const tierOrder = taskType === "SHEET_EDIT"
+        ? ["LOW", "MEDIUM", "HIGH"]
+        : ["HIGH", "MEDIUM", "LOW"];
+
+      tierOrder.forEach(tier => {
+        const tierKeys = available.filter(k => k.priority === tier);
+        if (tierKeys.length > 0) {
+          const offset = this.roundRobinIndex % tierKeys.length;
+          for (let i = 0; i < tierKeys.length; i++) {
+            pushUnique(tierKeys[(offset + i) % tierKeys.length]);
+          }
+        }
+      });
+
+      this.roundRobinIndex++;
+      return queue;
+    },
+
+    async callSingleProviderKey(keyObj, systemPrompt, userPrompt, expectJson = false) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 20000);
+
+      try {
+        const provider = (keyObj.provider || "GEMINI").toUpperCase();
+        const model = (keyObj.model || "gemini-2.5-flash").trim();
+        const secret = (keyObj.secret || "").trim();
+
+        if (provider === "GEMINI") {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(secret)}`;
+          const body = {
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+            contents: [{ role: "user", parts: [{ text: userPrompt }] }],
+            generationConfig: {
+              temperature: expectJson ? 0.25 : 0.4
+            }
+          };
+          if (expectJson) {
+            body.generationConfig.responseMimeType = "application/json";
+          }
+
+          const res = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+            signal: controller.signal
+          });
+
+          if (!res.ok) {
+            const errTxt = await res.text();
+            throw new Error(`HTTP ${res.status}: ${errTxt.slice(0, 120)}`);
+          }
+          const data = await res.json();
+          const textOut = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+          if (!textOut) throw new Error("Empty response from Gemini API.");
+          return textOut;
+        } else {
+          // GROQ, OPENROUTER, or CUSTOM OpenAI-Compatible Endpoint
+          let endpoint = "https://api.groq.com/openai/v1/chat/completions";
+          if (provider === "OPENROUTER") endpoint = "https://openrouter.ai/api/v1/chat/completions";
+          else if (provider === "CUSTOM" && keyObj.customUrl) endpoint = keyObj.customUrl.trim();
+
+          const headers = {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${secret}`
+          };
+
+          const body = {
+            model: model,
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: userPrompt }
+            ],
+            temperature: expectJson ? 0.2 : 0.4
+          };
+
+          const res = await fetch(endpoint, {
+            method: "POST",
+            headers: headers,
+            body: JSON.stringify(body),
+            signal: controller.signal
+          });
+
+          if (!res.ok) {
+            const errTxt = await res.text();
+            throw new Error(`HTTP ${res.status}: ${errTxt.slice(0, 120)}`);
+          }
+          const data = await res.json();
+          const textOut = data?.choices?.[0]?.message?.content || "";
+          if (!textOut) throw new Error("Empty response from OpenAI-compatible API.");
+          return textOut;
+        }
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    },
+
+    async executeMicroTask({ taskType = "SHORTCUT", systemPrompt, userPrompt, expectJson = false, validatorFn = null, manualKeyId = null }) {
+      const queue = this.buildOrderedKeyQueue(taskType, manualKeyId);
+
+      if (queue.length === 0) {
+        const clipPayload = `${systemPrompt}\n\n${userPrompt}`;
+        try { await navigator.clipboard.writeText(clipPayload); } catch (e) {}
+        throw new Error("No active API keys available (or all on cooldown). Prompt copied to your clipboard for manual Gemini Chat!");
+      }
+
+      let lastError = null;
+      for (const keyObj of queue) {
+        try {
+          const rawText = await this.callSingleProviderKey(keyObj, systemPrompt, userPrompt, expectJson);
+          let parsedData = rawText;
+
+          if (expectJson) {
+            parsedData = this.repairAiJson(rawText);
+            if (typeof validatorFn === "function") {
+              validatorFn(parsedData);
+            }
+          }
+
+          keyObj.lastSuccessEpoch = Date.now();
+          keyObj.cooldownUntil = 0;
+          keyObj.lastStatus = "READY";
+          await this.saveVault();
+
+          return {
+            success: true,
+            data: parsedData,
+            rawText: rawText,
+            sourceLabel: `${keyObj.label} (${keyObj.provider} \u2022 ${keyObj.model})`,
+            keyId: keyObj.id
+          };
+        } catch (err) {
+          lastError = err;
+          keyObj.lastError = err.message;
+          keyObj.cooldownUntil = Date.now() + 60000; // 60s automatic cooldown
+          keyObj.lastStatus = "COOLDOWN";
+          console.warn(`Waterfall failover: Key '${keyObj.label}' failed (${err.message}). Trying next key...`);
+        }
+      }
+
+      await this.saveVault();
+      const clipPayload = `${systemPrompt}\n\n${userPrompt}`;
+      try { await navigator.clipboard.writeText(clipPayload); } catch (e) {}
+      throw new Error(`All tried API keys failed (${lastError ? lastError.message : "Rate limit"}). Prompt copied to clipboard for manual chat!`);
+    }
+  };
+
+  function handleApiProviderPresetChange(provider) {
+    const modelInput = document.getElementById("api-key-model");
+    const customWrap = document.getElementById("api-custom-url-wrap");
+    if (customWrap) customWrap.style.display = provider === "CUSTOM" ? "block" : "none";
+    if (!modelInput) return;
+
+    if (provider === "GEMINI") modelInput.value = "gemini-2.5-flash";
+    else if (provider === "GROQ") modelInput.value = "llama-3.3-70b-versatile";
+    else if (provider === "OPENROUTER") modelInput.value = "deepseek/deepseek-r1:free";
+  }
+
+  async function addApiKeyToVault() {
+    const label = document.getElementById("api-key-label")?.value.trim() || `Key #${AiGatewayService.keys.length + 1}`;
+    const provider = document.getElementById("api-key-provider")?.value || "GEMINI";
+    const model = document.getElementById("api-key-model")?.value.trim() || "gemini-2.5-flash";
+    const priority = document.getElementById("api-key-priority")?.value || "MEDIUM";
+    const customUrl = document.getElementById("api-key-custom-url")?.value.trim() || "";
+    const secret = document.getElementById("api-key-secret")?.value.trim() || "";
+
+    if (!secret) {
+      alert("Please paste a valid API key.");
+      return;
+    }
+
+    AiGatewayService.keys.push({
+      id: "key_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
+      label,
+      provider,
+      model,
+      priority,
+      customUrl,
+      secret,
+      enabled: true,
+      cooldownUntil: 0,
+      lastStatus: "READY"
+    });
+
+    safeSetValue("api-key-label", "");
+    safeSetValue("api-key-secret", "");
+    await AiGatewayService.saveVault();
+  }
+
+  async function deleteApiKeyFromVault(id) {
+    AiGatewayService.keys = AiGatewayService.keys.filter(k => k.id !== id);
+    await AiGatewayService.saveVault();
+  }
+
+  async function moveApiKeyOrder(idx, dir) {
+    const target = idx + dir;
+    if (target < 0 || target >= AiGatewayService.keys.length) return;
+    const temp = AiGatewayService.keys[idx];
+    AiGatewayService.keys[idx] = AiGatewayService.keys[target];
+    AiGatewayService.keys[target] = temp;
+    await AiGatewayService.saveVault();
+  }
+
+  async function testSingleApiKey(id) {
+    const k = AiGatewayService.keys.find(item => item.id === id);
+    if (!k) return;
+    try {
+      const out = await AiGatewayService.callSingleProviderKey(
+        k,
+        "You are a fast connectivity checker.",
+        "Reply with the exact word: ONLINE",
+        false
+      );
+      k.cooldownUntil = 0;
+      k.lastStatus = "READY";
+      await AiGatewayService.saveVault();
+      alert(`✅ Key "${k.label}" (${k.model}) is ONLINE!\nResponse: ${out.slice(0, 60)}`);
+    } catch (err) {
+      k.cooldownUntil = Date.now() + 60000;
+      k.lastStatus = "COOLDOWN";
+      await AiGatewayService.saveVault();
+      alert(`❌ Key "${k.label}" test failed:\n${err.message}`);
+    }
+  }
+
+  async function resetAllApiCooldowns() {
+    AiGatewayService.keys.forEach(k => {
+      k.cooldownUntil = 0;
+      k.lastStatus = "READY";
+    });
+    await AiGatewayService.saveVault();
+  }
+
+  async function saveTaskRoutingConfig() {
+    ["SHORTCUT", "MUTANT", "SMART_PARSE", "SHEET_EDIT"].forEach(t => {
+      const sel = document.getElementById(`task-route-${t}`);
+      if (sel) AiGatewayService.taskRoutes[t] = sel.value;
+    });
+    await AiGatewayService.saveVault();
+  }
+
+  function renderApiVaultUI() {
+    const listEl = document.getElementById("api-vault-keys-list");
+    const badgeEl = document.getElementById("api-vault-status-badge");
+    const keys = AiGatewayService.keys || [];
+    const now = Date.now();
+    const readyCount = keys.filter(k => !k.cooldownUntil || k.cooldownUntil <= now).length;
+
+    if (badgeEl) {
+      badgeEl.innerText = `${readyCount} / ${keys.length} Keys Ready`;
+    }
+
+    if (listEl) {
+      listEl.innerHTML = "";
+      if (keys.length === 0) {
+        listEl.innerHTML = `<div style="font-size:11.5px; color:var(--text-muted); text-align:center; padding:10px; background:#070a12; border-radius:8px;">No API keys added yet. Add free Gemini / Groq / OpenRouter keys above to enable 1-tap in-app AI micro-tasks.</div>`;
+      } else {
+        keys.forEach((k, idx) => {
+          const onCooldown = k.cooldownUntil && k.cooldownUntil > now;
+          const remSec = onCooldown ? Math.ceil((k.cooldownUntil - now) / 1000) : 0;
+          const statusHtml = onCooldown
+            ? `<span class="badge" style="background:rgba(245,158,11,0.2); color:var(--status-amber);">\u23F3 Cooldown (${remSec}s)</span>`
+            : `<span class="badge" style="background:rgba(16,185,129,0.2); color:var(--status-green);">\uD83D\uDFE2 Ready</span>`;
+
+          const row = document.createElement("div");
+          row.className = "api-key-row";
+          row.innerHTML = `
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <span class="api-tier-badge tier-${k.priority}">${k.priority}</span>
+              <b style="font-size:12.5px; color:#fff;">${k.label}</b>
+              <span style="font-size:11px; font-family:var(--font-mono); color:var(--accent-cyan);">${k.provider} \u2022 ${k.model}</span>
+              ${statusHtml}
+            </div>
+            <div style="display:flex; gap:5px; align-items:center;">
+              <button class="btn btn-secondary" style="padding:2px 7px; font-size:10px;" onclick="CGL_OS.moveApiKeyOrder(${idx}, -1)" title="Move Up">\u25B2</button>
+              <button class="btn btn-secondary" style="padding:2px 7px; font-size:10px;" onclick="CGL_OS.moveApiKeyOrder(${idx}, 1)" title="Move Down">\u25BC</button>
+              <button class="btn btn-cyan" style="padding:2px 8px; font-size:10px;" onclick="CGL_OS.testSingleApiKey('${k.id}')">\u26A1 Test</button>
+              <button class="btn btn-danger" style="padding:2px 7px; font-size:10px;" onclick="CGL_OS.deleteApiKeyFromVault('${k.id}')">\u2715</button>
+            </div>
+          `;
+          listEl.appendChild(row);
+        });
+      }
+    }
+
+    // Populate Task Route & Manual Override Selectors across the App
+    const overrideSelectIds = [
+      "task-route-SHORTCUT",
+      "task-route-MUTANT",
+      "task-route-SMART_PARSE",
+      "task-route-SHEET_EDIT",
+      "ai-tutor-key-override",
+      "ai-sheet-key-override",
+      "smart-parse-key-override"
+    ];
+
+    overrideSelectIds.forEach(selId => {
+      const sel = document.getElementById(selId);
+      if (!sel) return;
+      const curVal = sel.value;
+      sel.innerHTML = `<option value="WATERFALL_AUTO">🌊 Waterfall Auto (Priority Failover)</option>`;
+      keys.forEach(k => {
+        const opt = document.createElement("option");
+        opt.value = k.id;
+        opt.innerText = `🔑 ${k.label} (${k.model} • ${k.priority})`;
+        sel.appendChild(opt);
+      });
+
+      if (selId.startsWith("task-route-")) {
+        const taskKey = selId.replace("task-route-", "");
+        sel.value = AiGatewayService.taskRoutes[taskKey] || "WATERFALL_AUTO";
+      } else if (curVal && keys.some(k => k.id === curVal)) {
+        sel.value = curVal;
+      }
+    });
+  }
+
+  /* ==========================================================================
    * SECTION 15: DYNAMIC TAXONOMY & SELECTOR SYNCHRONIZER UI
    * ========================================================================== */
   async function syncAllTaxonomyDropdowns() {
@@ -1697,6 +2116,7 @@ const CGL_OS = (() => {
     populateSelect("practice-filter-subject", true);
     populateSelect("builder-subject", true);
     populateSelect("global-search-filter-sub", true);
+    populateSelect("sheets-index-filter-sub", true);
 
     const practiceSub = document.getElementById("practice-filter-subject");
     if (practiceSub) handlePracticeSubjectChange(practiceSub.value);
@@ -1858,8 +2278,7 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * SECTION 16: NATIVE QUESTION GUI CREATOR & EDITOR CONTROLLERS
-   * Fixed: Full Difficulty & Tags editing + Arena/Dojo Live Sync
+   * SECTION 16: NATIVE QUESTION GUI CREATOR, SMART PARSE & EDITOR
    * ========================================================================== */
   function openNewQuestionCreatorModal(presetSub = null, presetChap = null) {
     currentQuestionImageBase64 = "";
@@ -1868,6 +2287,8 @@ const CGL_OS = (() => {
     syncNewQuestionChapterSelect(sub);
     if (presetChap) safeSetValue("new-q-chapter", presetChap);
 
+    safeSetValue("new-q-smart-raw-input", "");
+    safeSetDisplay("smart-parse-source-badge", "none");
     safeSetValue("new-q-subtopic", "");
     safeSetValue("new-q-method", "");
     safeSetValue("new-q-difficulty", "MEDIUM");
@@ -1889,9 +2310,73 @@ const CGL_OS = (() => {
     safeSetValue("new-q-tags", "");
     safeSetValue("new-q-concepts", "");
 
+    renderApiVaultUI();
     pushHistoryState("modal-new-question-creator");
     const m = document.getElementById("modal-new-question-creator");
     if (m) m.classList.add("active");
+  }
+
+  async function smartParseRawQuestionText() {
+    const rawText = document.getElementById("new-q-smart-raw-input")?.value.trim() || "";
+    if (!rawText) {
+      alert("Paste raw question text into the Smart Parse box first.");
+      return;
+    }
+
+    const manualKeyId = document.getElementById("smart-parse-key-override")?.value || "WATERFALL_AUTO";
+    const badge = document.getElementById("smart-parse-source-badge");
+    if (badge) {
+      badge.style.display = "inline-flex";
+      badge.innerText = "\u23F3 Parsing via API...";
+    }
+
+    const systemPrompt = `You are a precision SSC CGL question parser. Convert the user's raw question text into a clean JSON object with EXACTLY these 7 keys:
+{
+  "questionText": "Full stem with LaTeX math wrapped in $...$",
+  "options": ["Option A", "Option B", "Option C", "Option D"],
+  "correctIndex": 0,
+  "explanation": "Step-by-step derivation and shortcut",
+  "subtopic": "Short concept name",
+  "method": "Solving method name",
+  "difficulty": "EASY" | "MEDIUM" | "HARD"
+}
+Return ONLY valid JSON.`;
+
+    try {
+      const res = await AiGatewayService.executeMicroTask({
+        taskType: "SMART_PARSE",
+        systemPrompt,
+        userPrompt: rawText,
+        expectJson: true,
+        manualKeyId,
+        validatorFn: (obj) => {
+          if (!obj.questionText || !Array.isArray(obj.options) || obj.options.length !== 4) {
+            throw new Error("Parsed output missing questionText or 4 options.");
+          }
+        }
+      });
+
+      const d = res.data;
+      safeSetValue("new-q-text", d.questionText || "");
+      safeSetValue("new-q-opt-0", d.options[0] || "");
+      safeSetValue("new-q-opt-1", d.options[1] || "");
+      safeSetValue("new-q-opt-2", d.options[2] || "");
+      safeSetValue("new-q-opt-3", d.options[3] || "");
+      safeSetValue("new-q-correct", String(typeof d.correctIndex === "number" ? d.correctIndex : 0));
+      safeSetValue("new-q-explanation", d.explanation || "");
+      safeSetValue("new-q-subtopic", d.subtopic || "");
+      safeSetValue("new-q-method", d.method || "");
+      if (["EASY", "MEDIUM", "HARD"].includes(d.difficulty)) {
+        safeSetValue("new-q-difficulty", d.difficulty);
+      }
+
+      if (badge) {
+        badge.innerText = `\u2713 Parsed by: ${res.sourceLabel}`;
+      }
+    } catch (err) {
+      if (badge) badge.innerText = "\u26A0\uFE0F Fallback to Clipboard";
+      alert(err.message);
+    }
   }
 
   async function handleNewQuestionImageUpload(input) {
@@ -1960,6 +2445,7 @@ const CGL_OS = (() => {
       }
 
       if (keepOpen) {
+        safeSetValue("new-q-smart-raw-input", "");
         safeSetValue("new-q-text", "");
         safeSetValue("new-q-img-url", "");
         safeSetValue("new-q-img-file", "");
@@ -2155,10 +2641,6 @@ const CGL_OS = (() => {
 
   /* ==========================================================================
    * SECTION 17: SHARED SERVICE — PERFORMANCE SERVICE
-   * Upgraded:
-   * - Excludes micro-drills (<10 Qs) from inflating Standard Mocks & ERI Volume
-   * - Incorporates Attempt-Rate Factor & Subject-Calibrated Velocity
-   * - Supports Adversarial Mutant Redemption (remediatesQuestionId)
    * ========================================================================== */
   const PerformanceService = {
     async getHistoricalAttempts() {
@@ -2219,12 +2701,10 @@ const CGL_OS = (() => {
       const acc = Math.round(rawAcc);
       const avgSpeed = totalAtt > 0 ? Math.round(totalMockSec / totalAtt) : 0;
 
-      // Attempt Rate Guard: Prevents skipping 95% of a mock to game 100% accuracy
       const attemptRatio = totalQuestionsInMocks > 0 ? Math.min(1, (totalAtt / totalQuestionsInMocks) / 0.70) : 1;
       const effectiveAcc = rawAcc * (0.4 + 0.6 * attemptRatio);
       const accComp = parseFloat((effectiveAcc * 0.50).toFixed(1));
 
-      // Subject-Calibrated Velocity Score (1.0 par ratio = 100%)
       const avgParRatio = totalAtt > 0 ? (totalParWeightedRatio / totalAtt) : 1;
       let velScore = 100;
       if (avgParRatio > 1.0) {
@@ -2232,7 +2712,6 @@ const CGL_OS = (() => {
       }
       const velComp = parseFloat((velScore * 0.30).toFixed(1));
 
-      // Exposure / Consistency Volume weighted by standard mocks + total solved volume
       const volumeBonus = Math.min(100, (standardMocksCount * 10) + (totalAtt * 0.25));
       const consistencyComp = parseFloat((volumeBonus * 0.20).toFixed(1));
       const totalERI = Math.min(100, Math.max(5, accComp + velComp + consistencyComp)).toFixed(1);
@@ -2322,7 +2801,6 @@ const CGL_OS = (() => {
             const resp = att.userResponses[q.id];
             if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
               const targetIds = [q.id];
-              // Adversarial Mutant Redemption Rollup: Credit parent canonical question if mutant solved
               if (q.remediatesQuestionId) {
                 targetIds.push(q.remediatesQuestionId);
               }
@@ -2401,13 +2879,8 @@ const CGL_OS = (() => {
       return worstChapter;
     }
   };
-
   /* ==========================================================================
    * SECTION 18: SHARED SERVICE — MOCK SERVICE & OPTION PERMUTATION ENGINE
-   * Fixed:
-   * - Cross-subject sampling when subject === "ALL" (no silent QA coercion)
-   * - Strict scope by default (no silent cross-subject fallback padding)
-   * - Option Shuffle Permutation with automatic correctIndex remapping
    * ========================================================================== */
   const MockService = {
     shuffle(array, seed = null) {
@@ -2481,7 +2954,6 @@ const CGL_OS = (() => {
       const completed = attempts.filter(a => a.completed).sort((a, b) => b.timestamp - a.timestamp);
       const perfMap = await PerformanceService.getQuestionPerformanceMap();
 
-      // 1. Resolve Section Partitioning
       let sectionConfigs = [];
       if (Array.isArray(sections) && sections.length > 0) {
         sectionConfigs = sections.map((s, idx) => ({
@@ -2497,7 +2969,7 @@ const CGL_OS = (() => {
           mode: s.mode || mode,
           difficulty: s.difficulty || difficulty
         }));
-      } else if (subject === "ALL" && (count === 100 || count >= 80) && mode !== "WEAKNESS") {
+      } else if (subject === "ALL" && (count === 100 || count >= 80) && mode !== "WEAKNESS" && mode !== "STARRED") {
         const tier1Subs = ["REAS", "GA", "QA", "ENG"];
         const secDuration = Math.round(durationMin / tier1Subs.length);
         const secCount = Math.round(count / tier1Subs.length);
@@ -2515,7 +2987,6 @@ const CGL_OS = (() => {
           difficulty: difficulty
         }));
       } else {
-        // Fixed: Preserve subject: "ALL" for cross-subject weakness/mixed drills!
         sectionConfigs = [{
           id: "SEC_1",
           subject: subject,
@@ -2666,7 +3137,6 @@ const CGL_OS = (() => {
             }
           }
 
-          // Optional Fallback Padding (Only if allowFallbackPadding is explicitly enabled)
           if (allowFallbackPadding && secQuestions.length < secTarget) {
             const fallbackBank = allBankQuestions.filter(q => {
               if (secCfg.subject !== "ALL" && q.subject !== secCfg.subject) return false;
@@ -2759,10 +3229,8 @@ const CGL_OS = (() => {
     }
   };
 
-  // --- END OF PART 1 OF 2 (Proceed to Part 2 of 2 for Sections 19 - 30) ---
   /* ==========================================================================
-   * SECTION 19: MOCK LAB / BUILDER CONTROLLERS & FLEXIBLE MARKING SCHEME
-   * Granular Chip Matrix, Custom Marking Presets, Option Shuffle & Dojo Launch
+   * SECTION 19: MOCK LAB / BUILDER & FULL-FIDELITY PREVIEW / CURATION MODAL
    * ========================================================================== */
   let activeMockStrategy = "RANDOM";
   let customSequenceRows = [];
@@ -2910,19 +3378,160 @@ const CGL_OS = (() => {
     safeSetText("builder-pool-estimate", `Estimated pool: ${pool.length} matching questions`);
   }
 
+  /**
+   * INTERACTIVE FULL-FIDELITY MOCK PREVIEW & CURATION MODAL:
+   * Displays all N sampled questions with KaTeX math, options, toggleable answer
+   * keys, and per-question Swap / Remove actions.
+   */
   async function previewMockSelection() {
     try {
       const config = getActiveBuilderConfig();
-      const instance = await MockService.generate({ ...config, count: Math.min(config.count, 15) });
-      if (instance.questions.length === 0) {
+      previewedMockInstance = await MockService.generate(config);
+      if (!previewedMockInstance.questions || previewedMockInstance.questions.length === 0) {
         alert("Zero matching questions in current scope.");
         return;
       }
-      const qIds = instance.questions.map((q, idx) => `${idx + 1}. [${q.subject} \u2022 ${q.chapter}] ${q.questionText.slice(0, 75)}...`).join("\n\n");
-      alert(`MOCK PREVIEW (${instance.questions.length} Questions Sampled | Marking: +${instance.positiveMarks}/-${instance.negativeMarks}):\n\n${qIds}`);
+      showPreviewAnswerKeys = false;
+      const keyBtn = document.getElementById("btn-preview-toggle-keys");
+      if (keyBtn) keyBtn.innerText = "\uD83D\uDC41\uFE0F Show Answer Keys";
+
+      renderMockPreviewModalContent();
+      pushHistoryState("modal-mock-preview");
+      const m = document.getElementById("modal-mock-preview");
+      if (m) m.classList.add("active");
     } catch (err) {
       alert("Preview Error: " + err.message);
     }
+  }
+
+  function renderMockPreviewModalContent() {
+    if (!previewedMockInstance) return;
+    const qs = previewedMockInstance.questions || [];
+    safeSetText("mock-preview-modal-title", previewedMockInstance.title);
+    safeSetText(
+      "mock-preview-modal-sub",
+      `${qs.length} Questions Sampled \u2022 Marking: +${previewedMockInstance.positiveMarks} / -${previewedMockInstance.negativeMarks} \u2022 Duration: ${previewedMockInstance.durationMin}m`
+    );
+
+    const listEl = document.getElementById("mock-preview-questions-list");
+    if (!listEl) return;
+    listEl.innerHTML = "";
+
+    if (qs.length === 0) {
+      listEl.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted);">Queue is empty.</div>`;
+      return;
+    }
+
+    qs.forEach((q, idx) => {
+      const card = document.createElement("div");
+      card.className = "mock-preview-q-card";
+
+      const optsHtml = (q.options || []).map((opt, oIdx) => {
+        const isCor = showPreviewAnswerKeys && oIdx === q.correctIndex;
+        return `<div class="mock-preview-opt-item ${isCor ? "correct-opt" : ""}"><b>(${oIdx + 1})</b> ${formatRichText(opt)} ${isCor ? "\u2713" : ""}</div>`;
+      }).join("");
+
+      const expHtml = showPreviewAnswerKeys
+        ? `<div style="margin-top:10px; padding:8px 10px; background:#070a12; border-left:3px solid var(--status-green); border-radius:4px; font-size:12px;"><b>Key: Option ${q.correctIndex + 1}</b><br>${formatRichText(q.explanation || "No derivation registered.")}</div>`
+        : "";
+
+      card.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:6px;">
+          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+            <span class="q-number-pill" style="padding:2px 8px; font-size:11px;">Q${idx + 1}</span>
+            <span class="badge" style="background:#1f6feb;">${q.subject} \u2022 ${q.chapter}</span>
+            <span class="badge" style="background:#151a24; color:var(--accent-cyan);">${q.difficulty || "MEDIUM"}</span>
+            <span style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-muted);">${q.id}</span>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-secondary" style="padding:2px 8px; font-size:10.5px; color:var(--accent-cyan);" onclick="CGL_OS.swapPreviewedQuestion(${idx})" title="Swap with another question from pool">\uD83D\uDD04 Swap</button>
+            <button class="btn btn-danger" style="padding:2px 8px; font-size:10.5px;" onclick="CGL_OS.removePreviewedQuestion(${idx})" title="Remove from queue">\u2715 Remove</button>
+          </div>
+        </div>
+        ${q.passageText ? `<div class="q-passage-container" style="font-size:12px; padding:8px 10px; margin-bottom:8px;"><b>Passage:</b> ${formatRichText(q.passageText)}</div>` : ""}
+        <div style="font-size:13.8px; color:#fff; line-height:1.6;">${formatRichText(q.questionText)}</div>
+        ${q.imageUrl ? `<div style="text-align:center; margin:8px 0;"><img src="${q.imageUrl}" style="max-height:140px; border-radius:6px;"></div>` : ""}
+        <div class="mock-preview-opt-grid">${optsHtml}</div>
+        ${expHtml}
+      `;
+      listEl.appendChild(card);
+    });
+  }
+
+  function toggleMockPreviewAnswerKeys() {
+    showPreviewAnswerKeys = !showPreviewAnswerKeys;
+    const btn = document.getElementById("btn-preview-toggle-keys");
+    if (btn) {
+      btn.innerText = showPreviewAnswerKeys ? "\uD83D\uDE48 Hide Answer Keys" : "\uD83D\uDC41\uFE0F Show Answer Keys";
+    }
+    renderMockPreviewModalContent();
+  }
+
+  async function swapPreviewedQuestion(idx) {
+    if (!previewedMockInstance || !previewedMockInstance.questions[idx]) return;
+    const targetQ = previewedMockInstance.questions[idx];
+    const usedIds = new Set(previewedMockInstance.questions.map(q => q.id));
+    const allQs = await getAllRecords("store_questions");
+
+    let candidates = allQs.filter(q => q.chapter === targetQ.chapter && !usedIds.has(q.id));
+    if (candidates.length === 0) {
+      candidates = allQs.filter(q => q.subject === targetQ.subject && !usedIds.has(q.id));
+    }
+    if (candidates.length === 0) {
+      alert("No alternative unused questions available in this chapter/subject pool to swap.");
+      return;
+    }
+
+    const replacement = { ...candidates[Math.floor(Math.random() * candidates.length)] };
+    replacement.sectionIndex = targetQ.sectionIndex;
+    replacement.sectionName = targetQ.sectionName;
+    replacement.localNumber = targetQ.localNumber;
+    replacement.globalNumber = targetQ.globalNumber;
+
+    previewedMockInstance.questions[idx] = replacement;
+    renderMockPreviewModalContent();
+  }
+
+  function removePreviewedQuestion(idx) {
+    if (!previewedMockInstance || !previewedMockInstance.questions[idx]) return;
+    previewedMockInstance.questions.splice(idx, 1);
+    previewedMockInstance.questions.forEach((q, i) => {
+      q.globalNumber = i + 1;
+    });
+    renderMockPreviewModalContent();
+  }
+
+  async function launchPreviewedQueueInDojo() {
+    if (!previewedMockInstance || previewedMockInstance.questions.length === 0) return;
+    document.getElementById("modal-mock-preview")?.classList.remove("active");
+    document.getElementById("modal-mock-builder")?.classList.remove("active");
+    await openDojoSessionWithQuestions(previewedMockInstance.questions, `${previewedMockInstance.title} (Dojo)`);
+  }
+
+  async function launchPreviewedQueueAsMock() {
+    if (!previewedMockInstance || previewedMockInstance.questions.length === 0) return;
+    document.getElementById("modal-mock-preview")?.classList.remove("active");
+    document.getElementById("modal-mock-builder")?.classList.remove("active");
+    await MockService.launchMockSession(previewedMockInstance);
+  }
+
+  async function savePreviewedQueueAsFixedPaper() {
+    if (!previewedMockInstance || previewedMockInstance.questions.length === 0) return;
+    const title = prompt("Enter title for this Curated Fixed Paper:", previewedMockInstance.title);
+    if (!title || !title.trim()) return;
+
+    await MockService.saveMockDefinition({
+      title: title.trim(),
+      type: "FIXED_PAPER",
+      isSectionLocked: previewedMockInstance.isSectionLocked,
+      positiveMarks: previewedMockInstance.positiveMarks,
+      negativeMarks: previewedMockInstance.negativeMarks,
+      sections: previewedMockInstance.sections,
+      questions: previewedMockInstance.questions
+    });
+
+    alert(`Saved curated fixed paper "${title.trim()}" to Dashboard!`);
+    await renderDashboardBlueprints();
   }
 
   function getActiveBuilderConfig() {
@@ -3235,12 +3844,7 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * SECTION 20: TIMED EXAM ARENA, EPOCH-DELTA TIMERS, SCRATCHPAD & PALETTE
-   * Fixed:
-   * - Epoch-delta timers immune to mobile background throttling
-   * - Continuous auto-persist of store_active_session on every interaction
-   * - Chronological sectionRemainingAtAnswerSec recorded on option click
-   * - Live Canonical Overlay in Review Arena
+   * SECTION 20: TIMED EXAM ARENA, SPLIT-SCREEN SHEET DRAWER & AI TUTOR
    * ========================================================================== */
   function startExamTimers() {
     clearInterval(examTimerInterval);
@@ -3363,17 +3967,73 @@ const CGL_OS = (() => {
     renderActiveExamQuestion();
   }
 
+  /**
+   * SIDE-BY-SIDE SPLIT-SCREEN SHEET + QUESTION DRAWER:
+   * Opens any linked Knowledge Sheet alongside the active question in Review
+   * or Dojo Mode without hiding the question.
+   */
+  async function openSplitSheetDrawer(conceptId, fallbackSub, fallbackChap) {
+    let sheet = null;
+    if (conceptId) {
+      sheet = await ConceptService.get(conceptId);
+    }
+    if (!sheet && fallbackChap) {
+      const all = await ConceptService.getAll();
+      sheet = all.find(c => c.chapter === fallbackChap);
+    }
+    if (!sheet) {
+      alert(`No Knowledge Sheet found for ${conceptId || fallbackChap}.`);
+      return;
+    }
+
+    activeSplitSheetId = sheet.id;
+    activeSplitSheetSubject = sheet.subject;
+    activeSplitSheetChapter = sheet.chapter;
+
+    safeSetText("split-sheet-title", `${sheet.title} (${sheet.chapter})`);
+    const savedMasksRec = await getRecord("store_notes", `masks_${sheet.id}`);
+    const masks = savedMasksRec && Array.isArray(savedMasksRec.masks) ? savedMasksRec.masks : [];
+
+    safeSetHtml("split-sheet-body", `
+      <div style="font-size:11.5px; color:var(--accent-cyan); font-family:var(--font-mono); margin-bottom:8px;">${sheet.subtitle || ""}</div>
+      <div>${formatRichText(sheet.content, masks)}</div>
+    `);
+
+    const drawer = document.getElementById("arena-split-sheet-drawer");
+    if (drawer) drawer.classList.add("open");
+    document.body.classList.add("split-sheet-docked");
+  }
+
+  function closeSplitSheetDrawer() {
+    const drawer = document.getElementById("arena-split-sheet-drawer");
+    if (drawer) drawer.classList.remove("open");
+    document.body.classList.remove("split-sheet-docked");
+  }
+
+  function expandSplitSheetToFullStudio() {
+    const id = activeSplitSheetId;
+    const sub = activeSplitSheetSubject;
+    const chap = activeSplitSheetChapter;
+    closeSplitSheetDrawer();
+    openCompendiumToSheet(id, sub, chap);
+  }
+
   function renderActiveExamQuestion() {
     if (!activeExam || !activeExam.questions || activeExam.questions.length === 0) return;
     const q = activeExam.questions[activeExam.currentQuestionIndex];
     if (!q) return;
+
+    // Switch per-question ink context automatically
+    switchScratchpadContext(`exam_q_${q.id}`);
+
     const resp = activeExam.userResponses[q.id] || {};
     const isRev = !!activeExam.isReviewMode;
     const posM = activeExam.positiveMarks !== undefined ? activeExam.positiveMarks : 2.0;
     const negM = activeExam.negativeMarks !== undefined ? activeExam.negativeMarks : 0.5;
 
-    safeSetDisplay("btn-arena-research", "inline-flex");
     safeSetDisplay("btn-arena-edit-q", isRev ? "inline-flex" : "none");
+    safeSetDisplay("btn-arena-ai-assist", isRev ? "inline-flex" : "none");
+    safeSetDisplay("btn-arena-mutant-clone", isRev ? "inline-flex" : "none");
     safeSetText("hud-marking-pill", `+${posM.toFixed(1)} / -${negM.toFixed(2)}`);
 
     const starBtn = document.getElementById("btn-arena-star");
@@ -3404,6 +4064,7 @@ const CGL_OS = (() => {
       safeSetText("arena-q-timer", `${String(mSpent).padStart(2, "0")}:${String(sSpent).padStart(2, "0")}`);
       safeSetText("hud-pacing-status", `${spent}s on Q (Par: ${getSubjectThresholds(q.subject).parSec}s)`);
     } else {
+      closeSplitSheetDrawer();
       safeSetDisplay("btn-arena-pause", "inline-flex");
       safeSetDisplay("btn-arena-exit-review", "none");
       safeSetDisplay("btn-q-review", "inline-flex");
@@ -3429,7 +4090,6 @@ const CGL_OS = (() => {
     safeSetText("hud-section-qinfo", `Sec Q${q.localNumber || (activeExam.currentQuestionIndex + 1)} of ${secQs.length} (Global Q${q.globalNumber || (activeExam.currentQuestionIndex + 1)})`);
     safeSetText("arena-q-num", `Q${q.globalNumber || (activeExam.currentQuestionIndex + 1)}`);
 
-    // Pinned Reading Comprehension / Cloze / Caselet Container + Tablet Split-Pane Class
     const passageContainer = document.getElementById("arena-passage-container");
     const arenaBody = document.getElementById("arena-body");
     const hasPassage = !!(q.passageText && q.passageText.trim().length > 0);
@@ -3484,20 +4144,35 @@ const CGL_OS = (() => {
           : (q.conceptId ? [q.conceptId] : []);
 
         if (linkedIds.length === 0) {
-          const btn = document.createElement("button");
-          btn.className = "btn btn-cyan";
-          btn.style.cssText = "padding:6px 12px; font-size:12px; font-weight:700;";
-          btn.innerText = `\uD83D\uDCD6 Browse Sheets for ${q.chapter}`;
-          btn.onclick = () => openCompendiumToSheet(null, q.subject, q.chapter);
-          pillsWrap.appendChild(btn);
+          const pinBtn = document.createElement("button");
+          pinBtn.className = "btn btn-purple";
+          pinBtn.style.cssText = "padding:5px 10px; font-size:11.5px; font-weight:700;";
+          pinBtn.innerText = `\uD83D\uDCCC Pin ${q.chapter} Sheet`;
+          pinBtn.onclick = () => openSplitSheetDrawer(null, q.subject, q.chapter);
+          pillsWrap.appendChild(pinBtn);
+
+          const fullBtn = document.createElement("button");
+          fullBtn.className = "btn btn-cyan";
+          fullBtn.style.cssText = "padding:5px 10px; font-size:11.5px; font-weight:700;";
+          fullBtn.innerText = `\uD83D\uDCD6 Full Studio`;
+          fullBtn.onclick = () => openCompendiumToSheet(null, q.subject, q.chapter);
+          pillsWrap.appendChild(fullBtn);
         } else {
           linkedIds.forEach(cId => {
-            const btn = document.createElement("button");
-            btn.className = "btn btn-cyan";
-            btn.style.cssText = "padding:6px 12px; font-size:12px; font-weight:700;";
-            btn.innerText = `\uD83D\uDCD6 Sheet: ${cId.replace(/^top_/, "").replace(/_/g, " ")}`;
-            btn.onclick = () => openCompendiumToSheet(cId, q.subject, q.chapter);
-            pillsWrap.appendChild(btn);
+            const cleanName = cId.replace(/^top_/, "").replace(/_/g, " ");
+            const pinBtn = document.createElement("button");
+            pinBtn.className = "btn btn-purple";
+            pinBtn.style.cssText = "padding:5px 10px; font-size:11.5px; font-weight:700;";
+            pinBtn.innerText = `\uD83D\uDCCC Pin: ${cleanName}`;
+            pinBtn.onclick = () => openSplitSheetDrawer(cId, q.subject, q.chapter);
+            pillsWrap.appendChild(pinBtn);
+
+            const fullBtn = document.createElement("button");
+            fullBtn.className = "btn btn-cyan";
+            fullBtn.style.cssText = "padding:5px 10px; font-size:11.5px; font-weight:700;";
+            fullBtn.innerText = `\uD83D\uDCD6 Studio: ${cleanName}`;
+            fullBtn.onclick = () => openCompendiumToSheet(cId, q.subject, q.chapter);
+            pillsWrap.appendChild(fullBtn);
           });
         }
       }
@@ -3550,11 +4225,14 @@ const CGL_OS = (() => {
       solutionBlock.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
           <span style="font-weight:700; color:var(--accent-cyan); font-size:13px;">Method &amp; Detailed Solution</span>
-          ${isAtt ? `
-            <select onchange="CGL_OS.handleMistakeTagSelect('${q.id}', this.value)" style="background:#151a24; color:#fff; border:1px solid #da3633; font-size:11px; padding:4px 8px; border-radius:4px;">
-              ${optionsHtml}
-            </select>
-          ` : ""}
+          <div style="display:flex; gap:6px; align-items:center;">
+            <button class="btn btn-purple" style="padding:3px 9px; font-size:11px;" onclick="CGL_OS.openAiQuestionTutorModal('ARENA')">\uD83E\uDDE0 AI Shortcut / Tutor</button>
+            ${isAtt ? `
+              <select onchange="CGL_OS.handleMistakeTagSelect('${q.id}', this.value)" style="background:#151a24; color:#fff; border:1px solid #da3633; font-size:11px; padding:4px 8px; border-radius:4px;">
+                ${optionsHtml}
+              </select>
+            ` : ""}
+          </div>
         </div>
         <div style="font-size:calc(13.8px * var(--reader-font-scale)); line-height:1.68;">${formatRichText(q.explanation || "No method registered.")}</div>
         ${q.annotation ? `<div class="callout-box" style="margin-top:10px;"><b>Personal Solving Cue:</b><br>${formatRichText(q.annotation)}</div>` : ""}
@@ -3587,7 +4265,6 @@ const CGL_OS = (() => {
           if (resp.selectedOption !== null && resp.selectedOption !== idx) resp.switches++;
 
           resp.selectedOption = idx;
-          // Fixed: Record exact section clock remaining at the moment of answering!
           resp.sectionRemainingAtAnswerSec = activeExam.sectionRemainingSec;
 
           if (!resp.decisionTrail) resp.decisionTrail = [];
@@ -3632,6 +4309,196 @@ const CGL_OS = (() => {
     });
 
     if (!isRev) activeExam.currentQTimeSpentSec = 0;
+  }
+
+  /* ==========================================================================
+   * SECTION 20A: AI QUESTION COPILOT & 1-TAP ADVERSARIAL MUTANT CLONE ENGINE
+   * ========================================================================== */
+  function getActiveQuestionForAiContext(contextMode) {
+    if (contextMode === "ARENA" && activeExam) {
+      return activeExam.questions[activeExam.currentQuestionIndex];
+    }
+    if (dojoExam && dojoExam.questions) {
+      return dojoExam.questions[dojoExam.currentIndex];
+    }
+    if (activeExam && activeExam.questions) {
+      return activeExam.questions[activeExam.currentQuestionIndex];
+    }
+    return null;
+  }
+
+  function openAiQuestionTutorModal(contextMode = "DOJO") {
+    activeAiTutorContext = contextMode;
+    const q = getActiveQuestionForAiContext(contextMode);
+    if (!q) return;
+
+    renderApiVaultUI();
+    safeSetText("ai-tutor-q-meta", `${q.id} \u2022 ${q.subject} \u2022 ${q.chapter}`);
+    safeSetText("ai-tutor-source-badge", "\uD83E\uDD16 Ready (Waterfall Router)");
+    safeSetDisplay("btn-ai-tutor-save-cue", "none");
+    safeSetHtml("ai-tutor-response-box", `Select a 1-tap micro-task above or ask a specific doubt about <b>${q.id}</b>.`);
+
+    pushHistoryState("modal-ai-tutor");
+    const m = document.getElementById("modal-ai-tutor");
+    if (m) m.classList.add("active");
+  }
+
+  async function runAiTutorMicroTask(mode) {
+    const q = getActiveQuestionForAiContext(activeAiTutorContext);
+    if (!q) return;
+
+    const manualKeyId = document.getElementById("ai-tutor-key-override")?.value || "WATERFALL_AUTO";
+    const badge = document.getElementById("ai-tutor-source-badge");
+    const box = document.getElementById("ai-tutor-response-box");
+    const customInput = document.getElementById("ai-tutor-custom-prompt")?.value.trim() || "";
+
+    if (badge) badge.innerText = "\u23F3 Querying API Waterfall...";
+    if (box) box.innerHTML = `<div style="color:var(--accent-cyan);">Generating crisp response...</div>`;
+
+    const qContext = `Question (${q.subject} - ${q.chapter}): ${q.questionText}\nOptions: (1) ${q.options[0]} | (2) ${q.options[1]} | (3) ${q.options[2]} | (4) ${q.options[3]}\nCorrect Answer: Option ${q.correctIndex + 1} (${q.options[q.correctIndex]})\nExisting Explanation: ${q.explanation || "None"}`;
+
+    let systemPrompt = "You are an elite SSC CGL Tier-1/Tier-2 coach. Be concise, crisp, and use $...$ for LaTeX math.";
+    let userPrompt = "";
+
+    if (mode === "SHORTCUT") {
+      userPrompt = `${qContext}\n\nProvide a 2-to-4 line exam-hall speed shortcut (ratio, value-putting, unit digit, options elimination, or direct theorem) to solve this in under 20 seconds.`;
+    } else if (mode === "EXPLAIN") {
+      userPrompt = `${qContext}\n\nBreak down the step-by-step derivation clearly so the candidate understands why Option ${q.correctIndex + 1} is unequivocally correct.`;
+    } else if (mode === "TRAP_CHECK") {
+      userPrompt = `${qContext}\n\nExplain the specific cognitive trap or common calculation slip that leads candidates to pick the wrong distractors here, and how to avoid it.`;
+    } else {
+      if (!customInput) {
+        alert("Enter your question in the input box first.");
+        return;
+      }
+      userPrompt = `${qContext}\n\nCandidate Question: ${customInput}`;
+    }
+
+    try {
+      const res = await AiGatewayService.executeMicroTask({
+        taskType: "SHORTCUT",
+        systemPrompt,
+        userPrompt,
+        expectJson: false,
+        manualKeyId
+      });
+
+      lastAiTutorPlainText = res.rawText.trim();
+      if (badge) badge.innerText = `\u2713 Source: ${res.sourceLabel}`;
+      if (box) box.innerHTML = formatRichText(lastAiTutorPlainText);
+      safeSetDisplay("btn-ai-tutor-save-cue", "inline-flex");
+    } catch (err) {
+      if (badge) badge.innerText = "\u26A0\uFE0F Fallback to Clipboard";
+      if (box) box.innerHTML = `<span style="color:var(--status-amber);">${err.message}</span>`;
+    }
+  }
+
+  async function saveAiTutorOutputToQuestionCue() {
+    const q = getActiveQuestionForAiContext(activeAiTutorContext);
+    if (!q || !lastAiTutorPlainText) return;
+
+    const updatedCue = q.annotation
+      ? `${q.annotation}\n\n[AI Shortcut]: ${lastAiTutorPlainText}`
+      : `[AI Shortcut]: ${lastAiTutorPlainText}`;
+
+    q.annotation = updatedCue;
+    if (!q.ephemeral) {
+      await QuestionService.update(q.id, { annotation: updatedCue });
+    }
+    if (dojoExam) {
+      safeSetValue("dojo-arena-annotation", updatedCue);
+    }
+    if (activeExam && activeExam.isReviewMode) {
+      renderActiveExamQuestion();
+    }
+    alert("Saved to Personal Solving Cue for this question!");
+  }
+
+  /**
+   * 🧬 1-TAP ADVERSARIAL MUTANT CLONE GENERATOR:
+   * Uses the deterministic JS compiler pattern: API only generates the 6 flat
+   * content fields, while app.js enforces id, subject, chapter, conceptIds,
+   * ephemeral: true, and remediatesQuestionId.
+   */
+  async function generateInstantMutantClone(sourceContext = "DOJO") {
+    const ctx = sourceContext === "MODAL" ? activeAiTutorContext : sourceContext;
+    const parentQ = getActiveQuestionForAiContext(ctx);
+    if (!parentQ) return;
+
+    const manualKeyId = document.getElementById("ai-tutor-key-override")?.value || "WATERFALL_AUTO";
+    const badge = document.getElementById("ai-tutor-source-badge");
+    if (badge) badge.innerText = "\u23F3 Synthesizing Mutant Clone...";
+
+    const systemPrompt = `You are an adversarial SSC CGL problem designer. Given a canonical question, create a mutated variant that tests the EXACT same mathematical/linguistic theorem and trap, but with new numbers, changed surface entities, and recomputed options.
+ Verify your arithmetic step-by-step BEFORE choosing correctIndex (0, 1, 2, or 3).
+Return ONLY a valid JSON object with these 4 keys:
+{
+  "questionText": "Mutated stem with LaTeX in $...$",
+  "options": ["Opt 1", "Opt 2", "Opt 3", "Opt 4"],
+  "correctIndex": 0,
+  "explanation": "Complete step-by-step verification proof"
+}`;
+
+    const userPrompt = `Parent Question (${parentQ.subject} - ${parentQ.chapter} - ${parentQ.method || parentQ.subtopic}):
+Stem: ${parentQ.questionText}
+Options: ${JSON.stringify(parentQ.options)}
+Correct Index: ${parentQ.correctIndex}
+Explanation: ${parentQ.explanation}`;
+
+    try {
+      const res = await AiGatewayService.executeMicroTask({
+        taskType: "MUTANT",
+        systemPrompt,
+        userPrompt,
+        expectJson: true,
+        manualKeyId,
+        validatorFn: (obj) => {
+          if (!obj.questionText || !Array.isArray(obj.options) || obj.options.length !== 4) {
+            throw new Error("Mutant JSON missing questionText or 4 options.");
+          }
+          if (typeof obj.correctIndex !== "number" || obj.correctIndex < 0 || obj.correctIndex > 3) {
+            throw new Error("Mutant JSON has invalid correctIndex.");
+          }
+        }
+      });
+
+      const d = res.data;
+      const mutantQ = sanitizeQuestion({
+        id: `q_eph_mut_${Date.now()}`,
+        subject: parentQ.subject,
+        chapter: parentQ.chapter,
+        subtopic: parentQ.subtopic,
+        method: parentQ.method,
+        conceptId: parentQ.conceptId,
+        conceptIds: parentQ.conceptIds,
+        remediatesQuestionId: parentQ.id,
+        ephemeral: true,
+        questionText: d.questionText,
+        options: d.options,
+        correctIndex: d.correctIndex,
+        explanation: `[Mutant by ${res.sourceLabel}]\n${d.explanation || ""}`,
+        source: `Mutant Clone of ${parentQ.id}`,
+        difficulty: parentQ.difficulty || "MEDIUM",
+        tags: [...(parentQ.tags || []), "MutantClone"]
+      });
+
+      document.getElementById("modal-ai-tutor")?.classList.remove("active");
+
+      if (dojoExam && document.getElementById("dojo-arena-view")?.style.display === "flex") {
+        const insertIdx = dojoExam.currentIndex + 1;
+        dojoExam.questions.splice(insertIdx, 0, mutantQ);
+        dojoExam.questions.forEach((q, i) => { q.dojoSequentialNum = i + 1; });
+        dojoExam.userResponses[mutantQ.id] = { selectedOption: null, status: "unanswered", revealed: false };
+        dojoExam.currentIndex = insertIdx;
+        renderDojoArenaQuestion();
+        alert(`🧬 Mutant Clone generated by ${res.sourceLabel} and mounted right here in Dojo!`);
+      } else {
+        await openDojoSessionWithQuestions([mutantQ], `🧬 Mutant Probe (${parentQ.chapter})`);
+      }
+    } catch (err) {
+      if (badge) badge.innerText = "\u26A0\uFE0F Fallback to Clipboard";
+      alert(err.message);
+    }
   }
 
   // Safe Navigation Event Bindings
@@ -3829,6 +4696,7 @@ const CGL_OS = (() => {
     if (shield) shield.style.setProperty("display", "none", "important");
     safeSetDisplay("exam-arena", "none");
     toggleScratchpadCanvas(false);
+    closeSplitSheetDrawer();
     updateMiniPlayerDock();
   });
 
@@ -3838,6 +4706,7 @@ const CGL_OS = (() => {
       if (shield) shield.style.setProperty("display", "none", "important");
       safeSetDisplay("exam-arena", "none");
       toggleScratchpadCanvas(false);
+      closeSplitSheetDrawer();
       clearInterval(examTimerInterval);
       await deleteRecordFromStore("store_active_session", "current_session");
       activeExam = null;
@@ -3897,15 +4766,10 @@ const CGL_OS = (() => {
     }
   });
 
-  /**
-   * TEST SUBMISSION ENGINE:
-   * - Chronologically accurate PANIC_SLIP using sectionRemainingAtAnswerSec
-   * - Subject-calibrated TIME_TRAP_Q4 & SPEED_MASTERY thresholds
-   * - Configurable positiveMarks & negativeMarks support
-   */
   async function submitExamSession() {
     clearInterval(examTimerInterval);
     toggleScratchpadCanvas(false);
+    closeSplitSheetDrawer();
 
     let correct = 0, incorrect = 0, traps = 0, totalMarks = 0;
     let penaltyDrag = 0, switchDelta = 0;
@@ -4007,7 +4871,6 @@ const CGL_OS = (() => {
       ? JSON.parse(JSON.stringify(target.sections)).map(s => ({ ...s, locked: false }))
       : [{ id: "SEC_1", name: "Section 1", durationSec: 900, locked: false }];
 
-    // Overlay latest canonical question metadata & permute options to prevent position memory
     const allCanonical = await getAllRecords("store_questions");
     const canonMap = {};
     allCanonical.forEach(cq => { canonMap[cq.id] = cq; });
@@ -4071,11 +4934,6 @@ const CGL_OS = (() => {
     startExamTimers();
   }
 
-  /**
-   * LIVE CANONICAL OVERLAY IN REVIEW ARENA:
-   * Overlays the latest explanation, conceptIds, annotation, and bookmarked
-   * status from store_questions while keeping historical options & scoring intact.
-   */
   async function enterFullScreenReviewArena() {
     if (!activeReviewAttempt) return;
     const m = document.getElementById("modal-mock-review");
@@ -4113,6 +4971,7 @@ const CGL_OS = (() => {
     pushNavLayer("exam-arena", () => {
       safeSetDisplay("exam-arena", "none");
       toggleScratchpadCanvas(false);
+      closeSplitSheetDrawer();
     });
     safeSetDisplay("exam-arena", "flex");
     renderActiveExamQuestion();
@@ -4122,6 +4981,7 @@ const CGL_OS = (() => {
   function exitReviewArena() {
     safeSetDisplay("exam-arena", "none");
     toggleScratchpadCanvas(false);
+    closeSplitSheetDrawer();
     const wasStudyView = activeExam && activeExam.mockType === "STUDY_VIEW";
     activeExam = null;
     if (!wasStudyView && activeReviewAttempt) {
@@ -4132,6 +4992,7 @@ const CGL_OS = (() => {
   async function compileAndLaunchArena(title, questionsPool, durationMin, isSectionLocked = false, customSections = null, isEphemeral = false, positiveMarks = 2.0, negativeMarks = 0.5) {
     clearInterval(examTimerInterval);
     toggleScratchpadCanvas(false);
+    closeSplitSheetDrawer();
 
     if (!questionsPool || questionsPool.length === 0) {
       alert("Cannot launch arena: question pool is empty.");
@@ -4274,34 +5135,88 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * IN-ARENA ROUGH SCRATCHPAD CANVAS ENGINE (STYLUS & FINGER)
+   * SECTION 20B: GLOBAL SCROLL-SYNCHRONIZED TABLET/STYLUS SKETCHPAD ENGINE
+   * - World-space coordinates (clientY + scrollContainer.scrollTop)
+   * - Ink moves naturally with the page as you scroll
+   * - Per-Question & Per-Sheet Ink Memory during session
+   * - 1-Tap ✏️ Draw / 🖐️ Scroll pass-through toggle + Stylus auto-draw
    * ========================================================================== */
+  function getActiveScrollContainerForInk() {
+    const compView = document.getElementById("compendium-fullscreen-view");
+    if (compView && compView.style.display === "flex") {
+      return document.getElementById("comp-studio-canvas");
+    }
+    const dojoView = document.getElementById("dojo-arena-view");
+    if (dojoView && dojoView.style.display === "flex") {
+      return document.getElementById("dojo-arena-body");
+    }
+    const examView = document.getElementById("exam-arena");
+    if (examView && examView.style.display === "flex") {
+      return document.getElementById("arena-body");
+    }
+    return document.scrollingElement || document.documentElement;
+  }
+
+  function switchScratchpadContext(newContextKey) {
+    if (activeInkContextKey) {
+      inkMemoryByContextKey[activeInkContextKey] = [...scratchpadStrokes];
+    }
+    activeInkContextKey = newContextKey || "global_default";
+    scratchpadStrokes = inkMemoryByContextKey[activeInkContextKey]
+      ? [...inkMemoryByContextKey[activeInkContextKey]]
+      : [];
+    currentStroke = [];
+    if (scratchpadActive) {
+      redrawScratchpad();
+    }
+  }
+
   function initScratchpadCanvasListeners() {
     const canvas = document.getElementById("scratchpad-canvas");
     if (!canvas || canvas.dataset.bound === "true") return;
     canvas.dataset.bound = "true";
 
-    const getPos = (e) => {
+    // Bind scroll listeners on all 3 primary reading/solving containers so ink stays locked to text
+    ["arena-body", "dojo-arena-body", "comp-studio-canvas"].forEach(cid => {
+      const sc = document.getElementById(cid);
+      if (sc) {
+        sc.addEventListener("scroll", () => {
+          if (scratchpadActive) redrawScratchpad();
+        }, { passive: true });
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      if (scratchpadActive) resizeScratchpadCanvas();
+    });
+
+    const getWorldPos = (e) => {
       const rect = canvas.getBoundingClientRect();
+      const sc = getActiveScrollContainerForInk();
+      const sTop = sc ? sc.scrollTop : 0;
+      const sLeft = sc ? sc.scrollLeft : 0;
       return {
-        x: (e.clientX - rect.left),
-        y: (e.clientY - rect.top)
+        x: (e.clientX - rect.left) + sLeft,
+        y: (e.clientY - rect.top) + sTop
       };
     };
 
     canvas.addEventListener("pointerdown", (e) => {
-      if (!scratchpadActive) return;
+      if (!scratchpadActive || scratchpadScrollPassthrough) return;
+      // If user touches with 2 fingers or non-primary button, allow scroll
+      if (!e.isPrimary) return;
+
       e.preventDefault();
       scratchpadDrawing = true;
-      const pos = getPos(e);
+      const pos = getWorldPos(e);
       currentStroke = [{ x: pos.x, y: pos.y, mode: scratchpadMode }];
       redrawScratchpad();
     });
 
     canvas.addEventListener("pointermove", (e) => {
-      if (!scratchpadDrawing || !scratchpadActive) return;
+      if (!scratchpadDrawing || !scratchpadActive || scratchpadScrollPassthrough) return;
       e.preventDefault();
-      const pos = getPos(e);
+      const pos = getWorldPos(e);
       currentStroke.push({ x: pos.x, y: pos.y, mode: scratchpadMode });
       redrawScratchpad();
     });
@@ -4311,6 +5226,7 @@ const CGL_OS = (() => {
       scratchpadDrawing = false;
       if (currentStroke.length > 0) {
         scratchpadStrokes.push([...currentStroke]);
+        inkMemoryByContextKey[activeInkContextKey] = [...scratchpadStrokes];
         currentStroke = [];
       }
       redrawScratchpad();
@@ -4325,7 +5241,7 @@ const CGL_OS = (() => {
     const overlay = document.getElementById("scratchpad-overlay");
     if (!canvas || !overlay) return;
     canvas.width = overlay.clientWidth || window.innerWidth;
-    canvas.height = overlay.clientHeight || (window.innerHeight - 120);
+    canvas.height = overlay.clientHeight || (window.innerHeight - 56);
     redrawScratchpad();
   }
 
@@ -4335,6 +5251,10 @@ const CGL_OS = (() => {
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    const sc = getActiveScrollContainerForInk();
+    const sTop = sc ? sc.scrollTop : 0;
+    const sLeft = sc ? sc.scrollLeft : 0;
+
     const allStrokes = currentStroke.length > 0 ? [...scratchpadStrokes, currentStroke] : scratchpadStrokes;
     allStrokes.forEach(stroke => {
       if (!stroke || stroke.length === 0) return;
@@ -4342,13 +5262,13 @@ const CGL_OS = (() => {
       const isEraser = stroke[0].mode === "ERASER";
       ctx.globalCompositeOperation = isEraser ? "destination-out" : "source-over";
       ctx.strokeStyle = "#38bdf8";
-      ctx.lineWidth = isEraser ? 26 : 2.5;
+      ctx.lineWidth = isEraser ? 26 : 2.6;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
 
-      ctx.moveTo(stroke[0].x, stroke[0].y);
+      ctx.moveTo(stroke[0].x - sLeft, stroke[0].y - sTop);
       for (let i = 1; i < stroke.length; i++) {
-        ctx.lineTo(stroke[i].x, stroke[i].y);
+        ctx.lineTo(stroke[i].x - sLeft, stroke[i].y - sTop);
       }
       ctx.stroke();
     });
@@ -4360,8 +5280,16 @@ const CGL_OS = (() => {
     if (!overlay) return;
     scratchpadActive = forceState !== null ? forceState : !scratchpadActive;
     overlay.classList.toggle("active", scratchpadActive);
+
+    if (!scratchpadActive) {
+      scratchpadScrollPassthrough = false;
+      overlay.classList.remove("scroll-passthrough");
+    }
+
     const btn = document.getElementById("btn-arena-scratchpad");
     if (btn) btn.classList.toggle("active", scratchpadActive);
+    const dojoBtn = document.getElementById("btn-dojo-scratchpad");
+    if (dojoBtn) dojoBtn.classList.toggle("active", scratchpadActive);
 
     if (scratchpadActive) {
       initScratchpadCanvasListeners();
@@ -4369,8 +5297,28 @@ const CGL_OS = (() => {
     }
   }
 
+  function toggleScratchpadScrollMode() {
+    const overlay = document.getElementById("scratchpad-overlay");
+    const btn = document.getElementById("btn-scratch-draw-scroll");
+    if (!overlay || !btn) return;
+
+    scratchpadScrollPassthrough = !scratchpadScrollPassthrough;
+    overlay.classList.toggle("scroll-passthrough", scratchpadScrollPassthrough);
+
+    if (scratchpadScrollPassthrough) {
+      btn.className = "btn btn-amber";
+      btn.innerText = "\uD83D\uDD90\uFE0F Scroll Mode (Tap to Draw)";
+    } else {
+      btn.className = "btn btn-cyan";
+      btn.innerText = "\u270F\uFE0F Draw Mode";
+    }
+  }
+
   function setScratchpadMode(mode) {
     scratchpadMode = mode === "ERASER" ? "ERASER" : "PEN";
+    if (scratchpadScrollPassthrough) {
+      toggleScratchpadScrollMode();
+    }
     const penBtn = document.getElementById("btn-scratch-pen");
     const erBtn = document.getElementById("btn-scratch-eraser");
     if (penBtn) penBtn.classList.toggle("btn-cyan", scratchpadMode === "PEN");
@@ -4379,29 +5327,20 @@ const CGL_OS = (() => {
 
   function undoScratchpadStroke() {
     scratchpadStrokes.pop();
+    inkMemoryByContextKey[activeInkContextKey] = [...scratchpadStrokes];
     redrawScratchpad();
   }
 
   function clearScratchpadCanvas() {
     scratchpadStrokes = [];
     currentStroke = [];
+    inkMemoryByContextKey[activeInkContextKey] = [];
     redrawScratchpad();
   }
-
   /* ==========================================================================
    * SECTION 21: OMNIPOTENT CONSOLE COMMAND BUS (V3) & AI PERSISTENT MEMORY
-   * Upgraded:
-   * - Accepts Single Command, Array of Commands, or BATCH_COMMANDS
-   * - LAUNCH_DOJO (Untimed Clinic via AI Console)
-   * - GET_CHAPTER_BLUEPRINT (Compact Archetype & Sheet Coverage Index)
-   * - AUDIT_DATA_INTEGRITY (Forensic Duplicate, Orphan & Artifact Scanner)
-   * - BULK_PATCH_RECORDS (Mass Reassign, Link Concepts, Regex Strip)
-   * - SET_UI_CONFIG & INJECT_CUSTOM_CSS (Persistent Runtime Customization)
-   * - RUN_SANDBOX_QUERY (Declarative Filter/Group/Sort/Aggregate Engine)
-   * - CLEANUP_COMPENDIUM_STORE (Deduplicates Twin Sheets & Fixes Geo Taxonomy)
    * ========================================================================== */
   const COMMAND_REGISTRY = {
-    // 1. Symmetrical Mock Creation (Dynamic, Explicit IDs, or Ephemeral Generation)
     CREATE_MOCK: async (payload) => {
       const isEphemeral = (payload.ephemeral === true || payload.persistQuestions === false);
       const isLocked = (payload.isSectionLocked === true || payload.isSectionLocked === "YES");
@@ -4449,7 +5388,6 @@ const CGL_OS = (() => {
       return await COMMAND_REGISTRY.CREATE_MOCK({ ...payload, saveAsPreset: true });
     },
 
-    // 1B. Launch Untimed Dojo Clinic directly from AI Console
     LAUNCH_DOJO: async (payload) => {
       const {
         title = "AI Prescribed Dojo Clinic",
@@ -4501,7 +5439,6 @@ const CGL_OS = (() => {
       };
     },
 
-    // 1C. Full AI Database Introspection Suite
     GET_SYSTEM_STATS: async () => {
       const allQs = await getAllRecords("store_questions");
       const allAttempts = await getAllRecords("store_attempts");
@@ -4533,13 +5470,13 @@ const CGL_OS = (() => {
         livingSheetsCount: allConcepts.length,
         savedMocksCount: allPresets.length,
         consultationsCount: allConsultations.length,
+        apiKeysConfigured: AiGatewayService.keys.length,
         schemaVersion: DB_VERSION,
         subjectParConfig: SUBJECT_PAR_CONFIG,
         taxonomy: TAXONOMY
       };
     },
 
-    // 1D. Compact Chapter Blueprint & Archetype Coverage Map (Token-Efficient)
     GET_CHAPTER_BLUEPRINT: async (payload) => {
       const { subject = "ALL", chapter = "ALL" } = payload || {};
       const allQs = await getAllRecords("store_questions");
@@ -4584,7 +5521,7 @@ const CGL_OS = (() => {
         })
       };
     },
-    // 1E. Forensic Data Integrity & Duplicate/Orphan Auditor
+
     AUDIT_DATA_INTEGRITY: async () => {
       const allQs = await getAllRecords("store_questions");
       const allConcepts = await ConceptService.getAll();
@@ -4658,13 +5595,10 @@ const CGL_OS = (() => {
       };
     },
 
-
-    // 1F. Automated Compendium Sanitizer, Deduplicator & Geo Taxonomy Fixer
     CLEANUP_COMPENDIUM_STORE: async () => {
       const allConcepts = await ConceptService.getAll();
       const allQs = await getAllRecords("store_questions");
 
-      // 1. Reassign World/Physical Geography sheets from GA_GEOGRAPHY_IN to GA_GEOGRAPHY_WORLD
       const worldGeoIds = new Set([
         "top_ga_geo_climatology_circulation",
         "top_ga_geo_geodesy_earth_motions",
@@ -4675,7 +5609,6 @@ const CGL_OS = (() => {
         "top_ga_geo_plate_tectonics_volcanism"
       ]);
 
-      // 2. Duplicate sheet pairs in ENG_OWS & ENG_SYN_ANT (keep primary, merge content if needed, delete twin)
       const duplicateRedirects = {
         "top_eng_ows_medical_pathology": "top_eng_ows_domain_medical_sciences",
         "top_eng_ows_phobias_manias": "top_eng_ows_domain_phobias_manias",
@@ -4691,7 +5624,6 @@ const CGL_OS = (() => {
       let reassignedGeoCount = 0;
       let mergedDuplicatesCount = 0;
 
-      // Merge unique sections from duplicate twins into primary sheet before deleting twin
       for (const [dupId, primaryId] of Object.entries(duplicateRedirects)) {
         const dupSheet = conceptMap[dupId];
         const primarySheet = conceptMap[primaryId];
@@ -4706,7 +5638,6 @@ const CGL_OS = (() => {
         }
       }
 
-      // Sanitize all remaining sheets & fix World Geography chapter tags
       for (const c of Object.values(conceptMap)) {
         let modified = false;
         const cleaned = stripCitationArtifacts(cleanMojibake(c.content || ""));
@@ -4725,7 +5656,6 @@ const CGL_OS = (() => {
         }
       }
 
-      // Redirect any question conceptIds pointing to deleted twin sheets
       let questionsRelinked = 0;
       for (const q of allQs) {
         let qChanged = false;
@@ -4755,7 +5685,6 @@ const CGL_OS = (() => {
       };
     },
 
-    // 1G. Bulk Record Patching & Transformation
     BULK_PATCH_RECORDS: async (payload) => {
       const { store = "store_questions", patches = [], filter = null, updates = null } = payload || {};
       const allowed = ["store_questions", "store_concepts", "store_saved_mocks", "store_notes"];
@@ -4795,7 +5724,6 @@ const CGL_OS = (() => {
       return { store, updatedCount };
     },
 
-    // 1H. Persistent Runtime UI, Par Time & CSS Override Engine
     SET_UI_CONFIG: async (payload) => {
       const { readerScale, subjectParTimes, heroSubtitle, customMistakeTagsList } = payload || {};
       if (typeof readerScale === "number") {
@@ -4835,7 +5763,6 @@ const CGL_OS = (() => {
       return { injected: true, length: css.length };
     },
 
-    // 1I. Structured Declarative Query & Aggregation Engine
     RUN_SANDBOX_QUERY: async (payload) => {
       const { store = "store_questions", where = {}, groupBy = null, select = null, limit = 100 } = payload || {};
       const records = await getAllRecords(store);
@@ -5514,8 +6441,18 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * SECTION 22: PRACTICE LAB CONTROLLER, STAR FILTER & DOJO LAUNCHERS
+   * SECTION 22: PRACTICE LAB CONTROLLER, SHEETS LAUNCHER & DOJO TRIGGERS
    * ========================================================================== */
+  function openSheetsForPracticeFilter() {
+    const sub = document.getElementById("practice-filter-subject")?.value || "QA";
+    const chap = document.getElementById("practice-filter-chapter")?.value || "ALL";
+    const resolvedSub = sub === "ALL" ? "QA" : sub;
+    const resolvedChap = chap === "ALL"
+      ? (TAXONOMY[resolvedSub]?.chapters?.[0] || "QA_PERCENTAGE")
+      : chap;
+    openCompendiumToSheet(null, resolvedSub, resolvedChap);
+  }
+
   function handlePracticeSearchInput(val) {
     practiceSearchQuery = String(val || "").trim().toLowerCase();
     practiceCurrentPage = 1;
@@ -5736,8 +6673,6 @@ const CGL_OS = (() => {
     });
   }
 
-
-
   async function duplicateCurrentEditingQuestionFromId(id) {
     try {
       const clone = await QuestionService.duplicate(id);
@@ -5885,9 +6820,35 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * SECTION 23: UNTIMED DOJO PRACTICE & METHOD CLINIC
-   * Restored Full Reachability + Split-Pane Passage + Star Flagging
+   * SECTION 23: UNTIMED DOJO PRACTICE, STOPWATCH SPLIT & SPLIT-SHEET PINS
    * ========================================================================== */
+  function startDojoStopwatch() {
+    clearInterval(dojoStopwatchInterval);
+    dojoStopwatchSec = 0;
+    dojoSetupSplitSec = null;
+    safeSetText("dojo-stopwatch-display", "00:00");
+    safeSetText("dojo-stopwatch-splits", "");
+
+    dojoStopwatchInterval = setInterval(() => {
+      const dojoView = document.getElementById("dojo-arena-view");
+      if (!dojoExam || !dojoView || dojoView.style.display !== "flex") return;
+      dojoStopwatchSec++;
+      const m = Math.floor(dojoStopwatchSec / 60);
+      const s = dojoStopwatchSec % 60;
+      safeSetText("dojo-stopwatch-display", `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`);
+    }, 1000);
+  }
+
+  function recordDojoStopwatchSplit() {
+    if (dojoSetupSplitSec === null) {
+      dojoSetupSplitSec = dojoStopwatchSec;
+      safeSetText("dojo-stopwatch-splits", `[Setup: ${dojoSetupSplitSec}s]`);
+    } else {
+      const calcSec = Math.max(0, dojoStopwatchSec - dojoSetupSplitSec);
+      safeSetText("dojo-stopwatch-splits", `[Setup: ${dojoSetupSplitSec}s | Calc: ${calcSec}s]`);
+    }
+  }
+
   async function openDojoSessionWithQuestions(questionsArray, title = "Dojo Practice Clinic", customFormulaBrief = null) {
     if (!Array.isArray(questionsArray) || questionsArray.length === 0) {
       alert("No questions available for this Dojo session.");
@@ -5924,7 +6885,9 @@ const CGL_OS = (() => {
 
     pushNavLayer("dojo-arena-view", () => {
       safeSetDisplay("dojo-arena-view", "none");
+      clearInterval(dojoStopwatchInterval);
       toggleScratchpadCanvas(false);
+      closeSplitSheetDrawer();
     });
     safeSetDisplay("dojo-arena-view", "flex");
     renderDojoArenaQuestion();
@@ -5958,7 +6921,9 @@ const CGL_OS = (() => {
 
   function exitDojoArena() {
     safeSetDisplay("dojo-arena-view", "none");
+    clearInterval(dojoStopwatchInterval);
     toggleScratchpadCanvas(false);
+    closeSplitSheetDrawer();
   }
 
   async function toggleCurrentDojoQuestionStar() {
@@ -5969,13 +6934,20 @@ const CGL_OS = (() => {
     if (!q.ephemeral) {
       await QuestionService.toggleStar(q.id);
     }
-    renderDojoArenaQuestion();
+    renderDojoArenaQuestion(false);
   }
 
-  function renderDojoArenaQuestion() {
+  function renderDojoArenaQuestion(resetStopwatch = true) {
     if (!dojoExam || !dojoExam.questions || dojoExam.questions.length === 0) return;
     const q = dojoExam.questions[dojoExam.currentIndex];
     const resp = dojoExam.userResponses[q.id];
+
+    // Switch per-question ink context automatically
+    switchScratchpadContext(`dojo_q_${q.id}`);
+
+    if (resetStopwatch && resp.status === "unanswered") {
+      startDojoStopwatch();
+    }
 
     safeSetText("dojo-arena-title", dojoExam.title);
     safeSetText("dojo-arena-chap-badge", q.chapter);
@@ -6027,20 +6999,35 @@ const CGL_OS = (() => {
         : (q.conceptId ? [q.conceptId] : []);
 
       if (linkedIds.length === 0) {
-        const btn = document.createElement("button");
-        btn.className = "btn btn-secondary";
-        btn.style.cssText = "padding:2px 8px; font-size:11px; color:var(--accent-cyan);";
-        btn.innerText = `\uD83D\uDCD6 ${q.chapter} Sheets`;
-        btn.onclick = () => openCompendiumToSheet(null, q.subject, q.chapter);
-        dojoPillsWrap.appendChild(btn);
+        const pinBtn = document.createElement("button");
+        pinBtn.className = "btn btn-purple";
+        pinBtn.style.cssText = "padding:2px 8px; font-size:10.5px;";
+        pinBtn.innerText = `\uD83D\uDCCC Pin ${q.chapter} Sheet`;
+        pinBtn.onclick = () => openSplitSheetDrawer(null, q.subject, q.chapter);
+        dojoPillsWrap.appendChild(pinBtn);
+
+        const fullBtn = document.createElement("button");
+        fullBtn.className = "btn btn-secondary";
+        fullBtn.style.cssText = "padding:2px 8px; font-size:10.5px; color:var(--accent-cyan);";
+        fullBtn.innerText = `\uD83D\uDCD6 Studio`;
+        fullBtn.onclick = () => openCompendiumToSheet(null, q.subject, q.chapter);
+        dojoPillsWrap.appendChild(fullBtn);
       } else {
         linkedIds.forEach(cId => {
-          const btn = document.createElement("button");
-          btn.className = "btn btn-secondary";
-          btn.style.cssText = "padding:2px 8px; font-size:11px; color:var(--accent-cyan);";
-          btn.innerText = `\uD83D\uDCD6 ${cId.replace(/^top_/, "").replace(/_/g, " ")}`;
-          btn.onclick = () => openCompendiumToSheet(cId, q.subject, q.chapter);
-          dojoPillsWrap.appendChild(btn);
+          const cleanName = cId.replace(/^top_/, "").replace(/_/g, " ");
+          const pinBtn = document.createElement("button");
+          pinBtn.className = "btn btn-purple";
+          pinBtn.style.cssText = "padding:2px 8px; font-size:10.5px;";
+          pinBtn.innerText = `\uD83D\uDCCC Pin: ${cleanName}`;
+          pinBtn.onclick = () => openSplitSheetDrawer(cId, q.subject, q.chapter);
+          dojoPillsWrap.appendChild(pinBtn);
+
+          const fullBtn = document.createElement("button");
+          fullBtn.className = "btn btn-secondary";
+          fullBtn.style.cssText = "padding:2px 8px; font-size:10.5px; color:var(--accent-cyan);";
+          fullBtn.innerText = `\uD83D\uDCD6 Studio`;
+          fullBtn.onclick = () => openCompendiumToSheet(cId, q.subject, q.chapter);
+          dojoPillsWrap.appendChild(fullBtn);
         });
       }
     }
@@ -6087,9 +7074,17 @@ const CGL_OS = (() => {
         resp.selectedOption = idx;
         resp.status = "answered";
         resp.revealed = true;
+        clearInterval(dojoStopwatchInterval);
+        if (dojoSetupSplitSec !== null) {
+          const calcSec = Math.max(0, dojoStopwatchSec - dojoSetupSplitSec);
+          safeSetText("dojo-stopwatch-splits", `[Setup: ${dojoSetupSplitSec}s | Calc: ${calcSec}s | Total: ${dojoStopwatchSec}s]`);
+        } else {
+          safeSetText("dojo-stopwatch-splits", `[Solved in ${dojoStopwatchSec}s]`);
+        }
+
         if (navigator.vibrate) navigator.vibrate(idx === q.correctIndex ? 25 : [40, 40]);
 
-        renderDojoArenaQuestion();
+        renderDojoArenaQuestion(false);
         const fb = document.getElementById("dojo-arena-feedback");
         if (fb) {
           fb.style.display = "block";
@@ -6114,7 +7109,7 @@ const CGL_OS = (() => {
     const next = dojoExam.currentIndex + step;
     if (next >= 0 && next < dojoExam.questions.length) {
       dojoExam.currentIndex = next;
-      renderDojoArenaQuestion();
+      renderDojoArenaQuestion(true);
     }
   }
 
@@ -6186,7 +7181,7 @@ const CGL_OS = (() => {
         cell.addEventListener("click", () => {
           dojoExam.currentIndex = item.idx;
           toggleDojoPalette(false);
-          renderDojoArenaQuestion();
+          renderDojoArenaQuestion(true);
         });
 
         grid.appendChild(cell);
@@ -6196,7 +7191,6 @@ const CGL_OS = (() => {
     });
   }
 
-  // --- END OF PART 2 OF 3 (Proceed to Part 3 of 3 for Sections 24 - 30) ---
   /* ==========================================================================
    * SECTION 24: REVIEW COCKPIT, CONFIGURABLE SCORING & MISTAKE BIOPSY
    * ========================================================================== */
@@ -6659,12 +7653,19 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * SECTION 25: LIVING KNOWLEDGE STUDIO & INTERACTIVE 🙈 RECALL MODE
+   * SECTION 25: LIVING KNOWLEDGE STUDIO, USER-DEFINED 🙈 RECALL MASKS,
+   * ALL-SHEETS MASTER INDEX & 🪄 AI SHEET ARCHITECT
    * ========================================================================== */
   function toggleCompendiumRecallMode(forceState = null) {
     compendiumRecallMode = forceState !== null ? forceState : !compendiumRecallMode;
+    if (compendiumRecallMode && compendiumMaskEditMode) {
+      toggleCompendiumMaskEditMode(false);
+    }
+
     const canvas = document.getElementById("comp-studio-canvas");
     const btn = document.getElementById("btn-comp-recall-mode");
+    const autoBlurBtn = document.getElementById("btn-comp-auto-blur-all");
+
     if (canvas) {
       canvas.classList.toggle("recall-mode-active", compendiumRecallMode);
       if (!compendiumRecallMode) {
@@ -6675,6 +7676,59 @@ const CGL_OS = (() => {
       btn.classList.toggle("active", compendiumRecallMode);
       btn.innerText = compendiumRecallMode ? "\uD83D\uDC41\uFE0F Recall ON" : "\uD83D\uDE48 Recall Mode";
     }
+    if (autoBlurBtn) {
+      autoBlurBtn.style.display = compendiumRecallMode ? "inline-flex" : "none";
+    }
+  }
+
+  function toggleCompendiumAutoBlurAll() {
+    compendiumAutoBlurAll = !compendiumAutoBlurAll;
+    const canvas = document.getElementById("comp-studio-canvas");
+    const btn = document.getElementById("btn-comp-auto-blur-all");
+    if (canvas) {
+      canvas.classList.toggle("recall-auto-blur-all", compendiumAutoBlurAll);
+    }
+    if (btn) {
+      btn.classList.toggle("btn-cyan", compendiumAutoBlurAll);
+      btn.innerText = compendiumAutoBlurAll ? "\u2713 Auto-Blur ON" : "+Auto-Blur All";
+    }
+  }
+
+  function toggleCompendiumMaskEditMode(forceState = null) {
+    compendiumMaskEditMode = forceState !== null ? forceState : !compendiumMaskEditMode;
+    if (compendiumMaskEditMode && compendiumRecallMode) {
+      toggleCompendiumRecallMode(false);
+    }
+    const canvas = document.getElementById("comp-studio-canvas");
+    const btn = document.getElementById("btn-comp-edit-masks");
+    if (canvas) {
+      canvas.classList.toggle("mask-edit-mode-active", compendiumMaskEditMode);
+    }
+    if (btn) {
+      btn.classList.toggle("btn-amber", compendiumMaskEditMode);
+      btn.innerText = compendiumMaskEditMode ? "\u2713 Done Masking" : "\uD83D\uDD8C\uFE0F Edit Masks";
+    }
+  }
+
+  async function toggleCustomMaskPhraseOnActiveSheet(phraseText) {
+    const sheet = currentCompSheets[activeCompSheetIndex];
+    if (!sheet) return;
+    const cleanP = String(phraseText || "").trim();
+    if (cleanP.length < 2) return;
+
+    const existingIdx = activeSheetCustomMasks.indexOf(cleanP);
+    if (existingIdx !== -1) {
+      activeSheetCustomMasks.splice(existingIdx, 1);
+    } else {
+      activeSheetCustomMasks.push(cleanP);
+    }
+
+    await putRecord("store_notes", {
+      id: `masks_${sheet.id}`,
+      masks: activeSheetCustomMasks,
+      timestamp: Date.now()
+    });
+    await renderActiveCompSheet();
   }
 
   function initCompendiumRecallTapHandler() {
@@ -6682,13 +7736,157 @@ const CGL_OS = (() => {
     if (!canvas || canvas.dataset.recallBound === "true") return;
     canvas.dataset.recallBound = "true";
 
-    canvas.addEventListener("click", (e) => {
-      if (!compendiumRecallMode) return;
-      const target = e.target.closest("strong, .katex-display, td");
-      if (target && canvas.contains(target)) {
-        target.classList.toggle("recall-revealed");
+    canvas.addEventListener("click", async (e) => {
+      // 1. In 🖌️ Edit Masks Mode: tapping any formula, cell, bold term, or existing mask toggles it!
+      if (compendiumMaskEditMode) {
+        const target = e.target.closest(".user-recall-mask, strong, em, td, .katex, .md-bullet-row span:last-child");
+        if (target && canvas.contains(target)) {
+          e.preventDefault();
+          e.stopPropagation();
+          const textVal = (target.innerText || "").trim();
+          if (textVal.length >= 2) {
+            await toggleCustomMaskPhraseOnActiveSheet(textVal);
+          }
+        }
+        return;
+      }
+
+      // 2. In 🙈 Recall Mode: tapping any blurred element reveals/unblurs it on the spot!
+      if (compendiumRecallMode) {
+        const target = e.target.closest(".user-recall-mask, strong, .katex-display, td");
+        if (target && canvas.contains(target)) {
+          target.classList.toggle("recall-revealed");
+        }
       }
     });
+  }
+
+  async function openAllSheetsIndexModal() {
+    await renderAllSheetsIndexList();
+    pushHistoryState("modal-all-sheets-index");
+    const m = document.getElementById("modal-all-sheets-index");
+    if (m) m.classList.add("active");
+  }
+
+  async function renderAllSheetsIndexList() {
+    const listEl = document.getElementById("all-sheets-index-list");
+    if (!listEl) return;
+
+    const subFilter = document.getElementById("sheets-index-filter-sub")?.value || "ALL";
+    const term = (document.getElementById("sheets-index-search")?.value || "").trim().toLowerCase();
+    const allConcepts = await ConceptService.getAll();
+
+    const filtered = allConcepts.filter(c => {
+      if (subFilter !== "ALL" && c.subject !== subFilter) return false;
+      if (term) {
+        const inTitle = (c.title || "").toLowerCase().includes(term);
+        const inSub = (c.subtitle || "").toLowerCase().includes(term);
+        const inChap = (c.chapter || "").toLowerCase().includes(term);
+        const inId = (c.id || "").toLowerCase().includes(term);
+        if (!inTitle && !inSub && !inChap && !inId) return false;
+      }
+      return true;
+    });
+
+    safeSetText("all-sheets-index-sub", `Showing ${filtered.length} of ${allConcepts.length} Living Knowledge Sheets`);
+    listEl.innerHTML = "";
+
+    if (filtered.length === 0) {
+      listEl.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted);">No sheets match your filter.</div>`;
+      return;
+    }
+
+    const grouped = {};
+    filtered.forEach(s => {
+      const ch = `${s.subject} \u2022 ${s.chapter}`;
+      if (!grouped[ch]) grouped[ch] = [];
+      grouped[ch].push(s);
+    });
+
+    Object.keys(grouped).sort().forEach(groupKey => {
+      const head = document.createElement("div");
+      head.style.cssText = "font-size:11px; font-weight:800; color:var(--accent-cyan); margin:10px 0 6px 0; text-transform:uppercase; font-family:var(--font-mono);";
+      head.innerText = `// ${groupKey} (${grouped[groupKey].length} Sheets)`;
+      listEl.appendChild(head);
+
+      grouped[groupKey].forEach(sheet => {
+        const row = document.createElement("div");
+        row.className = "tree-node-row";
+        row.style.marginBottom = "6px";
+        row.innerHTML = `
+          <div style="overflow:hidden;">
+            <b style="font-size:13px; color:#fff;">\uD83D\uDCD6 ${sheet.title}</b>
+            <div style="font-size:11px; color:var(--text-muted);">${sheet.subtitle || sheet.id}</div>
+          </div>
+          <button class="btn btn-cyan" style="padding:3px 10px; font-size:11px; flex-shrink:0;">Open \u2794</button>
+        `;
+        row.onclick = () => {
+          document.getElementById("modal-all-sheets-index")?.classList.remove("active");
+          openCompendiumToSheet(sheet.id, sheet.subject, sheet.chapter);
+        };
+        listEl.appendChild(row);
+      });
+    });
+  }
+
+  function openAiSheetArchitectModal() {
+    renderApiVaultUI();
+    safeSetText("ai-sheet-source-badge", "\uD83E\uDD16 Ready");
+    pushHistoryState("modal-ai-sheet-architect");
+    const m = document.getElementById("modal-ai-sheet-architect");
+    if (m) m.classList.add("active");
+  }
+
+  async function runAiSheetArchitectTask(mode) {
+    const sheet = currentCompSheets[activeCompSheetIndex];
+    const manualKeyId = document.getElementById("ai-sheet-key-override")?.value || "WATERFALL_AUTO";
+    const badge = document.getElementById("ai-sheet-source-badge");
+    const customInst = document.getElementById("ai-sheet-custom-instruction")?.value.trim() || "";
+
+    if (!sheet && mode !== "CUSTOM") {
+      alert("Select or create a sheet first.");
+      return;
+    }
+
+    if (badge) badge.innerText = "\u23F3 Generating Sheet Markdown...";
+
+    let systemPrompt = "You are an elite SSC CGL Living Knowledge Sheet Architect. Return ONLY clean Markdown with KaTeX math ($...$ or $$...$$) and {{...}} around high-yield recall targets.";
+    let userPrompt = "";
+
+    if (mode === "AUTO_MASK") {
+      userPrompt = `Wrap the 8 to 12 most important formulas, constitutional articles, key definitions, or exam traps inside this sheet with double curly braces {{...}} so they act as active recall masks. Preserve 100% of the existing Markdown text and structure:\n\n${sheet.content}`;
+    } else if (mode === "ADD_TRAPS") {
+      userPrompt = `Take this existing SSC CGL Knowledge Sheet and append a comprehensive '> [!trap]' callout block and a Markdown summary comparison table at the bottom covering high-frequency TCS traps for this topic:\n\n${sheet.content}`;
+    } else {
+      if (!customInst) {
+        alert("Enter your custom instruction first.");
+        return;
+      }
+      userPrompt = sheet
+        ? `Current Sheet (${sheet.chapter} - ${sheet.title}):\n${sheet.content}\n\nInstruction: ${customInst}\nReturn the complete updated Markdown sheet.`
+        : `Author a complete SSC CGL Living Knowledge Sheet for chapter ${activeCompChapter} on: ${customInst}. Use ### headings, > [!formula] and > [!trap] callouts, Markdown tables, and {{...}} around key recall facts.`;
+    }
+
+    try {
+      const res = await AiGatewayService.executeMicroTask({
+        taskType: "SHEET_EDIT",
+        systemPrompt,
+        userPrompt,
+        expectJson: false,
+        manualKeyId
+      });
+
+      if (badge) badge.innerText = `\u2713 Staged by: ${res.sourceLabel}`;
+      document.getElementById("modal-ai-sheet-architect")?.classList.remove("active");
+
+      // Open in Staging Editor (#modal-concept-editor) so user inspects and approves before saving!
+      openConceptEditorModal(!sheet);
+      safeSetValue("concept-edit-body", res.rawText.trim());
+      alert(`🪄 Sheet staged by ${res.sourceLabel}! Review the Markdown in the editor and tap 'Save Living Sheet' to commit.`);
+    } catch (err) {
+      if (badge) badge.innerText = "\u26A0\uFE0F Fallback to Clipboard";
+      alert(err.message);
+    }
   }
 
   async function openCompendiumToSheet(conceptId, targetSub, targetChap) {
@@ -6709,6 +7907,7 @@ const CGL_OS = (() => {
 
     pushNavLayer("compendium-fullscreen-view", () => {
       safeSetDisplay("compendium-fullscreen-view", "none");
+      toggleScratchpadCanvas(false);
     });
     safeSetDisplay("compendium-fullscreen-view", "flex");
     initCompendiumRecallTapHandler();
@@ -6779,12 +7978,13 @@ const CGL_OS = (() => {
         docContent.innerHTML = `
           <div style="text-align:center; padding:50px 14px; color:var(--text-muted);">
             <h3 style="font-size:16px; margin-bottom:8px; color:#fff;">No Topic Sheets in ${activeCompChapter}</h3>
-            <p style="font-size:12px; margin-bottom:14px;">This chapter has no living sheets yet. Author your first sheet below.</p>
+            <p style="font-size:12px; margin-bottom:14px;">This chapter has no living sheets yet. Author your first sheet below or use 🪄 AI Sheet Architect.</p>
             <button class="btn" onclick="CGL_OS.openConceptEditorModal(true)">+ Create First Sheet</button>
           </div>
         `;
       }
       safeSetText("comp-linked-q-count", "0 Questions Linked");
+      safeSetText("comp-mask-count-badge", "0 Custom Masks");
       return;
     }
 
@@ -6810,15 +8010,26 @@ const CGL_OS = (() => {
     const sheet = currentCompSheets[activeCompSheetIndex];
     if (!sheet) return;
 
+    // Switch per-sheet ink context automatically
+    switchScratchpadContext(`sheet_${sheet.id}`);
+
     document.querySelectorAll(".comp-sheet-tab").forEach((t, i) => {
       t.classList.toggle("active", i === activeCompSheetIndex);
     });
 
     safeSetText("comp-studio-header-title", sheet.title);
-    safeSetText("comp-studio-header-sub", `${sheet.chapter} \u2022 Sheet ${activeCompSheetIndex + 1} of ${currentCompSheets.length}`);
+    safeSetText("comp-studio-header-sub", `${sheet.chapter} \u2022 Sheet ${activeCompSheetIndex + 1} of ${currentCompSheets.length} \u2022 Swipe Left/Right`);
 
     const linkedQs = await ConceptService.getLinkedQuestions(sheet.id, sheet.chapter);
     safeSetText("comp-linked-q-count", `${linkedQs.length} Associated Questions Linked`);
+
+    // Load persisted user-defined custom masks for this sheet
+    const savedMasksRec = await getRecord("store_notes", `masks_${sheet.id}`);
+    activeSheetCustomMasks = savedMasksRec && Array.isArray(savedMasksRec.masks) ? savedMasksRec.masks : [];
+
+    const inlineBraceCount = (sheet.content.match(/\{\{[\s\S]+?\}\}/g) || []).length;
+    const totalMasks = activeSheetCustomMasks.length + inlineBraceCount;
+    safeSetText("comp-mask-count-badge", `${totalMasks} Custom Mask${totalMasks === 1 ? "" : "s"}`);
 
     const toc = ConceptService.generateTOC(sheet.content);
     let tocHtml = "";
@@ -6853,7 +8064,7 @@ const CGL_OS = (() => {
         </div>
         ${tocHtml}
         ${imgHtml}
-        <div style="font-size:calc(14.5px * var(--reader-font-scale)); line-height:1.78; color:var(--text-reading);">${formatRichText(sheet.content)}</div>
+        <div style="font-size:calc(14.5px * var(--reader-font-scale)); line-height:1.78; color:var(--text-reading);">${formatRichText(sheet.content, activeSheetCustomMasks)}</div>
 
         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:28px; padding-top:14px; border-top:1px solid var(--border-color);">
           <button class="btn btn-secondary" onclick="CGL_OS.navCompStudioSheet(-1)">[ \u2190 ] Previous Sheet</button>
@@ -6915,9 +8126,20 @@ const CGL_OS = (() => {
     const textarea = document.getElementById("concept-edit-body");
     if (!textarea) return;
     let snippet = "";
-    if (type === "FORMULA") snippet = "\n> [!formula]\n> **Core Identity:**\n> $$a^2 + b^2 = c^2$$\n";
-    if (type === "TRAP") snippet = "\n> [!trap]\n> **Critical TCS Trap:**\n> Verify whether radius or diameter is specified.\n";
-    if (type === "TABLE") snippet = "\n| Condition | Method | Shortcut |\n| :--- | :--- | :--- |\n| Case 1 | Direct Tangent | $2\\sqrt{r_1 r_2}$ |\n";
+    if (type === "MASK") {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      if (start !== end) {
+        const selected = textarea.value.substring(start, end);
+        textarea.value = textarea.value.substring(0, start) + `{{${selected}}}` + textarea.value.substring(end);
+        textarea.focus();
+        return;
+      }
+      snippet = "{{target formula or term}}";
+    }
+    if (type === "FORMULA") snippet = "\n> [!formula]\n> **Core Identity:**\n> $${{a^2 + b^2 = c^2}}$$\n";
+    if (type === "TRAP") snippet = "\n> [!trap]\n> **Critical TCS Trap:**\n> Verify whether {{radius or diameter}} is specified.\n";
+    if (type === "TABLE") snippet = "\n| Condition | Method | Shortcut |\n| :--- | :--- | :--- |\n| Case 1 | Direct Tangent | {{$2\\sqrt{r_1 r_2}$}} |\n";
     textarea.value += snippet;
     textarea.focus();
   }
@@ -6950,6 +8172,7 @@ const CGL_OS = (() => {
   function openCompendiumStudio() {
     pushNavLayer("compendium-fullscreen-view", () => {
       safeSetDisplay("compendium-fullscreen-view", "none");
+      toggleScratchpadCanvas(false);
     });
     safeSetDisplay("compendium-fullscreen-view", "flex");
     initCompendiumRecallTapHandler();
@@ -6958,6 +8181,7 @@ const CGL_OS = (() => {
 
   function closeCompendiumStudio() {
     safeSetDisplay("compendium-fullscreen-view", "none");
+    toggleScratchpadCanvas(false);
   }
 
   function openConceptEditorModal(isNew = true) {
@@ -7033,46 +8257,6 @@ const CGL_OS = (() => {
     openCompendiumToSheet(id, subject, chapter);
   }
 
-  function openOmniResearchForCurrentQuestion() {
-    if (!activeExam) return;
-    const q = activeExam.questions[activeExam.currentQuestionIndex];
-    triggerOmniResearchDrawer(q);
-  }
-
-  function openOmniResearchForDojoQuestion() {
-    if (!dojoExam) return;
-    const q = dojoExam.questions[dojoExam.currentIndex];
-    triggerOmniResearchDrawer(q);
-  }
-
-  function triggerOmniResearchDrawer(q) {
-    if (!q) return;
-    const queryText = (q.subtopic || q.method || q.chapter).replace(/_/g, " ");
-    safeSetText("omni-research-query-sub", `${q.subject} \u2022 ${q.chapter}`);
-    safeSetText("omni-research-prompt-preview", q.questionText.slice(0, 160) + "...");
-
-    const wikiUrl = `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(queryText + " SSC CGL")}`;
-    const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(q.questionText.slice(0, 100) + " " + queryText)}`;
-
-    let wolframQuery = queryText;
-    const mathMatch = q.questionText.match(/\$([^\$]+)\$/);
-    if (mathMatch && mathMatch[1]) {
-      wolframQuery = mathMatch[1].replace(/\\text\{.*?\}/g, "").replace(/\\/g, "");
-    }
-    const wolframUrl = `https://www.wolframalpha.com/input?i=${encodeURIComponent(wolframQuery)}`;
-
-    const wEl = document.getElementById("omni-link-wiki");
-    if (wEl) wEl.href = wikiUrl;
-    const gEl = document.getElementById("omni-link-google");
-    if (gEl) gEl.href = googleUrl;
-    const wfEl = document.getElementById("omni-link-wolfram");
-    if (wfEl) wfEl.href = wolframUrl;
-
-    pushHistoryState("modal-omni-research");
-    const m = document.getElementById("modal-omni-research");
-    if (m) m.classList.add("active");
-  }
-
   function openOmniSearchModal() {
     pushHistoryState("modal-comp-omni-search");
     const m = document.getElementById("modal-comp-omni-search");
@@ -7132,7 +8316,6 @@ const CGL_OS = (() => {
       list.appendChild(div);
     });
   }
-
   /* ==========================================================================
    * SECTION 26: SYNAPSE KNOWLEDGE EXPLORER (WITH DOJO & TIMED DRILL LAUNCH)
    * ========================================================================== */
@@ -7307,12 +8490,10 @@ const CGL_OS = (() => {
 
   /* ==========================================================================
    * SECTION 27: DASHBOARD & DAILY AUTOPILOT ROUTINE CONTROLLER
-   * Upgraded:
-   * - Priority Queue in launchContinueTrainingDrill (Mistake Debt -> Neglect -> Unseen)
-   * - Unified Neglect Index (Nc) across Dashboard & Chapter Inspector
    * ========================================================================== */
   async function renderDashboard() {
     const allQs = await getAllRecords("store_questions");
+    const allConcepts = await ConceptService.getAll();
     const metrics = await PerformanceService.calculateGlobalMetrics();
     const weakChapters = await PerformanceService.getWeakChapters();
     const neglect = await PerformanceService.calculateNeglect();
@@ -7320,13 +8501,13 @@ const CGL_OS = (() => {
     const perfMap = await PerformanceService.getQuestionPerformanceMap();
 
     safeSetText("dash-stat-questions", allQs.length);
+    safeSetText("dash-stat-sheets", allConcepts.length);
     safeSetText("dash-stat-accuracy", metrics.totalMocks > 0 ? `${metrics.accuracy}%` : "--");
     safeSetText("dash-stat-weak", weakChapters.length);
     const hrs = Math.floor((metrics.totalStudyTimeSec || 0) / 3600);
     const mins = Math.floor(((metrics.totalStudyTimeSec || 0) % 3600) / 60);
     safeSetText("dash-stat-time", `${hrs}h ${mins}m`);
 
-    // Calculate Mistake Debt Count for Daily Autopilot Card
     const mistakeDebtCount = allQs.filter(q => perfMap[q.id] && perfMap[q.id].lastWasIncorrect).length;
     const starredCount = allQs.filter(q => q.bookmarked).length;
 
@@ -7475,13 +8656,6 @@ const CGL_OS = (() => {
     });
   }
 
-  /**
-   * DAILY AUTOPILOT PRIORITY QUEUE:
-   * Automatically builds a 20-question session combining:
-   * 1. Unresolved Mistake Debts & Starred Doubts (up to 8 Qs)
-   * 2. Neglect Decay / Weakest Chapter (up to 6 Qs)
-   * 3. Unseen Progression Questions (remaining slots)
-   */
   async function launchContinueTrainingDrill(openInDojo = false) {
     const completed = await PerformanceService.getHistoricalAttempts();
     if (completed.length === 0 && !openInDojo) {
@@ -7500,7 +8674,6 @@ const CGL_OS = (() => {
     const usedIds = new Set();
     const targetCount = 20;
 
-    // 1. Mistake Debts & Starred Questions
     const debtPool = MockService.shuffle(allQs.filter(q => (perfMap[q.id] && perfMap[q.id].lastWasIncorrect) || q.bookmarked));
     for (const q of debtPool) {
       if (selectedQueue.length >= 8) break;
@@ -7510,7 +8683,6 @@ const CGL_OS = (() => {
       }
     }
 
-    // 2. Neglect Decay or Weakest Chapter Questions
     const focusChapter = neglect ? neglect.chapter : (weaks.length > 0 ? weaks[0].chapter : null);
     if (focusChapter) {
       const chapPool = MockService.shuffle(allQs.filter(q => q.chapter === focusChapter && !usedIds.has(q.id)));
@@ -7523,7 +8695,6 @@ const CGL_OS = (() => {
       }
     }
 
-    // 3. Unseen Progression Backfill
     const unseenPool = MockService.shuffle(allQs.filter(q => (!perfMap[q.id] || perfMap[q.id].attempts === 0) && !usedIds.has(q.id)));
     for (const q of unseenPool) {
       if (selectedQueue.length >= targetCount) break;
@@ -7533,7 +8704,6 @@ const CGL_OS = (() => {
       }
     }
 
-    // 4. General Random Backfill if needed
     if (selectedQueue.length < targetCount) {
       const anyPool = MockService.shuffle(allQs.filter(q => !usedIds.has(q.id)));
       for (const q of anyPool) {
@@ -7787,6 +8957,15 @@ const CGL_OS = (() => {
     safeSetText("insp-speed", cStats.attempted > 0 ? `${cStats.avgSpeed}s` : "--");
     safeSetText("insp-nc", cStats.neglectIndex);
 
+    const sheetsBtn = document.getElementById("btn-launch-chapter-sheets");
+    if (sheetsBtn) {
+      sheetsBtn.onclick = () => {
+        const m = document.getElementById("modal-chapter-inspector");
+        if (m) m.classList.remove("active");
+        openCompendiumToSheet(null, subKey, chap);
+      };
+    }
+
     const dojoBtn = document.getElementById("btn-launch-chapter-dojo");
     if (dojoBtn) {
       dojoBtn.onclick = () => {
@@ -7852,7 +9031,6 @@ const CGL_OS = (() => {
 
   /* ==========================================================================
    * SECTION 28 & 29: PUBLISHING PRINT ENGINE, 1-TAP AI BIOPSY & DATA MATRIX
-   * Vault Decommissioned; Universal Exports Relocated to Tab 3 Console
    * ========================================================================== */
   async function openPrintConfigModal() {
     await updatePrintChapters();
@@ -8176,7 +9354,13 @@ const CGL_OS = (() => {
   async function exportCurrentSelectedStoreJson() {
     const storeName = document.getElementById("db-store-select")?.value;
     if (!storeName) return;
-    const records = await getAllRecords(storeName);
+    let records = await getAllRecords(storeName);
+    if (storeName === "store_config") {
+      const includeKeys = document.getElementById("backup-include-api-keys")?.checked ?? false;
+      if (!includeKeys) {
+        records = records.filter(r => r.key !== "ai_api_key_vault");
+      }
+    }
     const now = Date.now();
 
     const payload = {
@@ -8436,17 +9620,13 @@ const CGL_OS = (() => {
       await seedData();
       alert("Factory reset complete.");
       SearchService.invalidate();
+      await AiGatewayService.loadVault();
       await syncAllTaxonomyDropdowns();
       await renderDashboard();
       refreshDbInspector();
     }
   }
 
-  /**
-   * 1-TAP COMPACT AI BIOPSY GENERATOR:
-   * Extracts only failed, slow, option-switched, and starred questions from
-   * the current mock alongside the candidate's rolling clinical memory.
-   */
   async function generateCompactBiopsyPayload(att) {
     const consultations = await getAllRecords("store_ai_consultations");
     const allCanonical = await getAllRecords("store_questions");
@@ -8683,7 +9863,7 @@ const CGL_OS = (() => {
     const concepts = await ConceptService.getAll();
     const consultations = await getAllRecords("store_ai_consultations");
 
-    const manifest = `# SSC CGL Intelligence OS - Live Runtime Introspection Manifest (V6.0)
+    const manifest = `# SSC CGL Intelligence OS - Live Runtime Introspection Manifest (V7.2)
 Generated at: ${formatISTDate(Date.now())}
 Target Candidate: Ankit Kumar (SSC CGL 2026 Tier 1 & Tier 2 Master Preparation)
 
@@ -8692,6 +9872,7 @@ Target Candidate: Ankit Kumar (SSC CGL 2026 Tier 1 & Tier 2 Master Preparation)
 - Completed Mocks: ${attempts.filter(a => a.completed && a.mockType !== "STUDY_VIEW").length}
 - Living Knowledge Sheets: ${concepts.length}
 - Clinical Consultations Logged: ${consultations.length}
+- Local Waterfall API Keys Configured: ${AiGatewayService.keys.length}
 
 ## 2. Active System Taxonomy & Chapters
 ${JSON.stringify(TAXONOMY, null, 2)}
@@ -8716,11 +9897,11 @@ ${JSON.stringify(TAXONOMY, null, 2)}
 - REQUEST_HISTORICAL_DUMP / SAVE_MOCK_PRESET / MODIFY_TAXONOMY / RAW_DB_OPERATION
 `;
     navigator.clipboard.writeText(manifest);
-    alert("Live AI Introspection Manifest (V6.0) copied to clipboard!");
+    alert("Live AI Introspection Manifest (V7.2) copied to clipboard!");
   }
 
   /* ==========================================================================
-   * SECTION 30: GLOBAL SEARCH, 3-TAB GESTURES, BOOTSTRAP & API EXPORT
+   * SECTION 30: GLOBAL SEARCH, TEXT-SELECTION POPOVER, UNIVERSAL SWIPES & API
    * ========================================================================== */
   function openGlobalSearchModal() {
     pushHistoryState("modal-global-search");
@@ -8798,6 +9979,99 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     }
   }
 
+  /**
+   * FLOATING TEXT-SELECTION ACTION POPOVER ([ 🙈 Mask for Recall ] | [ 📌 Save to Cue ])
+   */
+  function initTextSelectionPopover() {
+    const popover = document.getElementById("selection-action-popover");
+    if (!popover) return;
+
+    const handleSelectionCheck = () => {
+      const sel = window.getSelection();
+      if (!sel || sel.isCollapsed) {
+        popover.classList.remove("active");
+        return;
+      }
+      const txt = sel.toString().trim();
+      if (txt.length < 2 || txt.length > 260) {
+        popover.classList.remove("active");
+        return;
+      }
+
+      const anchorNode = sel.anchorNode;
+      const el = anchorNode && anchorNode.nodeType === 3 ? anchorNode.parentElement : anchorNode;
+      if (!el) return;
+
+      const inCompendium = el.closest("#comp-studio-doc-content, #split-sheet-body");
+      const inQuestion = el.closest("#dojo-arena-body, #arena-body");
+
+      if (!inCompendium && !inQuestion) {
+        popover.classList.remove("active");
+        return;
+      }
+
+      pendingSelectedText = txt;
+      pendingSelectionContext = inCompendium ? "SHEET" : "QUESTION";
+
+      try {
+        const range = sel.getRangeAt(0);
+        const rect = range.getBoundingClientRect();
+        const topPos = Math.max(12, rect.top - 46);
+        const leftPos = Math.min(window.innerWidth - 230, Math.max(10, rect.left));
+        popover.style.top = `${topPos}px`;
+        popover.style.left = `${leftPos}px`;
+        popover.classList.add("active");
+      } catch (e) {
+        popover.classList.remove("active");
+      }
+    };
+
+    document.addEventListener("mouseup", () => setTimeout(handleSelectionCheck, 40));
+    document.addEventListener("touchend", () => setTimeout(handleSelectionCheck, 120), { passive: true });
+  }
+
+  async function applySelectionRecallMask() {
+    const popover = document.getElementById("selection-action-popover");
+    if (popover) popover.classList.remove("active");
+    if (!pendingSelectedText) return;
+
+    await toggleCustomMaskPhraseOnActiveSheet(pendingSelectedText);
+    window.getSelection()?.removeAllRanges();
+  }
+
+  async function saveSelectionToPersonalCue() {
+    const popover = document.getElementById("selection-action-popover");
+    if (popover) popover.classList.remove("active");
+    if (!pendingSelectedText) return;
+
+    if (pendingSelectionContext === "SHEET") {
+      const sheet = currentCompSheets[activeCompSheetIndex];
+      if (sheet) {
+        const scratchEl = document.getElementById("comp-studio-scratchpad");
+        const cur = scratchEl ? scratchEl.value.trim() : "";
+        const updated = cur ? `${cur}\n• ${pendingSelectedText}` : `• ${pendingSelectedText}`;
+        safeSetValue("comp-studio-scratchpad", updated);
+        await autoSaveCompScratchpad(updated);
+      }
+    } else {
+      const q = (dojoExam && document.getElementById("dojo-arena-view")?.style.display === "flex")
+        ? dojoExam.questions[dojoExam.currentIndex]
+        : (activeExam ? activeExam.questions[activeExam.currentQuestionIndex] : null);
+
+      if (q) {
+        const updated = q.annotation ? `${q.annotation}\n• ${pendingSelectedText}` : `• ${pendingSelectedText}`;
+        q.annotation = updated;
+        if (!q.ephemeral) {
+          await QuestionService.update(q.id, { annotation: updated });
+        }
+        safeSetValue("dojo-arena-annotation", updated);
+      }
+    }
+
+    window.getSelection()?.removeAllRanges();
+    alert("Saved highlight to your Personal Cue!");
+  }
+
   function switchTab(tId, btn) {
     document.querySelectorAll(".view-container").forEach(el => el.classList.remove("active"));
     document.querySelectorAll(".nav-btn").forEach(el => el.classList.remove("active"));
@@ -8810,7 +10084,10 @@ ${JSON.stringify(TAXONOMY, null, 2)}
 
     if (tId === "tab-dashboard") renderDashboard();
     if (tId === "tab-dojo") renderPracticeQuestionsTable();
-    if (tId === "tab-console") refreshDbInspector();
+    if (tId === "tab-console") {
+      renderApiVaultUI();
+      refreshDbInspector();
+    }
   }
 
   function initGestureControllers() {
@@ -8838,36 +10115,66 @@ ${JSON.stringify(TAXONOMY, null, 2)}
       }
     });
 
-    const arenaEl = document.getElementById("exam-arena");
-    if (arenaEl) {
-      let touchStartX = 0;
-      let touchStartY = 0;
+    // Helper for horizontal swipe detection that ignores horizontal scroll tables & math blocks
+    const bindHorizontalSwipe = (elementId, onSwipeLeft, onSwipeRight) => {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      let startX = 0;
+      let startY = 0;
+      let ignoreSwipe = false;
 
-      arenaEl.addEventListener("touchstart", (e) => {
-        if (scratchpadActive) return;
+      el.addEventListener("touchstart", (e) => {
+        if (scratchpadActive && !scratchpadScrollPassthrough) {
+          ignoreSwipe = true;
+          return;
+        }
+        const target = e.target;
+        if (target && target.closest(".table-responsive, .katex-display, .comp-tabs-bar, textarea, input, select")) {
+          ignoreSwipe = true;
+          return;
+        }
+        ignoreSwipe = false;
         if (e.touches.length === 1) {
-          touchStartX = e.touches[0].clientX;
-          touchStartY = e.touches[0].clientY;
+          startX = e.touches[0].clientX;
+          startY = e.touches[0].clientY;
         }
       }, { passive: true });
 
-      arenaEl.addEventListener("touchend", (e) => {
-        if (scratchpadActive) return;
-        if (e.changedTouches.length === 1 && activeExam) {
-          const deltaX = e.changedTouches[0].clientX - touchStartX;
-          const deltaY = e.changedTouches[0].clientY - touchStartY;
-
-          if (Math.abs(deltaX) > 55 && Math.abs(deltaX) > 2.0 * Math.abs(deltaY)) {
-            if (deltaX < 0) {
-              document.getElementById("btn-q-save-next")?.click();
-            } else {
-              document.getElementById("btn-q-prev")?.click();
-            }
+      el.addEventListener("touchend", (e) => {
+        if (ignoreSwipe || (scratchpadActive && !scratchpadScrollPassthrough)) return;
+        if (e.changedTouches.length === 1) {
+          const deltaX = e.changedTouches[0].clientX - startX;
+          const deltaY = e.changedTouches[0].clientY - startY;
+          if (Math.abs(deltaX) > 58 && Math.abs(deltaX) > 2.1 * Math.abs(deltaY)) {
+            if (deltaX < 0) onSwipeLeft();
+            else onSwipeRight();
           }
         }
       }, { passive: true });
-    }
+    };
 
+    // 1. Exam & Review Arena Swipes
+    bindHorizontalSwipe(
+      "exam-arena",
+      () => document.getElementById("btn-q-save-next")?.click(),
+      () => document.getElementById("btn-q-prev")?.click()
+    );
+
+    // 2. Untimed Dojo Clinic Swipes
+    bindHorizontalSwipe(
+      "dojo-arena-view",
+      () => navDojoArena(1),
+      () => navDojoArena(-1)
+    );
+
+    // 3. Living Knowledge Studio Swipes
+    bindHorizontalSwipe(
+      "compendium-fullscreen-view",
+      () => navCompStudioSheet(1),
+      () => navCompStudioSheet(-1)
+    );
+
+    // 4. Root 3-Tab Bar Swipes
     const viewportRoot = document.getElementById("app-viewport-root");
     if (viewportRoot) {
       let rootStartX = 0;
@@ -8876,8 +10183,10 @@ ${JSON.stringify(TAXONOMY, null, 2)}
 
       viewportRoot.addEventListener("touchstart", (e) => {
         const isModalOpen = document.querySelector(".modal-overlay.active");
-        const isArenaOpen = arenaEl && arenaEl.style.display === "flex";
-        if (isModalOpen || isArenaOpen) return;
+        const isArenaOpen = document.getElementById("exam-arena")?.style.display === "flex";
+        const isDojoOpen = document.getElementById("dojo-arena-view")?.style.display === "flex";
+        const isCompOpen = document.getElementById("compendium-fullscreen-view")?.style.display === "flex";
+        if (isModalOpen || isArenaOpen || isDojoOpen || isCompOpen) return;
 
         const target = e.target;
         if (target && target.closest("#dash-blueprints-pills, .comp-tabs-bar, .table-responsive, .matrix-chip-grid")) {
@@ -8892,8 +10201,10 @@ ${JSON.stringify(TAXONOMY, null, 2)}
 
       viewportRoot.addEventListener("touchend", (e) => {
         const isModalOpen = document.querySelector(".modal-overlay.active");
-        const isArenaOpen = arenaEl && arenaEl.style.display === "flex";
-        if (isModalOpen || isArenaOpen) return;
+        const isArenaOpen = document.getElementById("exam-arena")?.style.display === "flex";
+        const isDojoOpen = document.getElementById("dojo-arena-view")?.style.display === "flex";
+        const isCompOpen = document.getElementById("compendium-fullscreen-view")?.style.display === "flex";
+        if (isModalOpen || isArenaOpen || isDojoOpen || isCompOpen) return;
 
         if (e.changedTouches.length === 1) {
           const deltaX = e.changedTouches[0].clientX - rootStartX;
@@ -8943,10 +10254,12 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     try {
       await getDB();
       await hydratePersistedUiConfig();
+      await AiGatewayService.loadVault();
       initUniversalEngagementTracker();
       await syncAllTaxonomyDropdowns();
       await renderDashboard();
       initGestureControllers();
+      initTextSelectionPopover();
 
       const savedSessionRec = await getRecord("store_active_session", "current_session");
       if (savedSessionRec && savedSessionRec.session && !savedSessionRec.session.completed) {
@@ -8965,7 +10278,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     initializeApplication();
   }
 
-  // --- Complete Public API Export (V6.0) ---
+  // --- Complete Public API Export (V7.2) ---
   return {
     TaxonomyService,
     QuestionService,
@@ -8973,12 +10286,22 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     SearchService,
     MockService,
     PerformanceService,
+    AiGatewayService,
 
     switchTab,
     pushNavLayer,
     popNavLayer,
     adjustReaderFontScale,
 
+    handleApiProviderPresetChange,
+    addApiKeyToVault,
+    deleteApiKeyFromVault,
+    moveApiKeyOrder,
+    testSingleApiKey,
+    resetAllApiCooldowns,
+    saveTaskRoutingConfig,
+
+    openSheetsForPracticeFilter,
     handlePracticeSearchInput,
     handlePracticeSubjectChange,
     setPracticeQuickFilter,
@@ -8996,6 +10319,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     launchSeeQuestions,
 
     openNewQuestionCreatorModal,
+    smartParseRawQuestionText,
     handleNewQuestionImageUpload,
     submitNewQuestionCreator,
     syncNewQuestionChapterSelect,
@@ -9016,6 +10340,12 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     toggleAllBuilderMatrixChips,
     updateBuilderPoolEstimate,
     previewMockSelection,
+    toggleMockPreviewAnswerKeys,
+    swapPreviewedQuestion,
+    removePreviewedQuestion,
+    launchPreviewedQueueInDojo,
+    launchPreviewedQueueAsMock,
+    savePreviewedQueueAsFixedPaper,
     openCustomMockModal,
     addCustomSectionRow,
     removeCustomSectionRow,
@@ -9039,7 +10369,17 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     toggleExamPalette,
     toggleCurrentArenaQuestionStar,
 
+    openSplitSheetDrawer,
+    closeSplitSheetDrawer,
+    expandSplitSheetToFullStudio,
+
+    openAiQuestionTutorModal,
+    runAiTutorMicroTask,
+    saveAiTutorOutputToQuestionCue,
+    generateInstantMutantClone,
+
     toggleScratchpadCanvas,
+    toggleScratchpadScrollMode,
     setScratchpadMode,
     undoScratchpadStroke,
     clearScratchpadCanvas,
@@ -9047,7 +10387,13 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     openCompendiumStudio,
     closeCompendiumStudio,
     openCompendiumToSheet,
+    openAllSheetsIndexModal,
+    renderAllSheetsIndexList,
     toggleCompendiumRecallMode,
+    toggleCompendiumAutoBlurAll,
+    toggleCompendiumMaskEditMode,
+    openAiSheetArchitectModal,
+    runAiSheetArchitectTask,
     handleCompStudioSubjectChange,
     handleCompStudioChapterChange,
     renderCompStudioSheets,
@@ -9062,9 +10408,9 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     handleConceptImageUpload,
     saveConceptCard,
 
-    openOmniResearchForCurrentQuestion,
-    openOmniResearchForDojoQuestion,
-    triggerOmniResearchDrawer,
+    applySelectionRecallMask,
+    saveSelectionToPersonalCue,
+
     openOmniSearchModal,
     executeOmniSearch,
     openGlobalSearchModal,
@@ -9077,6 +10423,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     launchDirectSheetDrill,
 
     openDojoSessionWithQuestions,
+    recordDojoStopwatchSplit,
     launchWeakAreasDojo,
     launchDojoFromMockMistakes,
     exitDojoArena,
