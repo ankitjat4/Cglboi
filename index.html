@@ -12,11 +12,11 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" crossorigin="anonymous">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js" crossorigin="anonymous"></script>
 
-  <!-- External Stylesheet with Cache-Buster v6.0 -->
-  <link rel="stylesheet" href="style.css?v=6.0">
+  <!-- External Stylesheet with Cache-Buster v7.2 -->
+  <link rel="stylesheet" href="style.css?v=7.2">
 </head>
 <body>
-  <!-- MOBILE ON-SCREEN DEBUGGER (Remove once fixed) -->
+  <!-- MOBILE ON-SCREEN DEBUGGER (Auto-hides on clean boot) -->
   <div id="phone-debug-banner" style="background:#ef4444; color:#fff; padding:12px; font-family:monospace; font-size:12px; z-index:99999; position:relative; word-break:break-word;">
     ⏳ Waiting for app.js to load...
   </div>
@@ -32,15 +32,20 @@
       var box = document.getElementById("phone-debug-banner");
       if (window.CGL_OS && typeof window.CGL_OS.switchTab === "function") {
         box.style.background = "#10b981";
-        box.innerHTML = "✅ CGL_OS loaded successfully! All buttons active.";
-        setTimeout(function() { box.style.display = "none"; }, 3000);
+        box.innerHTML = "✅ CGL_OS V7.2 loaded successfully! All systems active.";
+        setTimeout(function() { box.style.display = "none"; }, 2200);
       } else if (box && box.innerHTML.indexOf("JS ERROR") === -1) {
         box.style.background = "#d97706";
-        box.innerHTML = "⚠️ <b>app.js DID NOT LOAD AT ALL!</b><br>Check if your file is named 'app.js' or 'app (16).js', or change script src='app.js?v=99' at the bottom of index.html.";
+        box.innerHTML = "⚠️ <b>app.js DID NOT LOAD!</b><br>Verify your script file is named 'app.js' in the root directory.";
       }
     });
   </script>
 
+  <!-- ==================== FLOATING TEXT-SELECTION ACTION POPOVER ==================== -->
+  <div id="selection-action-popover">
+    <button class="btn btn-purple" style="padding:4px 9px; font-size:11px;" onclick="CGL_OS.applySelectionRecallMask()">🙈 Mask for Recall</button>
+    <button class="btn btn-cyan" style="padding:4px 9px; font-size:11px;" onclick="CGL_OS.saveSelectionToPersonalCue()">📌 Save to Cue</button>
+  </div>
 
   <!-- ==================== FLOATING MINI-PLAYER DOCK ==================== -->
   <div id="mini-player-dock">
@@ -80,6 +85,9 @@
             <p style="font-size:12px; color:var(--accent-cyan); margin-top:2px;" id="dash-hero-sub">"Precision over volume. Every question deserves a clean derivation."</p>
           </div>
           <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
+            <button class="btn btn-purple" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openCompendiumStudio()" title="Open Living Knowledge Studio">
+              📖 Knowledge
+            </button>
             <button class="btn btn-secondary" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.openGlobalSearchModal()" title="Global Omni-Search">
               🔍 Search
             </button>
@@ -93,23 +101,27 @@
         </div>
       </div>
 
-      <!-- TOP 4 BATTLEFIELD TILES (REAL DB DATA) -->
-      <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:14px; text-align:center;">
-        <div class="card" style="margin-bottom:0; padding:12px 8px; cursor:pointer;" onclick="CGL_OS.switchTab('tab-dojo')">
-          <div style="font-size:10px; font-weight:800; color:var(--accent-cyan); text-transform:uppercase;">QUESTIONS</div>
-          <div style="font-size:20px; font-weight:900; font-family:var(--font-mono); margin-top:4px;" id="dash-stat-questions">0</div>
+      <!-- TOP 5 BATTLEFIELD TILES (DIRECT 1-TAP ACCESS TO QUESTIONS, SHEETS & WEAKNESSES) -->
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(92px, 1fr)); gap:8px; margin-bottom:14px; text-align:center;">
+        <div class="card" style="margin-bottom:0; padding:12px 6px; cursor:pointer;" onclick="CGL_OS.switchTab('tab-dojo')">
+          <div style="font-size:9.5px; font-weight:800; color:var(--accent-cyan); text-transform:uppercase;">QUESTIONS</div>
+          <div style="font-size:19px; font-weight:900; font-family:var(--font-mono); margin-top:4px;" id="dash-stat-questions">0</div>
         </div>
-        <div class="card" style="margin-bottom:0; padding:12px 8px;">
-          <div style="font-size:10px; font-weight:800; color:var(--status-green); text-transform:uppercase;">ACCURACY</div>
-          <div style="font-size:20px; font-weight:900; font-family:var(--font-mono); color:var(--status-green); margin-top:4px;" id="dash-stat-accuracy">0%</div>
+        <div class="card" style="margin-bottom:0; padding:12px 6px; cursor:pointer; border-color:rgba(167,139,250,0.35);" onclick="CGL_OS.openCompendiumStudio()">
+          <div style="font-size:9.5px; font-weight:800; color:var(--accent-purple-light); text-transform:uppercase;">📖 SHEETS</div>
+          <div style="font-size:19px; font-weight:900; font-family:var(--font-mono); color:var(--accent-purple-light); margin-top:4px;" id="dash-stat-sheets">0</div>
         </div>
-        <div class="card" style="margin-bottom:0; padding:12px 8px; cursor:pointer;" onclick="CGL_OS.MockService.generate({subject:'ALL', mode:'WEAKNESS', count:20, shuffleOptions:true}).then(i => CGL_OS.MockService.launchMockSession(i))">
-          <div style="font-size:10px; font-weight:800; color:var(--status-red); text-transform:uppercase;">WEAK AREAS</div>
-          <div style="font-size:20px; font-weight:900; font-family:var(--font-mono); color:var(--status-red); margin-top:4px;" id="dash-stat-weak">0</div>
+        <div class="card" style="margin-bottom:0; padding:12px 6px;">
+          <div style="font-size:9.5px; font-weight:800; color:var(--status-green); text-transform:uppercase;">ACCURACY</div>
+          <div style="font-size:19px; font-weight:900; font-family:var(--font-mono); color:var(--status-green); margin-top:4px;" id="dash-stat-accuracy">0%</div>
         </div>
-        <div class="card" style="margin-bottom:0; padding:12px 8px;">
-          <div style="font-size:10px; font-weight:800; color:var(--accent-purple-light); text-transform:uppercase;">STUDY TIME</div>
-          <div style="font-size:20px; font-weight:900; font-family:var(--font-mono); color:#fff; margin-top:4px;" id="dash-stat-time">0m</div>
+        <div class="card" style="margin-bottom:0; padding:12px 6px; cursor:pointer;" onclick="CGL_OS.MockService.generate({subject:'ALL', mode:'WEAKNESS', count:20, shuffleOptions:true}).then(i => CGL_OS.MockService.launchMockSession(i))">
+          <div style="font-size:9.5px; font-weight:800; color:var(--status-red); text-transform:uppercase;">WEAK AREAS</div>
+          <div style="font-size:19px; font-weight:900; font-family:var(--font-mono); color:var(--status-red); margin-top:4px;" id="dash-stat-weak">0</div>
+        </div>
+        <div class="card" style="margin-bottom:0; padding:12px 6px;">
+          <div style="font-size:9.5px; font-weight:800; color:var(--accent-cyan); text-transform:uppercase;">STUDY TIME</div>
+          <div style="font-size:19px; font-weight:900; font-family:var(--font-mono); color:#fff; margin-top:4px;" id="dash-stat-time">0m</div>
         </div>
       </div>
 
@@ -166,8 +178,9 @@
         <button class="anchor-pill active" onclick="CGL_OS.switchTab('tab-dojo')">🧪 PRACTICE LAB</button>
         <button class="anchor-pill" onclick="CGL_OS.openCustomMockModal()">⚡ MOCK LAB</button>
         <button class="anchor-pill" onclick="CGL_OS.openCompendiumStudio()">📖 KNOWLEDGE STUDIO</button>
+        <button class="anchor-pill" onclick="CGL_OS.openAllSheetsIndexModal()">📑 ALL SHEETS INDEX</button>
         <button class="anchor-pill" onclick="CGL_OS.openSynapseGraphModal()">🧠 SYNAPSE GRAPH</button>
-        <button class="anchor-pill" onclick="CGL_OS.switchTab('tab-console')">🤖 AI CONSOLE</button>
+        <button class="anchor-pill" onclick="CGL_OS.switchTab('tab-console')">🤖 AI &amp; API CONSOLE</button>
       </div>
 
       <!-- Exam Readiness Index (ERI) Dial -->
@@ -287,17 +300,20 @@
             <div style="font-family:var(--font-mono); font-size:11px; font-weight:800; color:var(--accent-cyan); text-transform:uppercase;">// PRACTICE LAB &amp; DOJO CLINIC</div>
             <h2 style="font-size:19px; font-weight:800; color:#fff;">Question Control Center</h2>
           </div>
-          <div style="display:flex; gap:6px;">
-            <button class="btn btn-emerald" style="padding:8px 12px; font-size:12px;" onclick="CGL_OS.launchDojoFromPracticeSelection(true)" title="Open Filtered Pool in Untimed Dojo">
-              🧘 Dojo All Filtered
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button class="btn btn-purple" style="padding:8px 12px; font-size:11.5px;" onclick="CGL_OS.openSheetsForPracticeFilter()" title="Open Living Knowledge Sheets for Active Subject/Chapter Filter">
+              📖 Sheets for Filter
             </button>
-            <button class="btn btn-cyan" style="padding:8px 14px; font-size:12px;" onclick="CGL_OS.openNewQuestionCreatorModal()">
-              + NEW QUESTION
+            <button class="btn btn-emerald" style="padding:8px 12px; font-size:11.5px;" onclick="CGL_OS.launchDojoFromPracticeSelection(true)" title="Open Filtered Pool in Untimed Dojo">
+              🧘 Dojo Filtered
+            </button>
+            <button class="btn btn-cyan" style="padding:8px 12px; font-size:11.5px;" onclick="CGL_OS.openNewQuestionCreatorModal()">
+              + NEW Q
             </button>
           </div>
         </div>
         <p style="font-size:11.5px; color:var(--text-muted); margin-top:4px;">
-          Filter, star, practice in Untimed Dojo (active recall + personal cues), or launch timed combat sprints.
+          Filter, star, open Knowledge Sheets directly, practice in Untimed Dojo, or launch timed sprints.
         </p>
       </div>
 
@@ -371,7 +387,7 @@
       <!-- Question Inventory List Container (Populated via Paged Virtual Slices) -->
       <div id="practice-question-rows"></div>
 
-      <!-- PAGINATION CONTROLS (Prevents 2,300+ Question CPU Lockup) -->
+      <!-- PAGINATION CONTROLS -->
       <div id="practice-pagination-controls" style="display:flex; justify-content:space-between; align-items:center; margin:16px 0 90px 0; padding:10px 14px; background:#0d1322; border-radius:10px; border:1px solid var(--border-color);">
         <button class="btn btn-secondary" id="btn-practice-prev-page" style="padding:6px 12px; font-size:11.5px;" onclick="CGL_OS.navPracticePage(-1)">◄ Previous 25</button>
         <span id="practice-page-info" style="font-size:11.5px; font-weight:700; color:var(--accent-cyan); font-family:var(--font-mono);">Page 1 of 1</span>
@@ -398,11 +414,91 @@
     </div>
 
     <!-- ------------------------------------------------------------------
-         VIEW 3: TAB CONSOLE // MASTER FORENSIC STUDIO & COMMAND BUS
+         VIEW 3: TAB CONSOLE // AI WATERFALL VAULT & OMNIPOTENT COMMAND BUS
          ------------------------------------------------------------------ -->
     <div id="tab-console" class="view-container">
 
-      <!-- Primary Command Bus & AI Dispatch -->
+      <!-- 1. PRIORITY WATERFALL API KEY VAULT & TASK ROUTER -->
+      <div class="card" style="border:1.5px solid rgba(139, 92, 246, 0.45); background:linear-gradient(145deg, #111328 0%, #070b14 100%);">
+        <div class="card-title" style="color:var(--accent-purple-light);">
+          <span>🔑 Free-Tier Waterfall API Key Vault &amp; Task Router</span>
+          <span class="badge" style="background:#7c3aed; color:#fff;" id="api-vault-status-badge">0 Keys Active</span>
+        </div>
+        <p style="font-size:11.5px; color:var(--text-muted); margin-bottom:12px; line-height:1.5;">
+          Keys are stored strictly on-device in <code style="color:var(--accent-cyan);">store_config</code>. Automatic priority failover (HIGH ➔ MEDIUM ➔ LOW) with manual override and task-specific key allocation. If all keys are on cooldown or offline, the app degrades gracefully to clipboard mode.
+        </p>
+
+        <!-- Add New API Key Form -->
+        <div style="background:#070a12; border:1px solid var(--border-color); border-radius:10px; padding:12px; margin-bottom:12px;">
+          <div style="font-size:10.5px; font-weight:800; color:var(--accent-cyan); text-transform:uppercase; margin-bottom:8px;">+ Add Key to Waterfall Vault</div>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(135px, 1fr)); gap:8px; margin-bottom:8px;">
+            <div>
+              <label style="font-size:9.5px; color:var(--text-muted);">Label / Nickname</label>
+              <input type="text" id="api-key-label" class="form-control" style="padding:7px; font-size:12px;" placeholder="e.g. Gemini Key #1">
+            </div>
+            <div>
+              <label style="font-size:9.5px; color:var(--text-muted);">Provider</label>
+              <select id="api-key-provider" class="form-control" style="padding:7px; font-size:12px;" onchange="CGL_OS.handleApiProviderPresetChange(this.value)">
+                <option value="GEMINI">Google Gemini (AI Studio)</option>
+                <option value="GROQ">Groq Cloud (Fast LPU)</option>
+                <option value="OPENROUTER">OpenRouter (Free Models)</option>
+                <option value="CUSTOM">Custom OpenAI Endpoint</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:9.5px; color:var(--text-muted);">Model ID</label>
+              <input type="text" id="api-key-model" class="form-control" style="padding:7px; font-size:12px;" value="gemini-2.5-flash" placeholder="e.g. gemini-2.5-flash">
+            </div>
+            <div>
+              <label style="font-size:9.5px; color:var(--text-muted);">Priority Tier</label>
+              <select id="api-key-priority" class="form-control" style="padding:7px; font-size:12px;">
+                <option value="HIGH">Tier 1: HIGH (Math/Proofs)</option>
+                <option value="MEDIUM" selected>Tier 2: MEDIUM (Mutants/Parse)</option>
+                <option value="LOW">Tier 3: LOW (Fast Masks/Tags)</option>
+              </select>
+            </div>
+          </div>
+          <div id="api-custom-url-wrap" style="display:none; margin-bottom:8px;">
+            <label style="font-size:9.5px; color:var(--text-muted);">Custom Base URL (OpenAI /v1/chat/completions endpoint)</label>
+            <input type="text" id="api-key-custom-url" class="form-control" style="padding:7px; font-size:12px;" placeholder="https://api.mistral.ai/v1/chat/completions">
+          </div>
+          <div style="display:grid; grid-template-columns:1fr auto; gap:8px;">
+            <input type="password" id="api-key-secret" class="form-control" style="padding:7px 10px; font-size:12px; font-family:var(--font-mono);" placeholder="Paste API Key (AIzaSy... / gsk_... / sk-or-...)...">
+            <button class="btn btn-purple" style="padding:7px 14px; font-size:12px;" onclick="CGL_OS.addApiKeyToVault()">+ Save Key</button>
+          </div>
+        </div>
+
+        <!-- Configured Keys List (Priority Reorder, Test, Delete) -->
+        <div id="api-vault-keys-list" style="margin-bottom:12px;"></div>
+
+        <!-- Task-Specific Key Allocation Matrix -->
+        <div style="background:#080c16; border:1px solid rgba(56,189,248,0.25); border-radius:10px; padding:10px 12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
+            <span style="font-size:10.5px; font-weight:800; color:var(--accent-cyan); text-transform:uppercase;">🎯 Task-Specific Key Allocation (Auto-Falls Back to Waterfall if Busy)</span>
+            <button class="btn btn-secondary" style="padding:2px 8px; font-size:10px;" onclick="CGL_OS.resetAllApiCooldowns()">🔄 Reset Cooldowns</button>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(175px, 1fr)); gap:8px;">
+            <div>
+              <label style="font-size:9.5px; color:var(--text-muted);">⚡ Math / Logic &amp; Shortcuts</label>
+              <select id="task-route-SHORTCUT" class="form-control" style="padding:5px; font-size:11px;" onchange="CGL_OS.saveTaskRoutingConfig()"></select>
+            </div>
+            <div>
+              <label style="font-size:9.5px; color:var(--text-muted);">🧬 1-Tap Mutant Clones</label>
+              <select id="task-route-MUTANT" class="form-control" style="padding:5px; font-size:11px;" onchange="CGL_OS.saveTaskRoutingConfig()"></select>
+            </div>
+            <div>
+              <label style="font-size:9.5px; color:var(--text-muted);">📥 Smart Raw Text Ingest</label>
+              <select id="task-route-SMART_PARSE" class="form-control" style="padding:5px; font-size:11px;" onchange="CGL_OS.saveTaskRoutingConfig()"></select>
+            </div>
+            <div>
+              <label style="font-size:9.5px; color:var(--text-muted);">🪄 Sheet Architect &amp; Masks</label>
+              <select id="task-route-SHEET_EDIT" class="form-control" style="padding:5px; font-size:11px;" onchange="CGL_OS.saveTaskRoutingConfig()"></select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.Primary Command Bus & AI Dispatch -->
       <div class="card">
         <div class="card-title">
           <span>JSON Command Bus &amp; AI Dispatch (v3 Omnipotent)</span>
@@ -424,7 +520,7 @@
         </div>
       </div>
 
-      <!-- UNIVERSAL DATA EXTRACTION MATRIX (FULL DATA SOVEREIGNTY) -->
+      <!-- 3. UNIVERSAL DATA EXTRACTION MATRIX (FULL DATA SOVEREIGNTY) -->
       <div class="card" style="background: linear-gradient(135deg, #101c30 0%, #090e18 100%); border: 1.5px solid var(--accent-cyan); box-shadow: 0 0 24px rgba(56, 189, 248, 0.2);">
         <div class="card-title" style="color:#fff; margin-bottom:6px;">
           <span>⚡ Universal Data Extraction Matrix</span>
@@ -434,12 +530,10 @@
           Export any slice of your preparation database on demand. Zero boundaries.
         </p>
 
-        <!-- Master All-in-One Package -->
         <button class="btn" style="width:100%; padding:12px; font-size:13.5px; font-weight:800; background:linear-gradient(135deg, #2563eb, #8957e5); margin-bottom:10px;" onclick="CGL_OS.exportUnifiedAiHandoffPackage()">
           📦 Download Complete AI Master Package (All Data .json)
         </button>
 
-        <!-- Granular Individual Store Download Grid -->
         <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px;">
           <button class="btn btn-secondary" style="font-size:12px; padding:9px;" onclick="CGL_OS.exportKnowledgeBankJson()">
             📖 Knowledge (.json)
@@ -453,11 +547,17 @@
         </div>
       </div>
 
-      <!-- Universal Plain Text, Backup & Typeset PDF Exports (Relocated from Decommissioned Vault) -->
+      <!-- 4. Universal Plain Text, Backup & Typeset PDF Exports -->
       <div class="card">
         <div class="card-title">
           <span>Universal Plain Text, Backup &amp; Typeset PDF Exports</span>
           <span class="badge" style="background:#059669;">Publishing &amp; Recovery</span>
+        </div>
+        <div style="margin-bottom:10px;">
+          <label style="display:inline-flex; align-items:center; gap:8px; font-size:11.5px; color:var(--text-muted); cursor:pointer;">
+            <input type="checkbox" id="backup-include-api-keys" style="width:15px; height:15px;">
+            <span>Include API Keys in Full Backup JSON (Keep unchecked when sharing files)</span>
+          </label>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
           <button class="btn btn-secondary" style="font-size: 12px;" onclick="CGL_OS.exportFullBackup()">💾 Export Full Backup (.json)</button>
@@ -469,7 +569,7 @@
         </div>
       </div>
 
-      <!-- Scoped Forensic Dossier Extractor -->
+      <!-- 5. Scoped Forensic Dossier Extractor -->
       <div class="scoped-extractor-panel card">
         <div class="card-title" style="color:var(--accent-cyan); margin-bottom:8px;">
           <span>🔍 Scoped Forensic Dossier Extractor</span>
@@ -518,7 +618,7 @@
         </button>
       </div>
 
-      <!-- Direct Database Studio with Table-Level Dumper -->
+      <!-- 6. Direct Database Studio with Table-Level Dumper -->
       <div class="card">
         <div class="card-title">
           <span>Direct Database Studio</span>
@@ -541,7 +641,7 @@
         <div id="db-inspector-list" style="max-height:220px; overflow-y:auto; font-size:12px;"></div>
       </div>
 
-      <!-- Danger Zone -->
+      <!-- 7. Danger Zone -->
       <div class="card" style="border-color:#5a1e1e;">
         <div class="card-title" style="color:var(--status-red);">Danger Zone Operations</div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
@@ -554,19 +654,35 @@
   </div> <!-- /#app-viewport-root -->
 
   <!-- ==================================================================
-       ROOT-LEVEL VIEWS, CANVAS OVERLAYS & MODALS
+       ROOT-LEVEL VIEWS, CANVAS OVERLAYS & SPLIT-SHEET DRAWER
        ================================================================== -->
 
-  <!-- IN-ARENA ROUGH SCRATCHPAD CANVAS OVERLAY (STYLUS & FINGER) -->
+  <!-- GLOBAL SCROLL-SYNCHRONIZED ROUGH SKETCHPAD CANVAS OVERLAY (STYLUS & FINGER) -->
   <div id="scratchpad-overlay" class="scratchpad-canvas-overlay">
     <canvas id="scratchpad-canvas" class="scratchpad-canvas-el"></canvas>
     <div class="scratchpad-toolbar">
-      <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" id="btn-scratch-pen" onclick="CGL_OS.setScratchpadMode('PEN')">✏️ Pen</button>
+      <button class="btn btn-cyan" style="padding:4px 9px; font-size:11px;" id="btn-scratch-draw-scroll" onclick="CGL_OS.toggleScratchpadScrollMode()" title="Switch between Drawing and Scrolling without losing ink">✏️ Draw Mode</button>
+      <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" id="btn-scratch-pen" onclick="CGL_OS.setScratchpadMode('PEN')">🖊️ Pen</button>
       <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" id="btn-scratch-eraser" onclick="CGL_OS.setScratchpadMode('ERASER')">🧽 Eraser</button>
       <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.undoScratchpadStroke()">↩ Undo</button>
       <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--status-red);" onclick="CGL_OS.clearScratchpadCanvas()">🗑 Clear</button>
-      <button class="btn btn-cyan" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.toggleScratchpadCanvas(false)">✕ Hide</button>
+      <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.toggleScratchpadCanvas(false)">✕ Hide</button>
     </div>
+  </div>
+
+  <!-- SIDE-BY-SIDE SPLIT-SCREEN SHEET + QUESTION DRAWER -->
+  <div id="arena-split-sheet-drawer">
+    <div class="split-sheet-header">
+      <div style="overflow:hidden;">
+        <div style="font-size:10px; font-weight:800; color:var(--accent-cyan); text-transform:uppercase;">📌 Pinned Knowledge Sheet</div>
+        <div style="font-size:13px; font-weight:800; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" id="split-sheet-title">Theorem Reference</div>
+      </div>
+      <div style="display:flex; gap:6px; align-items:center;">
+        <button class="btn btn-purple" style="padding:3px 8px; font-size:10.5px;" onclick="CGL_OS.expandSplitSheetToFullStudio()">↗ Full Studio</button>
+        <button class="btn btn-secondary" style="padding:3px 8px; font-size:11px;" onclick="CGL_OS.closeSplitSheetDrawer()">✕</button>
+      </div>
+    </div>
+    <div class="split-sheet-body" id="split-sheet-body"></div>
   </div>
 
   <!-- 1. FULLSCREEN EXAM ARENA -->
@@ -590,14 +706,14 @@
       </div>
 
       <div style="display:flex; gap:6px; align-items:center;">
-        <button class="hud-icon-btn" id="btn-arena-scratchpad" onclick="CGL_OS.toggleScratchpadCanvas()" title="Toggle Rough Work Scratchpad">
+        <button class="hud-icon-btn" id="btn-arena-scratchpad" onclick="CGL_OS.toggleScratchpadCanvas()" title="Toggle Scroll-Synced Sketchpad">
           ✏️
+        </button>
+        <button class="hud-icon-btn" id="btn-arena-ai-assist" style="display:none; border-color:var(--accent-purple-light); color:var(--accent-purple-light);" onclick="CGL_OS.openAiQuestionTutorModal('ARENA')" title="AI Tutor: Shortcut, Explain, or Mutant Clone">
+          🧠
         </button>
         <button class="hud-icon-btn" id="btn-arena-edit-q" style="display:none;" onclick="CGL_OS.openEditCurrentArenaQuestion()" title="Edit Canonical Question">
           ✎
-        </button>
-        <button class="hud-icon-btn" id="btn-arena-research" style="display:none;" onclick="CGL_OS.openOmniResearchForCurrentQuestion()" title="Omni Deep Dive / Wikipedia / Math Plot">
-          🌐
         </button>
         <button class="hud-icon-btn" id="btn-toggle-exam-palette" onclick="CGL_OS.toggleExamPalette()" title="Open Question Palette">
           <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
@@ -621,10 +737,13 @@
 
     <div class="arena-body" id="arena-body">
       <div class="question-header">
-        <div style="display:flex; align-items:center; gap:8px;">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
           <div class="q-number-pill" id="arena-q-num">Q1</div>
           <button class="star-flag-btn" id="btn-arena-star" onclick="CGL_OS.toggleCurrentArenaQuestionStar()" title="Bookmark / Flag as Doubt for Post-Test Review">
             ☆ Star / Doubt
+          </button>
+          <button class="btn btn-purple" id="btn-arena-mutant-clone" style="display:none; padding:4px 10px; font-size:11px;" onclick="CGL_OS.generateInstantMutantClone('ARENA')" title="Generate 1-Tap Adversarial Mutant Clone via API">
+            🧬 Mutant Clone
           </button>
         </div>
         <div class="q-clock-pill">
@@ -651,7 +770,7 @@
       <div id="arena-options-container"></div>
 
       <div id="arena-concept-bridge-box" style="display:none; margin:14px 0; background:rgba(56, 189, 248, 0.05); border:1px solid rgba(56, 189, 248, 0.2); border-radius:10px; padding:12px;">
-        <div style="font-size:10.5px; font-weight:800; color:var(--accent-cyan); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:8px;">// Associated Concept Sheets</div>
+        <div style="font-size:10.5px; font-weight:800; color:var(--accent-cyan); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:8px;">// Associated Concept Sheets (Tap 📌 to Pin Split-View or 📖 for Full Studio)</div>
         <div id="arena-concept-pills-wrap"></div>
       </div>
 
@@ -691,7 +810,7 @@
     </div>
   </div>
 
-  <!-- 2. UNTIMED DOJO ARENA VIEW (ACTIVE RECALL & ANNOTATION CLINIC) -->
+  <!-- 2. UNTIMED DOJO ARENA VIEW (ACTIVE RECALL, STOPWATCH SPLIT & AI COPILOT) -->
   <div id="dojo-arena-view">
     <div class="arena-header">
       <button class="hud-icon-btn" onclick="CGL_OS.exitDojoArena()">
@@ -699,11 +818,11 @@
       </button>
       <div style="text-align:center;">
         <div style="font-size:14px; font-weight:800; color:var(--accent-cyan);" id="dojo-arena-title">Dojo Practice</div>
-        <div style="font-size:10px; color:var(--text-muted);">Untimed Active Recall &amp; Method Clinic</div>
+        <div style="font-size:10px; color:var(--text-muted);">Untimed Active Recall • Swipe Left/Right</div>
       </div>
       <div style="display:flex; gap:6px;">
-        <button class="hud-icon-btn" onclick="CGL_OS.toggleScratchpadCanvas()" title="Rough Work Scratchpad">✏️</button>
-        <button class="hud-icon-btn" onclick="CGL_OS.openOmniResearchForDojoQuestion()" title="Omni Deep Dive">🌐</button>
+        <button class="hud-icon-btn" id="btn-dojo-scratchpad" onclick="CGL_OS.toggleScratchpadCanvas()" title="Scroll-Synced Sketchpad">✏️</button>
+        <button class="hud-icon-btn" style="border-color:var(--accent-purple-light); color:var(--accent-purple-light);" onclick="CGL_OS.openAiQuestionTutorModal('DOJO')" title="AI Tutor: Shortcut, Explain, or Mutant Clone">🧠</button>
         <button class="hud-icon-btn" onclick="CGL_OS.toggleDojoPalette(true)">
           <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
         </button>
@@ -716,7 +835,8 @@
         <span class="badge" style="background:#151a24; color:#38bdf8;" id="dojo-arena-method-badge">General</span>
       </div>
       <div id="dojo-concept-pills-wrap"></div>
-      <div style="display:flex; gap:6px; align-items:center;">
+      <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+        <button class="btn btn-purple" style="padding:2px 8px; font-size:10.5px;" onclick="CGL_OS.generateInstantMutantClone('DOJO')" title="Generate 1-Tap Mutant Clone">🧬 Mutant</button>
         <button class="star-flag-btn" id="btn-dojo-star" onclick="CGL_OS.toggleCurrentDojoQuestionStar()">☆ Star</button>
         <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openEditCurrentDojoQuestion()">✎ Edit Q</button>
       </div>
@@ -726,8 +846,16 @@
 
     <div class="arena-body" id="dojo-arena-body">
       <div class="question-header">
-        <div class="q-number-pill" id="dojo-arena-qnum">1</div>
-        <span style="font-size:12px; color:var(--text-muted);" id="dojo-arena-total-tag">Question 1 of 10</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div class="q-number-pill" id="dojo-arena-qnum">1</div>
+          <span style="font-size:12px; color:var(--text-muted);" id="dojo-arena-total-tag">Question 1 of 10</span>
+        </div>
+        <!-- Non-Stressful Dojo Stopwatch with Setup/Calc Lap Split -->
+        <div class="dojo-stopwatch-pill">
+          <span id="dojo-stopwatch-display">00:00</span>
+          <span id="dojo-stopwatch-splits" style="font-size:10px; color:var(--text-muted);"></span>
+          <button class="dojo-stopwatch-split-btn" onclick="CGL_OS.recordDojoStopwatchSplit()" title="Mark Setup Time vs Calculation Time">⏱️ Split</button>
+        </div>
       </div>
 
       <!-- Pinned Dojo Passage Container -->
@@ -745,9 +873,14 @@
 
       <div id="dojo-arena-feedback" style="display:none; padding:10px; border-radius:8px; margin:12px 0; font-size:13px; font-weight:700;"></div>
 
-      <button class="btn btn-secondary" style="width:100%; margin-top:10px; font-size:13px;" onclick="CGL_OS.toggleDojoMethod()">
-        Reveal Method &amp; Solution
-      </button>
+      <div style="display:grid; grid-template-columns:1fr auto; gap:8px; margin-top:10px;">
+        <button class="btn btn-secondary" style="font-size:13px;" onclick="CGL_OS.toggleDojoMethod()">
+          Reveal Method &amp; Solution
+        </button>
+        <button class="btn btn-purple" style="font-size:12px; padding:10px 14px;" onclick="CGL_OS.openAiQuestionTutorModal('DOJO')">
+          ⚡ AI Shortcut / Explain
+        </button>
+      </div>
 
       <div id="dojo-arena-method-box" style="display:none; margin-top:12px; padding:12px; background:#151a24; border-left:3px solid var(--accent-blue); border-radius:4px; font-size:13.5px; line-height:1.65;"></div>
 
@@ -774,7 +907,7 @@
     <div class="palette-scroll-body" id="dojo-palette-scroll-body"></div>
   </div>
 
-  <!-- 3. LIVING KNOWLEDGE STUDIO FULLSCREEN VIEW (WITH 🙈 RECALL MODE) -->
+  <!-- 3. LIVING KNOWLEDGE STUDIO FULLSCREEN VIEW (CUSTOM MASKS, SKETCHPAD & AI ARCHITECT) -->
   <div id="compendium-fullscreen-view">
     <div class="compendium-header" style="background:#090e18; border-bottom:1px solid var(--border-color); padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; flex-wrap:wrap; gap:6px;">
       <div style="display:flex; align-items:center; gap:8px;">
@@ -783,18 +916,29 @@
         </button>
         <div>
           <div style="font-size:14px; font-weight:800; color:#38bdf8;" id="comp-studio-header-title">Living Knowledge Studio</div>
-          <div style="font-size:10px; color:var(--text-muted);" id="comp-studio-header-sub">Structured Engineering &amp; Active Recall Sheets</div>
+          <div style="font-size:10px; color:var(--text-muted);" id="comp-studio-header-sub">Swipe Left/Right • Custom Active Recall Masks</div>
         </div>
       </div>
       <div style="display:flex; gap:5px; align-items:center; flex-wrap:wrap;">
-        <button class="btn btn-purple" id="btn-comp-recall-mode" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.toggleCompendiumRecallMode()" title="Mask bolded terms, formulas & table cells for active recall">
+        <button class="btn btn-secondary" style="padding:4px 9px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.openAllSheetsIndexModal()" title="Browse All 370 Sheets Index">
+          📑 Index
+        </button>
+        <button class="btn btn-secondary" id="btn-comp-edit-masks" style="padding:4px 9px; font-size:11px;" onclick="CGL_OS.toggleCompendiumMaskEditMode()" title="Tap any formula, cell, or word to add/remove it from your personal Recall Masks">
+          🖌️ Edit Masks
+        </button>
+        <button class="btn btn-purple" id="btn-comp-recall-mode" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.toggleCompendiumRecallMode()" title="Blur your custom masks (tap blurred items to reveal)">
           🙈 Recall Mode
         </button>
-        <button class="btn btn-secondary" style="padding:4px 7px; font-size:11px;" onclick="CGL_OS.adjustReaderFontScale(-0.08)" title="Decrease Font Size">A-</button>
-        <button class="btn btn-secondary" style="padding:4px 7px; font-size:11px;" onclick="CGL_OS.adjustReaderFontScale(0.08)" title="Increase Font Size">A+</button>
-        <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.openOmniSearchModal()" title="Global Omni-Search">🔍</button>
-        <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.openConceptEditorModal(false)" title="Edit Current Sheet">✎</button>
-        <button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.deleteCurrentCompendiumSheet()" title="Delete Current Sheet">🗑</button>
+        <button class="btn btn-secondary" id="btn-comp-auto-blur-all" style="padding:4px 8px; font-size:10.5px; display:none;" onclick="CGL_OS.toggleCompendiumAutoBlurAll()" title="Also blur all formulas & table cells">
+          +Auto-Blur All
+        </button>
+        <button class="hud-icon-btn" style="width:32px; height:32px;" onclick="CGL_OS.toggleScratchpadCanvas()" title="Scroll-Synced Sketchpad over Sheet">✏️</button>
+        <button class="hud-icon-btn" style="width:32px; height:32px; border-color:var(--accent-purple-light); color:var(--accent-purple-light);" onclick="CGL_OS.openAiSheetArchitectModal()" title="AI Sheet Architect: Auto-Mask or Expand Sheet">🪄</button>
+        <button class="btn btn-secondary" style="padding:4px 7px; font-size:11px;" onclick="CGL_OS.adjustReaderFontScale(-0.08)">A-</button>
+        <button class="btn btn-secondary" style="padding:4px 7px; font-size:11px;" onclick="CGL_OS.adjustReaderFontScale(0.08)">A+</button>
+        <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.openOmniSearchModal()" title="Omni-Search Sheets">🔍</button>
+        <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.openConceptEditorModal(false)" title="Edit Sheet Markdown">✎</button>
+        <button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="CGL_OS.deleteCurrentCompendiumSheet()" title="Delete Sheet">🗑</button>
       </div>
     </div>
 
@@ -814,13 +958,14 @@
     <!-- Bi-Directional Bridge: Questions Associated with this Sheet -->
     <div id="comp-linked-questions-bar" style="background:#090e18; border-bottom:1px solid var(--border-color); padding:6px 14px; display:flex; justify-content:space-between; align-items:center; font-size:11px; flex-shrink:0; flex-wrap:wrap; gap:6px;">
       <span style="color:var(--accent-cyan); font-weight:700;" id="comp-linked-q-count">0 Associated Questions Linked</span>
-      <div style="display:flex; gap:6px;">
+      <div style="display:flex; gap:6px; align-items:center;">
+        <span id="comp-mask-count-badge" class="badge" style="background:rgba(124,58,237,0.2); color:var(--accent-purple-light);">0 Custom Masks</span>
         <button class="btn btn-emerald" style="padding:3px 9px; font-size:11px;" onclick="CGL_OS.launchCurrentSheetQuestionsDrill(true)">🧘 Dojo Sheet Qs</button>
         <button class="btn btn-secondary" style="padding:3px 9px; font-size:11px;" id="btn-drill-sheet-questions" onclick="CGL_OS.launchCurrentSheetQuestionsDrill(false)">⚡ Timed Sheet Qs</button>
       </div>
     </div>
 
-    <!-- Living Document Canvas Body (Vertical Reading with Horizontal Layout Shield) -->
+    <!-- Living Document Canvas Body -->
     <div class="comp-document-canvas" id="comp-studio-canvas">
       <div id="comp-studio-doc-content"></div>
 
@@ -846,9 +991,124 @@
       <button class="btn btn-danger" style="margin-top:6px; font-size:12px; padding:10px;" id="btn-exit-exam">Exit &amp; Abandon</button>
     </div>
   </div>
-
-
   <!-- ==================== ALL ROOT-LEVEL MODALS ==================== -->
+
+  <!-- Modal: Full-Fidelity Mock Lab Preview & Curation (#modal-mock-preview) -->
+  <div class="modal-overlay child-layer" id="modal-mock-preview">
+    <div class="modal-window" style="max-width:820px; max-height:92vh; display:flex; flex-direction:column;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:8px; flex-wrap:wrap; gap:8px;">
+        <div>
+          <h3 style="font-size:16px; font-weight:800; color:var(--accent-cyan);" id="mock-preview-modal-title">Mock Queue Inspection &amp; Curation</h3>
+          <span style="font-size:11px; color:var(--text-muted);" id="mock-preview-modal-sub">0 Questions Sampled • Inspect, Swap, or Remove Before Launch</span>
+        </div>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <button class="btn btn-secondary" style="padding:4px 10px; font-size:11px;" id="btn-preview-toggle-keys" onclick="CGL_OS.toggleMockPreviewAnswerKeys()">👁️ Show Answer Keys</button>
+          <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-mock-preview').classList.remove('active')">✕</button>
+        </div>
+      </div>
+
+      <div id="mock-preview-questions-list" style="flex:1; overflow-y:auto; padding-right:4px; margin-bottom:12px;"></div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; border-top:1px solid var(--border-color); padding-top:12px;">
+        <button class="btn btn-secondary" style="font-size:12px;" onclick="CGL_OS.savePreviewedQueueAsFixedPaper()">📌 Save Fixed Paper</button>
+        <button class="btn btn-emerald" style="font-size:12px; font-weight:800;" onclick="CGL_OS.launchPreviewedQueueInDojo()">🧘 Launch in Dojo</button>
+        <button class="btn" style="font-size:12px; font-weight:800;" onclick="CGL_OS.launchPreviewedQueueAsMock()">⚡ Launch Timed Mock</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: All-Sheets Master Index Drawer (#modal-all-sheets-index) -->
+  <div class="modal-overlay child-layer" id="modal-all-sheets-index">
+    <div class="modal-window" style="max-width:780px; max-height:90vh; display:flex; flex-direction:column;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+        <div>
+          <h3 style="font-size:16px; font-weight:800; color:var(--accent-purple-light);">📑 Master Knowledge Sheets Index</h3>
+          <span style="font-size:11px; color:var(--text-muted);" id="all-sheets-index-sub">Jump directly to any sheet across all subjects &amp; chapters</span>
+        </div>
+        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-all-sheets-index').classList.remove('active')">✕</button>
+      </div>
+
+      <div style="display:grid; grid-template-columns:120px 1fr; gap:8px; margin-bottom:10px;">
+        <select id="sheets-index-filter-sub" class="form-control" style="padding:7px; font-size:12px;" onchange="CGL_OS.renderAllSheetsIndexList()">
+          <option value="ALL">All Subjects</option>
+        </select>
+        <input type="text" id="sheets-index-search" class="form-control" style="padding:7px 12px; font-size:12px;" placeholder="🔎 Filter sheet titles, chapters, formulas, or ID..." oninput="CGL_OS.renderAllSheetsIndexList()">
+      </div>
+
+      <div id="all-sheets-index-list" style="flex:1; overflow-y:auto; padding-right:4px;"></div>
+    </div>
+  </div>
+
+  <!-- Modal: AI Question Tutor, Shortcut & Mutant Generator (#modal-ai-tutor) -->
+  <div class="modal-overlay child-layer" id="modal-ai-tutor">
+    <div class="modal-window" style="max-width:660px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:8px; flex-wrap:wrap; gap:6px;">
+        <div>
+          <h3 style="font-size:16px; font-weight:800; color:var(--accent-purple-light);">🧠 AI Question Copilot &amp; Tutor</h3>
+          <span style="font-size:10.5px; color:var(--text-muted);" id="ai-tutor-q-meta">Question ID</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <select id="ai-tutor-key-override" class="form-control" style="width:auto; padding:4px 8px; font-size:11px;" title="Choose specific API key or use Waterfall Auto"></select>
+          <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-ai-tutor').classList.remove('active')">✕</button>
+        </div>
+      </div>
+
+      <!-- 1-Tap Micro-Task Chips -->
+      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;">
+        <button class="btn btn-cyan" style="padding:6px 12px; font-size:11.5px;" onclick="CGL_OS.runAiTutorMicroTask('SHORTCUT')">⚡ Exam-Hall Shortcut</button>
+        <button class="btn btn-secondary" style="padding:6px 12px; font-size:11.5px;" onclick="CGL_OS.runAiTutorMicroTask('EXPLAIN')">🔍 Step-by-Step Derivation</button>
+        <button class="btn btn-secondary" style="padding:6px 12px; font-size:11.5px;" onclick="CGL_OS.runAiTutorMicroTask('TRAP_CHECK')">⚠️ Why Distractors Trick You</button>
+        <button class="btn btn-purple" style="padding:6px 12px; font-size:11.5px;" onclick="CGL_OS.generateInstantMutantClone('MODAL')">🧬 1-Tap Mutant Clone</button>
+      </div>
+
+      <!-- Custom Question Prompt -->
+      <div style="display:grid; grid-template-columns:1fr auto; gap:6px; margin-bottom:10px;">
+        <input type="text" id="ai-tutor-custom-prompt" class="form-control" style="padding:8px 10px; font-size:12px;" placeholder="Or ask a specific doubt (e.g. Can we use allegation or ratio method here?)...">
+        <button class="btn" style="padding:8px 14px; font-size:12px;" onclick="CGL_OS.runAiTutorMicroTask('CUSTOM')">Ask AI</button>
+      </div>
+
+      <!-- Live AI Attribution Banner & Output Box -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <span class="ai-source-attribution-pill" id="ai-tutor-source-badge">🤖 Ready (Waterfall Router)</span>
+        <button class="btn btn-emerald" id="btn-ai-tutor-save-cue" style="display:none; padding:3px 10px; font-size:11px;" onclick="CGL_OS.saveAiTutorOutputToQuestionCue()">📌 Save to My Solving Cue</button>
+      </div>
+
+      <div id="ai-tutor-response-box" style="background:#060912; border:1px solid var(--border-color); border-radius:9px; padding:14px; min-height:110px; max-height:48vh; overflow-y:auto; font-size:13.5px; line-height:1.68; color:var(--text-reading);">
+        Select an action above or type a specific question to query your API Waterfall Vault.
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: AI Sheet Architect (#modal-ai-sheet-architect) -->
+  <div class="modal-overlay child-layer" id="modal-ai-sheet-architect">
+    <div class="modal-window" style="max-width:640px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:8px; flex-wrap:wrap; gap:6px;">
+        <div>
+          <h3 style="font-size:16px; font-weight:800; color:var(--accent-purple-light);">🪄 AI Sheet Architect (Staging Mode)</h3>
+          <span style="font-size:10.5px; color:var(--text-muted);">All edits open in the Sheet Editor for your review before saving</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <select id="ai-sheet-key-override" class="form-control" style="width:auto; padding:4px 8px; font-size:11px;"></select>
+          <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-ai-sheet-architect').classList.remove('active')">✕</button>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;">
+        <button class="btn btn-purple" style="padding:6px 12px; font-size:11.5px;" onclick="CGL_OS.runAiSheetArchitectTask('AUTO_MASK')">🙈 Auto-Mark Top 10 {{Recall Masks}}</button>
+        <button class="btn btn-cyan" style="padding:6px 12px; font-size:11.5px;" onclick="CGL_OS.runAiSheetArchitectTask('ADD_TRAPS')">⚠️ Append TCS Trap Callouts &amp; Table</button>
+      </div>
+
+      <div class="form-group">
+        <label>Custom Sheet Instruction (Or New Topic Specification)</label>
+        <textarea id="ai-sheet-custom-instruction" class="form-control" style="height:80px; font-size:12.5px;" placeholder="e.g. Add a Markdown comparison table of all 4 cases of common tangents, or generate a new sheet on Successive Discounts..."></textarea>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span class="ai-source-attribution-pill" id="ai-sheet-source-badge">🤖 Ready</span>
+        <button class="btn" onclick="CGL_OS.runAiSheetArchitectTask('CUSTOM')">⚡ Generate &amp; Open in Staging Editor</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Modal: Section Lock Confirm -->
   <div class="modal-overlay" id="modal-section-lock-confirm">
@@ -884,15 +1144,28 @@
     </div>
   </div>
 
-  <!-- Modal: Native New Question Creator -->
+  <!-- Modal: Native New Question Creator (With 📥 AI Smart Raw Text Ingest) -->
   <div class="modal-overlay child-layer" id="modal-new-question-creator">
-    <div class="modal-window" style="max-width:700px; max-height:92vh;">
+    <div class="modal-window" style="max-width:720px; max-height:92vh;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
         <div>
           <h3 style="font-size:16px; font-weight:800; color:var(--accent-cyan);">+ NEW QUESTION CREATOR</h3>
-          <span style="font-size:10.5px; color:var(--text-muted);">Author canonical question directly into local database</span>
+          <span style="font-size:10.5px; color:var(--text-muted);">Author manually or use AI Smart Parse from raw OCR/text</span>
         </div>
         <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-new-question-creator').classList.remove('active')">✕</button>
+      </div>
+
+      <!-- 📥 AI Smart Raw Text / OCR Ingest Box -->
+      <div style="background:rgba(139, 92, 246, 0.08); border:1px solid rgba(139, 92, 246, 0.35); border-radius:10px; padding:10px 12px; margin-bottom:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:6px;">
+          <span style="font-size:10.5px; font-weight:800; color:var(--accent-purple-light); text-transform:uppercase;">✨ AI Smart Parse (Paste Raw Question / OCR Text)</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="ai-source-attribution-pill" id="smart-parse-source-badge" style="display:none;"></span>
+            <select id="smart-parse-key-override" class="form-control" style="width:auto; padding:3px 6px; font-size:10.5px;"></select>
+            <button class="btn btn-purple" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.smartParseRawQuestionText()">⚡ Parse into Form</button>
+          </div>
+        </div>
+        <textarea id="new-q-smart-raw-input" class="form-control" style="height:55px; font-size:12px;" placeholder="Paste unformatted question + options from PDF/Telegram/OCR here and tap Parse into Form..."></textarea>
       </div>
 
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
@@ -1009,13 +1282,13 @@
     </div>
   </div>
 
-  <!-- Modal: Dynamic Mock Lab & Builder (With Flexible Marking Scheme & Option Permutation) -->
+  <!-- Modal: Dynamic Mock Lab & Builder -->
   <div class="modal-overlay child-layer" id="modal-mock-builder">
     <div class="modal-window" style="max-width:720px; max-height:92vh;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
         <div>
           <h3 style="font-size:17px; font-weight:800; color:#38bdf8;">🧪 MOCK LAB &amp; GENERATOR</h3>
-          <span style="font-size:11px; color:var(--text-muted);">Dynamic Sampling • Custom Marking Scheme • Multi-Chapter Matrix</span>
+          <span style="font-size:11px; color:var(--text-muted);">Dynamic Sampling • Full-Fidelity Preview • Custom Marking Scheme</span>
         </div>
         <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-mock-builder').classList.remove('active')">✕</button>
       </div>
@@ -1027,6 +1300,7 @@
           <button class="anchor-pill" id="strat-pill-weak" onclick="CGL_OS.setMockStrategy('WEAKNESS', this)">WEAK</button>
           <button class="anchor-pill" id="strat-pill-unseen" onclick="CGL_OS.setMockStrategy('UNSEEN', this)">UNSEEN</button>
           <button class="anchor-pill" id="strat-pill-ignored" onclick="CGL_OS.setMockStrategy('IGNORED', this)">IGNORED</button>
+          <button class="anchor-pill" id="strat-pill-starred" onclick="CGL_OS.setMockStrategy('STARRED', this)">⭐ STARRED</button>
           <button class="anchor-pill" id="strat-pill-chapter" onclick="CGL_OS.setMockStrategy('CHAPTER', this)">CHAPTER</button>
           <button class="anchor-pill" id="strat-pill-sectional" onclick="CGL_OS.setMockStrategy('SECTIONAL', this)">SECTIONAL</button>
           <button class="anchor-pill" id="strat-pill-custom" onclick="CGL_OS.setMockStrategy('CUSTOM_BUILDER', this)">CUSTOM QUEUE</button>
@@ -1080,7 +1354,7 @@
         </div>
       </div>
 
-      <!-- Flexible Marking Scheme Selector (Presets + Custom Numeric Inputs) -->
+      <!-- Flexible Marking Scheme Selector -->
       <div style="background:rgba(56,189,248,0.04); border:1px solid rgba(56,189,248,0.2); border-radius:9px; padding:10px 12px; margin-bottom:12px;">
         <div style="display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:8px; align-items:end;">
           <div>
@@ -1122,7 +1396,7 @@
         </label>
       </div>
 
-      <!-- Custom Multi-Section Stack Wrap (Scoped Chapter & Duration Rows) -->
+      <!-- Custom Multi-Section Stack Wrap -->
       <div id="custom-sequence-stack-wrap" style="display:none; margin-bottom:14px; background:#070b14; padding:12px; border-radius:9px; border:1px solid var(--border-color);">
         <div class="card-title">
           <span>Configured Section Queue</span>
@@ -1145,7 +1419,7 @@
       </div>
 
       <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
-        <button class="btn btn-secondary" onclick="CGL_OS.previewMockSelection()">PREVIEW</button>
+        <button class="btn btn-cyan" style="font-weight:800;" onclick="CGL_OS.previewMockSelection()">👁️ PREVIEW &amp; CURATE</button>
         <button class="btn btn-emerald" style="font-weight:800;" onclick="CGL_OS.launchConfiguredDojo()">🧘 LAUNCH DOJO</button>
         <button class="btn" style="font-weight:800;" onclick="CGL_OS.launchConfiguredMock()">⚡ LAUNCH MOCK</button>
       </div>
@@ -1282,50 +1556,6 @@
         <button class="btn" style="padding:13px; font-size:13.5px; font-weight:800; box-shadow:0 0 16px rgba(37, 99, 235, 0.4);" onclick="CGL_OS.enterFullScreenReviewArena()">
           📖 Enter Review Arena
         </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal: Omni Research Drawer -->
-  <div class="modal-overlay" id="modal-omni-research">
-    <div class="modal-window" style="max-width:540px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
-        <div>
-          <h3 style="font-size:16px; font-weight:800; color:var(--accent-cyan);">Omni-Research Deep Dive</h3>
-          <span style="font-size:11px; color:var(--text-muted);" id="omni-research-query-sub">Query Context</span>
-        </div>
-        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="document.getElementById('modal-omni-research').classList.remove('active')">✕</button>
-      </div>
-
-      <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:10px; margin-bottom:12px; font-size:12px; line-height:1.5;">
-        <span style="color:var(--text-muted); font-size:10px; text-transform:uppercase; font-weight:700;">Active Context Payload:</span>
-        <div id="omni-research-prompt-preview" style="color:#fff; margin-top:4px; font-family:var(--font-mono); max-height:80px; overflow-y:auto;"></div>
-      </div>
-
-      <div style="display:flex; flex-direction:column; gap:8px;">
-        <a id="omni-link-wiki" class="btn btn-secondary" target="_blank" rel="noopener noreferrer" style="justify-content:flex-start; text-decoration:none;">
-          <span style="font-size:16px;">📖</span>
-          <div style="text-align:left;">
-            <div style="font-size:13px; font-weight:700;">Wikipedia Instant Query</div>
-            <div style="font-size:10px; color:var(--text-muted);">Authoritative historical events, constitutional articles, biology mechanisms</div>
-          </div>
-        </a>
-
-        <a id="omni-link-google" class="btn btn-secondary" target="_blank" rel="noopener noreferrer" style="justify-content:flex-start; text-decoration:none;">
-          <span style="font-size:16px;">🔍</span>
-          <div style="text-align:left;">
-            <div style="font-size:13px; font-weight:700;">Google Search &amp; Image Diagrams</div>
-            <div style="font-size:10px; color:var(--text-muted);">Visual proofs, SSC PYQ discussions, and architectural maps</div>
-          </div>
-        </a>
-
-        <a id="omni-link-wolfram" class="btn btn-secondary" target="_blank" rel="noopener noreferrer" style="justify-content:flex-start; text-decoration:none;">
-          <span style="font-size:16px;">⚡</span>
-          <div style="text-align:left;">
-            <div style="font-size:13px; font-weight:700;">Wolfram Alpha / Math Resolver</div>
-            <div style="font-size:10px; color:var(--text-muted);">Exact algebraic solutions, roots, and geometric curve plotting</div>
-          </div>
-        </a>
       </div>
     </div>
   </div>
@@ -1505,12 +1735,15 @@
         </div>
       </div>
 
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
-        <button class="btn btn-emerald" style="font-size:12.5px;" id="btn-launch-chapter-dojo">
-          🧘 Open Chapter in Dojo
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:12px;">
+        <button class="btn btn-purple" style="font-size:12px;" id="btn-launch-chapter-sheets">
+          📖 Chapter Sheets
         </button>
-        <button class="btn" style="font-size:12.5px;" id="btn-launch-chapter-blitz">
-          ⚡ 10-Q Timed Blitz
+        <button class="btn btn-emerald" style="font-size:12px;" id="btn-launch-chapter-dojo">
+          🧘 Open in Dojo
+        </button>
+        <button class="btn" style="font-size:12px;" id="btn-launch-chapter-blitz">
+          ⚡ 10-Q Blitz
         </button>
       </div>
 
@@ -1581,7 +1814,7 @@
     </div>
   </div>
 
-  <!-- Modal: Topic Dossier Editor -->
+  <!-- Modal: Topic Dossier Editor (Supports {{...}} Custom Recall Mask Snippet) -->
   <div class="modal-overlay" id="modal-concept-editor">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1613,15 +1846,16 @@
       </div>
 
       <div class="form-group">
-        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-          <label>Sheet Content (Markdown, KaTeX, Callouts, Tables)</label>
-          <div style="display:flex; gap:4px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; flex-wrap:wrap; gap:4px;">
+          <label style="margin-bottom:0;">Sheet Content (Markdown, KaTeX, {{Recall Masks}}, Tables)</label>
+          <div style="display:flex; gap:4px; flex-wrap:wrap;">
+            <button class="btn btn-purple" style="padding:2px 6px; font-size:10px;" onclick="CGL_OS.insertDossierSnippet('MASK')">+ {{Mask}}</button>
             <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px;" onclick="CGL_OS.insertDossierSnippet('FORMULA')">+ Formula</button>
             <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px;" onclick="CGL_OS.insertDossierSnippet('TRAP')">+ Trap</button>
             <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px;" onclick="CGL_OS.insertDossierSnippet('TABLE')">+ Table</button>
           </div>
         </div>
-        <textarea id="concept-edit-body" class="form-control" style="height:160px; font-family:var(--font-mono); font-size:12px;" placeholder="Full theorems, derivations, shortcuts, Markdown tables..."></textarea>
+        <textarea id="concept-edit-body" class="form-control" style="height:170px; font-family:var(--font-mono); font-size:12px;" placeholder="Full theorems, derivations, {{custom recall mask}}, Markdown tables..."></textarea>
       </div>
 
       <div class="form-group">
@@ -1634,7 +1868,7 @@
     </div>
   </div>
 
-  <!-- Modal: Multi-Concept GUI Question Editor (Complete with Difficulty & Tags) -->
+  <!-- Modal: Multi-Concept GUI Question Editor -->
   <div class="modal-overlay" id="modal-question-editor">
     <div class="modal-window">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1860,7 +2094,7 @@
   <!-- ==================== PUBLISHING-GRADE TYPESET PRINT ROOT ==================== -->
   <div id="print-sheet-root" style="display:none;" class="print-page"></div>
 
-  <!-- Master JavaScript Controller with Cache-Buster Parameter v6.0 -->
-  <script src="app.js?v=6.3"></script>
+  <!-- Master JavaScript Controller with Cache-Buster Parameter v7.2 -->
+  <script src="app.js?v=7.2"></script>
 </body>
 </html>
