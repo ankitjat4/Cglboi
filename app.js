@@ -1,125 +1,58 @@
 /**
  * ============================================================================
- * SSC CGL INTELLIGENCE OS â€” CORE ENGINE (ARCHITECTURE V5.1)
- * Master Application Controller â€” PART 1 OF 4
- * Architecture: Mobile-First WebAPK / Local-First PWA | IndexedDB Engine (v15)
+ * SSC CGL INTELLIGENCE OS — CORE ENGINE (ARCHITECTURE V6.0)
+ * Master Application Controller — PART 1 OF 2 (Sections 1 - 18)
+ * Architecture: Mobile + Pad/Tablet Responsive WebAPK | IndexedDB Engine (v16)
  * Candidate: Ankit Kumar (SSC CGL 2026 Tier 1 & Tier 2 Master Preparation)
  * ============================================================================
  */
 
-// Immediate Global Registration to prevent reference errors across script lifecycles
 window.CGL_OS = window.CGL_OS || {};
 
 const CGL_OS = (() => {
   /* ==========================================================================
-   * SECTION 1: PURE-ASCII CONTEXTUAL AUTO-HEALER & SAFE DOM SWEEPER
+   * SECTION 1: CITATION ARTIFACT SANITIZER & UNICODE MOJIBAKE HEALER
    * ========================================================================== */
+  function stripCitationArtifacts(str) {
+    if (!str || typeof str !== "string") return str;
+    return str
+      .replace(/\[span_\d+\]\((?:start|end)_span\)/g, "")
+      .replace(/\[cite:\s*[\d,\s]+\]/g, "");
+  }
+
   function cleanMojibake(str) {
-    if (!str || typeof str !== 'string') return str;
-    // Fast-path: return immediately if no corrupted sentinel bytes exist
-    if (!/[\u00F0\u00E2\u00C2]/.test(str)) return str;
-    let s = str;
+    if (!str || typeof str !== "string") return str;
+    let s = stripCitationArtifacts(str);
+    if (!/[\u00F0\u00E2\u00C2]/.test(s)) return s;
 
-    // 1. Contextual Action Healers (Strict: requires at least 1 corrupt byte prefix)
-    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\u0027\u00A5\uFFFD]+\s*Export/g, '\uD83D\uDCE5 Export'); // 📥 Export
-    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\u0027\u00A5\uFFFD]+\s*Re-attempt/g, '\uD83D\uDD01 Re-attempt'); // 🔁 Re-attempt
-    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\u0027\uFFFD]+\s*(Submit Final Section)/g, '\uD83D\uDD12 $1'); // 🔒 Submit Final Section
-    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\u0027\uFFFD]+\s*(End Section Early)/g, '\uD83D\uDD12 $1'); // 🔒 End Section Early
-    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\u0027\uFFFD]+\s*(Lock &amp; Submit|Lock & Submit|End &amp; Advance|End & Advance)/g, '\uD83D\uDD12 $1'); // 🔒 Lock ...
-    s = s.replace(/[\u00E2\u008F\u00B3\uFFFD]+\s*English/g, '\u23F3 English'); // ⏳ English
-    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\uFFFD]+\s*Solve/g, '\u26A1 Solve'); // ⚡ Solve
-    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\uFFFD]+\s*Drill/g, '\u26A1 Drill'); // ⚡ Drill
-    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\uFFFD]+\s*(Browse Sheets|Sheet:)/g, '\uD83D\uDCD6 $1'); // 📖 Browse Sheets / Sheet:
-    s = s.replace(/[\u00E2\u201C\u2713\uFFFD]+\s*CORRECT/g, '\u2713 CORRECT'); // ✓ CORRECT
-    s = s.replace(/[\u00E2\u2014\u2717\uFFFD]+\s*INCORRECT/g, '\u2717 INCORRECT'); // ✗ INCORRECT
-    s = s.replace(/[\u00E2\u26AA\uFFFD]+\s*UNATTEMPTED/g, '\u26AA UNATTEMPTED'); // ⚪ UNATTEMPTED
-    s = s.replace(/[\u00E2\u201C\u2713\uFFFD]+\s*(Valid Calculated Risk)/g, '\u2713 $1'); // ✓ Valid Calculated Risk
-    s = s.replace(/[\u00E2\u201C\u2713\uFFFD]+\s*(Zero weak chapters)/g, '\u2713 $1'); // ✓ Zero weak chapters
+    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\u0027\u00A5\uFFFD]+\s*Export/g, "\uD83D\uDCE5 Export");
+    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\u0027\u00A5\uFFFD]+\s*Re-attempt/g, "\uD83D\uDD01 Re-attempt");
+    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\u0027\uFFFD]+\s*(Submit Final Section)/g, "\uD83D\uDD12 $1");
+    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\u0027\uFFFD]+\s*(End Section Early)/g, "\uD83D\uDD12 $1");
+    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\u0027\uFFFD]+\s*(Lock &amp; Submit|Lock & Submit|End &amp; Advance|End & Advance)/g, "\uD83D\uDD12 $1");
+    s = s.replace(/[\u00E2\u008F\u00B3\uFFFD]+\s*(English|QA|REAS|GA|Quant|General)/g, "\u23F3 $1");
+    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\uFFFD]+\s*Solve/g, "\u26A1 Solve");
+    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\uFFFD]+\s*Drill/g, "\u26A1 Drill");
+    s = s.replace(/[\u00F0\u00E2\u00C2\u0178\u201D\u2019\uFFFD]+\s*(Browse Sheets|Sheet:)/g, "\uD83D\uDCD6 $1");
+    s = s.replace(/[\u00E2\u201C\u2713\uFFFD]+\s*CORRECT/g, "\u2713 CORRECT");
+    s = s.replace(/[\u00E2\u2014\u2717\uFFFD]+\s*INCORRECT/g, "\u2717 INCORRECT");
+    s = s.replace(/[\u00E2\u26AA\uFFFD]+\s*UNATTEMPTED/g, "\u26AA UNATTEMPTED");
 
-    // 2. Direct Pure-ASCII Symbol Equivalents
-    s = s.replace(/\u00E2\u0161\u00A1/g, '\u26A1'); // ⚡
-    s = s.replace(/\u00E2\u2021\u201E/g, '\u21C4'); // ⇄
-    s = s.replace(/\u00E2\u0153\u2022/g, '\u2715'); // ✕
-    s = s.replace(/\u00E2\u2013\u00BC/g, '\u25BC'); // ▼
-    s = s.replace(/\u00E2\u2013\u00B2/g, '\u25B2'); // ▲
-    s = s.replace(/\u00C2\u20AC\u00A2|\u00E2\u20AC\u00A2|\u00E2\u00A0\u00A2/g, '\u2022'); // •
-    s = s.replace(/\u00E2\u017E\u201D/g, '\u2794'); // ➔
-    s = s.replace(/\u00E2\u20AC\u201D/g, '\u2014'); // —
-    s = s.replace(/\u00C2\u0161/g, '');             // Âš artifact
-
-    // 3. Fallback Isolated Corrupt Sequences
-    s = s.replace(/\u00F0\u0178[\u201D\u2019\u0027]{1,3}/g, '\uD83D\uDD12'); // 🔒
-    s = s.replace(/\u00F0\u0178\u0094\u0092|\u00F0\u0178\u201D\u0092/g, '\uD83D\uDD12'); // 🔒
-    s = s.replace(/\u00F0\u0178\u0178\u00A2/g, '\uD83D\uDFE2'); // 🟢
-    s = s.replace(/\u00F0\u0178\u201D\u00B4/g, '\uD83D\uDD34'); // 🔴
-    s = s.replace(/\u00F0\u0178\u0178\u00A1/g, '\uD83D\uDFE1'); // 🟡
-    s = s.replace(/\u00F0\u0178\u0178\u00A0/g, '\uD83D\uDFE0'); // 🟠
-    s = s.replace(/\u00F0\u0178\u0178\u00A3/g, '\uD83D\uDFE3'); // 🟣
-    s = s.replace(/\u00F0\u0178\u201C\u0152/g, '\uD83D\uDCCC'); // 📌
-    s = s.replace(/\u00F0\u0178\u201C\u2013/g, '\uD83D\uDCD6'); // 📖
-    s = s.replace(/\u00F0\u0178\u201C\u00A5/g, '\uD83D\uDCE5'); // 📥
-    s = s.replace(/\u00F0\u0178\u201D\uFFFD/g, '\uD83D\uDD01'); // 🔁
-    s = s.replace(/\u00F0\u0178\u2014\u2018/g, '\uD83D\uDDD1'); // 🗑
-    s = s.replace(/\u00F0\u0178\u2019\u00A1/g, '\uD83D\uDCA1'); // 💡
-    s = s.replace(/\u00F0\u0178\u201C\u2039/g, '\uD83D\uDCCB'); // 📋
-    s = s.replace(/\u00F0\u0178\u017D\u00AF/g, '\uD83C\uDFAF'); // 🎯
-    s = s.replace(/\u00E2\u0161\u00A0\u00EF\u00B8\u008F|\u00E2\u0161\u00A0/g, '\u26A0\uFE0F'); // ⚠️
-    s = s.replace(/\u00E2\u008F\u00B3|\u00E2\u00A0\u00B3/g, '\u23F3'); // ⏳
-    s = s.replace(/\u00E2\u0161\u00AA/g, '\u26AA'); // ⚪
-    s = s.replace(/\u00E2\u0153\u201C/g, '\u2713'); // ✓
-    s = s.replace(/\u00E2\u0153\u2017/g, '\u2717'); // ✗
+    s = s.replace(/\u00E2\u0161\u00A1/g, "\u26A1");
+    s = s.replace(/\u00E2\u2021\u201E/g, "\u21C4");
+    s = s.replace(/\u00E2\u0153\u2022/g, "\u2715");
+    s = s.replace(/\u00E2\u2013\u00BC/g, "\u25BC");
+    s = s.replace(/\u00E2\u2013\u00B2/g, "\u25B2");
+    s = s.replace(/\u00C2\u20AC\u00A2|\u00E2\u20AC\u00A2|\u00E2\u00A0\u00A2/g, "\u2022");
+    s = s.replace(/\u00E2\u017E\u201D/g, "\u2794");
+    s = s.replace(/\u00E2\u20AC\u201D/g, "\u2014");
+    s = s.replace(/\u00C2\u0161/g, "");
+    s = s.replace(/\u00E2\u008F\u00B3|\u00E2\u00A0\u00B3/g, "\u23F3");
+    s = s.replace(/\u00E2\u0161\u00AA/g, "\u26AA");
+    s = s.replace(/\u00E2\u0153\u201C/g, "\u2713");
+    s = s.replace(/\u00E2\u0153\u2017/g, "\u2717");
 
     return s;
-  }
-
-  // Non-reentrant DOM Sweeper
-  let isSweepingMojibake = false;
-
-  function sweepMojibake(rootNode) {
-    if (!rootNode || isSweepingMojibake) return;
-    isSweepingMojibake = true;
-    try {
-      if (rootNode.nodeType === 3 /* SHOW_TEXT */) {
-        if (rootNode.nodeValue && /[\u00F0\u00E2\u00C2]/.test(rootNode.nodeValue)) {
-          const fixed = cleanMojibake(rootNode.nodeValue);
-          if (fixed !== rootNode.nodeValue) rootNode.nodeValue = fixed;
-        }
-        return;
-      }
-      const walker = document.createTreeWalker(rootNode, 4 /* SHOW_TEXT */, null, false);
-      let textNode;
-      while ((textNode = walker.nextNode())) {
-        if (textNode.nodeValue && /[\u00F0\u00E2\u00C2]/.test(textNode.nodeValue)) {
-          const fixed = cleanMojibake(textNode.nodeValue);
-          if (fixed !== textNode.nodeValue) textNode.nodeValue = fixed;
-        }
-      }
-    } finally {
-      isSweepingMojibake = false;
-    }
-  }
-
-  // Scoped MutationObserver: sweeps newly mounted elements only; ignores characterData & eliminates intervals
-  if (typeof window !== 'undefined' && window.MutationObserver) {
-    const mojibakeObserver = new MutationObserver(mutations => {
-      if (isSweepingMojibake) return;
-      for (let i = 0; i < mutations.length; i++) {
-        const m = mutations[i];
-        if (m.type === 'childList') {
-          for (let j = 0; j < m.addedNodes.length; j++) {
-            sweepMojibake(m.addedNodes[j]);
-          }
-        }
-      }
-    });
-
-    document.addEventListener('DOMContentLoaded', () => {
-      sweepMojibake(document.body);
-      mojibakeObserver.observe(document.body, {
-        childList: true,
-        subtree: true
-      });
-    });
   }
 
   function safeBind(id, event, handler) {
@@ -151,21 +84,12 @@ const CGL_OS = (() => {
     if (el) el.style.display = displayStyle;
   }
 
-  function safeGetElement(id) {
-    return document.getElementById(id);
-  }
-
-
   /* ==========================================================================
    * SECTION 2: RESILIENT 3-TIER DOWNLOAD PIPELINE (WEBAPK / WEBVIEW SHIELD)
-   * Tier 1: Native Web Share API (navigator.share with File payload)
-   * Tier 2: Base64 Data URI programmatic download link
-   * Tier 3: On-screen copy modal buffer with 1-click clipboard transfer
    * ========================================================================== */
   let fallbackDownloadPayload = "";
 
   async function downloadFileResilient(filename, mimeType, contentString) {
-    // TIER 1: Native Web Share API (Preferred for Android WebAPKs / Chrome PWAs)
     if (navigator.share && navigator.canShare) {
       try {
         const file = new File([contentString], filename, { type: mimeType });
@@ -178,31 +102,28 @@ const CGL_OS = (() => {
           return { method: "SHARE_API", success: true };
         }
       } catch (shareErr) {
-        if (shareErr.name !== "AbortError") {
-          console.warn("Native Web Share failed, falling back to Data URI:", shareErr);
-        } else {
+        if (shareErr.name === "AbortError") {
           return { method: "SHARE_ABORTED", success: false };
         }
       }
     }
 
-    // TIER 2: Base64 Data URI Programmatic Download Link
     try {
-      const base64Encoded = btoa(unescape(encodeURIComponent(contentString)));
-      const dataUri = `data:${mimeType};base64,${base64Encoded}`;
+      const blob = new Blob([contentString], { type: mimeType });
+      const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
-      anchor.href = dataUri;
+      anchor.href = url;
       anchor.download = filename;
       anchor.style.display = "none";
       document.body.appendChild(anchor);
       anchor.click();
       document.body.removeChild(anchor);
-      return { method: "DATA_URI", success: true };
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+      return { method: "BLOB_URL", success: true };
     } catch (uriErr) {
-      console.warn("Base64 Data URI download failed, opening Tier 3 buffer:", uriErr);
+      console.warn("Blob download failed, opening Tier 3 buffer:", uriErr);
     }
 
-    // TIER 3: On-Screen Textarea Modal Buffer
     fallbackDownloadPayload = contentString;
     safeSetText("download-fallback-title", `File: ${filename}`);
     safeSetValue("download-fallback-text", contentString);
@@ -224,14 +145,14 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * SECTION 3: UNIVERSAL ENGAGEMENT & ACTIVE STUDY TIME TELEMETRY TRACKER
-   * Accumulates live active study time across Dojo, Practice Lab, Living
-   * Compendium, and Vault with a strict 60-second idle cutoff.
+   * SECTION 3: ACCURATE UNIVERSAL ENGAGEMENT & STUDY TIME TRACKER
+   * Fixed: Separates unsynced delta from persisted base so study time is
+   * never double-counted within an active session.
    * ========================================================================== */
-  let activeStudyTimeSeconds = 0;
+  let unsyncedStudySeconds = 0;
   let lastUserInteractionEpoch = Date.now();
   let universalEngagementInterval = null;
-  const IDLE_CUTOFF_MS = 60000; // 60 seconds
+  const IDLE_CUTOFF_MS = 60000;
 
   function initUniversalEngagementTracker() {
     const registerInteraction = () => {
@@ -246,12 +167,10 @@ const CGL_OS = (() => {
 
     universalEngagementInterval = setInterval(async () => {
       const now = Date.now();
-      // Only count active time if an active mock is NOT already ticking its own clock
       const isExamRunning = activeExam && !activeExam.isPaused && !activeExam.isReviewMode;
       if (!isExamRunning && (now - lastUserInteractionEpoch < IDLE_CUTOFF_MS)) {
-        activeStudyTimeSeconds++;
-        // Periodic sync to IndexedDB store_config every 30 seconds
-        if (activeStudyTimeSeconds % 30 === 0) {
+        unsyncedStudySeconds++;
+        if (unsyncedStudySeconds >= 30) {
           await persistEngagementTelemetry();
         }
       }
@@ -259,30 +178,45 @@ const CGL_OS = (() => {
   }
 
   async function persistEngagementTelemetry() {
+    if (unsyncedStudySeconds <= 0) return;
+    const deltaToCommit = unsyncedStudySeconds;
+    unsyncedStudySeconds = 0;
     try {
       const currentStored = await getRecord("store_config", "telemetry_active_study_time_sec");
       const baseSec = currentStored && typeof currentStored.value === "number" ? currentStored.value : 0;
       await putRecord("store_config", {
         key: "telemetry_active_study_time_sec",
-        value: baseSec + 30
+        value: baseSec + deltaToCommit
       });
     } catch (e) {
-      // Non-blocking telemetry sync
+      unsyncedStudySeconds += deltaToCommit;
     }
   }
 
   /* ==========================================================================
-   * SECTION 4: CONSTANTS, DB CONFIG & RUNTIME EXECUTION STATE
+   * SECTION 4: CONSTANTS, SUBJECT PAR MATRIX & RUNTIME EXECUTION STATE
    * ========================================================================== */
   const DB_NAME = "cgl_os_db";
   const DB_VERSION = 16;
   let db = null;
   let dbInitPromise = null;
 
+  // Subject-Calibrated Par Time & Trap Threshold Matrix (Seconds)
+  let SUBJECT_PAR_CONFIG = {
+    GA:   { parSec: 14, trapSec: 35, masterySec: 8 },
+    ENG:  { parSec: 20, trapSec: 45, masterySec: 10 },
+    REAS: { parSec: 35, trapSec: 70, masterySec: 15 },
+    QA:   { parSec: 50, trapSec: 95, masterySec: 20 }
+  };
+
+  function getSubjectThresholds(subKey) {
+    return SUBJECT_PAR_CONFIG[subKey] || { parSec: 40, trapSec: 85, masterySec: 12 };
+  }
+
   // Active Timed Exam & Review Arena State
   let activeExam = null;
   let examTimerInterval = null;
-  let questionTimerInterval = null;
+  let lastTimerTickEpoch = 0;
   let dojoExam = null;
   let activeReviewAttempt = null;
 
@@ -302,18 +236,19 @@ const CGL_OS = (() => {
   let activeCompSheetIndex = 0;
   let currentCompSheets = [];
   let currentConceptImageBase64 = "";
+  let compendiumRecallMode = false;
 
-  // Universal Flashcard Vault State (Tab 4)
-  let currentFcFrontImgBase64 = "";
-  let currentFcBackImgBase64 = "";
-  let activeVaultDeck = [];
-  let activeVaultIndex = 0;
-  let activeVaultFlipped = false;
-  let vaultSearchQuery = "";
-  let vaultActiveTag = "ALL";
+  // Reader Typography Scale
+  let readerFontScale = 1.0;
+
+  // Rough Scratchpad Canvas State
+  let scratchpadActive = false;
+  let scratchpadMode = "PEN";
+  let scratchpadDrawing = false;
+  let scratchpadStrokes = [];
+  let currentStroke = [];
 
   // Synapse Knowledge Explorer State
-  let synapseTreeBuilt = false;
   let synapseCurrentLevel = "SUBJECTS";
   let synapseActiveSubject = null;
   let synapseActiveChapter = null;
@@ -333,6 +268,7 @@ const CGL_OS = (() => {
     "FORMULA_AMNESIA",
     "CONCEPT_VOID",
     "RUSHED_PANIC",
+    "PANIC_SLIP",
     "TIME_TRAP_Q4",
     "SECOND_GUESS_BLUNDER",
     "SPEED_MISREAD",
@@ -427,10 +363,8 @@ const CGL_OS = (() => {
     }
   };
 
-  // Authoritative Runtime Taxonomy Cache
   let TAXONOMY = JSON.parse(JSON.stringify(DEFAULT_TAXONOMY));
 
-  // Foundational Pre-Seeded Question Bank with Passage-Set Schema
   const SEED_QUESTIONS = [
     {
       id: "q_cgl_ga_polity_014",
@@ -450,7 +384,9 @@ const CGL_OS = (() => {
       correctIndex: 0,
       explanation: "Article 124 establishes the Supreme Court of India, detailing its composition, appointment of judges, and jurisdictional authority.",
       source: "PYQ Tier-1",
+      difficulty: "EASY",
       tags: ["Polity", "SupremeCourt", "Articles"],
+      bookmarked: false,
       annotation: ""
     },
     {
@@ -471,7 +407,9 @@ const CGL_OS = (() => {
       correctIndex: 1,
       explanation: "Opposite angles sum to $180^\\circ$: $(2x + 10) + (3x + 20) = 180 \\implies 5x + 30 = 180 \\implies 5x = 150 \\implies x = 30^\\circ$. Therefore, $\\angle A = 2(30) + 10 = 70^\\circ$.",
       source: "PYQ Tier-1",
+      difficulty: "MEDIUM",
       tags: ["Geometry", "CyclicQuadrilateral", "Formula"],
+      bookmarked: false,
       annotation: ""
     },
     {
@@ -497,7 +435,9 @@ const CGL_OS = (() => {
       correctIndex: 1,
       explanation: "The text directly states that normal monsoons restrain food inflation and stabilize fiscal balances; erratic monsoons compromise these cushions.",
       source: "PYQ Tier-1 Mock Archetype",
+      difficulty: "MEDIUM",
       tags: ["RC", "Inference", "PassageSet"],
+      bookmarked: false,
       annotation: ""
     },
     {
@@ -523,7 +463,9 @@ const CGL_OS = (() => {
       correctIndex: 1,
       explanation: "Juxtaposed means placing contrasting elements side-by-side (here, localized droughts side-by-side with urban cloudbursts).",
       source: "PYQ Tier-1 Mock Archetype",
+      difficulty: "EASY",
       tags: ["RC", "Vocabulary", "PassageSet"],
+      bookmarked: false,
       annotation: ""
     },
     {
@@ -544,7 +486,9 @@ const CGL_OS = (() => {
       correctIndex: 0,
       explanation: "Combined rate $= \\frac{1}{12} + \\frac{1}{18} = \\frac{5}{36}\\text{ tank/hour}$. Total time $= \\frac{36}{5} = 7.2\\text{ hours}$.",
       source: "PYQ Tier-1",
+      difficulty: "EASY",
       tags: ["Pipes", "CombinedRate"],
+      bookmarked: false,
       annotation: ""
     },
     {
@@ -565,7 +509,9 @@ const CGL_OS = (() => {
       correctIndex: 1,
       explanation: "Pattern: $n : n(n + 1)$. Here, $14 \\times 15 = 210$. Similarly, $18 \\times 19 = 342$.",
       source: "PYQ Tier-1",
+      difficulty: "EASY",
       tags: ["Reasoning", "Analogy"],
+      bookmarked: false,
       annotation: ""
     },
     {
@@ -586,12 +532,13 @@ const CGL_OS = (() => {
       correctIndex: 0,
       explanation: "Incenter formula: $\\angle BIC = 90^\\circ + \\frac{\\angle A}{2} = 90^\\circ + 34^\\circ = 124^\\circ$.",
       source: "PYQ Tier-1",
+      difficulty: "EASY",
       tags: ["Geometry", "Incenter", "Formula"],
+      bookmarked: false,
       annotation: ""
     }
   ];
 
-  // Pre-Seeded Topic Dossiers
   const SEED_TOPIC_DOSSIERS = [
     {
       id: "top_qa_geo_triangles",
@@ -609,7 +556,7 @@ const CGL_OS = (() => {
       chapter: "QA_GEOMETRY",
       title: "Circles & Tangents",
       subtitle: "Secants, Power of Point & Tangent Lengths",
-      content: "### Tangent-Secant Theorem (Power of a Point)\nFrom external point $P$, if $PT$ is tangent and $PAB$ is secant:\n$$PT^2 = PA \\cdot PB$$\n\n### Common Tangent Lengths\nFor radii $r_1, r_2$ and center separation $d$:\nâ€¢ **Direct Common Tangent (DCT):**\n$$DCT = \\sqrt{d^2 - (r_1 - r_2)^2}$$\nâ€¢ **Transverse Common Tangent (TCT):**\n$$TCT = \\sqrt{d^2 - (r_1 + r_2)^2}$$\n\n> [!trap]\n> **Externally Touching Circles:**\n> When $d = r_1 + r_2$, the transverse tangent drops to $0$ and $DCT = 2\\sqrt{r_1 r_2}$.",
+      content: "### Tangent-Secant Theorem (Power of a Point)\nFrom external point $P$, if $PT$ is tangent and $PAB$ is secant:\n$$PT^2 = PA \\cdot PB$$\n\n### Common Tangent Lengths\nFor radii $r_1, r_2$ and center separation $d$:\n* **Direct Common Tangent (DCT):**\n$$DCT = \\sqrt{d^2 - (r_1 - r_2)^2}$$\n* **Transverse Common Tangent (TCT):**\n$$TCT = \\sqrt{d^2 - (r_1 + r_2)^2}$$\n\n> [!trap]\n> **Externally Touching Circles:**\n> When $d = r_1 + r_2$, the transverse tangent drops to $0$ and $DCT = 2\\sqrt{r_1 r_2}$.",
       imageUrl: "",
       timestamp: Date.now()
     },
@@ -619,20 +566,21 @@ const CGL_OS = (() => {
       chapter: "GA_POLITY",
       title: "Supreme Court & Writ Jurisdiction",
       subtitle: "Articles 32, 124, 131, 226",
-      content: "### Constitutional Architecture\nâ€¢ **Article 124:** Establishment and constitution of the Supreme Court of India.\nâ€¢ **Article 131:** Original jurisdiction of the Supreme Court (Federal inter-state disputes).\nâ€¢ **Article 143:** Advisory jurisdiction on Presidential references.\nâ€¢ **Article 226:** High Courts writ jurisdiction for Fundamental and statutory rights.",
+      content: "### Constitutional Architecture\n* **Article 124:** Establishment and constitution of the Supreme Court of India.\n* **Article 131:** Original jurisdiction of the Supreme Court (Federal inter-state disputes).\n* **Article 143:** Advisory jurisdiction on Presidential references.\n* **Article 226:** High Courts writ jurisdiction for Fundamental and statutory rights.",
       imageUrl: "",
       timestamp: Date.now()
     }
   ];
 
-  // Pre-Seeded Saved Mock Blueprints
   const SEED_SAVED_MOCKS = [
     {
       id: "bp_tier1_standard",
       type: "DYNAMIC_BLUEPRINT",
-      title: "Tier 1 Standard Full Mock",
+      title: "Tier 1 Standard Full Mock (100 Qs)",
       isSectionLocked: true,
-      selectionRule: { mode: "BALANCED", count: 100 },
+      positiveMarks: 2.0,
+      negativeMarks: 0.5,
+      selectionRule: { mode: "RANDOM", count: 100, positiveMarks: 2.0, negativeMarks: 0.5 },
       sections: [
         { id: 1, subject: "REAS", count: 25, durationMin: 15 },
         { id: 2, subject: "GA", count: 25, durationMin: 15 },
@@ -646,63 +594,13 @@ const CGL_OS = (() => {
       type: "DYNAMIC_BLUEPRINT",
       title: "QA Speed Blitz (25 Qs - 15 Mins)",
       isSectionLocked: false,
-      selectionRule: { subject: "QA", mode: "RANDOM", count: 25 },
+      positiveMarks: 2.0,
+      negativeMarks: 0.5,
+      selectionRule: { subject: "QA", mode: "RANDOM", count: 25, positiveMarks: 2.0, negativeMarks: 0.5 },
       sections: [
         { id: 1, subject: "QA", count: 25, durationMin: 15 }
       ],
       questions: null
-    }
-  ];
-
-  // Pre-Seeded Flashcards
-  const SEED_FLASHCARDS = [
-    {
-      id: "fc_qa_geo_001",
-      cardType: "BASIC_EXTRA",
-      subject: "QA",
-      chapter: "QA_GEOMETRY",
-      front: "In $\\triangle ABC$ with incenter $I$, what is the formula for $\\angle BIC$ in terms of vertex angle $\\angle A$?",
-      frontImageUrl: "",
-      back: "$$\\angle BIC = 90^\\circ + \\frac{\\angle A}{2}$$",
-      backImageUrl: "",
-      extra: "For excenter formed by external bisectors: $\\angle BEC = 90^\\circ - \\frac{\\angle A}{2}$.",
-      tags: ["Formula", "Incenter", "Geometry"]
-    },
-    {
-      id: "fc_qa_geo_002",
-      cardType: "BASIC_EXTRA",
-      subject: "QA",
-      chapter: "QA_GEOMETRY",
-      front: "What is the length formula for a Direct Common Tangent ($DCT$) between two circles of radii $r_1, r_2$ and center separation $d$?",
-      frontImageUrl: "",
-      back: "$$DCT = \\sqrt{d^2 - (r_1 - r_2)^2}$$",
-      backImageUrl: "",
-      extra: "Transverse Common Tangent ($TCT$) uses $(r_1 + r_2)^2$. $DCT$ is always strictly longer than $TCT$.",
-      tags: ["Formula", "Circles", "Geometry"]
-    },
-    {
-      id: "fc_ga_pol_001",
-      cardType: "BASIC",
-      subject: "GA",
-      chapter: "GA_POLITY",
-      front: "Which Article establishes and constitutes the Supreme Court of India?",
-      frontImageUrl: "",
-      back: "**Article 124** of the Constitution of India.",
-      backImageUrl: "",
-      extra: "Article 129 establishes SC as Court of Record. Article 131 defines Original Jurisdiction.",
-      tags: ["Polity", "Articles", "Judiciary"]
-    },
-    {
-      id: "fc_eng_ows_001",
-      cardType: "CLOZE",
-      subject: "ENG",
-      chapter: "ENG_OWS",
-      front: "A person who is unable to pay their debts is officially termed {{c1::insolvent}} or bankrupt.",
-      frontImageUrl: "",
-      back: "Synonym: Indigent, Bankrupt. Antonym: Solvent, Affluent.",
-      backImageUrl: "",
-      extra: "High-frequency in SSC CGL Tier 1 shifts.",
-      tags: ["Vocabulary", "OWS"]
     }
   ];
 
@@ -751,13 +649,13 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * SECTION 7: TYPESETTER, MULTI-LINE CALLOUTS & KATEX ISOLATION
+   * SECTION 7: TYPESETTER, MULTI-LINE CALLOUTS, ITALICS & KATEX ISOLATION
    * ========================================================================== */
   function formatRichText(str) {
     if (!str) return "";
-    let out = String(str);
+    let out = stripCitationArtifacts(cleanMojibake(String(str)));
 
-    // 1. Isolate LaTeX math into protected tokens so markdown and <br> cannot corrupt equations
+    // 1. Isolate LaTeX math into protected tokens
     const mathTokens = [];
     out = out.replace(/\$\$([\s\S]*?)\$\$/g, (match, formula) => {
       mathTokens.push({ display: true, formula: formula.trim() });
@@ -768,74 +666,86 @@ const CGL_OS = (() => {
       return `___CGL_MATH_${mathTokens.length - 1}___`;
     });
 
-    // 2. Multi-Line Callout Blocks (Support multi-line [!trap], [!formula], [!tip])
+    // 2. Escape stray < and > outside blockquote directives
+    out = out.replace(/<(?![\/!]?[a-zA-Z])/g, "&lt;");
+
+    // 3. Multi-Line Callout Blocks ([!trap], [!formula], [!tip])
     out = out.replace(/(?:^|\n)>\s*\[!trap\]([^\n]*(?:\n>[^\n]*)*)/gi, (match, body) => {
       const cleanBody = body.replace(/^\s*>\s?/gm, "").trim();
-      return `<div class="callout-box trap"><b>âš ï¸ Cognitive Trap:</b><br>${cleanBody}</div>`;
+      return `<div class="callout-box trap"><b>\u26A0\uFE0F Cognitive Trap:</b><br>${cleanBody}</div>`;
     });
     out = out.replace(/(?:^|\n)>\s*\[!formula\]([^\n]*(?:\n>[^\n]*)*)/gi, (match, body) => {
       const cleanBody = body.replace(/^\s*>\s?/gm, "").trim();
-      return `<div class="callout-box formula"><b>âš¡ Formula / Identity:</b><br>${cleanBody}</div>`;
+      return `<div class="callout-box formula"><b>\u26A1 Formula / Identity:</b><br>${cleanBody}</div>`;
     });
     out = out.replace(/(?:^|\n)>\s*\[!tip\]([^\n]*(?:\n>[^\n]*)*)/gi, (match, body) => {
       const cleanBody = body.replace(/^\s*>\s?/gm, "").trim();
-      return `<div class="callout-box"><b>ðŸ’¡ Tactical Tip:</b><br>${cleanBody}</div>`;
+      return `<div class="callout-box"><b>\uD83D\uDCA1 Tactical Tip:</b><br>${cleanBody}</div>`;
     });
 
-    // 3. Headings with Anchors for Sheet TOC Generation
+    // 4. Headings with Anchors for Sheet TOC Generation
+    out = out.replace(/^#### (.*$)/gim, '<h4 style="font-size:14px; font-weight:800; color:var(--accent-purple-light); margin:10px 0 4px 0;">$1</h4>');
     out = out.replace(/^### (.*$)/gim, (match, title) => {
-      const anchor = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      return `<h3 id="sec-${anchor}" class="comp-heading-h3" style="font-size:15px; font-weight:700; color:var(--accent-cyan); margin:12px 0 4px 0;">${title}</h3>`;
+      const anchor = title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      return `<h3 id="sec-${anchor}" class="comp-heading-h3" style="font-size:15.5px; font-weight:800; color:var(--accent-cyan); margin:14px 0 5px 0;">${title}</h3>`;
     });
     out = out.replace(/^## (.*$)/gim, (match, title) => {
-      const anchor = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      return `<h2 id="sec-${anchor}" class="comp-heading-h2" style="font-size:17px; font-weight:800; color:#fff; margin:14px 0 6px 0;">${title}</h2>`;
+      const anchor = title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      return `<h2 id="sec-${anchor}" class="comp-heading-h2" style="font-size:17.5px; font-weight:800; color:#fff; margin:16px 0 6px 0;">${title}</h2>`;
     });
-    out = out.replace(/^# (.*$)/gim, '<h1 class="comp-heading-h1" style="font-size:19px; font-weight:800; color:#fff; margin:16px 0 8px 0;">$1</h1>');
-    out = out.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    out = out.replace(/^# (.*$)/gim, '<h1 class="comp-heading-h1" style="font-size:19.5px; font-weight:800; color:#fff; margin:18px 0 8px 0;">$1</h1>');
 
-    // 4. Assertions & Reasons
+    // 5. Bold, Italics & Inline Code
+    out = out.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    out = out.replace(/(?<!\*)\*([^\*\n]+)\*(?!\*)/g, "<em>$1</em>");
+    out = out.replace(/`([^`\n]+)`/g, '<code style="background:#111828; color:var(--accent-cyan); padding:1px 5px; border-radius:4px; font-family:var(--font-mono); font-size:0.92em;">$1</code>');
+
+    // 6. Assertions & Reasons
     out = out.replace(/(?:Assertion\s*\(?A\)?|Assertion\s*:)\s*([^\n]+)/gi, '<div class="q-assertion-box"><b>[A] Assertion:</b> $1</div>');
     out = out.replace(/(?:Reason\s*\(?R\)?|Reason\s*:)\s*([^\n]+)/gi, '<div class="q-reason-box"><b>[R] Reason:</b> $1</div>');
 
-    // 5. Syllogisms & Structured Item Rows
+    // 7. Syllogisms & Structured Item Rows (Clean \u2022 Bullet Support)
     out = out.replace(/(?:Statements?\s*:)\s*([\s\S]+?)(?=(?:Conclusions?\s*:|Conclusions?|$))/i, (match, body) => {
-      const items = body.split(/(?:\(\d+\)|\(\w+\)|\d+\.|\nâ€¢|\n-)/).map(s => s.trim()).filter(Boolean);
+      const items = body.split(/(?:\(\d+\)|\(\w+\)|\d+\.|\n\u2022|\n\*|\n-)/).map(s => s.trim()).filter(Boolean);
       const rows = items.map((item, idx) => `
         <div class="q-itemized-row">
           <span class="q-item-num">(${idx + 1})</span>
           <span>${item}</span>
         </div>
-      `).join('');
-      return `<div class="q-structured-block"><div class="q-block-header"><span>ðŸ“‹ Statements:</span></div>${rows}</div>`;
+      `).join("");
+      return `<div class="q-structured-block"><div class="q-block-header"><span>\uD83D\uDCCB Statements:</span></div>${rows}</div>`;
     });
 
     out = out.replace(/(?:Conclusions?\s*:)\s*([\s\S]+?)(?=(?:\n\n[A-Z]|Options?|$))/i, (match, body) => {
       const roman = ["I", "II", "III", "IV", "V", "VI"];
-      const items = body.split(/(?:\(\d+\)|\(\w+\)|\[\w+\]|\d+\.|\nâ€¢|\n-)/).map(s => s.trim()).filter(Boolean);
+      const items = body.split(/(?:\(\d+\)|\(\w+\)|\[\w+\]|\d+\.|\n\u2022|\n\*|\n-)/).map(s => s.trim()).filter(Boolean);
       const rows = items.map((item, idx) => `
         <div class="q-itemized-row">
           <span class="q-item-num">[${roman[idx] || (idx + 1)}]</span>
           <span>${item}</span>
         </div>
-      `).join('');
-      return `<div class="q-structured-block" style="margin-top:6px;"><div class="q-block-header"><span style="color:var(--accent-purple-light);">ðŸŽ¯ Conclusions:</span></div>${rows}</div>`;
+      `).join("");
+      return `<div class="q-structured-block" style="margin-top:6px;"><div class="q-block-header"><span style="color:var(--accent-purple-light);">\uD83C\uDFAF Conclusions:</span></div>${rows}</div>`;
     });
 
-    // 6. Responsive Markdown Tables
+    // 8. Responsive Markdown Tables
     out = out.replace(/(\|[^\n]+\|\r?\n)((?:\|:?[-]+:?)+\|)(\r?\n(?:\|[^\n]+\|\r?\n?)+)/g, (match, headerLine, alignLine, bodyLines) => {
-      const headers = headerLine.trim().split('|').filter(c => c.trim().length > 0).map(c => `<th>${c.trim()}</th>`).join('');
-      const rows = bodyLines.trim().split('\n').map(row => {
-        const cells = row.trim().split('|').filter(c => c.trim().length > 0).map(c => `<td>${c.trim()}</td>`).join('');
+      const headers = headerLine.trim().split("|").filter(c => c.trim().length > 0).map(c => `<th>${c.trim()}</th>`).join("");
+      const rows = bodyLines.trim().split("\n").map(row => {
+        const cells = row.trim().split("|").filter(c => c.trim().length > 0).map(c => `<td>${c.trim()}</td>`).join("");
         return `<tr>${cells}</tr>`;
-      }).join('');
+      }).join("");
       return `<div class="table-responsive"><table class="document-table"><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table></div>`;
     });
 
-    // 7. Convert regular linebreaks to <br> outside math tokens
-    out = out.replace(/\n/g, "<br>");
+    // 9. Markdown Bullet Lists (*, -, •)
+    out = out.replace(/^(?:\s*[\*\-\u2022]\s+)(.+)$/gm, '<div class="md-bullet-row"><span class="md-bullet-dot">\u2022</span><span>$1</span></div>');
 
-    // 8. Re-inject KaTeX math tokens safely
+    // 10. Convert regular linebreaks to <br> outside block tags
+    out = out.replace(/\n/g, "<br>");
+    out = out.replace(/(<\/div>|<\/h1>|<\/h2>|<\/h3>|<\/h4>)<br>/g, "$1");
+
+    // 11. Re-inject KaTeX math tokens safely
     out = out.replace(/___CGL_MATH_(\d+)___/g, (match, index) => {
       const item = mathTokens[Number(index)];
       if (!item) return "";
@@ -855,12 +765,10 @@ const CGL_OS = (() => {
     return out;
   }
 
-  function convertKatexToAnkiMathJax(str) {
-    if (!str) return "";
-    let out = String(str);
-    out = out.replace(/\$\$([\s\S]*?)\$\$/g, "\\[$1\\]");
-    out = out.replace(/\$([^\$\n]+?)\$/g, "\\($1\\)");
-    return out;
+  function adjustReaderFontScale(delta) {
+    readerFontScale = Math.min(1.35, Math.max(0.84, parseFloat((readerFontScale + delta).toFixed(2))));
+    document.documentElement.style.setProperty("--reader-font-scale", String(readerFontScale));
+    putRecord("store_config", { key: "reader_font_scale", value: readerFontScale });
   }
 
   function compressImageFile(file) {
@@ -889,7 +797,6 @@ const CGL_OS = (() => {
     });
   }
 
-  // --- End of Part 1 of 4 ---
   /* ==========================================================================
    * SECTION 8: LIFO NAVIGATION STACK & MODAL LAYER ROUTER
    * ========================================================================== */
@@ -922,7 +829,7 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * SECTION 9: HARDENED INDEXEDDB ENGINE (NON-DESTRUCTIVE RE-SEEDING)
+   * SECTION 9: HARDENED INDEXEDDB ENGINE & VAULT DECOMMISSIONING PURGE
    * ========================================================================== */
   function getDB() {
     if (db) return Promise.resolve(db);
@@ -932,7 +839,6 @@ const CGL_OS = (() => {
       const req = indexedDB.open(DB_NAME, DB_VERSION);
 
       req.onblocked = () => {
-        console.warn("Database upgrade temporarily blocked. Closing pending connection.");
         if (db) { db.close(); db = null; }
       };
 
@@ -955,35 +861,6 @@ const CGL_OS = (() => {
             d.createObjectStore(s.name, { keyPath: s.key });
           }
         });
-
-        // Migration from legacy store_vault to store_flashcards if present
-        if (d.objectStoreNames.contains("store_vault") && d.objectStoreNames.contains("store_flashcards")) {
-          try {
-            const tx = e.target.transaction;
-            const vaultStore = tx.objectStore("store_vault");
-            const flashcardStore = tx.objectStore("store_flashcards");
-            const getAllReq = vaultStore.getAll();
-            getAllReq.onsuccess = () => {
-              const records = getAllReq.result || [];
-              records.forEach(v => {
-                flashcardStore.put({
-                  id: `fc_migrated_${v.questionId}`,
-                  cardType: "BASIC_EXTRA",
-                  subject: v.subject || "QA",
-                  chapter: v.chapter || "QA_GENERAL",
-                  front: `Vault Migrated Trap (${v.errorTag || 'UNCLASSIFIED'})`,
-                  frontImageUrl: "",
-                  back: `Question Reference ID: ${v.questionId}`,
-                  backImageUrl: "",
-                  extra: `Migrated error record: ${v.errorTag || 'UNCLASSIFIED'}`,
-                  tags: ["MigratedVault", v.errorTag || "UNCLASSIFIED"]
-                });
-              });
-            };
-          } catch (migErr) {
-            console.warn("Migration notice:", migErr);
-          }
-        }
       };
 
       req.onsuccess = async (e) => {
@@ -1008,20 +885,13 @@ const CGL_OS = (() => {
     return dbInitPromise;
   }
 
-  // Unified Transaction Harness
   async function runTx(storeNames, mode, callback) {
     const database = await getDB();
     return new Promise((resolve, reject) => {
       const tx = database.transaction(storeNames, mode);
       tx.oncomplete = () => resolve(true);
-      tx.onerror = (e) => {
-        console.error("runTx transaction error:", tx.error || e);
-        reject(tx.error || e);
-      };
-      tx.onabort = (e) => {
-        console.error("runTx transaction aborted:", tx.error || e);
-        reject(tx.error || e);
-      };
+      tx.onerror = (e) => reject(tx.error || e);
+      tx.onabort = (e) => reject(tx.error || e);
       try {
         callback(tx);
       } catch (err) {
@@ -1030,14 +900,20 @@ const CGL_OS = (() => {
     });
   }
 
-  /**
-   * SEED DATA ARCHITECTURAL GUARANTEE:
-   * Do NOT re-merge DEFAULT_TAXONOMY into savedTaxonomyConfig.
-   * If store_config.system_taxonomy already exists, it is the 100% authoritative master.
-   * User deletions and modifications are strictly preserved.
-   */
   async function seedData(database) {
     const d = database || await getDB();
+
+    // User Decision #1: Wipe all records from decommissioned store_flashcards
+    if (d.objectStoreNames.contains("store_flashcards")) {
+      try {
+        await new Promise((res) => {
+          const tx = d.transaction(["store_flashcards"], "readwrite");
+          tx.objectStore("store_flashcards").clear();
+          tx.oncomplete = () => res(true);
+          tx.onerror = () => res(false);
+        });
+      } catch (e) {}
+    }
 
     const existingCount = await new Promise((res) => {
       try {
@@ -1049,7 +925,7 @@ const CGL_OS = (() => {
     });
 
     if (existingCount === 0) {
-      await runTx(["store_questions", "store_concepts", "store_saved_mocks", "store_flashcards"], "readwrite", (tx) => {
+      await runTx(["store_questions", "store_concepts", "store_saved_mocks"], "readwrite", (tx) => {
         const stQ = tx.objectStore("store_questions");
         SEED_QUESTIONS.forEach(q => stQ.put(q));
 
@@ -1058,9 +934,6 @@ const CGL_OS = (() => {
 
         const stB = tx.objectStore("store_saved_mocks");
         SEED_SAVED_MOCKS.forEach(b => stB.put(b));
-
-        const stF = tx.objectStore("store_flashcards");
-        SEED_FLASHCARDS.forEach(f => stF.put(f));
       });
     }
 
@@ -1071,7 +944,6 @@ const CGL_OS = (() => {
       await putRecord("store_config", { key: "custom_mistake_tags", value: customMistakeTags });
     }
 
-    // Authoritative Taxonomy Check: Respect user deletions and modifications
     const savedTaxonomyConfig = await getRecord("store_config", "system_taxonomy");
     if (savedTaxonomyConfig && savedTaxonomyConfig.value && typeof savedTaxonomyConfig.value === "object") {
       TAXONOMY = savedTaxonomyConfig.value;
@@ -1136,7 +1008,7 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * SECTION 10: FULL BACKUP, DISASTER RECOVERY & SANITIZERS
+   * SECTION 10: FULL BACKUP, DISASTER RECOVERY & HARDENED SANITIZERS
    * ========================================================================== */
   async function exportFullBackup() {
     const envelope = {
@@ -1150,7 +1022,6 @@ const CGL_OS = (() => {
       stores: {
         store_questions: await getAllRecords("store_questions"),
         store_attempts: await getAllRecords("store_attempts"),
-        store_flashcards: await getAllRecords("store_flashcards"),
         store_concepts: await getAllRecords("store_concepts"),
         store_notes: await getAllRecords("store_notes"),
         store_saved_mocks: await getAllRecords("store_saved_mocks"),
@@ -1189,12 +1060,11 @@ const CGL_OS = (() => {
           statsBox.style.display = "block";
           statsBox.innerHTML = `
             <b>Backup File Validated:</b><br>
-            â€¢ Questions: ${pendingHydrationData.store_questions.length}<br>
-            â€¢ Attempts & Scores: ${pendingHydrationData.store_attempts.length}<br>
-            â€¢ Flashcards: ${pendingHydrationData.store_flashcards.length}<br>
-            â€¢ Living Knowledge Sheets: ${pendingHydrationData.store_concepts.length}<br>
-            â€¢ Clinical AI Consultations: ${pendingHydrationData.store_ai_consultations.length}<br>
-            â€¢ Saved Blueprints & Papers: ${pendingHydrationData.store_saved_mocks.length}
+            \u2022 Questions: ${pendingHydrationData.store_questions.length}<br>
+            \u2022 Attempts & Scores: ${pendingHydrationData.store_attempts.length}<br>
+            \u2022 Living Knowledge Sheets: ${pendingHydrationData.store_concepts.length}<br>
+            \u2022 Clinical AI Consultations: ${pendingHydrationData.store_ai_consultations.length}<br>
+            \u2022 Saved Blueprints & Papers: ${pendingHydrationData.store_saved_mocks.length}
           `;
         }
         const execBtn = document.getElementById("btn-execute-restore");
@@ -1212,20 +1082,22 @@ const CGL_OS = (() => {
     let stores = {};
     if (raw.cgl_os_envelope && raw.stores) {
       stores = raw.stores;
+    } else if (raw.cgl_os_knowledge_export && Array.isArray(raw.concepts)) {
+      stores.store_concepts = raw.concepts;
+    } else if (Array.isArray(raw)) {
+      stores.store_questions = raw;
     } else {
-      stores.store_questions = raw.questions || raw.store_questions || [];
+      stores.store_questions = raw.questions || raw.masterQuestionBank || raw.store_questions || [];
       stores.store_attempts = raw.attempts || raw.store_attempts || [];
-      stores.store_flashcards = raw.flashcards || raw.store_flashcards || raw.vault || [];
-      stores.store_concepts = raw.concepts || raw.formulas || raw.store_concepts || [];
+      stores.store_concepts = raw.concepts || raw.knowledgeCompendium || raw.formulas || raw.store_concepts || [];
       stores.store_notes = raw.notes || raw.store_notes || [];
       stores.store_saved_mocks = raw.savedMocks || raw.store_saved_mocks || [];
-      stores.store_ai_consultations = raw.consultations || raw.store_ai_consultations || [];
+      stores.store_ai_consultations = raw.consultations || raw.recentConsultations || raw.store_ai_consultations || [];
       stores.store_config = raw.config || raw.store_config || [];
     }
 
     stores.store_questions = (stores.store_questions || []).map(sanitizeQuestion);
     stores.store_concepts = (stores.store_concepts || []).map(sanitizeDossier);
-    stores.store_flashcards = (stores.store_flashcards || []).map(sanitizeFlashcard);
     stores.store_attempts = (stores.store_attempts || []).map(sanitizeAttempt);
     stores.store_saved_mocks = (stores.store_saved_mocks || []).map(sanitizeSavedMock);
     stores.store_ai_consultations = stores.store_ai_consultations || [];
@@ -1237,34 +1109,42 @@ const CGL_OS = (() => {
 
   function sanitizeQuestion(q, idx = 0) {
     let conceptIds = [];
-    if (Array.isArray(q.conceptIds)) {
+    if (Array.isArray(q.conceptIds) && q.conceptIds.length > 0) {
       conceptIds = q.conceptIds.map(s => String(s).trim()).filter(Boolean);
-    } else if (q.conceptId && typeof q.conceptId === "string" && q.conceptId.trim().length > 0) {
-      conceptIds = [q.conceptId.trim()];
+    }
+    if (q.conceptId && typeof q.conceptId === "string" && q.conceptId.trim().length > 0) {
+      const single = q.conceptId.trim();
+      if (!conceptIds.includes(single)) {
+        conceptIds.unshift(single);
+      }
     }
 
     return {
       id: q.id || `q_manual_${Date.now()}_${idx}_${Math.random().toString(36).substr(2, 5)}`,
       subject: q.subject || "QA",
       chapter: q.chapter || "QA_GENERAL",
-      subtopic: q.subtopic || "",
-      method: q.method || "",
-      // Atomic Passage-Set Grouping Schema
+      subtopic: cleanMojibake(q.subtopic || ""),
+      method: cleanMojibake(q.method || ""),
       parentPassageId: q.parentPassageId || null,
-      passageText: q.passageText || "",
+      passageText: stripCitationArtifacts(cleanMojibake(q.passageText || "")),
       setOrder: typeof q.setOrder === "number" ? q.setOrder : 1,
       setTotal: typeof q.setTotal === "number" ? q.setTotal : 1,
       conceptId: conceptIds[0] || "",
       conceptIds: conceptIds,
-      questionText: q.questionText || "",
+      remediatesQuestionId: q.remediatesQuestionId || null,
+      ephemeral: !!q.ephemeral,
+      questionText: stripCitationArtifacts(cleanMojibake(q.questionText || "")),
       imageUrl: q.imageUrl || "",
-      options: Array.isArray(q.options) && q.options.length === 4 ? q.options : ["Option 1", "Option 2", "Option 3", "Option 4"],
+      options: Array.isArray(q.options) && q.options.length === 4
+        ? q.options.map(o => stripCitationArtifacts(cleanMojibake(String(o))))
+        : ["Option 1", "Option 2", "Option 3", "Option 4"],
       correctIndex: (typeof q.correctIndex === "number" && q.correctIndex >= 0 && q.correctIndex <= 3) ? q.correctIndex : 0,
-      explanation: q.explanation || "",
-      source: q.source || "Manual Entry",
+      explanation: stripCitationArtifacts(cleanMojibake(q.explanation || "")),
+      source: cleanMojibake(q.source || "Manual Entry"),
       difficulty: q.difficulty || "MEDIUM",
       tags: Array.isArray(q.tags) ? q.tags : ["Hydrated"],
-      annotation: q.annotation || "",
+      bookmarked: !!q.bookmarked,
+      annotation: cleanMojibake(q.annotation || ""),
       createdAt: q.createdAt || Date.now(),
       updatedAt: Date.now()
     };
@@ -1275,29 +1155,13 @@ const CGL_OS = (() => {
       id: d.id || `top_restored_${Date.now()}_${idx}`,
       subject: d.subject || "QA",
       chapter: d.chapter || "QA_GENERAL",
-      title: d.title || d.word || "Untitled Topic",
-      subtitle: d.subtitle || d.root || "",
-      content: d.content || d.meaning || "",
+      title: stripCitationArtifacts(cleanMojibake(d.title || d.word || "Untitled Topic")),
+      subtitle: stripCitationArtifacts(cleanMojibake(d.subtitle || d.root || "")),
+      content: stripCitationArtifacts(cleanMojibake(d.content || d.meaning || "")),
       imageUrl: d.imageUrl || "",
       tags: Array.isArray(d.tags) ? d.tags : [],
       timestamp: d.timestamp || Date.now(),
       updatedAt: Date.now()
-    };
-  }
-
-  function sanitizeFlashcard(f, idx = 0) {
-    return {
-      id: f.id || `fc_restored_${Date.now()}_${idx}`,
-      cardType: f.cardType || (f.extra ? "BASIC_EXTRA" : "BASIC"),
-      subject: f.subject || "QA",
-      chapter: f.chapter || "QA_GENERAL",
-      front: f.front || f.questionText || "Untitled Prompt",
-      frontImageUrl: f.frontImageUrl || "",
-      back: f.back || f.explanation || "Untitled Answer",
-      backImageUrl: f.backImageUrl || "",
-      extra: f.extra || "",
-      tags: Array.isArray(f.tags) ? f.tags : ["Restored"],
-      createdAt: f.createdAt || Date.now()
     };
   }
 
@@ -1307,11 +1171,13 @@ const CGL_OS = (() => {
       sessionId: a.sessionId || `mock_${epoch}_${idx}`,
       parentSessionId: a.parentSessionId || null,
       attemptNumber: typeof a.attemptNumber === "number" ? a.attemptNumber : 1,
-      title: a.title || "SSC CGL Practice Mock",
+      title: cleanMojibake(a.title || "SSC CGL Practice Mock"),
       timestamp: epoch,
       timeIST: a.timeIST || formatISTDate(epoch),
       diurnalSlot: a.diurnalSlot || getDiurnalSlot(epoch),
       mockType: a.mockType || "CUSTOM",
+      positiveMarks: typeof a.positiveMarks === "number" ? a.positiveMarks : 2.0,
+      negativeMarks: typeof a.negativeMarks === "number" ? a.negativeMarks : 0.5,
       signatureTag: a.signatureTag || "",
       finalScore: typeof a.finalScore === "number" ? a.finalScore : 0,
       correctCount: typeof a.correctCount === "number" ? a.correctCount : 0,
@@ -1331,8 +1197,10 @@ const CGL_OS = (() => {
     return {
       id: b.id || `preset_${Date.now()}_${idx}`,
       type: b.type || (b.questions ? "FIXED_PAPER" : "DYNAMIC_BLUEPRINT"),
-      title: b.title || `Saved Setup ${idx + 1}`,
+      title: cleanMojibake(b.title || `Saved Setup ${idx + 1}`),
       isSectionLocked: b.isSectionLocked !== undefined ? b.isSectionLocked : true,
+      positiveMarks: typeof b.positiveMarks === "number" ? b.positiveMarks : 2.0,
+      negativeMarks: typeof b.negativeMarks === "number" ? b.negativeMarks : 0.5,
       selectionRule: b.selectionRule || null,
       sections: Array.isArray(b.sections) ? b.sections : [{ id: 1, subject: "QA", count: 25, durationMin: 15 }],
       questions: Array.isArray(b.questions) ? b.questions.map(sanitizeQuestion) : null,
@@ -1348,9 +1216,8 @@ const CGL_OS = (() => {
 
     try {
       const storeKeys = [
-        "store_questions", "store_attempts", "store_flashcards", 
-        "store_concepts", "store_notes", "store_saved_mocks", 
-        "store_ai_consultations", "store_config"
+        "store_questions", "store_attempts", "store_concepts",
+        "store_notes", "store_saved_mocks", "store_ai_consultations", "store_config"
       ];
 
       if (mode === "WIPE_REPLACE") {
@@ -1369,14 +1236,12 @@ const CGL_OS = (() => {
         }
       }
 
-      alert("Disaster Recovery Complete! All records restored safely.");
+      alert("Disaster Recovery Complete! All records hydrated and sanitized.");
       const modal = document.getElementById("modal-backup-restore");
       if (modal) modal.classList.remove("active");
       SearchService.invalidate();
       await syncAllTaxonomyDropdowns();
       await renderDashboard();
-      await updateDojoChapters();
-      await renderVault();
       if (typeof renderPracticeQuestionsTable === "function") {
         await renderPracticeQuestionsTable();
       }
@@ -1386,8 +1251,7 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * SECTION 11: SHARED SERVICE â€” TAXONOMY SERVICE
-   * Full User-Driven Taxonomy Control, Reassignment & Safe Chapter Merging
+   * SECTION 11: SHARED SERVICE — TAXONOMY SERVICE
    * ========================================================================== */
   const TaxonomyService = {
     async getTaxonomy() {
@@ -1405,7 +1269,7 @@ const CGL_OS = (() => {
     },
 
     async addSubject(key, name) {
-      const cleanKey = String(key).trim().toUpperCase().replace(/\s+/g, '_');
+      const cleanKey = String(key).trim().toUpperCase().replace(/\s+/g, "_");
       const cleanName = String(name).trim();
       if (!cleanKey || !cleanName) throw new Error("Both Key and Full Name are required.");
       if (TAXONOMY[cleanKey]) throw new Error(`Subject ${cleanKey} already exists.`);
@@ -1443,27 +1307,24 @@ const CGL_OS = (() => {
 
     async addChapter(subKey, chapterName) {
       if (!TAXONOMY[subKey]) throw new Error(`Subject ${subKey} does not exist.`);
-      const cleanChap = String(chapterName).trim().toUpperCase().replace(/\s+/g, '_');
+      const cleanChap = String(chapterName).trim().toUpperCase().replace(/\s+/g, "_");
       if (!cleanChap) throw new Error("Chapter name cannot be empty.");
-      if (TAXONOMY[subKey].chapters.includes(cleanChap)) {
-        throw new Error(`Chapter ${cleanChap} already exists in ${subKey}.`);
+      if (!TAXONOMY[subKey].chapters.includes(cleanChap)) {
+        TAXONOMY[subKey].chapters.push(cleanChap);
+        await this.saveTaxonomy();
       }
-
-      TAXONOMY[subKey].chapters.push(cleanChap);
-      await this.saveTaxonomy();
       return cleanChap;
     },
 
     async renameChapter(subKey, oldChap, newChap) {
       if (!TAXONOMY[subKey]) throw new Error(`Subject ${subKey} does not exist.`);
-      const cleanNew = String(newChap).trim().toUpperCase().replace(/\s+/g, '_');
+      const cleanNew = String(newChap).trim().toUpperCase().replace(/\s+/g, "_");
       if (!cleanNew) throw new Error("New chapter name cannot be empty.");
       if (!TAXONOMY[subKey].chapters.includes(oldChap)) throw new Error(`Chapter ${oldChap} does not exist.`);
 
       const idx = TAXONOMY[subKey].chapters.indexOf(oldChap);
       TAXONOMY[subKey].chapters[idx] = cleanNew;
       await this.saveTaxonomy();
-
       await this.reassignChapterContent(subKey, oldChap, cleanNew);
     },
 
@@ -1513,34 +1374,11 @@ const CGL_OS = (() => {
       }
 
       SearchService.invalidate();
-    },
-
-    async getOrphanedContent() {
-      const allQs = await getAllRecords("store_questions");
-      const allConcepts = await getAllRecords("store_concepts");
-      const knownTaxonomy = await this.getTaxonomy();
-
-      const orphans = { questions: [], concepts: [] };
-
-      allQs.forEach(q => {
-        if (!knownTaxonomy[q.subject] || !knownTaxonomy[q.subject].chapters.includes(q.chapter)) {
-          orphans.questions.push(q);
-        }
-      });
-
-      allConcepts.forEach(c => {
-        if (!knownTaxonomy[c.subject] || !knownTaxonomy[c.subject].chapters.includes(c.chapter)) {
-          orphans.concepts.push(c);
-        }
-      });
-
-      return orphans;
     }
   };
 
   /* ==========================================================================
-   * SECTION 12: SHARED SERVICE â€” QUESTION SERVICE
-   * Full CRUD, Validation, Duplication & Atomic Passage-Set Grouping
+   * SECTION 12: SHARED SERVICE — QUESTION SERVICE
    * ========================================================================== */
   const QuestionService = {
     generateId(subject = "QA") {
@@ -1556,7 +1394,7 @@ const CGL_OS = (() => {
         throw new Error("Questions must contain exactly 4 options.");
       }
       if (typeof q.correctIndex !== "number" || q.correctIndex < 0 || q.correctIndex > 3) {
-        throw new Error("A valid correct answer option (1-4) must be designated.");
+        throw new Error("A valid correct answer option (0-3) must be designated.");
       }
       if (!q.subject || !q.chapter) {
         throw new Error("Subject and Chapter tags are mandatory.");
@@ -1594,12 +1432,28 @@ const CGL_OS = (() => {
       const existing = await getRecord("store_questions", id);
       if (!existing) throw new Error(`Question ${id} not found.`);
 
-      const updated = sanitizeQuestion({ ...existing, ...questionData, id: id });
+      // Reconcile conceptId vs conceptIds when updating partially
+      const merged = { ...existing, ...questionData, id: id };
+      if (questionData.conceptId !== undefined && questionData.conceptIds === undefined) {
+        merged.conceptIds = questionData.conceptId ? [String(questionData.conceptId).trim()] : [];
+      }
+
+      const updated = sanitizeQuestion(merged);
       this.validate(updated);
 
       await putRecord("store_questions", updated);
       SearchService.invalidate();
       return updated;
+    },
+
+    async toggleStar(id) {
+      const existing = await getRecord("store_questions", id);
+      if (!existing) return null;
+      existing.bookmarked = !existing.bookmarked;
+      existing.updatedAt = Date.now();
+      await putRecord("store_questions", existing);
+      SearchService.invalidate();
+      return existing;
     },
 
     async delete(id) {
@@ -1617,7 +1471,7 @@ const CGL_OS = (() => {
 
       const clone = JSON.parse(JSON.stringify(source));
       clone.id = this.generateId(clone.subject);
-      clone.source = `${source.source || 'Original'} (Variant)`;
+      clone.source = `${source.source || "Original"} (Variant)`;
       clone.annotation = `Cloned from ${id} on ${formatISTDate(Date.now())}`;
       clone.createdAt = Date.now();
       clone.updatedAt = Date.now();
@@ -1647,8 +1501,7 @@ const CGL_OS = (() => {
   };
 
   /* ==========================================================================
-   * SECTION 13: SHARED SERVICE â€” CONCEPT SERVICE (LIVING KNOWLEDGE STUDIO)
-   * Sheet CRUD, In-Sheet TOC Generator & Question Discovery
+   * SECTION 13: SHARED SERVICE — CONCEPT SERVICE (LIVING KNOWLEDGE STUDIO)
    * ========================================================================== */
   const ConceptService = {
     async get(id) {
@@ -1685,23 +1538,9 @@ const CGL_OS = (() => {
       return true;
     },
 
-    async duplicate(id) {
-      const source = await getRecord("store_concepts", id);
-      if (!source) throw new Error(`Sheet ${id} not found.`);
-
-      const clone = JSON.parse(JSON.stringify(source));
-      clone.id = `top_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
-      clone.title = `${source.title} (Copy)`;
-      clone.timestamp = Date.now();
-
-      await putRecord("store_concepts", clone);
-      SearchService.invalidate();
-      return clone;
-    },
-
     async getLinkedQuestions(conceptId, chapterFallback = null) {
       const allQs = await getAllRecords("store_questions");
-      let linked = allQs.filter(q => 
+      let linked = allQs.filter(q =>
         (Array.isArray(q.conceptIds) && q.conceptIds.includes(conceptId)) ||
         q.conceptId === conceptId
       );
@@ -1714,15 +1553,15 @@ const CGL_OS = (() => {
 
     generateTOC(content) {
       if (!content) return [];
-      const lines = content.split('\n');
+      const lines = content.split("\n");
       const toc = [];
       lines.forEach(line => {
         const h3 = line.match(/^###\s+(.+)$/);
         const h2 = line.match(/^##\s+(.+)$/);
         if (h3) {
-          toc.push({ level: 3, title: h3[1].trim(), anchor: 'sec-' + h3[1].toLowerCase().replace(/[^a-z0-9]+/g, '-') });
+          toc.push({ level: 3, title: h3[1].trim(), anchor: "sec-" + h3[1].toLowerCase().replace(/[^a-z0-9]+/g, "-") });
         } else if (h2) {
-          toc.push({ level: 2, title: h2[1].trim(), anchor: 'sec-' + h2[1].toLowerCase().replace(/[^a-z0-9]+/g, '-') });
+          toc.push({ level: 2, title: h2[1].trim(), anchor: "sec-" + h2[1].toLowerCase().replace(/[^a-z0-9]+/g, "-") });
         }
       });
       return toc;
@@ -1730,8 +1569,7 @@ const CGL_OS = (() => {
   };
 
   /* ==========================================================================
-   * SECTION 14: SHARED SERVICE â€” SEARCH SERVICE
-   * In-Memory Unified Search Engine across Questions, Sheets & Taxonomy
+   * SECTION 14: SHARED SERVICE — SEARCH SERVICE
    * ========================================================================== */
   const SearchService = {
     cache: {
@@ -1779,6 +1617,7 @@ const CGL_OS = (() => {
         if (filters.method && filters.method !== "ALL" && q.method !== filters.method) return false;
         if (filters.source && filters.source !== "ALL" && q.source !== filters.source) return false;
         if (filters.difficulty && filters.difficulty !== "ALL" && q.difficulty !== filters.difficulty) return false;
+        if (filters.bookmarked === true && !q.bookmarked) return false;
 
         if (term) {
           const inId = (q.id || "").toLowerCase().includes(term);
@@ -1802,11 +1641,12 @@ const CGL_OS = (() => {
         if (filters.chapter && filters.chapter !== "ALL" && c.chapter !== filters.chapter) return false;
 
         if (term) {
+          const inId = (c.id || "").toLowerCase().includes(term);
           const inTitle = (c.title || "").toLowerCase().includes(term);
           const inSub = (c.subtitle || "").toLowerCase().includes(term);
           const inContent = (c.content || "").toLowerCase().includes(term);
           const inChap = (c.chapter || "").toLowerCase().includes(term);
-          if (!inTitle && !inSub && !inContent && !inChap) return false;
+          if (!inId && !inTitle && !inSub && !inContent && !inChap) return false;
         }
 
         return true;
@@ -1848,22 +1688,16 @@ const CGL_OS = (() => {
       }
     };
 
-    populateSelect("dojo-nav-subject", false);
     populateSelect("comp-studio-subject-select", false);
     populateSelect("print-subject", true);
     populateSelect("concept-edit-subject", false);
     populateSelect("edit-q-subject", false);
     populateSelect("new-q-subject", false);
-    populateSelect("edit-fc-subject", false);
-    populateSelect("vault-deck-filter-sub", true);
     populateSelect("scoped-export-subject", true);
-    populateSelect("anki-export-subject", true);
     populateSelect("practice-filter-subject", true);
     populateSelect("builder-subject", true);
     populateSelect("global-search-filter-sub", true);
 
-    const dojoSub = document.getElementById("dojo-nav-subject");
-    if (dojoSub) updateDojoChapters();
     const practiceSub = document.getElementById("practice-filter-subject");
     if (practiceSub) handlePracticeSubjectChange(practiceSub.value);
     const builderSub = document.getElementById("builder-subject");
@@ -1912,11 +1746,11 @@ const CGL_OS = (() => {
             return `
               <span style="font-size:10.5px; font-family:var(--font-mono); background:var(--bg-elevated); border:1px solid var(--border-color); padding:3px 8px; border-radius:5px; display:inline-flex; align-items:center; gap:6px;">
                 <span>${c} <small style="color:var(--accent-cyan);">(${qCount}Q/${cCount}S)</small></span>
-                <span title="Merge or Reassign Chapter" style="cursor:pointer; color:var(--accent-cyan); font-weight:bold;" onclick="CGL_OS.openChapterMergeModal('${subKey}', '${c}')">â‡„</span>
-                <span title="Delete Chapter" style="cursor:pointer; color:var(--status-red); opacity:0.7;" onclick="CGL_OS.deleteChapterFromSubject('${subKey}', '${c}')">âœ•</span>
+                <span title="Merge or Reassign Chapter" style="cursor:pointer; color:var(--accent-cyan); font-weight:bold;" onclick="CGL_OS.openChapterMergeModal('${subKey}', '${c}')">\u21C4</span>
+                <span title="Delete Chapter" style="cursor:pointer; color:var(--status-red); opacity:0.7;" onclick="CGL_OS.deleteChapterFromSubject('${subKey}', '${c}')">\u2715</span>
               </span>
             `;
-          }).join('')}
+          }).join("")}
         </div>
       `;
       container.appendChild(div);
@@ -1926,7 +1760,7 @@ const CGL_OS = (() => {
   async function addNewSubjectAction() {
     const keyInput = document.getElementById("new-sub-key");
     const nameInput = document.getElementById("new-sub-name");
-    const key = keyInput ? keyInput.value.trim().toUpperCase().replace(/\s+/g, '_') : "";
+    const key = keyInput ? keyInput.value.trim().toUpperCase().replace(/\s+/g, "_") : "";
     const name = nameInput ? nameInput.value.trim() : "";
 
     if (!key || !name) {
@@ -1940,7 +1774,6 @@ const CGL_OS = (() => {
       if (nameInput) nameInput.value = "";
       renderTaxonomyManagerList();
       await renderDashboard();
-      await updateDojoChapters();
     } catch (err) {
       alert(err.message);
     }
@@ -1954,7 +1787,6 @@ const CGL_OS = (() => {
       await TaxonomyService.addChapter(subKey, chap);
       renderTaxonomyManagerList();
       await renderDashboard();
-      await updateDojoChapters();
     } catch (err) {
       alert(err.message);
     }
@@ -1978,7 +1810,6 @@ const CGL_OS = (() => {
 
     renderTaxonomyManagerList();
     await renderDashboard();
-    await updateDojoChapters();
   }
 
   async function openChapterMergeModal(subKey, sourceChap) {
@@ -1990,7 +1821,6 @@ const CGL_OS = (() => {
       alert(`Merged all questions and sheets from ${sourceChap} into ${targetChap.trim().toUpperCase()}.`);
       renderTaxonomyManagerList();
       await renderDashboard();
-      await updateDojoChapters();
     } catch (err) {
       alert("Merge error: " + err.message);
     }
@@ -2002,7 +1832,6 @@ const CGL_OS = (() => {
         await TaxonomyService.deleteSubject(subKey);
         renderTaxonomyManagerList();
         await renderDashboard();
-        await updateDojoChapters();
       }
     } catch (err) {
       alert(err.message);
@@ -2011,13 +1840,6 @@ const CGL_OS = (() => {
 
   function syncEditorChapterDropdown(subKey) {
     const chapInput = document.getElementById("concept-edit-chapter");
-    if (chapInput && TAXONOMY[subKey] && TAXONOMY[subKey].chapters.length > 0) {
-      chapInput.value = TAXONOMY[subKey].chapters[0];
-    }
-  }
-
-  function syncFlashcardChapterDropdown(subKey) {
-    const chapInput = document.getElementById("edit-fc-chapter");
     if (chapInput && TAXONOMY[subKey] && TAXONOMY[subKey].chapters.length > 0) {
       chapInput.value = TAXONOMY[subKey].chapters[0];
     }
@@ -2037,7 +1859,7 @@ const CGL_OS = (() => {
 
   /* ==========================================================================
    * SECTION 16: NATIVE QUESTION GUI CREATOR & EDITOR CONTROLLERS
-   * (Passage Grouping Support, Tag & Annotation Preservation Fixed)
+   * Fixed: Full Difficulty & Tags editing + Arena/Dojo Live Sync
    * ========================================================================== */
   function openNewQuestionCreatorModal(presetSub = null, presetChap = null) {
     currentQuestionImageBase64 = "";
@@ -2125,6 +1947,7 @@ const CGL_OS = (() => {
       explanation: document.getElementById("new-q-explanation")?.value.trim() || "",
       source: document.getElementById("new-q-source")?.value.trim() || "Manual Entry",
       tags: (document.getElementById("new-q-tags")?.value || "").split(",").map(s => s.trim()).filter(Boolean),
+      bookmarked: false,
       annotation: ""
     };
 
@@ -2147,7 +1970,6 @@ const CGL_OS = (() => {
         safeSetValue("new-q-opt-2", "");
         safeSetValue("new-q-opt-3", "");
         safeSetValue("new-q-explanation", "");
-        // If part of passage set, increment setOrder
         if (parentPassageId) {
           safeSetValue("new-q-set-order", setOrder + 1);
         }
@@ -2176,7 +1998,9 @@ const CGL_OS = (() => {
     safeSetValue("edit-q-chapter", qData.chapter);
     safeSetValue("edit-q-subtopic", qData.subtopic || "");
     safeSetValue("edit-q-method", qData.method || "");
+    safeSetValue("edit-q-difficulty", qData.difficulty || "MEDIUM");
     safeSetValue("edit-q-source", qData.source || "Manual Entry");
+    safeSetValue("edit-q-tags", Array.isArray(qData.tags) ? qData.tags.join(", ") : "");
 
     safeSetValue("edit-q-parent-passage-id", qData.parentPassageId || "");
     safeSetValue("edit-q-set-order", qData.setOrder || "1");
@@ -2208,6 +2032,14 @@ const CGL_OS = (() => {
     if (m) m.classList.add("active");
   }
 
+  async function openEditCurrentArenaQuestion() {
+    if (!activeExam) return;
+    const curQ = activeExam.questions[activeExam.currentQuestionIndex];
+    if (!curQ) return;
+    const canonical = await QuestionService.get(curQ.id);
+    openEditQuestionModal(canonical || curQ);
+  }
+
   function openEditCurrentDojoQuestion() {
     if (!dojoExam) return;
     openEditQuestionModal(dojoExam.questions[dojoExam.currentIndex]);
@@ -2224,6 +2056,8 @@ const CGL_OS = (() => {
     const urlInput = document.getElementById("edit-q-img-url")?.value.trim() || "";
     const rawConceptIds = document.getElementById("edit-q-concept-ids")?.value.trim() || "";
     const parsedConceptIds = rawConceptIds.split(",").map(s => s.trim()).filter(Boolean);
+    const rawTags = document.getElementById("edit-q-tags")?.value.trim() || "";
+    const parsedTags = rawTags ? rawTags.split(",").map(s => s.trim()).filter(Boolean) : ["UserSaved"];
 
     const existing = await QuestionService.get(id);
 
@@ -2233,6 +2067,7 @@ const CGL_OS = (() => {
       chapter: (document.getElementById("edit-q-chapter")?.value || (existing ? existing.chapter : "QA_PERCENTAGE")).trim().toUpperCase(),
       subtopic: document.getElementById("edit-q-subtopic")?.value.trim() || "",
       method: document.getElementById("edit-q-method")?.value.trim() || "",
+      difficulty: document.getElementById("edit-q-difficulty")?.value || (existing ? existing.difficulty : "MEDIUM"),
       parentPassageId: document.getElementById("edit-q-parent-passage-id")?.value.trim() || null,
       passageText: document.getElementById("edit-q-passage-text")?.value.trim() || "",
       setOrder: parseInt(document.getElementById("edit-q-set-order")?.value || "1", 10) || 1,
@@ -2250,26 +2085,33 @@ const CGL_OS = (() => {
       correctIndex: parseInt(document.getElementById("edit-q-correct")?.value || "0", 10),
       explanation: document.getElementById("edit-q-explanation")?.value.trim() || "",
       source: document.getElementById("edit-q-source")?.value.trim() || (existing ? existing.source : "Manual Entry"),
-      difficulty: existing ? (existing.difficulty || "MEDIUM") : "MEDIUM",
-      // CRITICAL FIX: Preserve existing tags and user annotation
-      tags: existing && Array.isArray(existing.tags) && existing.tags.length > 0 ? existing.tags : ["UserSaved"],
+      tags: parsedTags,
+      bookmarked: existing ? !!existing.bookmarked : false,
       annotation: existing ? (existing.annotation || "") : ""
     };
 
     try {
-      await QuestionService.update(id, qObj);
+      if (existing) {
+        await QuestionService.update(id, qObj);
+      } else {
+        await QuestionService.create(qObj);
+      }
       const m = document.getElementById("modal-question-editor");
       if (m) m.classList.remove("active");
 
       if (dojoExam && dojoExam.questions[dojoExam.currentIndex]?.id === id) {
-        dojoExam.questions[dojoExam.currentIndex] = qObj;
+        dojoExam.questions[dojoExam.currentIndex] = { ...dojoExam.questions[dojoExam.currentIndex], ...qObj };
         renderDojoArenaQuestion();
+      }
+      if (activeExam && activeExam.questions[activeExam.currentQuestionIndex]?.id === id) {
+        activeExam.questions[activeExam.currentQuestionIndex] = { ...activeExam.questions[activeExam.currentQuestionIndex], ...qObj };
+        renderActiveExamQuestion();
       }
       await renderDashboard();
       if (typeof renderPracticeQuestionsTable === "function") {
         await renderPracticeQuestionsTable();
       }
-      alert(`Question ${id} updated successfully.`);
+      alert(`Question ${id} saved successfully.`);
     } catch (err) {
       alert("Save Error: " + err.message);
     }
@@ -2312,21 +2154,22 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * SECTION 17: SHARED SERVICE â€” PERFORMANCE SERVICE
-   * Telemetry Aggregation, Cold-Start Guards & Dynamic ERI Telemetry
+   * SECTION 17: SHARED SERVICE — PERFORMANCE SERVICE
+   * Upgraded:
+   * - Excludes micro-drills (<10 Qs) from inflating Standard Mocks & ERI Volume
+   * - Incorporates Attempt-Rate Factor & Subject-Calibrated Velocity
+   * - Supports Adversarial Mutant Redemption (remediatesQuestionId)
    * ========================================================================== */
   const PerformanceService = {
     async getHistoricalAttempts() {
       const attempts = await getAllRecords("store_attempts");
-      return attempts.filter(a => a.completed);
+      return attempts.filter(a => a.completed && a.mockType !== "STUDY_VIEW");
     },
 
     async calculateGlobalMetrics() {
       const completed = await this.getHistoricalAttempts();
-
-      // Retrieve universal active engagement time from store_config
       const storedEngagement = await getRecord("store_config", "telemetry_active_study_time_sec");
-      const universalStudyTimeSec = (storedEngagement && typeof storedEngagement.value === "number" ? storedEngagement.value : 0) + activeStudyTimeSeconds;
+      const universalStudyTimeSec = (storedEngagement && typeof storedEngagement.value === "number" ? storedEngagement.value : 0) + unsyncedStudySeconds;
 
       if (completed.length === 0) {
         return {
@@ -2343,34 +2186,59 @@ const CGL_OS = (() => {
         };
       }
 
-      let totalCor = 0, totalAtt = 0, totalMockSec = 0, traps = 0;
+      let totalCor = 0, totalAtt = 0, totalQuestionsInMocks = 0;
+      let totalMockSec = 0, totalParWeightedRatio = 0, traps = 0;
+      let standardMocksCount = 0;
+
       completed.forEach(c => {
+        const qList = Array.isArray(c.questions) ? c.questions : [];
+        if (qList.length >= 10 && c.mockType !== "MICRO_DRILL") {
+          standardMocksCount++;
+        }
+        totalQuestionsInMocks += qList.length;
         totalCor += (c.correctCount || 0);
         totalAtt += ((c.correctCount || 0) + (c.incorrectCount || 0));
         traps += (c.q4Traps || 0);
+
         if (c.userResponses && typeof c.userResponses === "object") {
-          Object.values(c.userResponses).forEach(r => {
-            totalMockSec += (r ? (r.timeSpentSec || 0) : 0);
+          qList.forEach(q => {
+            const r = c.userResponses[q.id];
+            if (r) {
+              const spent = r.timeSpentSec || 0;
+              totalMockSec += spent;
+              if (r.selectedOption !== null && r.selectedOption !== undefined) {
+                const par = getSubjectThresholds(q.subject).parSec;
+                totalParWeightedRatio += (spent / par);
+              }
+            }
           });
         }
       });
 
-      const acc = totalAtt > 0 ? Math.round((totalCor / totalAtt) * 100) : 0;
+      const rawAcc = totalAtt > 0 ? (totalCor / totalAtt) * 100 : 0;
+      const acc = Math.round(rawAcc);
       const avgSpeed = totalAtt > 0 ? Math.round(totalMockSec / totalAtt) : 0;
 
-      // ERI Components: Accuracy (50%) + Velocity (30%) + Consistency Volume (20%)
-      const accComp = parseFloat((acc * 0.50).toFixed(1));
+      // Attempt Rate Guard: Prevents skipping 95% of a mock to game 100% accuracy
+      const attemptRatio = totalQuestionsInMocks > 0 ? Math.min(1, (totalAtt / totalQuestionsInMocks) / 0.70) : 1;
+      const effectiveAcc = rawAcc * (0.4 + 0.6 * attemptRatio);
+      const accComp = parseFloat((effectiveAcc * 0.50).toFixed(1));
+
+      // Subject-Calibrated Velocity Score (1.0 par ratio = 100%)
+      const avgParRatio = totalAtt > 0 ? (totalParWeightedRatio / totalAtt) : 1;
       let velScore = 100;
-      if (avgSpeed > 45) {
-        velScore = Math.max(20, 100 - (avgSpeed - 45) * 1.2);
+      if (avgParRatio > 1.0) {
+        velScore = Math.max(20, 100 - (avgParRatio - 1.0) * 55);
       }
       const velComp = parseFloat((velScore * 0.30).toFixed(1));
-      const volumeBonus = Math.min(100, completed.length * 12.5);
+
+      // Exposure / Consistency Volume weighted by standard mocks + total solved volume
+      const volumeBonus = Math.min(100, (standardMocksCount * 10) + (totalAtt * 0.25));
       const consistencyComp = parseFloat((volumeBonus * 0.20).toFixed(1));
-      const totalERI = Math.min(100, Math.max(10, accComp + velComp + consistencyComp)).toFixed(1);
+      const totalERI = Math.min(100, Math.max(5, accComp + velComp + consistencyComp)).toFixed(1);
 
       return {
-        totalMocks: completed.length,
+        totalMocks: standardMocksCount || completed.length,
         accuracy: acc,
         avgSpeed: avgSpeed,
         trapsHit: traps,
@@ -2384,7 +2252,7 @@ const CGL_OS = (() => {
 
     async getChapterStats(subKey, chapter) {
       const completed = await this.getHistoricalAttempts();
-      let attempted = 0, correct = 0, totalTimeSec = 0, wrongCount = 0;
+      let attempted = 0, correct = 0, totalTimeSec = 0, wrongCount = 0, lastSeenEpoch = 0;
 
       completed.forEach(att => {
         if (Array.isArray(att.questions) && att.userResponses) {
@@ -2394,6 +2262,7 @@ const CGL_OS = (() => {
               if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
                 attempted++;
                 totalTimeSec += (resp.timeSpentSec || 0);
+                lastSeenEpoch = Math.max(lastSeenEpoch, att.timestamp || 0);
                 if (resp.selectedOption === q.correctIndex) {
                   correct++;
                 } else {
@@ -2407,6 +2276,10 @@ const CGL_OS = (() => {
 
       const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
       const avgSpeed = attempted > 0 ? Math.round(totalTimeSec / attempted) : 0;
+      const daysSinceLast = lastSeenEpoch > 0 ? calcGapDays(Date.now(), lastSeenEpoch) : 99;
+      const unifiedNc = attempted > 0
+        ? Math.min(1.0, ((daysSinceLast / 14) * 0.65) + (Math.max(0, 1 - attempted / 40) * 0.35)).toFixed(2)
+        : "1.00";
 
       return {
         subject: subKey,
@@ -2416,7 +2289,10 @@ const CGL_OS = (() => {
         wrong: wrongCount,
         accuracy: accuracy,
         avgSpeed: avgSpeed,
-        isWeak: attempted >= 3 && accuracy < 60
+        lastSeenEpoch: lastSeenEpoch,
+        daysSinceLast: daysSinceLast,
+        neglectIndex: unifiedNc,
+        isWeak: attempted >= 2 && accuracy < 65
       };
     },
 
@@ -2440,37 +2316,48 @@ const CGL_OS = (() => {
       const completed = await this.getHistoricalAttempts();
       const map = {};
 
-      completed.forEach(att => {
+      completed.slice().sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0)).forEach(att => {
         if (Array.isArray(att.questions) && att.userResponses) {
           att.questions.forEach(q => {
             const resp = att.userResponses[q.id];
             if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
-              if (!map[q.id]) {
-                map[q.id] = {
-                  attempts: 0,
-                  correct: 0,
-                  incorrect: 0,
-                  totalTime: 0,
-                  lastAttemptEpoch: 0,
-                  lastWasIncorrect: false,
-                  traps: []
-                };
+              const targetIds = [q.id];
+              // Adversarial Mutant Redemption Rollup: Credit parent canonical question if mutant solved
+              if (q.remediatesQuestionId) {
+                targetIds.push(q.remediatesQuestionId);
               }
-              const stats = map[q.id];
-              stats.attempts++;
-              stats.totalTime += (resp.timeSpentSec || 0);
-              stats.lastAttemptEpoch = Math.max(stats.lastAttemptEpoch, att.timestamp);
 
-              if (resp.selectedOption === q.correctIndex) {
-                stats.correct++;
-                stats.lastWasIncorrect = false;
-              } else {
-                stats.incorrect++;
-                stats.lastWasIncorrect = true;
-                if (resp.errorTag && resp.errorTag !== "UNCLASSIFIED") {
-                  stats.traps.push(resp.errorTag);
+              targetIds.forEach(tId => {
+                if (!map[tId]) {
+                  map[tId] = {
+                    attempts: 0,
+                    correct: 0,
+                    incorrect: 0,
+                    totalTime: 0,
+                    lastAttemptEpoch: 0,
+                    lastWasIncorrect: false,
+                    traps: []
+                  };
                 }
-              }
+                const stats = map[tId];
+                stats.attempts++;
+                stats.totalTime += (resp.timeSpentSec || 0);
+                stats.lastAttemptEpoch = Math.max(stats.lastAttemptEpoch, att.timestamp || 0);
+
+                if (resp.selectedOption === q.correctIndex) {
+                  stats.correct++;
+                  const par = getSubjectThresholds(q.subject).parSec;
+                  if ((resp.timeSpentSec || 0) <= par * 1.35) {
+                    stats.lastWasIncorrect = false;
+                  }
+                } else {
+                  stats.incorrect++;
+                  stats.lastWasIncorrect = true;
+                  if (resp.errorTag && resp.errorTag !== "UNCLASSIFIED") {
+                    stats.traps.push(resp.errorTag);
+                  }
+                }
+              });
             }
           });
         }
@@ -2478,12 +2365,6 @@ const CGL_OS = (() => {
       return map;
     },
 
-    /**
-     * COLD-START NEGLECT GUARD:
-     * Returns null immediately if zero completed test sessions exist.
-     * Evaluates neglect ONLY against chapters that have been seen historically,
-     * preventing false-positive neglect alarms on fresh profiles.
-     */
     async calculateNeglect() {
       const completed = await this.getHistoricalAttempts();
       if (completed.length === 0) return null;
@@ -2503,7 +2384,6 @@ const CGL_OS = (() => {
             }
           }
 
-          // Guard against unattempted chapters triggering false positive alarms
           if (lastSeen > 0) {
             const diff = now - lastSeen;
             if (diff > sevenDaysMs && diff > maxNeglectMs) {
@@ -2523,8 +2403,11 @@ const CGL_OS = (() => {
   };
 
   /* ==========================================================================
-   * SECTION 18: SHARED SERVICE â€” MOCK SERVICE & ATOMIC GROUP SAMPLING
-   * Atomic Passage Clustering, Ephemeral Session Support & Fisher-Yates Shuffle
+   * SECTION 18: SHARED SERVICE — MOCK SERVICE & OPTION PERMUTATION ENGINE
+   * Fixed:
+   * - Cross-subject sampling when subject === "ALL" (no silent QA coercion)
+   * - Strict scope by default (no silent cross-subject fallback padding)
+   * - Option Shuffle Permutation with automatic correctIndex remapping
    * ========================================================================== */
   const MockService = {
     shuffle(array, seed = null) {
@@ -2551,6 +2434,20 @@ const CGL_OS = (() => {
       }
       return array;
     },
+
+    permuteQuestionOptions(q, seed = null) {
+      const clone = JSON.parse(JSON.stringify(q));
+      if (!Array.isArray(clone.options) || clone.options.length !== 4) return clone;
+      const indexed = clone.options.map((text, idx) => ({
+        text,
+        isCorrect: idx === clone.correctIndex
+      }));
+      this.shuffle(indexed, seed ? `${seed}_${clone.id}` : null);
+      clone.options = indexed.map(item => item.text);
+      clone.correctIndex = indexed.findIndex(item => item.isCorrect);
+      return clone;
+    },
+
     async generate(config) {
       const {
         title = "SSC CGL Practice Mock",
@@ -2559,13 +2456,15 @@ const CGL_OS = (() => {
         subject = "ALL",
         chapter = "ALL",
         chapters = [],
-        method = "ALL",
         difficulty = "ALL",
         mode = "RANDOM",
         excludeRecentMocks = false,
         recentMockWindow = 3,
         randomizeOrder = true,
-        patternBalanced = false,
+        shuffleOptions = false,
+        allowFallbackPadding = false,
+        positiveMarks = 2.0,
+        negativeMarks = 0.5,
         isSectionLocked = false,
         ephemeral = false,
         persistQuestions = true,
@@ -2586,9 +2485,9 @@ const CGL_OS = (() => {
       let sectionConfigs = [];
       if (Array.isArray(sections) && sections.length > 0) {
         sectionConfigs = sections.map((s, idx) => ({
-          id: s.id || `SEC_${idx + 1}_${s.subject || 'GEN'}`,
-          subject: s.subject || "QA",
-          name: s.name || `${TAXONOMY[s.subject]?.name || s.subject || 'Section'} (Part ${idx + 1})`,
+          id: s.id || `SEC_${idx + 1}_${s.subject || "GEN"}`,
+          subject: s.subject || "ALL",
+          name: s.name || `${TAXONOMY[s.subject]?.name || s.subject || "Section"} (Part ${idx + 1})`,
           count: parseInt(s.count, 10) || Math.round(count / sections.length),
           durationMin: parseInt(s.durationMin, 10) || Math.round(durationMin / sections.length),
           explicitQuestionIds: Array.isArray(s.explicitQuestionIds) ? s.explicitQuestionIds : [],
@@ -2598,8 +2497,7 @@ const CGL_OS = (() => {
           mode: s.mode || mode,
           difficulty: s.difficulty || difficulty
         }));
-      } else if (subject === "ALL" && (count === 100 || count >= 80)) {
-        // Standard Tier-1 4-Section Queue
+      } else if (subject === "ALL" && (count === 100 || count >= 80) && mode !== "WEAKNESS") {
         const tier1Subs = ["REAS", "GA", "QA", "ENG"];
         const secDuration = Math.round(durationMin / tier1Subs.length);
         const secCount = Math.round(count / tier1Subs.length);
@@ -2617,10 +2515,10 @@ const CGL_OS = (() => {
           difficulty: difficulty
         }));
       } else {
-        // Single Section Queue
+        // Fixed: Preserve subject: "ALL" for cross-subject weakness/mixed drills!
         sectionConfigs = [{
           id: "SEC_1",
-          subject: subject === "ALL" ? "QA" : subject,
+          subject: subject,
           name: title,
           count: count,
           durationMin: durationMin,
@@ -2633,7 +2531,6 @@ const CGL_OS = (() => {
         }];
       }
 
-      // Distribute top-level explicit IDs and custom questions across multi-section queues
       if (sectionConfigs.length > 1) {
         if (Array.isArray(explicitQuestionIds) && explicitQuestionIds.length > 0) {
           explicitQuestionIds.forEach(id => {
@@ -2659,14 +2556,12 @@ const CGL_OS = (() => {
       let globalCounter = 1;
       const sessionGlobalUsedIds = new Set();
 
-      // 2. Process Each Section Queue Additively
       for (let sIdx = 0; sIdx < sectionConfigs.length; sIdx++) {
         const secCfg = sectionConfigs[sIdx];
         const secQuestions = [];
         const secUsedIds = new Set();
         const secTarget = Math.max(secCfg.count, secCfg.explicitQuestionIds.length + secCfg.customQuestions.length);
 
-        // Stage A: Explicit Bank Question IDs
         for (const id of secCfg.explicitQuestionIds) {
           if (secQuestions.length >= secTarget) break;
           const found = allBankQuestions.find(q => q.id === id);
@@ -2677,11 +2572,10 @@ const CGL_OS = (() => {
           }
         }
 
-        // Stage B: Inline Questions (Handling Ephemeral vs. Bank Ingestion)
         for (const rawCustom of secCfg.customQuestions) {
           if (secQuestions.length >= secTarget) break;
           const item = sanitizeQuestion(rawCustom);
-          const shouldPersist = (item.ephemeral === false || item.persist === true) && !isEphemeralMock;
+          const shouldPersist = (rawCustom.ephemeral === false || rawCustom.persist === true) && !isEphemeralMock;
 
           if (shouldPersist) {
             await putRecord("store_questions", item);
@@ -2697,7 +2591,6 @@ const CGL_OS = (() => {
           }
         }
 
-        // Stage C: Additive Backfill from Question Bank
         const needed = secTarget - secQuestions.length;
         if (needed > 0) {
           const targetChapters = (secCfg.chapters && secCfg.chapters.length > 0)
@@ -2718,7 +2611,7 @@ const CGL_OS = (() => {
               (att.questions || []).forEach(q => recentQIds.add(q.id));
             });
             const filteredPool = candidatePool.filter(q => !recentQIds.has(q.id));
-            if (filteredPool.length >= needed) {
+            if (filteredPool.length >= Math.min(needed, candidatePool.length)) {
               candidatePool = filteredPool;
             }
           }
@@ -2733,14 +2626,20 @@ const CGL_OS = (() => {
           } else if (secCfg.mode === "WEAKNESS") {
             const p = candidatePool.filter(q => {
               const st = perfMap[q.id];
-              return st && st.attempts > 0 && (Math.round((st.correct / st.attempts) * 100) < 65 || st.traps.length > 0);
+              return st && st.attempts > 0 && (st.lastWasIncorrect || Math.round((st.correct / st.attempts) * 100) < 65 || st.traps.length > 0);
             });
+            if (p.length > 0) prioritized = p;
+          } else if (secCfg.mode === "STARRED") {
+            const p = candidatePool.filter(q => q.bookmarked);
+            if (p.length > 0) prioritized = p;
+          } else if (secCfg.mode === "IGNORED") {
+            const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+            const p = candidatePool.filter(q => perfMap[q.id] && perfMap[q.id].lastAttemptEpoch < sevenDaysAgo);
             if (p.length > 0) prioritized = p;
           }
 
           const shuffledCandidates = this.shuffle([...prioritized], seed);
 
-          // Atomic Passage Set Ingestion with Quota Clamping (Eliminates Overshoot)
           for (const q of shuffledCandidates) {
             if (secQuestions.length >= secTarget) break;
             if (sessionGlobalUsedIds.has(q.id) || secUsedIds.has(q.id)) continue;
@@ -2767,8 +2666,8 @@ const CGL_OS = (() => {
             }
           }
 
-          // Dynamic Exhaustive Subject Drain (Eliminates Undershoot)
-          if (secQuestions.length < secTarget) {
+          // Optional Fallback Padding (Only if allowFallbackPadding is explicitly enabled)
+          if (allowFallbackPadding && secQuestions.length < secTarget) {
             const fallbackBank = allBankQuestions.filter(q => {
               if (secCfg.subject !== "ALL" && q.subject !== secCfg.subject) return false;
               return !sessionGlobalUsedIds.has(q.id) && !secUsedIds.has(q.id);
@@ -2781,21 +2680,8 @@ const CGL_OS = (() => {
               sessionGlobalUsedIds.add(fq.id);
             }
           }
-
-          // Universal Emergency Cross-Subject Drain (Guarantees Exact Target)
-          if (secQuestions.length < secTarget) {
-            const emergencyBank = allBankQuestions.filter(q => !sessionGlobalUsedIds.has(q.id) && !secUsedIds.has(q.id));
-            const shuffledEmergency = this.shuffle([...emergencyBank], seed);
-            for (const eq of shuffledEmergency) {
-              if (secQuestions.length >= secTarget) break;
-              secQuestions.push({ ...eq });
-              secUsedIds.add(eq.id);
-              sessionGlobalUsedIds.add(eq.id);
-            }
-          }
         }
 
-        // Stage D: Atomic Passage Contiguity Shuffling
         let finalSectionList = secQuestions;
         if (randomizeOrder) {
           const blocks = [];
@@ -2816,13 +2702,13 @@ const CGL_OS = (() => {
           blocks.forEach(b => finalSectionList.push(...b));
         }
 
-        // Tag Section Metadata
         finalSectionList.forEach((q, lIdx) => {
-          q.sectionIndex = sIdx;
-          q.sectionName = secCfg.name;
-          q.localNumber = lIdx + 1;
-          q.globalNumber = globalCounter++;
-          allFinalQuestions.push(q);
+          const finalQ = shuffleOptions ? this.permuteQuestionOptions(q, seed) : { ...q };
+          finalQ.sectionIndex = sIdx;
+          finalQ.sectionName = secCfg.name;
+          finalQ.localNumber = lIdx + 1;
+          finalQ.globalNumber = globalCounter++;
+          allFinalQuestions.push(finalQ);
         });
 
         configuredSections.push({
@@ -2838,6 +2724,8 @@ const CGL_OS = (() => {
       return {
         title: title,
         durationMin: durationMin,
+        positiveMarks: parseFloat(positiveMarks) || 2.0,
+        negativeMarks: parseFloat(negativeMarks) >= 0 ? parseFloat(negativeMarks) : 0.5,
         isSectionLocked: isLocked,
         isEphemeral: isEphemeralMock,
         sections: configuredSections,
@@ -2862,17 +2750,39 @@ const CGL_OS = (() => {
     },
 
     async launchMockSession(mockInstance) {
-      const { title, questions, durationMin, isSectionLocked, sections, isEphemeral } = mockInstance;
-      await compileAndLaunchArena(title, questions, durationMin, isSectionLocked, sections, isEphemeral);
+      const { title, questions, durationMin, isSectionLocked, sections, isEphemeral, positiveMarks, negativeMarks } = mockInstance;
+      if (!questions || questions.length === 0) {
+        alert("Zero matching questions found in the bank for this scope.");
+        return;
+      }
+      await compileAndLaunchArena(title, questions, durationMin, isSectionLocked, sections, isEphemeral, positiveMarks, negativeMarks);
     }
   };
 
+  // --- END OF PART 1 OF 2 (Proceed to Part 2 of 2 for Sections 19 - 30) ---
   /* ==========================================================================
-   * SECTION 19: MOCK LAB / BUILDER CONTROLLERS & MULTI-CHAPTER MATRIX
-   * Granular Chip Matrix Selection & Independent Sectional Clocks
+   * SECTION 19: MOCK LAB / BUILDER CONTROLLERS & FLEXIBLE MARKING SCHEME
+   * Granular Chip Matrix, Custom Marking Presets, Option Shuffle & Dojo Launch
    * ========================================================================== */
   let activeMockStrategy = "RANDOM";
   let customSequenceRows = [];
+
+  function handleMarkingPresetChange(preset) {
+    const posEl = document.getElementById("builder-mark-pos");
+    const negEl = document.getElementById("builder-mark-neg");
+    if (!posEl || !negEl) return;
+
+    if (preset === "TIER_1") {
+      posEl.value = "2.0";
+      negEl.value = "0.5";
+    } else if (preset === "TIER_2") {
+      posEl.value = "3.0";
+      negEl.value = "1.0";
+    } else if (preset === "PRACTICE") {
+      posEl.value = "1.0";
+      negEl.value = "0.0";
+    }
+  }
 
   function setMockStrategy(strategy, btnEl) {
     activeMockStrategy = strategy;
@@ -2902,7 +2812,6 @@ const CGL_OS = (() => {
       sel.innerHTML = `<option value="ALL">All Chapters (Use Matrix Below)</option>`;
     }
 
-    // Retain mockLabSelectedMatrixChapters so multi-subject selections persist across Custom sections
     const chipsWrap = document.getElementById("builder-chapter-chips-wrap");
     if (chipsWrap) chipsWrap.innerHTML = "";
 
@@ -2988,23 +2897,29 @@ const CGL_OS = (() => {
 
   async function updateBuilderPoolEstimate() {
     const sub = document.getElementById("builder-subject")?.value || "ALL";
+    const diff = document.getElementById("builder-difficulty")?.value || "ALL";
     const allQs = await getAllRecords("store_questions");
 
     const pool = allQs.filter(q => {
       if (sub !== "ALL" && q.subject !== sub) return false;
+      if (diff !== "ALL" && q.difficulty !== diff) return false;
       if (mockLabSelectedMatrixChapters.size > 0 && !mockLabSelectedMatrixChapters.has(q.chapter)) return false;
       return true;
     });
 
-    safeSetText("builder-pool-estimate", `Estimated pool: ${pool.length} questions`);
+    safeSetText("builder-pool-estimate", `Estimated pool: ${pool.length} matching questions`);
   }
 
   async function previewMockSelection() {
     try {
       const config = getActiveBuilderConfig();
       const instance = await MockService.generate({ ...config, count: Math.min(config.count, 15) });
-      const qIds = instance.questions.map((q, idx) => `${idx + 1}. [${q.subject} â€¢ ${q.chapter}] ${q.questionText.slice(0, 75)}...`).join("\n\n");
-      alert(`MOCK PREVIEW (${instance.questions.length} Questions Sampled):\n\n${qIds}`);
+      if (instance.questions.length === 0) {
+        alert("Zero matching questions in current scope.");
+        return;
+      }
+      const qIds = instance.questions.map((q, idx) => `${idx + 1}. [${q.subject} \u2022 ${q.chapter}] ${q.questionText.slice(0, 75)}...`).join("\n\n");
+      alert(`MOCK PREVIEW (${instance.questions.length} Questions Sampled | Marking: +${instance.positiveMarks}/-${instance.negativeMarks}):\n\n${qIds}`);
     } catch (err) {
       alert("Preview Error: " + err.message);
     }
@@ -3017,13 +2932,17 @@ const CGL_OS = (() => {
     const diff = document.getElementById("builder-difficulty")?.value || "ALL";
     const avoidRecent = document.getElementById("builder-avoid-recent")?.checked ?? true;
     const shuffle = document.getElementById("builder-shuffle")?.checked ?? true;
+    const shuffleOptions = document.getElementById("builder-shuffle-options")?.checked ?? false;
+    const strictPool = document.getElementById("builder-strict-pool")?.checked ?? true;
+    const posMarks = parseFloat(document.getElementById("builder-mark-pos")?.value || "2.0");
+    const negMarks = parseFloat(document.getElementById("builder-mark-neg")?.value || "0.5");
 
     const chosenChapters = Array.from(mockLabSelectedMatrixChapters);
 
     return {
-      title: chosenChapters.length > 0 
-        ? `${chosenChapters.slice(0, 2).join(' & ')} Practice Mock` 
-        : (sub !== "ALL" ? `${sub} Sectional Mock` : `Targeted ${activeMockStrategy} Mock`),
+      title: chosenChapters.length > 0
+        ? `${chosenChapters.slice(0, 2).join(" & ")} Practice`
+        : (sub !== "ALL" ? `${sub} Sectional (${activeMockStrategy})` : `Targeted ${activeMockStrategy} Mock`),
       subject: sub,
       chapter: "ALL",
       chapters: chosenChapters,
@@ -3033,6 +2952,10 @@ const CGL_OS = (() => {
       mode: activeMockStrategy,
       excludeRecentMocks: avoidRecent,
       randomizeOrder: shuffle,
+      shuffleOptions: shuffleOptions,
+      allowFallbackPadding: !strictPool,
+      positiveMarks: isNaN(posMarks) ? 2.0 : posMarks,
+      negativeMarks: isNaN(negMarks) ? 0.5 : negMarks,
       isSectionLocked: false
     };
   }
@@ -3072,11 +2995,9 @@ const CGL_OS = (() => {
       div.style.marginBottom = "8px";
 
       const subChapters = TAXONOMY[row.subject] ? TAXONOMY[row.subject].chapters : [];
-      
-      // Calculate active matrix chips matching this section's subject
       const activeMatrixForSub = Array.from(mockLabSelectedMatrixChapters).filter(c => subChapters.includes(c));
-      const matrixBadge = activeMatrixForSub.length > 0 
-        ? `<span style="font-size:10px; color:var(--accent-cyan); font-weight:700;">[Matrix: ${activeMatrixForSub.length} chapter(s) active]</span>` 
+      const matrixBadge = activeMatrixForSub.length > 0
+        ? `<span style="font-size:10px; color:var(--accent-cyan); font-weight:700;">[Matrix: ${activeMatrixForSub.length} chapter(s) active]</span>`
         : `<span style="font-size:10px; color:var(--text-muted);">[Matrix: All chapters]</span>`;
 
       div.innerHTML = `
@@ -3085,29 +3006,29 @@ const CGL_OS = (() => {
             <span style="font-weight:700; font-size:12px; color:var(--accent-cyan);">Section ${idx + 1}</span>
             ${matrixBadge}
           </div>
-          ${customSequenceRows.length > 1 ? `<button class="btn btn-secondary" style="padding:2px 6px; font-size:10px; color:var(--status-red);" onclick="CGL_OS.removeCustomSectionRow(${idx})">Remove</button>` : ''}
+          ${customSequenceRows.length > 1 ? `<button class="btn btn-secondary" style="padding:2px 6px; font-size:10px; color:var(--status-red);" onclick="CGL_OS.removeCustomSectionRow(${idx})">Remove</button>` : ""}
         </div>
         <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:6px;">
           <div>
             <label style="font-size:10px; color:var(--text-muted);">Subject</label>
             <select class="form-control" style="padding:6px; font-size:11px;" onchange="CGL_OS.updateCustomRowSubject(${idx}, this.value)">
-              ${Object.keys(TAXONOMY).map(k => `<option value="${k}" ${row.subject === k ? 'selected' : ''}>${k}</option>`).join('')}
+              ${Object.keys(TAXONOMY).map(k => `<option value="${k}" ${row.subject === k ? "selected" : ""}>${k}</option>`).join("")}
             </select>
           </div>
           <div>
             <label style="font-size:10px; color:var(--text-muted);">Chapter</label>
             <select class="form-control" style="padding:6px; font-size:11px;" onchange="CGL_OS.updateCustomRowChapter(${idx}, this.value)">
               <option value="ALL">All (Use Matrix)</option>
-              ${subChapters.map(c => `<option value="${c}" ${row.chapter === c ? 'selected' : ''}>${c}</option>`).join('')}
+              ${subChapters.map(c => `<option value="${c}" ${row.chapter === c ? "selected" : ""}>${c}</option>`).join("")}
             </select>
           </div>
           <div>
             <label style="font-size:10px; color:var(--text-muted);">Qs</label>
-            <input type="number" class="form-control" style="padding:6px; font-size:11px;" value="${row.count}" min="5" max="50" onchange="CGL_OS.updateCustomRowCount(${idx}, this.value)">
+            <input type="number" class="form-control" style="padding:6px; font-size:11px;" value="${row.count}" min="1" max="100" onchange="CGL_OS.updateCustomRowCount(${idx}, this.value)">
           </div>
           <div>
             <label style="font-size:10px; color:var(--text-muted);">Mins</label>
-            <input type="number" class="form-control" style="padding:6px; font-size:11px;" value="${row.durationMin}" min="1" max="60" onchange="CGL_OS.updateCustomRowDuration(${idx}, this.value)">
+            <input type="number" class="form-control" style="padding:6px; font-size:11px;" value="${row.durationMin}" min="1" max="120" onchange="CGL_OS.updateCustomRowDuration(${idx}, this.value)">
           </div>
         </div>
       `;
@@ -3159,17 +3080,22 @@ const CGL_OS = (() => {
         type: "FIXED_PAPER",
         title: title,
         isSectionLocked: !!target.isSectionLocked,
+        positiveMarks: target.positiveMarks || 2.0,
+        negativeMarks: target.negativeMarks !== undefined ? target.negativeMarks : 0.5,
         sections: target.sections ? JSON.parse(JSON.stringify(target.sections)) : [],
         questions: JSON.parse(JSON.stringify(target.questions))
       };
     } else {
       const isLock = document.getElementById("builder-sectional-lock")?.value === "YES";
+      const cfg = getActiveBuilderConfig();
       record = {
         id: "bp_" + Date.now(),
         type: "DYNAMIC_BLUEPRINT",
         title: title,
         isSectionLocked: isLock,
-        selectionRule: getActiveBuilderConfig(),
+        positiveMarks: cfg.positiveMarks,
+        negativeMarks: cfg.negativeMarks,
+        selectionRule: cfg,
         sections: JSON.parse(JSON.stringify(customSequenceRows)),
         questions: null
       };
@@ -3189,7 +3115,13 @@ const CGL_OS = (() => {
     if (preset.type === "FIXED_PAPER" && preset.questions && preset.questions.length > 0) {
       await MockService.launchMockSession(preset);
     } else {
-      const rule = preset.selectionRule || { title: preset.title, count: 25, mode: "RANDOM" };
+      const rule = preset.selectionRule || {
+        title: preset.title,
+        count: 25,
+        mode: "RANDOM",
+        positiveMarks: preset.positiveMarks || 2.0,
+        negativeMarks: preset.negativeMarks !== undefined ? preset.negativeMarks : 0.5
+      };
       const instance = await MockService.generate(rule);
       await MockService.launchMockSession(instance);
     }
@@ -3202,9 +3134,22 @@ const CGL_OS = (() => {
     }
   }
 
+  async function launchConfiguredDojo() {
+    const modal = document.getElementById("modal-mock-builder");
+    if (modal) modal.classList.remove("active");
+    const config = getActiveBuilderConfig();
+    const instance = await MockService.generate(config);
+    if (!instance.questions || instance.questions.length === 0) {
+      alert("Zero matching questions found for this Dojo setup.");
+      return;
+    }
+    await openDojoSessionWithQuestions(instance.questions, `${config.title} (Dojo Clinic)`);
+  }
+
   async function launchConfiguredMock() {
     const modal = document.getElementById("modal-mock-builder");
     if (modal) modal.classList.remove("active");
+    const baseCfg = getActiveBuilderConfig();
 
     if (activeMockStrategy === "CUSTOM_BUILDER") {
       const isLock = document.getElementById("builder-sectional-lock")?.value === "YES";
@@ -3218,8 +3163,7 @@ const CGL_OS = (() => {
       for (let sIdx = 0; sIdx < customSequenceRows.length; sIdx++) {
         const row = customSequenceRows[sIdx];
         let pool = allQuestions.filter(q => q.subject === row.subject);
-        
-        // Scope pool by active matrix chips matching this section's subject
+
         const matrixChapsForSub = Array.from(mockLabSelectedMatrixChapters).filter(c => {
           return TAXONOMY[row.subject] && TAXONOMY[row.subject].chapters.includes(c);
         });
@@ -3230,8 +3174,10 @@ const CGL_OS = (() => {
           pool = pool.filter(q => matrixChapsForSub.includes(q.chapter));
         }
 
+        if (pool.length === 0 && !baseCfg.allowFallbackPadding) {
+          continue;
+        }
         if (pool.length === 0) pool = allQuestions.filter(q => q.subject === row.subject);
-        if (pool.length === 0) pool = allQuestions;
 
         const shuffled = MockService.shuffle([...pool]);
         const sectionQuestions = shuffled.slice(0, Math.min(row.count, shuffled.length));
@@ -3248,8 +3194,9 @@ const CGL_OS = (() => {
         sections.push(secObj);
 
         sectionQuestions.forEach((q, qIdx) => {
+          const itemQ = baseCfg.shuffleOptions ? MockService.permuteQuestionOptions(q) : { ...q };
           flattened.push({
-            ...q,
+            ...itemQ,
             sectionIndex: sIdx,
             sectionName: secObj.name,
             localNumber: qIdx + 1,
@@ -3259,38 +3206,44 @@ const CGL_OS = (() => {
       }
 
       await compileAndLaunchArena(
-        `Custom Routine (${signatureTags.join('âž”')})`,
+        `Custom Routine (${signatureTags.join("\u2794")})`,
         flattened,
         customSequenceRows.reduce((a, b) => a + b.durationMin, 0),
         isLock,
-        sections
+        sections,
+        false,
+        baseCfg.positiveMarks,
+        baseCfg.negativeMarks
       );
     } else {
-      const config = getActiveBuilderConfig();
-      const instance = await MockService.generate(config);
+      const instance = await MockService.generate(baseCfg);
       await MockService.launchMockSession(instance);
     }
   }
 
   async function launchConfiguredMockDirect(sub, chap, count, durMin) {
     const instance = await MockService.generate({
-      title: `${chap === 'ALL' ? sub : chap} Blitz Drill`,
+      title: `${chap === "ALL" ? sub : chap} Blitz Drill`,
       subject: sub,
       chapter: chap,
       count: count,
       durationMin: durMin,
-      mode: "RANDOM"
+      mode: "RANDOM",
+      shuffleOptions: true
     });
     await MockService.launchMockSession(instance);
   }
 
   /* ==========================================================================
-   * SECTION 20: TIMED EXAM ARENA CONTROLLER & PALETTE
-   * Independent Sectional Clocks & Pinned Passage Container
+   * SECTION 20: TIMED EXAM ARENA, EPOCH-DELTA TIMERS, SCRATCHPAD & PALETTE
+   * Fixed:
+   * - Epoch-delta timers immune to mobile background throttling
+   * - Continuous auto-persist of store_active_session on every interaction
+   * - Chronological sectionRemainingAtAnswerSec recorded on option click
+   * - Live Canonical Overlay in Review Arena
    * ========================================================================== */
   function startExamTimers() {
     clearInterval(examTimerInterval);
-    clearInterval(questionTimerInterval);
 
     if (activeExam && activeExam.isReviewMode) {
       safeSetText("hud-countdown", "REVIEW");
@@ -3299,38 +3252,50 @@ const CGL_OS = (() => {
       return;
     }
 
-    examTimerInterval = setInterval(() => {
-      if (!activeExam || activeExam.isPaused || activeExam.isReviewMode) return;
+    lastTimerTickEpoch = Date.now();
 
-      activeExam.sectionRemainingSec--;
+    examTimerInterval = setInterval(() => {
+      if (!activeExam || activeExam.isPaused || activeExam.isReviewMode) {
+        lastTimerTickEpoch = Date.now();
+        return;
+      }
+
+      const now = Date.now();
+      const elapsedSec = Math.max(1, Math.round((now - lastTimerTickEpoch) / 1000));
+      lastTimerTickEpoch = now;
+
+      activeExam.sectionRemainingSec = Math.max(0, activeExam.sectionRemainingSec - elapsedSec);
+      activeExam.currentQTimeSpentSec += elapsedSec;
+
+      const curQ = activeExam.questions[activeExam.currentQuestionIndex];
+      if (curQ && activeExam.userResponses[curQ.id]) {
+        activeExam.userResponses[curQ.id].timeSpentSec += elapsedSec;
+      }
+
       const m = Math.floor(activeExam.sectionRemainingSec / 60);
       const s = activeExam.sectionRemainingSec % 60;
       const clockEl = document.getElementById("hud-countdown");
       if (clockEl) {
-        clockEl.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        clockEl.innerText = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
         if (activeExam.sectionRemainingSec < 180) clockEl.className = "hud-timer crimson";
         else if (activeExam.sectionRemainingSec < 300) clockEl.className = "hud-timer amber";
         else clockEl.className = "hud-timer";
       }
 
+      const qm = Math.floor(activeExam.currentQTimeSpentSec / 60);
+      const qs = activeExam.currentQTimeSpentSec % 60;
+      safeSetText("arena-q-timer", `${String(qm).padStart(2, "0")}:${String(qs).padStart(2, "0")}`);
+      safeSetText("hud-pacing-status", `${activeExam.currentQTimeSpentSec}s on Q`);
+
       if (activeExam.sectionRemainingSec <= 0) {
         handleSectionLockTransition(true);
       }
     }, 1000);
+  }
 
-    questionTimerInterval = setInterval(() => {
-      if (!activeExam || activeExam.isPaused || activeExam.isReviewMode) return;
-      activeExam.currentQTimeSpentSec++;
-      const m = Math.floor(activeExam.currentQTimeSpentSec / 60);
-      const s = activeExam.currentQTimeSpentSec % 60;
-      safeSetText("arena-q-timer", `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`);
-      safeSetText("hud-pacing-status", `${activeExam.currentQTimeSpentSec}s on Q`);
-
-      const curQ = activeExam.questions[activeExam.currentQuestionIndex];
-      if (curQ && activeExam.userResponses[curQ.id]) {
-        activeExam.userResponses[curQ.id].timeSpentSec++;
-      }
-    }, 1000);
+  function persistActiveSessionSilently() {
+    if (!activeExam || activeExam.isReviewMode || activeExam.completed) return;
+    putRecord("store_active_session", { id: "current_session", session: activeExam });
   }
 
   function requestEndSectionEarly() {
@@ -3340,7 +3305,7 @@ const CGL_OS = (() => {
     const s = activeExam.sectionRemainingSec % 60;
 
     safeSetHtml("lock-confirm-msg", `
-      You have <b>${m}m ${s}s</b> remaining in <b>${curSec ? curSec.name : 'this section'}</b>.<br><br>
+      You have <b>${m}m ${s}s</b> remaining in <b>${curSec ? curSec.name : "this section"}</b>.<br><br>
       Locking early will permanently seal this section. You cannot return to it.
     `);
     const modal = document.getElementById("modal-section-lock-confirm");
@@ -3363,11 +3328,13 @@ const CGL_OS = (() => {
       activeExam.activeSectionIndex++;
       const nextSec = activeExam.sections[activeExam.activeSectionIndex];
       activeExam.sectionRemainingSec = nextSec.durationSec;
+      lastTimerTickEpoch = Date.now();
       const nextIdx = activeExam.questions.findIndex(q => q.sectionIndex === activeExam.activeSectionIndex);
       if (nextIdx !== -1) activeExam.currentQuestionIndex = nextIdx;
 
-      showSectionToast(isAutoExpired 
-        ? `Section time expired! Locked and transitioned to: ${nextSec.name}` 
+      persistActiveSessionSilently();
+      showSectionToast(isAutoExpired
+        ? `Section time expired! Locked and transitioned to: ${nextSec.name}`
         : `Section locked early! Transitioned to: ${nextSec.name}`);
 
       renderActiveExamQuestion();
@@ -3384,12 +3351,36 @@ const CGL_OS = (() => {
     setTimeout(() => { toast.style.display = "none"; }, 3500);
   }
 
-  function renderActiveExamQuestion() {
+  async function toggleCurrentArenaQuestionStar() {
+    if (!activeExam) return;
     const q = activeExam.questions[activeExam.currentQuestionIndex];
+    if (!q) return;
+    q.bookmarked = !q.bookmarked;
+    if (!q.ephemeral) {
+      await QuestionService.toggleStar(q.id);
+    }
+    persistActiveSessionSilently();
+    renderActiveExamQuestion();
+  }
+
+  function renderActiveExamQuestion() {
+    if (!activeExam || !activeExam.questions || activeExam.questions.length === 0) return;
+    const q = activeExam.questions[activeExam.currentQuestionIndex];
+    if (!q) return;
     const resp = activeExam.userResponses[q.id] || {};
     const isRev = !!activeExam.isReviewMode;
+    const posM = activeExam.positiveMarks !== undefined ? activeExam.positiveMarks : 2.0;
+    const negM = activeExam.negativeMarks !== undefined ? activeExam.negativeMarks : 0.5;
 
     safeSetDisplay("btn-arena-research", "inline-flex");
+    safeSetDisplay("btn-arena-edit-q", isRev ? "inline-flex" : "none");
+    safeSetText("hud-marking-pill", `+${posM.toFixed(1)} / -${negM.toFixed(2)}`);
+
+    const starBtn = document.getElementById("btn-arena-star");
+    if (starBtn) {
+      starBtn.classList.toggle("starred", !!q.bookmarked);
+      starBtn.innerText = q.bookmarked ? "\u2605 Starred" : "\u2606 Star / Doubt";
+    }
 
     if (isRev) {
       safeSetDisplay("btn-arena-pause", "none");
@@ -3397,21 +3388,21 @@ const CGL_OS = (() => {
       safeSetDisplay("btn-arena-early-lock", "none");
       safeSetDisplay("btn-drawer-early-lock", "none");
       safeSetDisplay("btn-q-review", "none");
-      safeSetText("btn-q-save-next", "Next Question â–º");
+      safeSetText("btn-q-save-next", "Next Question \u25BA");
       safeSetDisplay("btn-submit-exam", "none");
       safeSetText("palette-drawer-title", "Review Palette");
       safeSetHtml("palette-legend-bar", `
-        <span>ðŸŸ¢ Correct</span>
-        <span>ðŸ”´ Incorrect</span>
-        <span>âšª Unattempted</span>
+        <span>\uD83D\uDFE2 Correct</span>
+        <span>\uD83D\uDD34 Incorrect</span>
+        <span>\u26AA Unattempted</span>
       `);
       safeSetDisplay("hud-panic-flag", resp.isPanicSlip ? "inline-block" : "none");
 
       const spent = resp.timeSpentSec || 0;
       const mSpent = Math.floor(spent / 60);
       const sSpent = spent % 60;
-      safeSetText("arena-q-timer", `${String(mSpent).padStart(2, '0')}:${String(sSpent).padStart(2, '0')}`);
-      safeSetText("hud-pacing-status", `${spent}s on Q`);
+      safeSetText("arena-q-timer", `${String(mSpent).padStart(2, "0")}:${String(sSpent).padStart(2, "0")}`);
+      safeSetText("hud-pacing-status", `${spent}s on Q (Par: ${getSubjectThresholds(q.subject).parSec}s)`);
     } else {
       safeSetDisplay("btn-arena-pause", "inline-flex");
       safeSetDisplay("btn-arena-exit-review", "none");
@@ -3425,8 +3416,8 @@ const CGL_OS = (() => {
         safeSetDisplay("btn-arena-early-lock", "inline-flex");
         safeSetDisplay("btn-drawer-early-lock", "block");
         const isLast = activeExam.activeSectionIndex === activeExam.sections.length - 1;
-        safeSetText("btn-arena-early-lock", isLast ? "ðŸ”’ Submit Final Section" : "ðŸ”’ End Section Early");
-        safeSetText("btn-drawer-early-lock", isLast ? "ðŸ”’ Lock & Submit Final Section" : "ðŸ”’ End & Advance Section Early");
+        safeSetText("btn-arena-early-lock", isLast ? "\uD83D\uDD12 Submit Final Section" : "\uD83D\uDD12 End Section Early");
+        safeSetText("btn-drawer-early-lock", isLast ? "\uD83D\uDD12 Lock & Submit Final Section" : "\uD83D\uDD12 End & Advance Section Early");
       } else {
         safeSetDisplay("btn-arena-early-lock", "none");
         safeSetDisplay("btn-drawer-early-lock", "none");
@@ -3434,16 +3425,21 @@ const CGL_OS = (() => {
     }
 
     const secQs = activeExam.questions.filter(item => item.sectionIndex === q.sectionIndex);
-    safeSetText("hud-section-badge", `${q.sectionName ? q.sectionName.toUpperCase() : 'EXAM'}`);
+    safeSetText("hud-section-badge", `${q.sectionName ? q.sectionName.toUpperCase() : "EXAM"}`);
     safeSetText("hud-section-qinfo", `Sec Q${q.localNumber || (activeExam.currentQuestionIndex + 1)} of ${secQs.length} (Global Q${q.globalNumber || (activeExam.currentQuestionIndex + 1)})`);
     safeSetText("arena-q-num", `Q${q.globalNumber || (activeExam.currentQuestionIndex + 1)}`);
 
-    // Pinned Reading Comprehension / Cloze / Caselet Container
+    // Pinned Reading Comprehension / Cloze / Caselet Container + Tablet Split-Pane Class
     const passageContainer = document.getElementById("arena-passage-container");
+    const arenaBody = document.getElementById("arena-body");
+    const hasPassage = !!(q.passageText && q.passageText.trim().length > 0);
+    if (arenaBody) {
+      arenaBody.classList.toggle("has-passage", hasPassage);
+    }
     if (passageContainer) {
-      if (q.passageText && q.passageText.trim().length > 0) {
+      if (hasPassage) {
         passageContainer.style.display = "block";
-        safeSetText("arena-passage-tag", `${q.chapter.replace(/^ENG_/, '').replace(/^QA_/, '')} CONTEXT`);
+        safeSetText("arena-passage-tag", `${q.chapter.replace(/^ENG_/, "").replace(/^QA_/, "")} CONTEXT`);
         safeSetText("arena-passage-set-badge", `SET Q ${q.setOrder || 1}/${q.setTotal || 1}`);
         safeSetHtml("arena-passage-body", formatRichText(q.passageText));
       } else {
@@ -3477,7 +3473,6 @@ const CGL_OS = (() => {
       }
     }
 
-    // Dynamic Multi-Concept Linked Knowledge Pills in Review Mode
     const conceptBridgeBox = document.getElementById("arena-concept-bridge-box");
     if (isRev && conceptBridgeBox) {
       conceptBridgeBox.style.display = "block";
@@ -3492,7 +3487,7 @@ const CGL_OS = (() => {
           const btn = document.createElement("button");
           btn.className = "btn btn-cyan";
           btn.style.cssText = "padding:6px 12px; font-size:12px; font-weight:700;";
-          btn.innerText = `ðŸ“– Browse Sheets for ${q.chapter}`;
+          btn.innerText = `\uD83D\uDCD6 Browse Sheets for ${q.chapter}`;
           btn.onclick = () => openCompendiumToSheet(null, q.subject, q.chapter);
           pillsWrap.appendChild(btn);
         } else {
@@ -3500,7 +3495,7 @@ const CGL_OS = (() => {
             const btn = document.createElement("button");
             btn.className = "btn btn-cyan";
             btn.style.cssText = "padding:6px 12px; font-size:12px; font-weight:700;";
-            btn.innerText = `ðŸ“– Sheet: ${cId.replace(/^top_/, '').replace(/_/g, ' ')}`;
+            btn.innerText = `\uD83D\uDCD6 Sheet: ${cId.replace(/^top_/, "").replace(/_/g, " ")}`;
             btn.onclick = () => openCompendiumToSheet(cId, q.subject, q.chapter);
             pillsWrap.appendChild(btn);
           });
@@ -3510,30 +3505,31 @@ const CGL_OS = (() => {
       conceptBridgeBox.style.display = "none";
     }
 
-    // Telemetry & Hesitation Decision Trail Banner
     const telemBanner = document.getElementById("arena-review-telemetry-banner");
     const solutionBlock = document.getElementById("arena-review-solution-block");
 
     if (isRev && telemBanner && solutionBlock) {
       const isAtt = resp.selectedOption !== null && resp.selectedOption !== undefined;
       const isCor = isAtt && resp.selectedOption === q.correctIndex;
+      const parSec = getSubjectThresholds(q.subject).parSec;
+
       telemBanner.style.display = "block";
       telemBanner.innerHTML = `
-        <div style="background:var(--bg-elevated); border:1px solid ${isCor ? 'var(--status-green)' : (isAtt ? 'var(--status-red)' : 'var(--border-color)')}; border-radius:8px; padding:10px; font-size:12px;">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-weight:800; color:${isCor ? 'var(--status-green)' : (isAtt ? 'var(--status-red)' : 'var(--text-muted)')};">
-              ${isCor ? 'âœ“ CORRECT (+2.0)' : (isAtt ? 'âœ— INCORRECT (-0.5)' : 'âšª UNATTEMPTED (0.0)')}
+        <div style="background:var(--bg-elevated); border:1px solid ${isCor ? "var(--status-green)" : (isAtt ? "var(--status-red)" : "var(--border-color)")}; border-radius:8px; padding:10px; font-size:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+            <span style="font-weight:800; color:${isCor ? "var(--status-green)" : (isAtt ? "var(--status-red)" : "var(--text-muted)")};">
+              ${isCor ? `\u2713 CORRECT (+${posM.toFixed(1)})` : (isAtt ? `\u2717 INCORRECT (-${negM.toFixed(2)})` : "\u26AA UNATTEMPTED (0.0)")}
             </span>
-            <span style="font-family:var(--font-mono); color:var(--text-muted);">${resp.timeSpentSec || 0}s spent</span>
+            <span style="font-family:var(--font-mono); color:var(--text-muted);">${resp.timeSpentSec || 0}s spent (Target Par: ${parSec}s)</span>
           </div>
           ${resp.decisionTrail && resp.decisionTrail.length > 0 ? `
             <div style="margin-top:6px; color:var(--accent-cyan); font-size:11px;">
-              <b>Hesitation Trail:</b> ${resp.decisionTrail.map(d => `Opt ${d.opt} (${d.atSec}s)`).join(' âž” ')}
+              <b>Hesitation Trail:</b> ${resp.decisionTrail.map(d => `Opt ${d.opt} (${d.atSec}s)`).join(" \u2794 ")}
             </div>
-          ` : ''}
-          ${resp.isPanicSlip ? `<div style="margin-top:4px; color:var(--status-red); font-size:11px; font-weight:700;">âš ï¸ Detected as Panic Slip (&lt;8s solve under end-of-section pressure).</div>` : ''}
-          ${resp.errorTag && resp.errorTag !== 'UNCLASSIFIED' && resp.errorTag !== 'VALID_CALCULATED_RISK' ? `<div style="margin-top:4px; color:#f87171; font-size:11px;"><b>Active Classification:</b> #${resp.errorTag}</div>` : ''}
-          ${resp.errorTag === 'VALID_CALCULATED_RISK' ? `<div style="margin-top:4px; color:var(--status-green); font-size:11px;"><b>Tag Cleared:</b> Valid Calculated Risk / Speed Move</div>` : ''}
+          ` : ""}
+          ${resp.isPanicSlip ? `<div style="margin-top:4px; color:var(--status-red); font-size:11px; font-weight:700;">\u26A0\uFE0F Detected as Panic Slip (&le;8s solve with &lt;90s left on section clock).</div>` : ""}
+          ${resp.errorTag && resp.errorTag !== "UNCLASSIFIED" && resp.errorTag !== "VALID_CALCULATED_RISK" ? `<div style="margin-top:4px; color:#f87171; font-size:11px;"><b>Active Classification:</b> #${resp.errorTag}</div>` : ""}
+          ${resp.errorTag === "VALID_CALCULATED_RISK" ? `<div style="margin-top:4px; color:var(--status-green); font-size:11px;"><b>Tag Cleared:</b> Valid Calculated Risk / Speed Move</div>` : ""}
         </div>
       `;
 
@@ -3541,26 +3537,27 @@ const CGL_OS = (() => {
       const currentTag = resp.errorTag || "UNCLASSIFIED";
 
       let optionsHtml = `
-        <option value="UNCLASSIFIED" ${currentTag==='UNCLASSIFIED'?'selected':''}>Override Mistake Tag...</option>
-        <option value="VALID_CALCULATED_RISK" ${currentTag==='VALID_CALCULATED_RISK'?'selected':''}>âœ“ Valid Calculated Risk (Clear Trap Penalty)</option>
+        <option value="UNCLASSIFIED" ${currentTag === "UNCLASSIFIED" ? "selected" : ""}>Override Mistake Tag...</option>
+        <option value="VALID_CALCULATED_RISK" ${currentTag === "VALID_CALCULATED_RISK" ? "selected" : ""}>\u2713 Valid Calculated Risk (Clear Trap Penalty)</option>
       `;
       customMistakeTags.forEach(t => {
         if (t !== "VALID_CALCULATED_RISK") {
-          optionsHtml += `<option value="${t}" ${currentTag===t?'selected':''}>${t.replace(/_/g, ' ')}</option>`;
+          optionsHtml += `<option value="${t}" ${currentTag === t ? "selected" : ""}>${t.replace(/_/g, " ")}</option>`;
         }
       });
       optionsHtml += `<option value="__NEW_TAG__">+ Create New Custom Tag...</option>`;
 
       solutionBlock.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
-          <span style="font-weight:700; color:var(--accent-cyan); font-size:13px;">Method & Detailed Solution</span>
+          <span style="font-weight:700; color:var(--accent-cyan); font-size:13px;">Method &amp; Detailed Solution</span>
           ${isAtt ? `
             <select onchange="CGL_OS.handleMistakeTagSelect('${q.id}', this.value)" style="background:#151a24; color:#fff; border:1px solid #da3633; font-size:11px; padding:4px 8px; border-radius:4px;">
               ${optionsHtml}
             </select>
-          ` : ''}
+          ` : ""}
         </div>
-        <div style="font-size:13.5px; line-height:1.6;">${formatRichText(q.explanation || 'No method registered.')}</div>
+        <div style="font-size:calc(13.8px * var(--reader-font-scale)); line-height:1.68;">${formatRichText(q.explanation || "No method registered.")}</div>
+        ${q.annotation ? `<div class="callout-box" style="margin-top:10px;"><b>Personal Solving Cue:</b><br>${formatRichText(q.annotation)}</div>` : ""}
       `;
     } else {
       if (telemBanner) telemBanner.style.display = "none";
@@ -3590,9 +3587,17 @@ const CGL_OS = (() => {
           if (resp.selectedOption !== null && resp.selectedOption !== idx) resp.switches++;
 
           resp.selectedOption = idx;
+          // Fixed: Record exact section clock remaining at the moment of answering!
+          resp.sectionRemainingAtAnswerSec = activeExam.sectionRemainingSec;
+
           if (!resp.decisionTrail) resp.decisionTrail = [];
-          resp.decisionTrail.push({ opt: idx + 1, atSec: activeExam.currentQTimeSpentSec });
+          resp.decisionTrail.push({
+            opt: idx + 1,
+            atSec: activeExam.currentQTimeSpentSec,
+            secRem: activeExam.sectionRemainingSec
+          });
           if (resp.status !== "marked") resp.status = "answered";
+          persistActiveSessionSilently();
           renderActiveExamQuestion();
         });
 
@@ -3610,6 +3615,7 @@ const CGL_OS = (() => {
                 if (resp.status === "answered") resp.status = "unanswered";
               }
             }
+            persistActiveSessionSilently();
             renderActiveExamQuestion();
           }, 550);
         });
@@ -3619,8 +3625,8 @@ const CGL_OS = (() => {
       card.innerHTML = `
         <span style="font-weight:700; color:var(--text-muted); font-size:13px;">${idx + 1}.</span>
         <div style="flex:1;">${formatRichText(optText)}</div>
-        ${isRev && idx === q.correctIndex ? '<span style="font-size:11px; font-weight:800; color:var(--status-green);">âœ“ Correct</span>' : ''}
-        ${isRev && idx === resp.selectedOption && idx !== q.correctIndex ? '<span style="font-size:11px; font-weight:800; color:var(--status-red);">âœ— Your Pick</span>' : ''}
+        ${isRev && idx === q.correctIndex ? '<span style="font-size:11px; font-weight:800; color:var(--status-green);">\u2713 Correct</span>' : ""}
+        ${isRev && idx === resp.selectedOption && idx !== q.correctIndex ? '<span style="font-size:11px; font-weight:800; color:var(--status-red);">\u2717 Your Pick</span>' : ""}
       `;
       container.appendChild(card);
     });
@@ -3637,6 +3643,7 @@ const CGL_OS = (() => {
     if (!activeExam.isReviewMode && resp.selectedOption !== null && resp.status !== "marked") {
       resp.status = "answered";
     }
+    persistActiveSessionSilently();
 
     const nextIdx = activeExam.currentQuestionIndex + 1;
     if (nextIdx < activeExam.questions.length) {
@@ -3669,6 +3676,7 @@ const CGL_OS = (() => {
     } else {
       resp.status = "marked";
     }
+    persistActiveSessionSilently();
     renderActiveExamQuestion();
   });
 
@@ -3706,13 +3714,13 @@ const CGL_OS = (() => {
       activeExam.sections.forEach((sec, sIdx) => {
         const tabBtn = document.createElement("button");
         tabBtn.className = "anchor-pill" + (sIdx === activeExam.activeSectionIndex ? " active" : "");
-        
+
         if (isLocked && sec.locked) {
-          tabBtn.innerText = `ðŸ”’ ${sec.name.split(" ")[0]}`;
+          tabBtn.innerText = `\uD83D\uDD12 ${sec.name.split(" ")[0]}`;
           tabBtn.style.opacity = "0.5";
           tabBtn.style.cursor = "not-allowed";
         } else if (isLocked && sIdx > activeExam.activeSectionIndex) {
-          tabBtn.innerText = `â³ ${sec.name.split(" ")[0]}`;
+          tabBtn.innerText = `\u23F3 ${sec.name.split(" ")[0]}`;
           tabBtn.style.opacity = "0.6";
         } else {
           tabBtn.innerText = sec.name.split(" ")[0];
@@ -3729,12 +3737,12 @@ const CGL_OS = (() => {
       });
     }
 
-    const targetSec = filterSectionIndex !== null 
-      ? filterSectionIndex 
+    const targetSec = filterSectionIndex !== null
+      ? filterSectionIndex
       : (isLocked ? activeExam.activeSectionIndex : null);
-      
-    const displayedQs = targetSec !== null 
-      ? activeExam.questions.filter(q => q.sectionIndex === targetSec) 
+
+    const displayedQs = targetSec !== null
+      ? activeExam.questions.filter(q => q.sectionIndex === targetSec)
       : activeExam.questions;
 
     if (!isRev) {
@@ -3756,6 +3764,7 @@ const CGL_OS = (() => {
 
       const cell = document.createElement("div");
       cell.className = "palette-cell";
+      if (q.bookmarked) cell.classList.add("starred-cell");
 
       if (isRev) {
         const isAtt = resp.selectedOption !== null && resp.selectedOption !== undefined;
@@ -3800,7 +3809,6 @@ const CGL_OS = (() => {
     if (!activeExam || activeExam.isReviewMode) return;
     activeExam.isPaused = true;
     clearInterval(examTimerInterval);
-    clearInterval(questionTimerInterval);
     await putRecord("store_active_session", { id: "current_session", session: activeExam });
 
     const shield = document.getElementById("pause-shield");
@@ -3820,6 +3828,7 @@ const CGL_OS = (() => {
     const shield = document.getElementById("pause-shield");
     if (shield) shield.style.setProperty("display", "none", "important");
     safeSetDisplay("exam-arena", "none");
+    toggleScratchpadCanvas(false);
     updateMiniPlayerDock();
   });
 
@@ -3828,8 +3837,8 @@ const CGL_OS = (() => {
       const shield = document.getElementById("pause-shield");
       if (shield) shield.style.setProperty("display", "none", "important");
       safeSetDisplay("exam-arena", "none");
+      toggleScratchpadCanvas(false);
       clearInterval(examTimerInterval);
-      clearInterval(questionTimerInterval);
       await deleteRecordFromStore("store_active_session", "current_session");
       activeExam = null;
       hideMiniPlayer();
@@ -3852,8 +3861,8 @@ const CGL_OS = (() => {
     Object.values(activeExam.userResponses).forEach(r => { if (r.status === "answered") ansCount++; });
 
     safeSetText("mini-player-title", activeExam.title);
-    safeSetText("mini-player-sub", `${q && q.sectionName ? q.sectionName.split(' ')[0] : 'Exam'} â€¢ Q${q ? (q.globalNumber || 1) : 1}`);
-    safeSetText("mini-player-time", `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`);
+    safeSetText("mini-player-sub", `${q && q.sectionName ? q.sectionName.split(" ")[0] : "Exam"} \u2022 Q${q ? (q.globalNumber || 1) : 1}`);
+    safeSetText("mini-player-time", `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`);
     safeSetText("mini-player-ans", `${ansCount}/${activeExam.questions.length} Ans`);
 
     dock.style.display = "flex";
@@ -3889,56 +3898,64 @@ const CGL_OS = (() => {
   });
 
   /**
-   * TEST SUBMISSION ENGINE & EPHEMERAL QUESTION ISOLATION:
-   * Ephemeral test questions attach strictly to the active mock session
-   * and persist in store_attempts without polluting store_questions.
+   * TEST SUBMISSION ENGINE:
+   * - Chronologically accurate PANIC_SLIP using sectionRemainingAtAnswerSec
+   * - Subject-calibrated TIME_TRAP_Q4 & SPEED_MASTERY thresholds
+   * - Configurable positiveMarks & negativeMarks support
    */
   async function submitExamSession() {
     clearInterval(examTimerInterval);
-    clearInterval(questionTimerInterval);
+    toggleScratchpadCanvas(false);
 
     let correct = 0, incorrect = 0, traps = 0, totalMarks = 0;
     let penaltyDrag = 0, switchDelta = 0;
+    const posMarks = activeExam.positiveMarks !== undefined ? activeExam.positiveMarks : 2.0;
+    const negMarks = activeExam.negativeMarks !== undefined ? activeExam.negativeMarks : 0.5;
 
     for (const q of activeExam.questions) {
       const resp = activeExam.userResponses[q.id];
+      const thresholds = getSubjectThresholds(q.subject);
+
       if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
         const isCorrect = resp.selectedOption === q.correctIndex;
-        
-        if (!isCorrect && resp.timeSpentSec <= 8 && activeExam.sectionRemainingSec < 90) {
+        const secRemWhenAnswered = resp.sectionRemainingAtAnswerSec !== undefined
+          ? resp.sectionRemainingAtAnswerSec
+          : activeExam.sectionRemainingSec;
+
+        if (!isCorrect && resp.timeSpentSec <= 8 && secRemWhenAnswered < 90) {
           resp.isPanicSlip = true;
         } else {
           resp.isPanicSlip = false;
         }
 
         if (isCorrect) {
-          totalMarks += 2.0;
+          totalMarks += posMarks;
           correct++;
           if (resp.initialOption !== null && resp.initialOption !== q.correctIndex) {
             switchDelta++;
           }
-          if (resp.timeSpentSec <= 10) {
+          if (resp.timeSpentSec <= thresholds.masterySec) {
             resp.errorTag = "SPEED_MASTERY";
           }
         } else {
-          totalMarks -= 0.5;
-          penaltyDrag += 0.5;
+          totalMarks -= negMarks;
+          penaltyDrag += negMarks;
           incorrect++;
 
           if (resp.initialOption === q.correctIndex) {
             switchDelta--;
           }
 
-          if (resp.timeSpentSec > 90) traps++;
+          if (resp.timeSpentSec > thresholds.trapSec) traps++;
 
           if (!resp.errorTag || resp.errorTag === "UNCLASSIFIED") {
             if (resp.isPanicSlip) {
               resp.errorTag = "PANIC_SLIP";
             } else if (resp.switches > 0 && resp.initialOption === q.correctIndex) {
               resp.errorTag = "SECOND_GUESS_BLUNDER";
-            } else if (resp.timeSpentSec > 90) {
+            } else if (resp.timeSpentSec > thresholds.trapSec) {
               resp.errorTag = "TIME_TRAP_Q4";
-            } else if (resp.timeSpentSec <= 12) {
+            } else if (resp.timeSpentSec <= 10 && secRemWhenAnswered >= 180) {
               resp.errorTag = "SPEED_MISREAD";
             } else {
               resp.errorTag = "CONCEPT_VOID";
@@ -3953,17 +3970,18 @@ const CGL_OS = (() => {
     activeExam.timestamp = now;
     activeExam.timeIST = formatISTDate(now);
     activeExam.diurnalSlot = getDiurnalSlot(now);
-    activeExam.finalScore = totalMarks;
+    activeExam.positiveMarks = posMarks;
+    activeExam.negativeMarks = negMarks;
+    activeExam.finalScore = parseFloat(totalMarks.toFixed(2));
     activeExam.correctCount = correct;
     activeExam.incorrectCount = incorrect;
     activeExam.q4Traps = traps;
-    activeExam.penaltyDrag = penaltyDrag;
+    activeExam.penaltyDrag = parseFloat(penaltyDrag.toFixed(2));
     activeExam.switchDelta = switchDelta;
 
     await deleteRecordFromStore("store_active_session", "current_session");
     hideMiniPlayer();
 
-    // Persist full session (including ephemeral questions) to store_attempts
     await putRecord("store_attempts", activeExam);
 
     safeSetDisplay("exam-arena", "none");
@@ -3985,9 +4003,14 @@ const CGL_OS = (() => {
     const threadAttempts = attempts.filter(a => a.sessionId === rootId || a.parentSessionId === rootId);
     const nextAttemptNumber = threadAttempts.length + 1;
 
-    const parsedSections = target.sections && target.sections.length > 0 
-      ? JSON.parse(JSON.stringify(target.sections)).map(s => ({ ...s, locked: false })) 
+    const parsedSections = target.sections && target.sections.length > 0
+      ? JSON.parse(JSON.stringify(target.sections)).map(s => ({ ...s, locked: false }))
       : [{ id: "SEC_1", name: "Section 1", durationSec: 900, locked: false }];
+
+    // Overlay latest canonical question metadata & permute options to prevent position memory
+    const allCanonical = await getAllRecords("store_questions");
+    const canonMap = {};
+    allCanonical.forEach(cq => { canonMap[cq.id] = cq; });
 
     const now = Date.now();
     activeExam = {
@@ -3997,19 +4020,25 @@ const CGL_OS = (() => {
       timestamp: now,
       timeIST: formatISTDate(now),
       diurnalSlot: getDiurnalSlot(now),
-      title: `${target.title.replace(/^Re-attempt:\s*/i, '')}`,
+      title: `${target.title.replace(/^Re-attempt:\s*/i, "")}`,
       mockType: target.mockType || "CUSTOM",
+      positiveMarks: target.positiveMarks !== undefined ? target.positiveMarks : 2.0,
+      negativeMarks: target.negativeMarks !== undefined ? target.negativeMarks : 0.5,
       signatureTag: target.signatureTag || "",
       isSectionLocked: !!target.isSectionLocked,
       isEphemeral: !!target.isEphemeral,
       sections: parsedSections,
       activeSectionIndex: 0,
       currentQuestionIndex: 0,
-      questions: target.questions.map((q, idx) => ({ 
-        ...q, 
-        sectionIndex: (typeof q.sectionIndex === "number" && q.sectionIndex >= 0 && q.sectionIndex < parsedSections.length) ? q.sectionIndex : 0,
-        globalNumber: idx + 1 
-      })),
+      questions: target.questions.map((q, idx) => {
+        const baseQ = canonMap[q.id] ? { ...q, ...canonMap[q.id] } : { ...q };
+        const permuted = MockService.permuteQuestionOptions(baseQ, `re_${now}_${idx}`);
+        return {
+          ...permuted,
+          sectionIndex: (typeof q.sectionIndex === "number" && q.sectionIndex >= 0 && q.sectionIndex < parsedSections.length) ? q.sectionIndex : 0,
+          globalNumber: idx + 1
+        };
+      }),
       sectionRemainingSec: parsedSections[0].durationSec || 900,
       currentQTimeSpentSec: 0,
       userResponses: {},
@@ -4042,13 +4071,38 @@ const CGL_OS = (() => {
     startExamTimers();
   }
 
-  function enterFullScreenReviewArena() {
+  /**
+   * LIVE CANONICAL OVERLAY IN REVIEW ARENA:
+   * Overlays the latest explanation, conceptIds, annotation, and bookmarked
+   * status from store_questions while keeping historical options & scoring intact.
+   */
+  async function enterFullScreenReviewArena() {
     if (!activeReviewAttempt) return;
     const m = document.getElementById("modal-mock-review");
     if (m) m.classList.remove("active");
 
+    const allCanonical = await getAllRecords("store_questions");
+    const canonMap = {};
+    allCanonical.forEach(cq => { canonMap[cq.id] = cq; });
+
+    const clonedAttempt = JSON.parse(JSON.stringify(activeReviewAttempt));
+    if (Array.isArray(clonedAttempt.questions)) {
+      clonedAttempt.questions = clonedAttempt.questions.map(q => {
+        const live = canonMap[q.id];
+        if (!live) return q;
+        return {
+          ...q,
+          explanation: live.explanation || q.explanation,
+          conceptId: live.conceptId || q.conceptId,
+          conceptIds: (Array.isArray(live.conceptIds) && live.conceptIds.length > 0) ? live.conceptIds : (q.conceptIds || []),
+          annotation: live.annotation || q.annotation,
+          bookmarked: !!live.bookmarked
+        };
+      });
+    }
+
     activeExam = {
-      ...JSON.parse(JSON.stringify(activeReviewAttempt)),
+      ...clonedAttempt,
       isReviewMode: true,
       activeSectionIndex: 0,
       currentQuestionIndex: 0,
@@ -4058,6 +4112,7 @@ const CGL_OS = (() => {
 
     pushNavLayer("exam-arena", () => {
       safeSetDisplay("exam-arena", "none");
+      toggleScratchpadCanvas(false);
     });
     safeSetDisplay("exam-arena", "flex");
     renderActiveExamQuestion();
@@ -4066,20 +4121,22 @@ const CGL_OS = (() => {
 
   function exitReviewArena() {
     safeSetDisplay("exam-arena", "none");
+    toggleScratchpadCanvas(false);
+    const wasStudyView = activeExam && activeExam.mockType === "STUDY_VIEW";
     activeExam = null;
-    if (activeReviewAttempt) {
+    if (!wasStudyView && activeReviewAttempt) {
       openMockReview(activeReviewAttempt);
     }
   }
 
-  /**
-   * INDEPENDENT SECTIONAL CLOCK INTEGRITY:
-   * Preserves explicitly configured section durations. Divides total time
-   * evenly only if section-specific durations were not assigned.
-   */
-  async function compileAndLaunchArena(title, questionsPool, durationMin, isSectionLocked = false, customSections = null, isEphemeral = false) {
+  async function compileAndLaunchArena(title, questionsPool, durationMin, isSectionLocked = false, customSections = null, isEphemeral = false, positiveMarks = 2.0, negativeMarks = 0.5) {
     clearInterval(examTimerInterval);
-    clearInterval(questionTimerInterval);
+    toggleScratchpadCanvas(false);
+
+    if (!questionsPool || questionsPool.length === 0) {
+      alert("Cannot launch arena: question pool is empty.");
+      return;
+    }
 
     const lockActive = (isSectionLocked === true || isSectionLocked === "YES");
     let configuredSections = [];
@@ -4106,9 +4163,9 @@ const CGL_OS = (() => {
     } else {
       const rawSections = {};
       questionsPool.forEach((q) => {
-        const sKey = (q.sectionIndex !== undefined && q.sectionName) 
-          ? `${q.sectionIndex}_${q.sectionName}` 
-          : `sub_${q.subject || 'GEN'}`;
+        const sKey = (q.sectionIndex !== undefined && q.sectionName)
+          ? `${q.sectionIndex}_${q.sectionName}`
+          : `sub_${q.subject || "GEN"}`;
         if (!rawSections[sKey]) {
           rawSections[sKey] = {
             subject: q.subject || "QA",
@@ -4165,6 +4222,8 @@ const CGL_OS = (() => {
     }
 
     const now = Date.now();
+    const isMicroDrill = flattenedQuestions.length < 10;
+
     activeExam = {
       sessionId: "ai_mock_" + now,
       parentSessionId: null,
@@ -4173,7 +4232,9 @@ const CGL_OS = (() => {
       timeIST: formatISTDate(now),
       diurnalSlot: getDiurnalSlot(now),
       title: title || "AI Practice Arena",
-      mockType: configuredSections.length > 1 ? "CUSTOM" : "SECTIONAL",
+      mockType: isMicroDrill ? "MICRO_DRILL" : (configuredSections.length > 1 ? "CUSTOM" : "SECTIONAL"),
+      positiveMarks: parseFloat(positiveMarks) || 2.0,
+      negativeMarks: parseFloat(negativeMarks) >= 0 ? parseFloat(negativeMarks) : 0.5,
       isSectionLocked: lockActive,
       isEphemeral: !!isEphemeral,
       sections: configuredSections,
@@ -4212,12 +4273,132 @@ const CGL_OS = (() => {
     startExamTimers();
   }
 
-  // --- End of Part 3 of 4 --
+  /* ==========================================================================
+   * IN-ARENA ROUGH SCRATCHPAD CANVAS ENGINE (STYLUS & FINGER)
+   * ========================================================================== */
+  function initScratchpadCanvasListeners() {
+    const canvas = document.getElementById("scratchpad-canvas");
+    if (!canvas || canvas.dataset.bound === "true") return;
+    canvas.dataset.bound = "true";
 
+    const getPos = (e) => {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: (e.clientX - rect.left),
+        y: (e.clientY - rect.top)
+      };
+    };
+
+    canvas.addEventListener("pointerdown", (e) => {
+      if (!scratchpadActive) return;
+      e.preventDefault();
+      scratchpadDrawing = true;
+      const pos = getPos(e);
+      currentStroke = [{ x: pos.x, y: pos.y, mode: scratchpadMode }];
+      redrawScratchpad();
+    });
+
+    canvas.addEventListener("pointermove", (e) => {
+      if (!scratchpadDrawing || !scratchpadActive) return;
+      e.preventDefault();
+      const pos = getPos(e);
+      currentStroke.push({ x: pos.x, y: pos.y, mode: scratchpadMode });
+      redrawScratchpad();
+    });
+
+    const finishStroke = () => {
+      if (!scratchpadDrawing) return;
+      scratchpadDrawing = false;
+      if (currentStroke.length > 0) {
+        scratchpadStrokes.push([...currentStroke]);
+        currentStroke = [];
+      }
+      redrawScratchpad();
+    };
+
+    canvas.addEventListener("pointerup", finishStroke);
+    canvas.addEventListener("pointercancel", finishStroke);
+  }
+
+  function resizeScratchpadCanvas() {
+    const canvas = document.getElementById("scratchpad-canvas");
+    const overlay = document.getElementById("scratchpad-overlay");
+    if (!canvas || !overlay) return;
+    canvas.width = overlay.clientWidth || window.innerWidth;
+    canvas.height = overlay.clientHeight || (window.innerHeight - 120);
+    redrawScratchpad();
+  }
+
+  function redrawScratchpad() {
+    const canvas = document.getElementById("scratchpad-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const allStrokes = currentStroke.length > 0 ? [...scratchpadStrokes, currentStroke] : scratchpadStrokes;
+    allStrokes.forEach(stroke => {
+      if (!stroke || stroke.length === 0) return;
+      ctx.beginPath();
+      const isEraser = stroke[0].mode === "ERASER";
+      ctx.globalCompositeOperation = isEraser ? "destination-out" : "source-over";
+      ctx.strokeStyle = "#38bdf8";
+      ctx.lineWidth = isEraser ? 26 : 2.5;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+
+      ctx.moveTo(stroke[0].x, stroke[0].y);
+      for (let i = 1; i < stroke.length; i++) {
+        ctx.lineTo(stroke[i].x, stroke[i].y);
+      }
+      ctx.stroke();
+    });
+    ctx.globalCompositeOperation = "source-over";
+  }
+
+  function toggleScratchpadCanvas(forceState = null) {
+    const overlay = document.getElementById("scratchpad-overlay");
+    if (!overlay) return;
+    scratchpadActive = forceState !== null ? forceState : !scratchpadActive;
+    overlay.classList.toggle("active", scratchpadActive);
+    const btn = document.getElementById("btn-arena-scratchpad");
+    if (btn) btn.classList.toggle("active", scratchpadActive);
+
+    if (scratchpadActive) {
+      initScratchpadCanvasListeners();
+      setTimeout(resizeScratchpadCanvas, 20);
+    }
+  }
+
+  function setScratchpadMode(mode) {
+    scratchpadMode = mode === "ERASER" ? "ERASER" : "PEN";
+    const penBtn = document.getElementById("btn-scratch-pen");
+    const erBtn = document.getElementById("btn-scratch-eraser");
+    if (penBtn) penBtn.classList.toggle("btn-cyan", scratchpadMode === "PEN");
+    if (erBtn) erBtn.classList.toggle("btn-cyan", scratchpadMode === "ERASER");
+  }
+
+  function undoScratchpadStroke() {
+    scratchpadStrokes.pop();
+    redrawScratchpad();
+  }
+
+  function clearScratchpadCanvas() {
+    scratchpadStrokes = [];
+    currentStroke = [];
+    redrawScratchpad();
+  }
 
   /* ==========================================================================
-   * SECTION 21: CONSOLE COMMAND BUS (V2) & BIDIRECTIONAL AI PERSISTENT MEMORY
-   * Dynamic Subject Scoping, Concept CRUD & Search Cache Invalidation
+   * SECTION 21: OMNIPOTENT CONSOLE COMMAND BUS (V3) & AI PERSISTENT MEMORY
+   * Upgraded:
+   * - Accepts Single Command, Array of Commands, or BATCH_COMMANDS
+   * - LAUNCH_DOJO (Untimed Clinic via AI Console)
+   * - GET_CHAPTER_BLUEPRINT (Compact Archetype & Sheet Coverage Index)
+   * - AUDIT_DATA_INTEGRITY (Forensic Duplicate, Orphan & Artifact Scanner)
+   * - BULK_PATCH_RECORDS (Mass Reassign, Link Concepts, Regex Strip)
+   * - SET_UI_CONFIG & INJECT_CUSTOM_CSS (Persistent Runtime Customization)
+   * - RUN_SANDBOX_QUERY (Declarative Filter/Group/Sort/Aggregate Engine)
+   * - CLEANUP_COMPENDIUM_STORE (Deduplicates Twin Sheets & Fixes Geo Taxonomy)
    * ========================================================================== */
   const COMMAND_REGISTRY = {
     // 1. Symmetrical Mock Creation (Dynamic, Explicit IDs, or Ephemeral Generation)
@@ -4237,6 +4418,8 @@ const CGL_OS = (() => {
         savedRecord = await MockService.saveMockDefinition({
           title: payload.title || instance.title,
           type: payload.selection ? "DYNAMIC_BLUEPRINT" : "FIXED_PAPER",
+          positiveMarks: instance.positiveMarks,
+          negativeMarks: instance.negativeMarks,
           selectionRule: payload.selection || null,
           isSectionLocked: instance.isSectionLocked,
           sections: instance.sections,
@@ -4252,6 +4435,8 @@ const CGL_OS = (() => {
         mockId: savedRecord ? savedRecord.id : `instance_${Date.now()}`,
         title: instance.title,
         questionCount: instance.totalSelected,
+        positiveMarks: instance.positiveMarks,
+        negativeMarks: instance.negativeMarks,
         isSectionLocked: instance.isSectionLocked,
         sectionsCount: instance.sections ? instance.sections.length : 1,
         isEphemeral: isEphemeral,
@@ -4260,37 +4445,429 @@ const CGL_OS = (() => {
       };
     },
 
-    // 1B. Full AI Database Introspection Suite
+    CREATE_AND_SAVE_FIXED_MOCK: async (payload) => {
+      return await COMMAND_REGISTRY.CREATE_MOCK({ ...payload, saveAsPreset: true });
+    },
+
+    // 1B. Launch Untimed Dojo Clinic directly from AI Console
+    LAUNCH_DOJO: async (payload) => {
+      const {
+        title = "AI Prescribed Dojo Clinic",
+        subject = "ALL",
+        chapter = "ALL",
+        method = "ALL",
+        formulaBrief = null,
+        explicitQuestionIds = [],
+        customQuestions = [],
+        shuffleOptions = false
+      } = payload || {};
+
+      const allQs = await getAllRecords("store_questions");
+      let pool = [];
+
+      if (Array.isArray(explicitQuestionIds) && explicitQuestionIds.length > 0) {
+        const idSet = new Set(explicitQuestionIds);
+        pool.push(...allQs.filter(q => idSet.has(q.id)));
+      }
+      if (Array.isArray(customQuestions) && customQuestions.length > 0) {
+        for (const rawQ of customQuestions) {
+          const item = sanitizeQuestion(rawQ);
+          if (rawQ.ephemeral === false || rawQ.persist === true) {
+            await putRecord("store_questions", item);
+            SearchService.invalidate();
+          }
+          pool.push(item);
+        }
+      }
+      if (pool.length === 0) {
+        pool = allQs.filter(q => {
+          if (subject !== "ALL" && q.subject !== subject) return false;
+          if (chapter !== "ALL" && q.chapter !== chapter) return false;
+          if (method !== "ALL" && q.method !== method) return false;
+          return true;
+        });
+      }
+
+      if (shuffleOptions) {
+        pool = pool.map(q => MockService.permuteQuestionOptions(q));
+      }
+
+      await openDojoSessionWithQuestions(pool, title, formulaBrief);
+      return {
+        launchedDojo: true,
+        title: title,
+        questionCount: pool.length,
+        questionIds: pool.map(q => q.id)
+      };
+    },
+
+    // 1C. Full AI Database Introspection Suite
     GET_SYSTEM_STATS: async () => {
       const allQs = await getAllRecords("store_questions");
       const allAttempts = await getAllRecords("store_attempts");
-      const allFlashcards = await getAllRecords("store_flashcards");
       const allConcepts = await ConceptService.getAll();
       const allPresets = await getAllRecords("store_saved_mocks");
       const allConsultations = await getAllRecords("store_ai_consultations");
 
       const bySubject = {};
       const byChapter = {};
+      const sheetsByChapter = {};
       allQs.forEach(q => {
         const s = q.subject || "UNKNOWN";
         const c = q.chapter || "UNKNOWN";
         bySubject[s] = (bySubject[s] || 0) + 1;
         byChapter[c] = (byChapter[c] || 0) + 1;
       });
+      allConcepts.forEach(c => {
+        const ch = c.chapter || "UNKNOWN";
+        sheetsByChapter[ch] = (sheetsByChapter[ch] || 0) + 1;
+      });
 
       return {
         totalQuestions: allQs.length,
         questionsBySubject: bySubject,
         questionsByChapter: byChapter,
-        completedMocksCount: allAttempts.filter(a => a.completed).length,
+        sheetsByChapter: sheetsByChapter,
+        completedMocksCount: allAttempts.filter(a => a.completed && a.mockType !== "STUDY_VIEW").length,
         totalAttemptsCount: allAttempts.length,
-        cardVaultCount: allFlashcards.length,
         livingSheetsCount: allConcepts.length,
         savedMocksCount: allPresets.length,
         consultationsCount: allConsultations.length,
         schemaVersion: DB_VERSION,
+        subjectParConfig: SUBJECT_PAR_CONFIG,
         taxonomy: TAXONOMY
       };
+    },
+
+    // 1D. Compact Chapter Blueprint & Archetype Coverage Map (Token-Efficient)
+    GET_CHAPTER_BLUEPRINT: async (payload) => {
+      const { subject = "ALL", chapter = "ALL" } = payload || {};
+      const allQs = await getAllRecords("store_questions");
+      const allConcepts = await ConceptService.getAll();
+      const perfMap = await PerformanceService.getQuestionPerformanceMap();
+
+      const scopedConcepts = allConcepts.filter(c => {
+        if (subject !== "ALL" && c.subject !== subject) return false;
+        if (chapter !== "ALL" && c.chapter !== chapter) return false;
+        return true;
+      });
+
+      const scopedQs = allQs.filter(q => {
+        if (subject !== "ALL" && q.subject !== subject) return false;
+        if (chapter !== "ALL" && q.chapter !== chapter) return false;
+        return true;
+      });
+
+      return {
+        scope: { subject, chapter },
+        sheetsCount: scopedConcepts.length,
+        questionsCount: scopedQs.length,
+        sheets: scopedConcepts.map(c => ({
+          id: c.id,
+          chapter: c.chapter,
+          title: c.title,
+          subtitle: c.subtitle
+        })),
+        archetypes: scopedQs.map(q => {
+          const st = perfMap[q.id];
+          return {
+            id: q.id,
+            chapter: q.chapter,
+            subtopic: q.subtopic,
+            method: q.method,
+            difficulty: q.difficulty,
+            conceptIds: q.conceptIds || [],
+            bookmarked: !!q.bookmarked,
+            attempts: st ? st.attempts : 0,
+            acc: st && st.attempts > 0 ? Math.round((st.correct / st.attempts) * 100) : null
+          };
+        })
+      };
+    },
+
+    // 1E. Forensic Data Integrity & Duplicate/Orphan Auditor
+    AUDIT_DATA_INTEGRITY: async () => {
+      const allQs = await getAllRecords("store_questions");
+      const allConcepts = await ConceptService.getAll();
+      const conceptIdSet = new Set(allConcepts.map(c => c.id));
+      const orphans = await TaxonomyService.getOrphanedContent();
+
+      const unlinkedQuestions = [];
+      const brokenConceptLinks = [];
+      const stemMap = {};
+      const duplicateQuestionPairs = [];
+
+      allQs.forEach(q => {
+        const cIds = Array.isArray(q.conceptIds) ? q.conceptIds : (q.conceptId ? [q.conceptId] : []);
+        if (cIds.length === 0) {
+          unlinkedQuestions.push(q.id);
+        } else {
+          cIds.forEach(cid => {
+            if (!conceptIdSet.has(cid)) {
+              brokenConceptLinks.push({ questionId: q.id, missingConceptId: cid });
+            }
+          });
+        }
+
+        const normStem = (q.questionText || "").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 120);
+        if (normStem.length > 20) {
+          if (stemMap[normStem]) {
+            duplicateQuestionPairs.push([stemMap[normStem], q.id]);
+          } else {
+            stemMap[normStem] = q.id;
+          }
+        }
+      });
+
+      const titleMap = {};
+      const duplicateSheetCandidates = [];
+      const sheetsWithCitationLeaks = [];
+      allConcepts.forEach(c => {
+        if (/\[span_\d+\]/.test(c.content || "")) {
+          sheetsWithCitationLeaks.push(c.id);
+        }
+        const key = `${c.chapter}::${(c.subtitle || "").toLowerCase().slice(0, 35)}`;
+        if (c.subtitle && titleMap[key]) {
+          duplicateSheetCandidates.push([titleMap[key], c.id]);
+        } else if (c.subtitle) {
+          titleMap[key] = c.id;
+        }
+      });
+
+      return {
+        totalQuestions: allQs.length,
+        totalConcepts: allConcepts.length,
+        unlinkedQuestionsCount: unlinkedQuestions.length,
+        unlinkedQuestionIds: unlinkedQuestions.slice(0, 50),
+        brokenConceptLinksCount: brokenConceptLinks.length,
+        brokenConceptLinks: brokenConceptLinks.slice(0, 50),
+        duplicateQuestionPairs,
+        duplicateSheetCandidates,
+        sheetsWithCitationLeaks,
+        taxonomyOrphans: {
+          questions: orphans.questions.map(q => ({ id: q.id, subject: q.subject, chapter: q.chapter })),
+          concepts: orphans.concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.chapter }))
+        }
+      };
+    },
+
+    // 1F. Automated Compendium Sanitizer, Deduplicator & Geo Taxonomy Fixer
+    CLEANUP_COMPENDIUM_STORE: async () => {
+      const allConcepts = await ConceptService.getAll();
+      const allQs = await getAllRecords("store_questions");
+
+      // 1. Reassign World/Physical Geography sheets from GA_GEOGRAPHY_IN to GA_GEOGRAPHY_WORLD
+      const worldGeoIds = new Set([
+        "top_ga_geo_climatology_circulation",
+        "top_ga_geo_geodesy_earth_motions",
+        "top_ga_geo_geomorphology_landforms",
+        "top_ga_geo_interior_seismology",
+        "top_ga_geo_oceanography_dynamics",
+        "top_ga_geo_petrology_rock_cycle",
+        "top_ga_geo_plate_tectonics_volcanism"
+      ]);
+
+      // 2. Duplicate sheet pairs in ENG_OWS & ENG_SYN_ANT (keep primary, merge content if needed, delete twin)
+      const duplicateRedirects = {
+        "top_eng_ows_medical_pathology": "top_eng_ows_domain_medical_sciences",
+        "top_eng_ows_phobias_manias": "top_eng_ows_domain_phobias_manias",
+        "top_eng_ows_habitats_enclosures": "top_eng_ows_domain_places_habitats",
+        "top_eng_ows_killings_killers": "top_eng_ows_roots_killing_cide",
+        "top_eng_synant_frugality_extravagance": "top_eng_synant_affluence_penury"
+      };
+
+      const conceptMap = {};
+      allConcepts.forEach(c => { conceptMap[c.id] = c; });
+
+      let sanitizedCount = 0;
+      let reassignedGeoCount = 0;
+      let mergedDuplicatesCount = 0;
+
+      // Merge unique sections from duplicate twins into primary sheet before deleting twin
+      for (const [dupId, primaryId] of Object.entries(duplicateRedirects)) {
+        const dupSheet = conceptMap[dupId];
+        const primarySheet = conceptMap[primaryId];
+        if (dupSheet && primarySheet) {
+          if (!primarySheet.content.includes(dupSheet.title)) {
+            primarySheet.content = `${stripCitationArtifacts(primarySheet.content)}\n\n---\n\n${stripCitationArtifacts(dupSheet.content)}`;
+          }
+          await putRecord("store_concepts", sanitizeDossier(primarySheet));
+          await deleteRecordFromStore("store_concepts", dupId);
+          delete conceptMap[dupId];
+          mergedDuplicatesCount++;
+        }
+      }
+
+      // Sanitize all remaining sheets & fix World Geography chapter tags
+      for (const c of Object.values(conceptMap)) {
+        let modified = false;
+        const cleaned = stripCitationArtifacts(cleanMojibake(c.content || ""));
+        if (cleaned !== c.content) {
+          c.content = cleaned;
+          modified = true;
+          sanitizedCount++;
+        }
+        if (worldGeoIds.has(c.id) && c.chapter !== "GA_GEOGRAPHY_WORLD") {
+          c.chapter = "GA_GEOGRAPHY_WORLD";
+          modified = true;
+          reassignedGeoCount++;
+        }
+        if (modified) {
+          await putRecord("store_concepts", sanitizeDossier(c));
+        }
+      }
+
+      // Redirect any question conceptIds pointing to deleted twin sheets
+      let questionsRelinked = 0;
+      for (const q of allQs) {
+        let qChanged = false;
+        if (Array.isArray(q.conceptIds)) {
+          const updatedIds = q.conceptIds.map(cid => {
+            if (duplicateRedirects[cid]) {
+              qChanged = true;
+              return duplicateRedirects[cid];
+            }
+            return cid;
+          });
+          q.conceptIds = [...new Set(updatedIds)];
+          q.conceptId = q.conceptIds[0] || "";
+        }
+        if (qChanged) {
+          await putRecord("store_questions", sanitizeQuestion(q));
+          questionsRelinked++;
+        }
+      }
+
+      SearchService.invalidate();
+      return {
+        sanitizedSheetsCount: sanitizedCount,
+        reassignedWorldGeoCount: reassignedGeoCount,
+        mergedDuplicateSheetsCount: mergedDuplicatesCount,
+        questionsRelinkedCount: questionsRelinked
+      };
+    },
+
+    // 1G. Bulk Record Patching & Transformation
+    BULK_PATCH_RECORDS: async (payload) => {
+      const { store = "store_questions", patches = [], filter = null, updates = null } = payload || {};
+      const allowed = ["store_questions", "store_concepts", "store_saved_mocks", "store_notes"];
+      if (!allowed.includes(store)) throw new Error(`Disallowed store for bulk patch: ${store}`);
+
+      let updatedCount = 0;
+      const allRecords = await getAllRecords(store);
+      const recordMap = {};
+      allRecords.forEach(r => { recordMap[r.id] = r; });
+
+      if (Array.isArray(patches) && patches.length > 0) {
+        for (const p of patches) {
+          const target = recordMap[p.id];
+          if (target) {
+            const merged = { ...target, ...(p.updates || p) };
+            const clean = store === "store_questions" ? sanitizeQuestion(merged) : (store === "store_concepts" ? sanitizeDossier(merged) : merged);
+            await putRecord(store, clean);
+            updatedCount++;
+          }
+        }
+      } else if (filter && updates) {
+        for (const r of allRecords) {
+          let match = true;
+          for (const [k, v] of Object.entries(filter)) {
+            if (r[k] !== v) { match = false; break; }
+          }
+          if (match) {
+            const merged = { ...r, ...updates };
+            const clean = store === "store_questions" ? sanitizeQuestion(merged) : (store === "store_concepts" ? sanitizeDossier(merged) : merged);
+            await putRecord(store, clean);
+            updatedCount++;
+          }
+        }
+      }
+
+      SearchService.invalidate();
+      return { store, updatedCount };
+    },
+
+    // 1H. Persistent Runtime UI, Par Time & CSS Override Engine
+    SET_UI_CONFIG: async (payload) => {
+      const { readerScale, subjectParTimes, heroSubtitle, customMistakeTagsList } = payload || {};
+      if (typeof readerScale === "number") {
+        readerFontScale = Math.min(1.35, Math.max(0.84, readerScale));
+        document.documentElement.style.setProperty("--reader-font-scale", String(readerFontScale));
+        await putRecord("store_config", { key: "reader_font_scale", value: readerFontScale });
+      }
+      if (subjectParTimes && typeof subjectParTimes === "object") {
+        SUBJECT_PAR_CONFIG = { ...SUBJECT_PAR_CONFIG, ...subjectParTimes };
+        await putRecord("store_config", { key: "subject_par_config", value: SUBJECT_PAR_CONFIG });
+      }
+      if (typeof heroSubtitle === "string") {
+        safeSetText("dash-hero-sub", heroSubtitle);
+        await putRecord("store_config", { key: "hero_subtitle", value: heroSubtitle });
+      }
+      if (Array.isArray(customMistakeTagsList)) {
+        customMistakeTags = [...new Set([...customMistakeTags, ...customMistakeTagsList])];
+        await putRecord("store_config", { key: "custom_mistake_tags", value: customMistakeTags });
+      }
+      return {
+        readerFontScale,
+        subjectParConfig: SUBJECT_PAR_CONFIG,
+        customMistakeTagsCount: customMistakeTags.length
+      };
+    },
+
+    INJECT_CUSTOM_CSS: async (payload) => {
+      const css = (payload && payload.css !== undefined) ? String(payload.css) : "";
+      let styleTag = document.getElementById("cgl-os-custom-css");
+      if (!styleTag) {
+        styleTag = document.createElement("style");
+        styleTag.id = "cgl-os-custom-css";
+        document.head.appendChild(styleTag);
+      }
+      styleTag.textContent = css;
+      await putRecord("store_config", { key: "custom_css_overrides", value: css });
+      return { injected: true, length: css.length };
+    },
+
+    // 1I. Structured Declarative Query & Aggregation Engine
+    RUN_SANDBOX_QUERY: async (payload) => {
+      const { store = "store_questions", where = {}, groupBy = null, select = null, limit = 100 } = payload || {};
+      const records = await getAllRecords(store);
+
+      const matched = records.filter(r => {
+        for (const [k, cond] of Object.entries(where)) {
+          const val = r[k];
+          if (cond && typeof cond === "object" && !Array.isArray(cond)) {
+            if (cond.$eq !== undefined && val !== cond.$eq) return false;
+            if (cond.$ne !== undefined && val === cond.$ne) return false;
+            if (cond.$in !== undefined && Array.isArray(cond.$in) && !cond.$in.includes(val)) return false;
+            if (cond.$regex !== undefined && !new RegExp(cond.$regex, "i").test(String(val || ""))) return false;
+            if (cond.$gt !== undefined && !(val > cond.$gt)) return false;
+            if (cond.$lt !== undefined && !(val < cond.$lt)) return false;
+          } else if (val !== cond) {
+            return false;
+          }
+        }
+        return true;
+      });
+
+      if (groupBy) {
+        const groups = {};
+        matched.forEach(r => {
+          const gKey = r[groupBy] || "UNDEFINED";
+          groups[gKey] = (groups[gKey] || 0) + 1;
+        });
+        return { store, totalMatched: matched.length, groupedBy: groupBy, groups };
+      }
+
+      const sliced = matched.slice(0, limit);
+      const projected = Array.isArray(select) && select.length > 0
+        ? sliced.map(r => {
+            const obj = {};
+            select.forEach(f => { obj[f] = r[f]; });
+            return obj;
+          })
+        : sliced;
+
+      return { store, totalMatched: matched.length, returnedCount: projected.length, results: projected };
     },
 
     FETCH_QUESTIONS: async (payload) => {
@@ -4351,7 +4928,6 @@ const CGL_OS = (() => {
       return { totalQueried: ids.length, foundCount: found.length, missingCount: missing.length, found, missing };
     },
 
-    // 2. Safe Read & Telemetry Queries
     SEARCH_QUESTIONS: async (payload) => {
       const res = await SearchService.searchAll(payload.query, payload.filters || payload, payload.limit || 25);
       return { count: res.totalQuestions, results: res.questions };
@@ -4385,7 +4961,6 @@ const CGL_OS = (() => {
       return await getAllRecords("store_saved_mocks");
     },
 
-    // 3. Question CRUD
     CREATE_QUESTION: async (payload) => {
       const q = await QuestionService.create(payload.question || payload);
       SearchService.invalidate();
@@ -4408,7 +4983,6 @@ const CGL_OS = (() => {
       return await MockService.deleteMock(payload.mockId);
     },
 
-    // 4. Living Knowledge Sheet (Concept) CRUD
     CREATE_CONCEPT: async (payload) => {
       const c = await ConceptService.create(payload.concept || payload);
       SearchService.invalidate();
@@ -4422,12 +4996,11 @@ const CGL_OS = (() => {
     },
 
     DELETE_CONCEPT: async (payload) => {
-      const res = await ConceptService.delete(payload.id);
+      await ConceptService.delete(payload.id);
       SearchService.invalidate();
       return { deleted: true, id: payload.id };
     },
 
-    // 5. Safe Taxonomy Operations
     ADD_CHAPTER: async (payload) => {
       const chap = await TaxonomyService.addChapter(payload.subject, payload.chapter);
       return { success: true, chapter: chap };
@@ -4435,10 +5008,9 @@ const CGL_OS = (() => {
 
     MERGE_CHAPTERS: async (payload) => {
       await TaxonomyService.mergeChapters(payload.subject, payload.sourceChapter, payload.targetChapter);
-      return { success: true, merged: `${payload.sourceChapter} âž” ${payload.targetChapter}` };
+      return { success: true, merged: `${payload.sourceChapter} \u2794 ${payload.targetChapter}` };
     },
 
-    // 6. Bidirectional AI Memory Storage & Retrieval
     SAVE_AI_INSIGHT: async (payload) => {
       const insight = {
         id: payload.insightId || `insight_${Date.now()}`,
@@ -4464,7 +5036,7 @@ const CGL_OS = (() => {
         goal: payload.goal || "Remediation",
         subject: payload.subject || "QA",
         steps: Array.isArray(payload.steps) ? payload.steps : [],
-        successCondition: payload.successCondition || "â‰¥80% accuracy",
+        successCondition: payload.successCondition || "\u226580% accuracy",
         status: payload.status || "active",
         createdAt: Date.now()
       };
@@ -4477,21 +5049,23 @@ const CGL_OS = (() => {
       const attempts = await getAllRecords("store_attempts");
       const global = await PerformanceService.calculateGlobalMetrics();
       const weak = await PerformanceService.getWeakChapters();
+      const allQs = await getAllRecords("store_questions");
+      const starredIds = allQs.filter(q => q.bookmarked).map(q => q.id);
 
       return {
         timestampIST: formatISTDate(Date.now()),
         globalMetrics: global,
-        weakAreas: weak.slice(0, 5),
-        recentCompletedAttemptsCount: attempts.filter(a => a.completed).length,
+        weakAreas: weak.slice(0, 8),
+        starredQuestionIds: starredIds,
+        recentCompletedAttemptsCount: attempts.filter(a => a.completed && a.mockType !== "STUDY_VIEW").length,
         persistedAiConsultations: allConsultations.slice(-10)
       };
     },
 
-    // 7. Protected Raw DB Directive
     RAW_DB_OPERATION: async (payload) => {
       const { store, operation, key, record, confirmationToken } = payload;
       const allowedStores = [
-        "store_questions", "store_concepts", "store_flashcards",
+        "store_questions", "store_concepts",
         "store_notes", "store_saved_mocks", "store_ai_consultations", "store_config"
       ];
       if (!allowedStores.includes(store)) throw new Error(`Disallowed store: ${store}`);
@@ -4515,9 +5089,8 @@ const CGL_OS = (() => {
       throw new Error(`Unsupported raw operation: ${operation}`);
     },
 
-    // 8. Batch Ingestion Handlers with Search Invalidation
     BATCH_INGEST_QUESTIONS: async (payload) => {
-      const count = await QuestionService.bulkCreate(payload.questions, "Ingested Bank");
+      const count = await QuestionService.bulkCreate(payload.questions, payload.source || "Ingested Bank");
       SearchService.invalidate();
       return { success: true, count: count };
     },
@@ -4532,20 +5105,14 @@ const CGL_OS = (() => {
       return { success: true, count: dossiers.length };
     },
 
-    BATCH_INGEST_FLASHCARDS: async (payload) => {
-      const cards = (payload.cards || []).map(sanitizeFlashcard);
-      await runTx(["store_flashcards"], "readwrite", (tx) => {
-        const stF = tx.objectStore("store_flashcards");
-        cards.forEach(c => stF.put(c));
-      });
-      return { success: true, count: cards.length };
-    },
-
     INGEST_AND_ASSEMBLE_COMPLETE_MOCK: async (payload) => {
       const {
         title = "Curated Practice Mock",
         launchImmediately = false,
+        launchInDojo = false,
         isSectionLocked = false,
+        positiveMarks = 2.0,
+        negativeMarks = 0.5,
         durationMin = 20,
         dossiers = [],
         newQuestions = [],
@@ -4565,7 +5132,7 @@ const CGL_OS = (() => {
       if (newQuestions.length > 0) {
         for (const nq of newQuestions) {
           const item = sanitizeQuestion(nq);
-          if (item.ephemeral !== true && item.persist !== false) {
+          if (item.ephemeral !== true && nq.persist !== false) {
             await putRecord("store_questions", item);
           }
         }
@@ -4586,7 +5153,6 @@ const CGL_OS = (() => {
       const resolved = [];
       const addedIds = new Set();
 
-      // Resolve from explicit IDs
       orderedMockQuestionIds.forEach(id => {
         const found = allQs.find(q => q.id === id);
         if (found && !addedIds.has(found.id)) {
@@ -4595,7 +5161,6 @@ const CGL_OS = (() => {
         }
       });
 
-      // Append new questions
       newQuestions.forEach(nq => {
         const item = sanitizeQuestion(nq);
         if (!addedIds.has(item.id)) {
@@ -4604,7 +5169,6 @@ const CGL_OS = (() => {
         }
       });
 
-      // Build Discrete Sections for Timers & Locking
       let resolvedSections = sections;
       if (!resolvedSections || resolvedSections.length === 0) {
         const rawSecMap = {};
@@ -4628,6 +5192,8 @@ const CGL_OS = (() => {
       const paper = await MockService.saveMockDefinition({
         title: title,
         type: "FIXED_PAPER",
+        positiveMarks: positiveMarks,
+        negativeMarks: negativeMarks,
         isSectionLocked: isLocked,
         sections: resolvedSections,
         questions: resolved
@@ -4635,8 +5201,10 @@ const CGL_OS = (() => {
 
       SearchService.invalidate();
 
-      if (launchImmediately) {
-        await compileAndLaunchArena(title, resolved, durationMin, isLocked, resolvedSections, false);
+      if (launchInDojo) {
+        await openDojoSessionWithQuestions(resolved, title);
+      } else if (launchImmediately) {
+        await compileAndLaunchArena(title, resolved, durationMin, isLocked, resolvedSections, false, positiveMarks, negativeMarks);
       }
 
       return {
@@ -4658,21 +5226,35 @@ const CGL_OS = (() => {
         await putRecord("store_ai_consultations", consultationDossier);
       }
 
+      const actionResults = [];
       for (const act of actions) {
         const handler = COMMAND_REGISTRY[act.action];
         if (handler) {
-          await handler(act.payload || {});
+          const res = await handler(act.payload || {});
+          actionResults.push({ action: act.action, result: res });
         }
       }
       SearchService.invalidate();
-      return { success: true, actionsExecuted: actions.length };
+      return { success: true, actionsExecuted: actionResults.length, actionResults };
+    },
+
+    BATCH_COMMANDS: async (payload) => {
+      const commands = Array.isArray(payload) ? payload : (payload.commands || []);
+      const results = [];
+      for (const cmd of commands) {
+        const handler = COMMAND_REGISTRY[cmd.action];
+        if (!handler) throw new Error(`Unrecognized command in batch: ${cmd.action}`);
+        const res = await handler(cmd.payload || {});
+        results.push({ action: cmd.action, status: "SUCCESS", data: res });
+      }
+      return { totalExecuted: results.length, results };
     },
 
     REQUEST_HISTORICAL_DUMP: async (payload) => {
       const { targetSubject, timeframeDays = 30 } = payload;
       const cutoff = timeframeDays > 0 ? Date.now() - (timeframeDays * 24 * 60 * 60 * 1000) : 0;
       const allAttempts = await getAllRecords("store_attempts");
-      const dump = allAttempts.filter(a => a.completed && a.timestamp >= cutoff).map(a => ({
+      const dump = allAttempts.filter(a => a.completed && a.mockType !== "STUDY_VIEW" && a.timestamp >= cutoff).map(a => ({
         sessionId: a.sessionId,
         timeIST: a.timeIST || formatISTDate(a.timestamp),
         diurnalSlot: a.diurnalSlot || getDiurnalSlot(a.timestamp),
@@ -4689,12 +5271,14 @@ const CGL_OS = (() => {
     INGEST_AND_LAUNCH_MOCK: async (payload) => {
       const isEphemeral = (payload.ephemeral === true || payload.persistQuestions === false);
       const isLocked = (payload.isSectionLocked === true || payload.isSectionLocked === "YES");
+      const posMarks = payload.positiveMarks !== undefined ? payload.positiveMarks : 2.0;
+      const negMarks = payload.negativeMarks !== undefined ? payload.negativeMarks : 0.5;
       const rawQuestions = Array.isArray(payload.questions) ? payload.questions : [];
       const questions = [];
 
       for (const q of rawQuestions) {
         const item = sanitizeQuestion(q);
-        const itemEphemeral = item.ephemeral === true || isEphemeral;
+        const itemEphemeral = q.ephemeral === true || isEphemeral;
         if (!itemEphemeral) {
           await putRecord("store_questions", item);
         } else {
@@ -4705,7 +5289,15 @@ const CGL_OS = (() => {
 
       if (!isEphemeral) SearchService.invalidate();
 
-      // Resolve Multi-Section Wiring
+      if (payload.launchInDojo) {
+        await openDojoSessionWithQuestions(questions, payload.title || "AI Dojo Clinic", payload.formulaBrief || null);
+        return {
+          success: true,
+          launchedInDojo: true,
+          questionCount: questions.length
+        };
+      }
+
       let resolvedSections = payload.sections;
       if (!resolvedSections || resolvedSections.length === 0) {
         const rawSecMap = {};
@@ -4726,7 +5318,7 @@ const CGL_OS = (() => {
         }));
       }
 
-      await compileAndLaunchArena(payload.title || "AI Practice Mock", questions, payload.durationMin || 15, isLocked, resolvedSections, isEphemeral);
+      await compileAndLaunchArena(payload.title || "AI Practice Mock", questions, payload.durationMin || 15, isLocked, resolvedSections, isEphemeral, posMarks, negMarks);
       return {
         success: true,
         launched: true,
@@ -4736,7 +5328,6 @@ const CGL_OS = (() => {
         questionCount: questions.length
       };
     },
-
 
     AI_PRESCRIBE_REMEDY: async (payload) => {
       const qIds = payload.questionIds || [];
@@ -4749,7 +5340,11 @@ const CGL_OS = (() => {
       let remedialPool = allQs.filter(q => qIds.includes(q.id));
       if (newQuestions.length > 0) remedialPool = [...remedialPool, ...newQuestions];
 
-      await compileAndLaunchArena(payload.title || "AI Prescribed Remedial Blitz", remedialPool, payload.durationMin || 10, false);
+      if (payload.launchInDojo) {
+        await openDojoSessionWithQuestions(remedialPool, payload.title || "AI Remedial Dojo Clinic", payload.formulaBrief || null);
+      } else {
+        await compileAndLaunchArena(payload.title || "AI Prescribed Remedial Blitz", remedialPool, payload.durationMin || 10, false);
+      }
       return { success: true, remedialLaunched: true, count: remedialPool.length };
     },
 
@@ -4760,9 +5355,15 @@ const CGL_OS = (() => {
     },
 
     MODIFY_TAXONOMY: async (payload) => {
-      const { operation, subject, chapter } = payload;
-      if (operation === "ADD_CHAPTER") {
+      const { operation, subject, chapter, newName, targetChapter } = payload;
+      if (operation === "ADD_SUBJECT") {
+        await TaxonomyService.addSubject(subject, newName || subject);
+      } else if (operation === "ADD_CHAPTER") {
         await TaxonomyService.addChapter(subject, chapter);
+      } else if (operation === "RENAME_CHAPTER") {
+        await TaxonomyService.renameChapter(subject, chapter, newName);
+      } else if (operation === "MERGE_CHAPTERS") {
+        await TaxonomyService.mergeChapters(subject, chapter, targetChapter);
       } else if (operation === "DELETE_CHAPTER") {
         await TaxonomyService.deleteChapter(subject, chapter, "PRESERVE_UNASSIGNED");
       }
@@ -4770,13 +5371,13 @@ const CGL_OS = (() => {
     }
   };
 
-  async function executeConsoleCommand() {
+  async function executeConsoleCommand(overrideRaw = null) {
     const rawInput = document.getElementById("console-payload");
     const consoleOutput = document.getElementById("console-output-box");
-    if (!rawInput) return;
-    const raw = rawInput.value.trim();
-    let cmd;
+    const raw = (overrideRaw !== null ? overrideRaw : (rawInput ? rawInput.value : "")).trim();
+    if (!raw) return;
 
+    let cmd;
     try {
       cmd = JSON.parse(raw);
     } catch (err) {
@@ -4785,15 +5386,23 @@ const CGL_OS = (() => {
     }
 
     try {
-      const handler = COMMAND_REGISTRY[cmd.action];
-      if (!handler) {
-        throw new Error(`Unrecognized command action: ${cmd.action}`);
+      let result;
+      let actionLabel = "BATCH_ARRAY";
+
+      if (Array.isArray(cmd)) {
+        result = await COMMAND_REGISTRY.BATCH_COMMANDS(cmd);
+      } else {
+        actionLabel = cmd.action;
+        const handler = COMMAND_REGISTRY[cmd.action];
+        if (!handler) {
+          throw new Error(`Unrecognized command action: ${cmd.action}`);
+        }
+        result = await handler(cmd.payload || {});
       }
 
-      const result = await handler(cmd.payload || {});
       const responsePayload = {
         status: "SUCCESS",
-        action: cmd.action,
+        action: actionLabel,
         timestampIST: formatISTDate(Date.now()),
         data: result
       };
@@ -4802,16 +5411,18 @@ const CGL_OS = (() => {
       if (consoleOutput) {
         consoleOutput.innerText = formattedJson;
         consoleOutput.style.display = "block";
-      } else {
-        rawInput.value = formattedJson;
       }
 
       await renderDashboard();
       await syncAllTaxonomyDropdowns();
+      if (typeof renderPracticeQuestionsTable === "function") {
+        await renderPracticeQuestionsTable();
+      }
+      return responsePayload;
     } catch (execErr) {
       const errPayload = {
         status: "ERROR",
-        action: cmd ? cmd.action : "UNKNOWN",
+        action: cmd && cmd.action ? cmd.action : "BATCH",
         timestampIST: formatISTDate(Date.now()),
         error: execErr.message
       };
@@ -4822,51 +5433,71 @@ const CGL_OS = (() => {
       } else {
         alert("Command Execution Error: " + execErr.message);
       }
+      return errPayload;
     }
+  }
+
+  async function pasteAndExecuteClipboardCommand() {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (!text || !text.trim()) {
+        alert("Clipboard is empty.");
+        return;
+      }
+      safeSetValue("console-payload", text.trim());
+      const res = await executeConsoleCommand(text.trim());
+      if (res && res.status === "SUCCESS") {
+        await navigator.clipboard.writeText(JSON.stringify(res, null, 2));
+      }
+    } catch (err) {
+      alert("Clipboard read permission denied or invalid content. Paste manually into the box and tap Execute.");
+    }
+  }
+
+  async function runConsoleQuickAction(actionName, payload = {}) {
+    const cmdObj = { action: actionName, payload: payload };
+    safeSetValue("console-payload", JSON.stringify(cmdObj, null, 2));
+    await executeConsoleCommand();
+  }
+
+  async function copyCompactAiContextToClipboard() {
+    const contextData = await COMMAND_REGISTRY.GET_AI_CONTEXT();
+    const stats = await COMMAND_REGISTRY.GET_SYSTEM_STATS();
+    const payload = {
+      cgl_os_ai_context_bridge: {
+        generatedAtIST: formatISTDate(Date.now()),
+        diurnalSlot: getDiurnalSlot(Date.now()),
+        schemaVersion: DB_VERSION
+      },
+      aiContext: contextData,
+      inventorySummary: {
+        totalQuestions: stats.totalQuestions,
+        questionsBySubject: stats.questionsBySubject,
+        livingSheetsCount: stats.livingSheetsCount,
+        completedMocksCount: stats.completedMocksCount
+      }
+    };
+    const jsonStr = JSON.stringify(payload, null, 2);
+    navigator.clipboard.writeText(jsonStr)
+      .then(() => alert("Compact AI Context & Rolling Clinical Memory copied to clipboard! Paste directly into Gemini."))
+      .catch(() => downloadFileResilient(`cgl_ai_context_${Date.now()}.json`, "application/json", jsonStr));
   }
 
   function loadSamplePayload(type) {
     if (type === "COMPLETE_BUNDLE") {
       const sample = {
-        action: "INGEST_AND_ASSEMBLE_COMPLETE_MOCK",
+        action: "EXECUTE_AI_CONSULTATION_BUNDLE",
         payload: {
-          title: "Tier 1 Specialist: Circle Tangents & Alternating Work",
-          launchImmediately: true,
-          isSectionLocked: false,
-          durationMin: 15,
-          subject: "QA",
-          dossiers: [
+          consultationDossier: {
+            consultationId: "consult_sample_" + Date.now(),
+            summary: "Sample Omnipotent V3 Bundle",
+            cumulativeNarrative: "[CGL_OS CLINICAL MEMORY — ROLLING BASELINE]\n1. ACTIVE SURVEILLANCE: QA_GEOMETRY (Tangents), ENG_CLOZE_TEST (Prepositions)"
+          },
+          actions: [
             {
-              id: "top_geo_tangents_advanced",
-              subject: "QA",
-              chapter: "QA_GEOMETRY",
-              title: "Direct & Transverse Tangent Lengths",
-              subtitle: "Formulas and Center Distance Conditions",
-              content: "### Direct Common Tangent (DCT)\n$$DCT = \\sqrt{d^2 - (r_1 - r_2)^2}$$\n\n### Transverse Common Tangent (TCT)\n$$TCT = \\sqrt{d^2 - (r_1 + r_2)^2}$$\n\n> [!trap]\n> **External Touching Circles:**\n> If $d = r_1 + r_2$, then $DCT = 2\\sqrt{r_1 r_2}$. Transverse tangent is 0."
+              action: "GET_CHAPTER_BLUEPRINT",
+              payload: { subject: "QA", chapter: "QA_GEOMETRY" }
             }
-          ],
-          newQuestions: [
-            {
-              id: "q_sample_pipe_cycle_01",
-              subject: "QA",
-              chapter: "QA_PIPE_CISTERN",
-              subtopic: "Pipes & Cisterns",
-              method: "Alternating Work",
-              conceptId: "top_geo_tangents_advanced",
-              conceptIds: ["top_geo_tangents_advanced"],
-              questionText: "Pipe $A$ fills in $10\\text{ h}$, $B$ in $12\\text{ h}$, and $C$ empties in $15\\text{ h}$. Opened alternately for $1\\text{ h}$ ($A \\to B \\to C$). In how many hours will the tank be full?",
-              options: ["$24\\text{ h } 10\\text{ m}$", "$25\\text{ h } 15\\text{ m}$", "$23\\text{ h } 40\\text{ m}$", "$26\\text{ h }$"],
-              correctIndex: 0,
-              explanation: "Net 3-hour cycle $= 6 + 5 - 4 = 7\\text{ units}$. Work completes before the final drain cycle."
-            }
-          ],
-          linkExistingQuestions: [
-            { questionId: "q_cgl_qa_geom_011", assignConceptIds: ["top_geo_tangents_advanced"] }
-          ],
-          orderedMockQuestionIds: [
-            "q_sample_pipe_cycle_01",
-            "q_cgl_qa_geom_011",
-            "q_cgl_qa_tw_010"
           ]
         }
       };
@@ -4875,7 +5506,7 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * SECTION 22: PRACTICE LAB CONTROLLER & STEM EXPANSION TOGGLE
+   * SECTION 22: PRACTICE LAB CONTROLLER, STAR FILTER & DOJO LAUNCHERS
    * ========================================================================== */
   function handlePracticeSearchInput(val) {
     practiceSearchQuery = String(val || "").trim().toLowerCase();
@@ -4947,14 +5578,16 @@ const CGL_OS = (() => {
     const isExpanded = stemEl.classList.toggle("expanded");
     const toggleBtn = document.getElementById(`toggle-${stemId}`);
     if (toggleBtn) {
-      toggleBtn.innerText = isExpanded ? "[ Collapse â–² ]" : "[ Read Full Stem â–¼ ]";
+      toggleBtn.innerText = isExpanded ? "[ Collapse \u25B2 ]" : "[ Read Full Stem \u25BC ]";
     }
   }
 
-  async function renderPracticeQuestionsTable() {
-    const container = document.getElementById("practice-question-rows");
-    if (!container) return;
+  async function toggleQuestionStarFromPractice(id) {
+    await QuestionService.toggleStar(id);
+    await renderPracticeQuestionsTable();
+  }
 
+  async function getCurrentlyFilteredPracticeQuestions() {
     const sub = document.getElementById("practice-filter-subject")?.value || "ALL";
     const chap = document.getElementById("practice-filter-chapter")?.value || "ALL";
     const diff = document.getElementById("practice-filter-difficulty")?.value || "ALL";
@@ -4965,7 +5598,7 @@ const CGL_OS = (() => {
     const now = Date.now();
     const sevenDaysAgo = now - (7 * 24 * 60 * 60 * 1000);
 
-    const filtered = allQs.filter(q => {
+    return allQs.filter(q => {
       if (sub !== "ALL" && q.subject !== sub) return false;
       if (chap !== "ALL" && q.chapter !== chap) return false;
       if (diff !== "ALL" && q.difficulty !== diff) return false;
@@ -4973,22 +5606,22 @@ const CGL_OS = (() => {
       const pStats = perfMap[q.id];
       const attempts = pStats ? pStats.attempts : 0;
       const acc = attempts > 0 ? Math.round((pStats.correct / attempts) * 100) : 0;
+      const parSec = getSubjectThresholds(q.subject).parSec;
 
-      // Dropdown performance filter
       if (perf === "WEAK" && (attempts === 0 || acc >= 60)) return false;
-      if (perf === "WRONG" && (!pStats || pStats.incorrect === 0)) return false;
+      if (perf === "WRONG" && (!pStats || (!pStats.lastWasIncorrect && pStats.incorrect === 0))) return false;
+      if (perf === "STARRED" && !q.bookmarked) return false;
       if (perf === "UNSEEN" && attempts > 0) return false;
-      if (perf === "SLOW" && (!pStats || Math.round(pStats.totalTime / attempts) <= 75)) return false;
+      if (perf === "SLOW" && (!pStats || Math.round(pStats.totalTime / attempts) <= parSec * 1.4)) return false;
       if (perf === "STRONG" && (attempts === 0 || acc < 80)) return false;
 
-      // Quick filter pills
       if (practiceActiveQuickFilter === "WEAK" && (attempts === 0 || acc >= 60)) return false;
-      if (practiceActiveQuickFilter === "WRONG" && (!pStats || pStats.incorrect === 0)) return false;
+      if (practiceActiveQuickFilter === "WRONG" && (!pStats || (!pStats.lastWasIncorrect && pStats.incorrect === 0))) return false;
+      if (practiceActiveQuickFilter === "STARRED" && !q.bookmarked) return false;
       if (practiceActiveQuickFilter === "UNSEEN" && attempts > 0) return false;
-      if (practiceActiveQuickFilter === "IGNORED" && pStats && pStats.lastAttemptEpoch >= sevenDaysAgo) return false;
+      if (practiceActiveQuickFilter === "IGNORED" && (!pStats || pStats.lastAttemptEpoch >= sevenDaysAgo)) return false;
       if (practiceActiveQuickFilter === "WITH_SHEET" && (!q.conceptId && (!Array.isArray(q.conceptIds) || q.conceptIds.length === 0))) return false;
 
-      // Text search query
       if (practiceSearchQuery) {
         const inId = q.id.toLowerCase().includes(practiceSearchQuery);
         const inText = q.questionText.toLowerCase().includes(practiceSearchQuery);
@@ -5001,6 +5634,14 @@ const CGL_OS = (() => {
 
       return true;
     });
+  }
+
+  async function renderPracticeQuestionsTable() {
+    const container = document.getElementById("practice-question-rows");
+    if (!container) return;
+
+    const filtered = await getCurrentlyFilteredPracticeQuestions();
+    const perfMap = await PerformanceService.getQuestionPerformanceMap();
 
     safeSetText("practice-filtered-count", filtered.length);
 
@@ -5028,9 +5669,9 @@ const CGL_OS = (() => {
       const acc = attempts > 0 ? Math.round((pStats.correct / attempts) * 100) : 0;
       let statusBadge = `<span class="badge" style="background:#151a24; color:var(--text-muted);">Unseen</span>`;
       if (attempts > 0) {
-        if (acc >= 80) statusBadge = `<span class="badge" style="background:rgba(16,185,129,0.2); color:var(--status-green);">ðŸŸ¢ ${acc}% (${attempts}A)</span>`;
-        else if (acc >= 60) statusBadge = `<span class="badge" style="background:rgba(245,158,11,0.2); color:var(--status-amber);">ðŸŸ¡ ${acc}% (${attempts}A)</span>`;
-        else statusBadge = `<span class="badge" style="background:rgba(244,63,94,0.2); color:var(--status-red);">ðŸ”´ ${acc}% (${attempts}A)</span>`;
+        if (acc >= 80 && !pStats.lastWasIncorrect) statusBadge = `<span class="badge" style="background:rgba(16,185,129,0.2); color:var(--status-green);">\uD83D\uDFE2 ${acc}% (${attempts}A)</span>`;
+        else if (acc >= 60 && !pStats.lastWasIncorrect) statusBadge = `<span class="badge" style="background:rgba(245,158,11,0.2); color:var(--status-amber);">\uD83D\uDFE1 ${acc}% (${attempts}A)</span>`;
+        else statusBadge = `<span class="badge" style="background:rgba(244,63,94,0.2); color:var(--status-red);">\uD83D\uDD34 ${acc}% (${attempts}A)</span>`;
       }
 
       const isChecked = practiceSelectedIds.has(q.id);
@@ -5040,26 +5681,28 @@ const CGL_OS = (() => {
       card.dataset.id = q.id;
 
       card.innerHTML = `
-        <input type="checkbox" class="practice-checkbox" data-id="${q.id}" ${isChecked ? 'checked' : ''} onchange="CGL_OS.togglePracticeQuestionSelection('${q.id}', this.checked)">
+        <input type="checkbox" class="practice-checkbox" data-id="${q.id}" ${isChecked ? "checked" : ""} onchange="CGL_OS.togglePracticeQuestionSelection('${q.id}', this.checked)">
         <div class="practice-q-main">
           <div class="practice-q-header">
-            <div style="display:flex; align-items:center; gap:6px;">
+            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
               <span class="practice-q-id">${q.id}</span>
-              <span class="badge" style="background:#1f6feb;">${q.subject} â€¢ ${q.chapter}</span>
-              ${q.parentPassageId ? `<span class="q-passage-set-badge">SET ${q.setOrder || 1}/${q.setTotal || 1}</span>` : ''}
+              <span class="badge" style="background:#1f6feb;">${q.subject} \u2022 ${q.chapter}</span>
+              ${q.parentPassageId ? `<span class="q-passage-set-badge">SET ${q.setOrder \vert{}\vert{} 1}/${q.setTotal || 1}</span>` : ""}
               ${statusBadge}
             </div>
             <div class="practice-q-actions">
+              <button class="star-flag-btn ${q.bookmarked ? "starred" : ""}" style="padding:2px 6px; font-size:10px;" onclick="CGL_OS.toggleQuestionStarFromPractice('${q.id}')" title="Star / Bookmark">${q.bookmarked ? "\u2605" : "\u2606"}</button>
               <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px;" onclick="CGL_OS.QuestionService.get('${q.id}').then(q => CGL_OS.openEditQuestionModal(q))">Edit</button>
               <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px; color:var(--accent-cyan);" onclick="CGL_OS.duplicateCurrentEditingQuestionFromId('${q.id}')">Clone</button>
-              <button class="btn btn-cyan" style="padding:2px 8px; font-size:10px; font-weight:700;" onclick="CGL_OS.launchSingleQuestionPractice('${q.id}')">âš¡ Solve</button>
+              <button class="btn btn-emerald" style="padding:2px 8px; font-size:10px; font-weight:700;" onclick="CGL_OS.launchSingleQuestionDojo('${q.id}')" title="Untimed Active Recall in Dojo">\uD83E\uDDD8 Dojo</button>
+              <button class="btn btn-cyan" style="padding:2px 8px; font-size:10px; font-weight:700;" onclick="CGL_OS.launchSingleQuestionPractice('${q.id}')" title="Timed Sprint">\u26A1 Timed</button>
             </div>
           </div>
           <div id="${stemDomId}" class="practice-q-stem">${formatRichText(q.questionText)}</div>
-          <span id="toggle-${stemDomId}" class="practice-q-stem-toggle" onclick="CGL_OS.togglePracticeStemExpansion('${stemDomId}')">[ Read Full Stem â–¼ ]</span>
+          <span id="toggle-${stemDomId}" class="practice-q-stem-toggle" onclick="CGL_OS.togglePracticeStemExpansion('${stemDomId}')">[ Read Full Stem \u25BC ]</span>
           <div class="practice-q-footer">
-            <span>Method: <b>${q.method || q.subtopic || 'General'}</b></span>
-            <span>Source: <i>${q.source || 'Manual'}</i></span>
+            <span>Method: <b>${q.method || q.subtopic || "General"}</b> (${q.difficulty || "MEDIUM"})</span>
+            <span>Source: <i>${q.source || "Manual"}</i></span>
           </div>
         </div>
       `;
@@ -5077,8 +5720,22 @@ const CGL_OS = (() => {
     }
   }
 
+  async function launchSingleQuestionDojo(id) {
+    const searchModal = document.getElementById("modal-global-search");
+    if (searchModal && searchModal.classList.contains("active")) {
+      searchModal.classList.remove("active");
+    }
+    const q = await QuestionService.get(id);
+    if (!q) return;
+    let pool = [q];
+    if (q.parentPassageId) {
+      const siblings = await QuestionService.getByPassageId(q.parentPassageId);
+      if (siblings.length > 0) pool = siblings;
+    }
+    await openDojoSessionWithQuestions(pool, `Dojo Clinic: ${q.chapter}`);
+  }
+
   async function launchSingleQuestionPractice(id) {
-    // GLOBAL SEARCH Z-INDEX TRAP RESOLUTION: Dismiss search modal if active
     const searchModal = document.getElementById("modal-global-search");
     if (searchModal && searchModal.classList.contains("active")) {
       searchModal.classList.remove("active");
@@ -5088,7 +5745,6 @@ const CGL_OS = (() => {
     if (!q) return;
 
     let pool = [q];
-    // If question belongs to a passage set, bundle siblings automatically
     if (q.parentPassageId) {
       const siblings = await QuestionService.getByPassageId(q.parentPassageId);
       if (siblings.length > 0) pool = siblings;
@@ -5097,59 +5753,34 @@ const CGL_OS = (() => {
     await compileAndLaunchArena(`Focus Drill: ${q.chapter}`, pool, Math.max(5, pool.length * 2), false);
   }
 
-  async function launchPracticeSelectedSession() {
-    if (practiceSelectedIds.size === 0) {
-      alert("Select at least one question from the list to practice.");
+  async function launchDojoFromPracticeSelection(useAllFiltered = false) {
+    let pool = [];
+    const allQs = await getAllRecords("store_questions");
+    if (!useAllFiltered && practiceSelectedIds.size > 0) {
+      pool = allQs.filter(q => practiceSelectedIds.has(q.id));
+    } else {
+      pool = await getCurrentlyFilteredPracticeQuestions();
+    }
+    if (pool.length === 0) {
+      alert("No questions selected or matching current filters to open in Dojo.");
       return;
     }
-    const allQs = await getAllRecords("store_questions");
-    const selected = allQs.filter(q => practiceSelectedIds.has(q.id));
-    await compileAndLaunchArena(`Custom Drill (${selected.length} Qs)`, selected, Math.max(5, Math.round(selected.length * 1.5)), false);
+    await openDojoSessionWithQuestions(pool, `Dojo Practice (${pool.length} Qs)`);
   }
-    async function getCurrentlyFilteredPracticeQuestions() {
-    const sub = document.getElementById("practice-filter-subject")?.value || "ALL";
-    const chap = document.getElementById("practice-filter-chapter")?.value || "ALL";
-    const diff = document.getElementById("practice-filter-difficulty")?.value || "ALL";
-    const perf = document.getElementById("practice-filter-performance")?.value || "ALL";
 
+  async function launchPracticeSelectedSession() {
+    let selected = [];
     const allQs = await getAllRecords("store_questions");
-    const perfMap = await PerformanceService.getQuestionPerformanceMap();
-    const now = Date.now();
-    const sevenDaysAgo = now - (7 * 24 * 60 * 60 * 1000);
-
-    return allQs.filter(q => {
-      if (sub !== "ALL" && q.subject !== sub) return false;
-      if (chap !== "ALL" && q.chapter !== chap) return false;
-      if (diff !== "ALL" && q.difficulty !== diff) return false;
-
-      const pStats = perfMap[q.id];
-      const attempts = pStats ? pStats.attempts : 0;
-      const acc = attempts > 0 ? Math.round((pStats.correct / attempts) * 100) : 0;
-
-      if (perf === "WEAK" && (attempts === 0 || acc >= 60)) return false;
-      if (perf === "WRONG" && (!pStats || pStats.incorrect === 0)) return false;
-      if (perf === "UNSEEN" && attempts > 0) return false;
-      if (perf === "SLOW" && (!pStats || Math.round(pStats.totalTime / attempts) <= 75)) return false;
-      if (perf === "STRONG" && (attempts === 0 || acc < 80)) return false;
-
-      if (practiceActiveQuickFilter === "WEAK" && (attempts === 0 || acc >= 60)) return false;
-      if (practiceActiveQuickFilter === "WRONG" && (!pStats || pStats.incorrect === 0)) return false;
-      if (practiceActiveQuickFilter === "UNSEEN" && attempts > 0) return false;
-      if (practiceActiveQuickFilter === "IGNORED" && pStats && pStats.lastAttemptEpoch >= sevenDaysAgo) return false;
-      if (practiceActiveQuickFilter === "WITH_SHEET" && (!q.conceptId && (!Array.isArray(q.conceptIds) || q.conceptIds.length === 0))) return false;
-
-      if (practiceSearchQuery) {
-        const inId = q.id.toLowerCase().includes(practiceSearchQuery);
-        const inText = q.questionText.toLowerCase().includes(practiceSearchQuery);
-        const inPassage = (q.passageText || "").toLowerCase().includes(practiceSearchQuery);
-        const inMethod = (q.method || "").toLowerCase().includes(practiceSearchQuery);
-        const inSubtopic = (q.subtopic || "").toLowerCase().includes(practiceSearchQuery);
-        const inTags = Array.isArray(q.tags) && q.tags.some(t => t.toLowerCase().includes(practiceSearchQuery));
-        if (!inId && !inText && !inPassage && !inMethod && !inSubtopic && !inTags) return false;
-      }
-
-      return true;
-    });
+    if (practiceSelectedIds.size > 0) {
+      selected = allQs.filter(q => practiceSelectedIds.has(q.id));
+    } else {
+      selected = (await getCurrentlyFilteredPracticeQuestions()).slice(0, 25);
+    }
+    if (selected.length === 0) {
+      alert("Select at least one question from the list to launch a timed sprint.");
+      return;
+    }
+    await compileAndLaunchArena(`Timed Sprint (${selected.length} Qs)`, selected, Math.max(5, Math.round(selected.length * 1.2)), false);
   }
 
   async function launchSeeQuestions() {
@@ -5167,7 +5798,6 @@ const CGL_OS = (() => {
       return;
     }
 
-    // Launch in Untimed Study View: solutions, methods, and options are freely navigable
     const now = Date.now();
     activeReviewAttempt = {
       sessionId: "study_view_" + now,
@@ -5176,6 +5806,8 @@ const CGL_OS = (() => {
       timeIST: formatISTDate(now),
       diurnalSlot: getDiurnalSlot(now),
       mockType: "STUDY_VIEW",
+      positiveMarks: 2.0,
+      negativeMarks: 0.5,
       finalScore: 0,
       correctCount: pool.length,
       incorrectCount: 0,
@@ -5199,12 +5831,12 @@ const CGL_OS = (() => {
       };
     });
 
-    enterFullScreenReviewArena();
+    await enterFullScreenReviewArena();
   }
 
   async function buildMockFromPracticeSelection() {
     if (practiceSelectedIds.size === 0) {
-      alert("Select at least one question to build a mock paper.");
+      alert("Select at least one question to build a saved mock paper.");
       return;
     }
     const allQs = await getAllRecords("store_questions");
@@ -5226,87 +5858,35 @@ const CGL_OS = (() => {
 
   /* ==========================================================================
    * SECTION 23: UNTIMED DOJO PRACTICE & METHOD CLINIC
-   * Pinned Passage Container Support Included
+   * Restored Full Reachability + Split-Pane Passage + Star Flagging
    * ========================================================================== */
-  async function updateDojoChapters() {
-    const sub = document.getElementById("dojo-nav-subject") ? document.getElementById("dojo-nav-subject").value : "QA";
-    const chapSelect = document.getElementById("dojo-nav-chapter");
-    if (!chapSelect) return;
-    chapSelect.innerHTML = `<option value="ALL">Entire ${sub} (All Chapters)</option>`;
-
-    const definedChaps = (TAXONOMY[sub] && Array.isArray(TAXONOMY[sub].chapters)) 
-      ? TAXONOMY[sub].chapters 
-      : [];
-
-    const allQs = await getAllRecords("store_questions");
-    const qChaps = allQs.filter(q => q.subject === sub).map(q => q.chapter);
-    const allConcepts = await ConceptService.getAll();
-    const cChaps = allConcepts.filter(c => c.subject === sub).map(c => c.chapter);
-
-    const mergedChapters = [...new Set([...definedChaps, ...qChaps, ...cChaps])];
-    mergedChapters.forEach(c => {
-      const opt = document.createElement("option");
-      opt.value = c;
-      opt.innerText = c;
-      chapSelect.appendChild(opt);
-    });
-
-    updateDojoMethods();
-  }
-
-  async function updateDojoMethods() {
-    const sub = document.getElementById("dojo-nav-subject") ? document.getElementById("dojo-nav-subject").value : "QA";
-    const chap = document.getElementById("dojo-nav-chapter") ? document.getElementById("dojo-nav-chapter").value : "ALL";
-    const methodSelect = document.getElementById("dojo-nav-method");
-    if (!methodSelect) return;
-    methodSelect.innerHTML = `<option value="ALL">All Methods & Types in Scope</option>`;
-
-    const allQs = await getAllRecords("store_questions");
-    let pool = allQs.filter(q => q.subject === sub);
-    if (chap !== "ALL") pool = pool.filter(q => q.chapter === chap);
-
-    const methods = [...new Set(pool.filter(q => q.method).map(q => q.method))];
-    methods.forEach(m => {
-      const opt = document.createElement("option");
-      opt.value = m;
-      opt.innerText = m;
-      methodSelect.appendChild(opt);
-    });
-  }
-
-  async function launchFilteredDojo() {
-    const sub = document.getElementById("dojo-nav-subject")?.value || "QA";
-    const chap = document.getElementById("dojo-nav-chapter")?.value || "ALL";
-    const method = document.getElementById("dojo-nav-method")?.value || "ALL";
-
-    const allQs = await getAllRecords("store_questions");
-    let pool = allQs.filter(q => q.subject === sub);
-    if (chap !== "ALL") pool = pool.filter(q => q.chapter === chap);
-    if (method !== "ALL") pool = pool.filter(q => q.method === method);
-
-    if (pool.length === 0) {
-      alert("No questions found matching this selection.");
+  async function openDojoSessionWithQuestions(questionsArray, title = "Dojo Practice Clinic", customFormulaBrief = null) {
+    if (!Array.isArray(questionsArray) || questionsArray.length === 0) {
+      alert("No questions available for this Dojo session.");
       return;
     }
 
-    pool = MockService.shuffle([...pool]);
-
-    const allDossiers = await ConceptService.getAll();
-    const matchedDossier = allDossiers.find(c => c.chapter === chap || (method !== "ALL" && c.title === method));
+    const firstQ = questionsArray[0];
+    let resolvedBrief = customFormulaBrief;
+    if (!resolvedBrief && firstQ) {
+      const allDossiers = await ConceptService.getAll();
+      const cId = (Array.isArray(firstQ.conceptIds) && firstQ.conceptIds[0]) || firstQ.conceptId;
+      const matched = cId ? allDossiers.find(d => d.id === cId) : allDossiers.find(d => d.chapter === firstQ.chapter);
+      if (matched) resolvedBrief = `**${matched.title}:** ${matched.subtitle || ""}`;
+    }
 
     dojoExam = {
-      subject: sub,
-      chapter: chap,
-      method: method,
-      title: chap === "ALL" ? `${sub} â€¢ Entire Subject Dojo` : (method !== "ALL" ? `${chap} â€¢ ${method}` : `${chap} Dojo`),
-      formulaBrief: matchedDossier ? matchedDossier.content : null,
-      questions: pool,
+      subject: firstQ.subject || "QA",
+      chapter: firstQ.chapter || "ALL",
+      method: firstQ.method || "ALL",
+      title: title,
+      formulaBrief: resolvedBrief,
+      questions: questionsArray.map((q, idx) => ({ ...q, dojoSequentialNum: idx + 1 })),
       currentIndex: 0,
       userResponses: {}
     };
 
-    dojoExam.questions.forEach((q, idx) => {
-      q.dojoSequentialNum = idx + 1;
+    dojoExam.questions.forEach(q => {
       dojoExam.userResponses[q.id] = {
         selectedOption: null,
         status: "unanswered",
@@ -5316,17 +5896,56 @@ const CGL_OS = (() => {
 
     pushNavLayer("dojo-arena-view", () => {
       safeSetDisplay("dojo-arena-view", "none");
+      toggleScratchpadCanvas(false);
     });
     safeSetDisplay("dojo-arena-view", "flex");
     renderDojoArenaQuestion();
   }
 
+  async function launchWeakAreasDojo() {
+    const inst = await MockService.generate({
+      subject: "ALL",
+      mode: "WEAKNESS",
+      count: 25,
+      shuffleOptions: true
+    });
+    if (!inst.questions || inst.questions.length === 0) {
+      alert("No weak questions detected yet! Complete a mock or practice new questions first.");
+      return;
+    }
+    await openDojoSessionWithQuestions(inst.questions, "Weakness Remediation Dojo");
+  }
+
+  async function launchDojoFromMockMistakes() {
+    if (!activeReviewAttempt || !Array.isArray(activeReviewAttempt.questions)) return;
+    const failedOrUnans = activeReviewAttempt.questions.filter(q => {
+      const r = activeReviewAttempt.userResponses ? activeReviewAttempt.userResponses[q.id] : null;
+      return !r || r.selectedOption === null || r.selectedOption === undefined || r.selectedOption !== q.correctIndex || q.bookmarked;
+    });
+    const pool = failedOrUnans.length > 0 ? failedOrUnans : activeReviewAttempt.questions;
+    const m = document.getElementById("modal-mock-review");
+    if (m) m.classList.remove("active");
+    await openDojoSessionWithQuestions(pool, `Mistake Clinic: ${activeReviewAttempt.title}`);
+  }
+
   function exitDojoArena() {
     safeSetDisplay("dojo-arena-view", "none");
+    toggleScratchpadCanvas(false);
+  }
+
+  async function toggleCurrentDojoQuestionStar() {
+    if (!dojoExam) return;
+    const q = dojoExam.questions[dojoExam.currentIndex];
+    if (!q) return;
+    q.bookmarked = !q.bookmarked;
+    if (!q.ephemeral) {
+      await QuestionService.toggleStar(q.id);
+    }
+    renderDojoArenaQuestion();
   }
 
   function renderDojoArenaQuestion() {
-    if (!dojoExam) return;
+    if (!dojoExam || !dojoExam.questions || dojoExam.questions.length === 0) return;
     const q = dojoExam.questions[dojoExam.currentIndex];
     const resp = dojoExam.userResponses[q.id];
 
@@ -5336,12 +5955,22 @@ const CGL_OS = (() => {
     safeSetText("dojo-arena-qnum", q.dojoSequentialNum);
     safeSetText("dojo-arena-total-tag", `Question ${q.dojoSequentialNum} of ${dojoExam.questions.length}`);
 
-    // Pinned Reading Comprehension / Cloze Container in Dojo
+    const starBtn = document.getElementById("btn-dojo-star");
+    if (starBtn) {
+      starBtn.classList.toggle("starred", !!q.bookmarked);
+      starBtn.innerText = q.bookmarked ? "\u2605 Starred" : "\u2606 Star";
+    }
+
     const dojoPassageBox = document.getElementById("dojo-passage-container");
+    const dojoBody = document.getElementById("dojo-arena-body");
+    const hasPassage = !!(q.passageText && q.passageText.trim().length > 0);
+    if (dojoBody) {
+      dojoBody.classList.toggle("has-passage", hasPassage);
+    }
     if (dojoPassageBox) {
-      if (q.passageText && q.passageText.trim().length > 0) {
+      if (hasPassage) {
         dojoPassageBox.style.display = "block";
-        safeSetText("dojo-passage-tag", `${q.chapter.replace(/^ENG_/, '').replace(/^QA_/, '')} CONTEXT`);
+        safeSetText("dojo-passage-tag", `${q.chapter.replace(/^ENG_/, "").replace(/^QA_/, "")} CONTEXT`);
         safeSetText("dojo-passage-set-badge", `SET Q ${q.setOrder || 1}/${q.setTotal || 1}`);
         safeSetHtml("dojo-passage-body", formatRichText(q.passageText));
       } else {
@@ -5369,21 +5998,30 @@ const CGL_OS = (() => {
         ? q.conceptIds
         : (q.conceptId ? [q.conceptId] : []);
 
-      linkedIds.forEach(cId => {
+      if (linkedIds.length === 0) {
         const btn = document.createElement("button");
         btn.className = "btn btn-secondary";
         btn.style.cssText = "padding:2px 8px; font-size:11px; color:var(--accent-cyan);";
-        btn.innerText = `ðŸ“– ${cId.replace(/^top_/, '').replace(/_/g, ' ')}`;
-        btn.onclick = () => openCompendiumToSheet(cId, q.subject, q.chapter);
+        btn.innerText = `\uD83D\uDCD6 ${q.chapter} Sheets`;
+        btn.onclick = () => openCompendiumToSheet(null, q.subject, q.chapter);
         dojoPillsWrap.appendChild(btn);
-      });
+      } else {
+        linkedIds.forEach(cId => {
+          const btn = document.createElement("button");
+          btn.className = "btn btn-secondary";
+          btn.style.cssText = "padding:2px 8px; font-size:11px; color:var(--accent-cyan);";
+          btn.innerText = `\uD83D\uDCD6 ${cId.replace(/^top_/, "").replace(/_/g, " ")}`;
+          btn.onclick = () => openCompendiumToSheet(cId, q.subject, q.chapter);
+          dojoPillsWrap.appendChild(btn);
+        });
+      }
     }
 
     const theoryBanner = document.getElementById("dojo-theory-banner");
     if (theoryBanner) {
       if (dojoExam.formulaBrief) {
         theoryBanner.style.display = "block";
-        theoryBanner.innerHTML = `<strong>Concept Brief:</strong> ${formatRichText(dojoExam.formulaBrief)}`;
+        theoryBanner.innerHTML = `<strong>Active Sheet Cue:</strong> ${formatRichText(dojoExam.formulaBrief)}`;
       } else {
         theoryBanner.style.display = "none";
       }
@@ -5394,7 +6032,7 @@ const CGL_OS = (() => {
     const mb = document.getElementById("dojo-arena-method-box");
     if (mb) {
       mb.style.display = resp.revealed ? "block" : "none";
-      mb.innerHTML = `<strong>Solution & Method:</strong><br>${formatRichText(q.explanation || 'No method registered.')}`;
+      mb.innerHTML = `<strong>Solution &amp; Method:</strong><br>${formatRichText(q.explanation || "No method registered.")}`;
     }
 
     safeSetValue("dojo-arena-annotation", q.annotation || "");
@@ -5420,22 +6058,23 @@ const CGL_OS = (() => {
       card.addEventListener("click", () => {
         resp.selectedOption = idx;
         resp.status = "answered";
+        resp.revealed = true;
         if (navigator.vibrate) navigator.vibrate(idx === q.correctIndex ? 25 : [40, 40]);
 
+        renderDojoArenaQuestion();
         const fb = document.getElementById("dojo-arena-feedback");
         if (fb) {
           fb.style.display = "block";
           if (idx === q.correctIndex) {
             fb.style.background = "rgba(16, 185, 129, 0.22)";
             fb.style.color = "var(--status-green)";
-            fb.innerText = "âœ“ Correct Answer!";
+            fb.innerText = "\u2713 Correct Answer!";
           } else {
             fb.style.background = "rgba(244, 63, 94, 0.22)";
             fb.style.color = "var(--status-red)";
-            fb.innerText = `âœ— Incorrect. Correct is Option ${q.correctIndex + 1}.`;
+            fb.innerText = `\u2717 Incorrect. Correct is Option ${q.correctIndex + 1}.`;
           }
         }
-        renderDojoArenaQuestion();
       });
 
       optContainer.appendChild(card);
@@ -5464,7 +6103,9 @@ const CGL_OS = (() => {
     if (!dojoExam) return;
     const q = dojoExam.questions[dojoExam.currentIndex];
     q.annotation = val;
-    await putRecord("store_questions", q);
+    if (!q.ephemeral) {
+      await putRecord("store_questions", q);
+    }
   }
 
   function toggleDojoPalette(open) {
@@ -5510,7 +6151,8 @@ const CGL_OS = (() => {
         const cell = document.createElement("div");
         cell.className = "palette-cell" +
           (resp.status === "answered" ? " answered" : " unanswered") +
-          (item.idx === dojoExam.currentIndex ? " current" : "");
+          (item.idx === dojoExam.currentIndex ? " current" : "") +
+          (item.q.bookmarked ? " starred-cell" : "");
 
         cell.innerText = item.q.dojoSequentialNum;
         cell.addEventListener("click", () => {
@@ -5526,11 +6168,12 @@ const CGL_OS = (() => {
     });
   }
 
+  // --- END OF PART 2 OF 3 (Proceed to Part 3 of 3 for Sections 24 - 30) ---
   /* ==========================================================================
-   * SECTION 24: REVIEW COCKPIT, STAGE 1 REVIEW & HISTORICAL MISTAKE BIOPSY
+   * SECTION 24: REVIEW COCKPIT, CONFIGURABLE SCORING & MISTAKE BIOPSY
    * ========================================================================== */
   async function openMockReview(attemptOrId) {
-    let att = typeof attemptOrId === "string" 
+    let att = typeof attemptOrId === "string"
       ? (await getAllRecords("store_attempts")).find(a => a.sessionId === attemptOrId)
       : attemptOrId;
 
@@ -5542,7 +6185,10 @@ const CGL_OS = (() => {
       archiveModal.classList.remove("active");
     }
 
-    safeSetText("review-modal-title", `${att.title}${att.attemptNumber > 1 ? ` (Attempt ${att.attemptNumber})` : ''}`);
+    const posM = att.positiveMarks !== undefined ? att.positiveMarks : 2.0;
+    const negM = att.negativeMarks !== undefined ? att.negativeMarks : 0.5;
+
+    safeSetText("review-modal-title", `${att.title}${att.attemptNumber > 1 ? ` (Attempt ${att.attemptNumber})` : ""} [+${posM}/-${negM}]`);
     safeSetText("review-modal-date", att.timeIST || formatISTDate(att.timestamp));
     safeSetText("rev-score", (att.finalScore || 0).toFixed(2));
 
@@ -5551,7 +6197,7 @@ const CGL_OS = (() => {
     safeSetText("rev-cor", att.correctCount || 0);
     safeSetText("rev-inc", att.incorrectCount || 0);
     safeSetText("rev-penalty", `-${(att.penaltyDrag || 0).toFixed(2)}`);
-    safeSetText("rev-switch-delta", `${att.switchDelta > 0 ? '+' : ''}${att.switchDelta || 0} Net`);
+    safeSetText("rev-switch-delta", `${att.switchDelta > 0 ? "+" : ""}${att.switchDelta || 0} Net`);
     safeSetText("rev-traps", att.q4Traps || 0);
 
     const reattemptBtn = document.getElementById("btn-review-reattempt");
@@ -5559,7 +6205,6 @@ const CGL_OS = (() => {
     const saveFixedBtn = document.getElementById("btn-review-save-fixed");
     if (saveFixedBtn) saveFixedBtn.onclick = () => openSaveBlueprintModal("FIXED_PAPER", att.sessionId);
 
-    // Threaded Attempt Iteration Switcher
     const rootId = att.parentSessionId || att.sessionId;
     const allAttempts = await getAllRecords("store_attempts");
     const thread = allAttempts.filter(a => a.sessionId === rootId || a.parentSessionId === rootId);
@@ -5574,7 +6219,7 @@ const CGL_OS = (() => {
       thread.forEach(iter => {
         const opt = document.createElement("option");
         opt.value = iter.sessionId;
-        opt.innerText = `Attempt ${iter.attemptNumber || 1}: ${(iter.finalScore || 0).toFixed(1)} pts (${iter.timeIST ? iter.timeIST.split(',')[0] : 'Past'})`;
+        opt.innerText = `Attempt ${iter.attemptNumber || 1}: ${(iter.finalScore || 0).toFixed(1)} pts (${iter.timeIST ? iter.timeIST.split(",")[0] : "Past"})`;
         if (iter.sessionId === att.sessionId) opt.selected = true;
         switchSelect.appendChild(opt);
       });
@@ -5582,7 +6227,6 @@ const CGL_OS = (() => {
       switchWrap.style.display = "none";
     }
 
-    // High-Fidelity Sectional Breakdown
     const secGrid = document.getElementById("rev-sectional-breakdown-grid");
     if (secGrid) {
       secGrid.innerHTML = "";
@@ -5600,11 +6244,11 @@ const CGL_OS = (() => {
           if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
             secScores[secName].att++;
             if (resp.selectedOption === q.correctIndex) {
-              secScores[secName].score += 2.0;
+              secScores[secName].score += posM;
               secScores[secName].cor++;
             } else {
-              secScores[secName].score -= 0.5;
-              secScores[secName].penalty += 0.5;
+              secScores[secName].score -= negM;
+              secScores[secName].penalty += negM;
               secScores[secName].inc++;
             }
           } else {
@@ -5623,20 +6267,20 @@ const CGL_OS = (() => {
         card.className = "sec-fidelity-card";
         card.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:4px; margin-bottom:6px;">
-            <b style="color:var(--accent-cyan); font-size:12px;">${TAXONOMY[sKey] ? TAXONOMY[sKey].name.split(' ')[0] : sKey}</b>
-            <span style="font-weight:800; font-size:13px; color:#fff;">${s.score.toFixed(1)} pts</span>
+            <b style="color:var(--accent-cyan); font-size:12px;">${TAXONOMY[sKey] ? TAXONOMY[sKey].name.split(" ")[0] : sKey}</b>
+            <span style="font-weight:800; font-size:13px; color:#fff;">${s.score.toFixed(2)} pts</span>
           </div>
           <div class="sec-fidelity-metric-row">
-            <span>Accuracy:</span> <b style="color:${acc >= 80 ? 'var(--status-green)' : (acc >= 60 ? 'var(--status-amber)' : 'var(--status-red)')};">${acc}%</b>
+            <span>Accuracy:</span> <b style="color:${acc >= 80 ? "var(--status-green)" : (acc >= 60 ? "var(--status-amber)" : "var(--status-red)")};">${acc}%</b>
           </div>
           <div class="sec-fidelity-metric-row">
-            <span>Split (ðŸŸ¢/ðŸ”´/âšª):</span> <b>${s.cor} / ${s.inc} / ${s.unans}</b>
+            <span>Split (\uD83D\uDFE2/\uD83D\uDD34/\u26AA):</span> <b>${s.cor} / ${s.inc} / ${s.unans}</b>
           </div>
           <div class="sec-fidelity-metric-row">
-            <span>Penalty Drag:</span> <b style="color:#f87171;">-${s.penalty.toFixed(1)}</b>
+            <span>Penalty Drag:</span> <b style="color:#f87171;">-${s.penalty.toFixed(2)}</b>
           </div>
           <div class="sec-fidelity-metric-row">
-            <span>Section Dwell:</span> <b style="font-family:var(--font-mono);">${String(mDwell).padStart(2, '0')}:${String(sDwell).padStart(2, '0')}</b>
+            <span>Section Dwell:</span> <b style="font-family:var(--font-mono);">${String(mDwell).padStart(2, "0")}:${String(sDwell).padStart(2, "0")}</b>
           </div>
         `;
         secGrid.appendChild(card);
@@ -5663,7 +6307,7 @@ const CGL_OS = (() => {
           span.className = "badge";
           span.style.background = "#5a1e1e";
           span.style.color = "#f87171";
-          span.innerText = `${tag.replace(/_/g, ' ')}: ${tagCounts[tag]}`;
+          span.innerText = `${tag.replace(/_/g, " ")}: ${tagCounts[tag]}`;
           tagPills.appendChild(span);
         });
       }
@@ -5685,7 +6329,7 @@ const CGL_OS = (() => {
     if (val === "__NEW_TAG__") {
       const raw = prompt("Enter new custom mistake tag (e.g., RUSHED_PANIC):");
       if (!raw || !raw.trim()) return;
-      const formatted = raw.trim().toUpperCase().replace(/\s+/g, '_');
+      const formatted = raw.trim().toUpperCase().replace(/\s+/g, "_");
       if (!customMistakeTags.includes(formatted)) {
         customMistakeTags.push(formatted);
         await putRecord("store_config", { key: "custom_mistake_tags", value: customMistakeTags });
@@ -5711,10 +6355,10 @@ const CGL_OS = (() => {
 
   async function openTrapClinicModal(trapType) {
     activeClinicTrapType = trapType;
-    safeSetText("trap-clinic-title", `Trap Clinic: #${trapType.replace(/_/g, ' ')}`);
+    safeSetText("trap-clinic-title", `Trap Clinic: #${trapType.replace(/_/g, " ")}`);
 
     const allAttempts = await getAllRecords("store_attempts");
-    const completed = allAttempts.filter(a => a.completed);
+    const completed = allAttempts.filter(a => a.completed && a.mockType !== "STUDY_VIEW");
     activeClinicQuestions = [];
 
     completed.forEach(att => {
@@ -5749,12 +6393,12 @@ const CGL_OS = (() => {
         div.style.marginBottom = "8px";
         div.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-            <span class="badge" style="background:#1f6feb;">${item.question.subject} â€¢ ${item.question.chapter}</span>
+            <span class="badge" style="background:#1f6feb;">${item.question.subject} \u2022 ${item.question.chapter}</span>
             <span style="font-family:var(--font-mono); font-size:11px; color:#f87171;">${item.response.timeSpentSec || 0}s spent</span>
           </div>
           <div style="font-size:13px; color:#fff; line-height:1.5; margin:6px 0;">${formatRichText(item.question.questionText)}</div>
           <div style="font-size:11.5px; color:var(--text-muted); line-height:1.4;">
-            <b>Solution Key:</b> Option ${item.question.correctIndex + 1} | <i>${item.question.explanation || 'No derivation registered.'}</i>
+            <b>Solution Key:</b> Option ${item.question.correctIndex + 1} | <i>${formatRichText(item.question.explanation || "No derivation registered.")}</i>
           </div>
         `;
         list.appendChild(div);
@@ -5769,7 +6413,7 @@ const CGL_OS = (() => {
     if (m) m.classList.add("active");
   }
 
-  async function drillFilteredTrapQuestions() {
+  async function drillFilteredTrapQuestions(openInDojo = false) {
     if (activeClinicQuestions.length === 0) {
       alert("No trap questions available to drill.");
       return;
@@ -5784,7 +6428,11 @@ const CGL_OS = (() => {
       }
     });
 
-    await compileAndLaunchArena(`Trap Drill: #${activeClinicTrapType}`, uniquePool, Math.max(5, uniquePool.length * 2), false);
+    if (openInDojo) {
+      await openDojoSessionWithQuestions(uniquePool, `Dojo Trap Clinic: #${activeClinicTrapType}`);
+    } else {
+      await compileAndLaunchArena(`Trap Drill: #${activeClinicTrapType}`, uniquePool, Math.max(5, uniquePool.length * 2), false);
+    }
   }
 
   async function openSubjectDiagnosticModal(subKey) {
@@ -5792,10 +6440,9 @@ const CGL_OS = (() => {
     if (!sub) return;
 
     safeSetText("diag-subject-name", `${sub.name} (${subKey})`);
-    safeSetText("diag-subject-sub", `Complete Syllabus & Chapter Analysis`);
+    safeSetText("diag-subject-sub", `Complete Syllabus & Chapter Analysis (Par: ${getSubjectThresholds(subKey).parSec}s/Q)`);
 
-    const attempts = await getAllRecords("store_attempts");
-    const completed = attempts.filter(a => a.completed);
+    const completed = await PerformanceService.getHistoricalAttempts();
 
     let subAtt = 0, subCor = 0;
     completed.forEach(c => {
@@ -5814,7 +6461,7 @@ const CGL_OS = (() => {
 
     const acc = subAtt > 0 ? Math.round((subCor / subAtt) * 100) : 0;
     safeSetText("diag-subject-acc", subAtt > 0 ? `${acc}%` : "--");
-    safeSetText("diag-subject-counts", `${subAtt} Solved â€¢ ${subCor} Correct`);
+    safeSetText("diag-subject-counts", `${subAtt} Solved \u2022 ${subCor} Correct`);
 
     const gauge = document.getElementById("diag-acc-gauge");
     if (gauge) {
@@ -5846,17 +6493,23 @@ const CGL_OS = (() => {
         div.className = "card";
         div.style.padding = "8px 10px";
         div.style.marginBottom = "6px";
+        div.style.cursor = "pointer";
         div.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
             <span style="font-weight:700; font-family:var(--font-mono); font-size:12px;">${chap}</span>
-            <span class="badge" style="background:${cAtt > 0 ? '#1b4d2e' : '#151a24'}; color:${cAtt > 0 ? '#4ade80' : '#8b949e'};">
-              ${cAtt > 0 ? `${cAcc}% (${cAtt} Qs)` : '0 Qs'}
+            <span class="badge" style="background:${cAtt > 0 ? "#1b4d2e" : "#151a24"}; color:${cAtt > 0 ? "#4ade80" : "#8b949e"};">
+              ${cAtt > 0 ? `${cAcc}% (${cAtt} Qs)` : "0 Qs"}
             </span>
           </div>
           <div class="battery-bar-container" style="height:6px;">
-            <div class="battery-bar-fill" style="width:${cAcc}%; background:${cAcc >= 80 ? 'var(--status-green)' : (cAcc >= 60 ? 'var(--status-amber)' : 'var(--accent-blue)')};"></div>
+            <div class="battery-bar-fill" style="width:${cAcc}%; background:${cAcc >= 80 ? "var(--status-green)" : (cAcc >= 60 ? "var(--status-amber)" : "var(--accent-blue)")};"></div>
           </div>
         `;
+        div.onclick = () => {
+          const m = document.getElementById("modal-subject-diagnostic");
+          if (m) m.classList.remove("active");
+          openChapterInspector(subKey, chap);
+        };
         chapList.appendChild(div);
       });
     }
@@ -5886,17 +6539,15 @@ const CGL_OS = (() => {
   }
 
   async function renderArchiveList(filterType) {
-    const attempts = await getAllRecords("store_attempts");
-    const completed = attempts.filter(a => a.completed);
+    const completed = await PerformanceService.getHistoricalAttempts();
     const container = document.getElementById("archive-list-container");
     if (!container) return;
     container.innerHTML = "";
 
     let list = completed.slice().sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
-    // CRITICAL FILTER FIX: Accommodate historical papers saved as Tier-1
     if (filterType === "TIER_1") {
-      list = list.filter(a => a.mockType === "TIER_1" || (a.questions && a.questions.length >= 100) || /tier[\s_-]?1/i.test(a.title || ""));
+      list = list.filter(a => a.mockType === "TIER_1" || (a.questions && a.questions.length >= 80) || /tier[\s_-]?[12]/i.test(a.title || ""));
     } else if (filterType !== "ALL") {
       list = list.filter(a => a.mockType === filterType);
     }
@@ -5924,10 +6575,10 @@ const CGL_OS = (() => {
       header.className = "attempt-thread-header";
       header.innerHTML = `
         <div>
-          <div style="display:flex; align-items:center; gap:6px;">
+          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
             <b style="font-size:13.5px; color:#fff;">${latest.title}</b>
-            ${threadAttempts.length > 1 ? `<span class="badge" style="background:#8957e5; font-size:10px;">${threadAttempts.length} Attempts</span>` : ''}
-            <span class="badge-slot slot-${(latest.diurnalSlot || 'morning').toLowerCase()}">${latest.diurnalSlot || 'DAY'}</span>
+            ${threadAttempts.length > 1 ? `<span class="badge" style="background:#8957e5; font-size:10px;">${threadAttempts.length} Attempts</span>` : ""}
+            <span class="badge-slot slot-${(latest.diurnalSlot || "morning").toLowerCase()}">${latest.diurnalSlot || "DAY"}</span>
           </div>
           <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Latest: ${latest.timeIST || formatISTDate(latest.timestamp)}</div>
         </div>
@@ -5944,13 +6595,13 @@ const CGL_OS = (() => {
         row.className = "attempt-sub-row";
         row.innerHTML = `
           <div>
-            <b>Attempt ${iter.attemptNumber || 1}</b> â€¢ <span style="color:var(--text-muted);">${iter.timeIST ? iter.timeIST.split(',')[1] : ''}</span>
+            <b>Attempt ${iter.attemptNumber || 1}</b> \u2022 <span style="color:var(--text-muted);">${iter.timeIST ? iter.timeIST.split(",")[1] : ""}</span>
           </div>
           <div style="display:flex; align-items:center; gap:8px;">
-            <span style="font-weight:700; color:var(--accent-cyan);">${(iter.finalScore || 0).toFixed(1)} pts</span>
-            <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.exportMockByIdJson('${iter.sessionId}')">ðŸ“¥ Export</button>
+            <span style="font-weight:700; color:var(--accent-cyan);">${(iter.finalScore || 0).toFixed(2)} pts</span>
+            <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.exportMockByIdJson('${iter.sessionId}')">\uD83D\uDCE5 Export</button>
             <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.openMockReview('${iter.sessionId}')">Inspect</button>
-            <button class="btn btn-danger" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.deleteAttemptSession('${iter.sessionId}')">ðŸ—‘</button>
+            <button class="btn btn-danger" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.deleteAttemptSession('${iter.sessionId}')">\uD83D\uDDD1</button>
           </div>
         `;
         subList.appendChild(row);
@@ -5980,8 +6631,38 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * SECTION 25: LIVING KNOWLEDGE STUDIO CONTROLLER & IN-SHEET TOC
+   * SECTION 25: LIVING KNOWLEDGE STUDIO & INTERACTIVE 🙈 RECALL MODE
    * ========================================================================== */
+  function toggleCompendiumRecallMode(forceState = null) {
+    compendiumRecallMode = forceState !== null ? forceState : !compendiumRecallMode;
+    const canvas = document.getElementById("comp-studio-canvas");
+    const btn = document.getElementById("btn-comp-recall-mode");
+    if (canvas) {
+      canvas.classList.toggle("recall-mode-active", compendiumRecallMode);
+      if (!compendiumRecallMode) {
+        canvas.querySelectorAll(".recall-revealed").forEach(el => el.classList.remove("recall-revealed"));
+      }
+    }
+    if (btn) {
+      btn.classList.toggle("active", compendiumRecallMode);
+      btn.innerText = compendiumRecallMode ? "\uD83D\uDC41\uFE0F Recall ON" : "\uD83D\uDE48 Recall Mode";
+    }
+  }
+
+  function initCompendiumRecallTapHandler() {
+    const canvas = document.getElementById("comp-studio-canvas");
+    if (!canvas || canvas.dataset.recallBound === "true") return;
+    canvas.dataset.recallBound = "true";
+
+    canvas.addEventListener("click", (e) => {
+      if (!compendiumRecallMode) return;
+      const target = e.target.closest("strong, .katex-display, td");
+      if (target && canvas.contains(target)) {
+        target.classList.toggle("recall-revealed");
+      }
+    });
+  }
+
   async function openCompendiumToSheet(conceptId, targetSub, targetChap) {
     const openModals = document.querySelectorAll(".modal-overlay.active");
     openModals.forEach(m => m.classList.remove("active"));
@@ -6002,16 +6683,23 @@ const CGL_OS = (() => {
       safeSetDisplay("compendium-fullscreen-view", "none");
     });
     safeSetDisplay("compendium-fullscreen-view", "flex");
+    initCompendiumRecallTapHandler();
 
     const subSelect = document.getElementById("comp-studio-subject-select");
     if (subSelect) subSelect.value = activeCompSubject;
 
     await handleCompStudioSubjectChange(activeCompSubject);
     if (item) {
+      const chapSelect = document.getElementById("comp-studio-chapter-select");
+      if (chapSelect && chapSelect.value !== item.chapter) {
+        activeCompChapter = item.chapter;
+        chapSelect.value = activeCompChapter;
+        await renderCompStudioSheets();
+      }
       const sheetIdx = currentCompSheets.findIndex(s => s.id === item.id);
       if (sheetIdx !== -1) {
         activeCompSheetIndex = sheetIdx;
-        renderActiveCompSheet();
+        await renderActiveCompSheet();
       }
     }
   }
@@ -6035,7 +6723,9 @@ const CGL_OS = (() => {
     });
 
     if (combined.length > 0) {
-      activeCompChapter = combined[0];
+      if (!combined.includes(activeCompChapter)) {
+        activeCompChapter = combined[0];
+      }
       chapSelect.value = activeCompChapter;
     }
     await renderCompStudioSheets();
@@ -6097,7 +6787,7 @@ const CGL_OS = (() => {
     });
 
     safeSetText("comp-studio-header-title", sheet.title);
-    safeSetText("comp-studio-header-sub", `${sheet.chapter} â€¢ Sheet ${activeCompSheetIndex + 1} of ${currentCompSheets.length}`);
+    safeSetText("comp-studio-header-sub", `${sheet.chapter} \u2022 Sheet ${activeCompSheetIndex + 1} of ${currentCompSheets.length}`);
 
     const linkedQs = await ConceptService.getLinkedQuestions(sheet.id, sheet.chapter);
     safeSetText("comp-linked-q-count", `${linkedQs.length} Associated Questions Linked`);
@@ -6109,10 +6799,10 @@ const CGL_OS = (() => {
         <div class="sheet-toc-pill-wrap">
           <span style="font-size:10px; font-weight:800; color:var(--accent-cyan); text-transform:uppercase; letter-spacing:0.8px; align-self:center;">Jump to:</span>
           ${toc.map(item => `
-            <a href="#${item.anchor}" class="anchor-pill" onclick="document.getElementById('${item.anchor}').scrollIntoView({behavior:'smooth'}); return false;">
+            <a href="#${item.anchor}" class="anchor-pill" onclick="document.getElementById('${item.anchor}')?.scrollIntoView({behavior:'smooth'}); return false;">
               ${item.title}
             </a>
-          `).join('')}
+          `).join("")}
         </div>
       `;
     }
@@ -6126,21 +6816,21 @@ const CGL_OS = (() => {
     if (docContent) {
       docContent.innerHTML = `
         <div style="border-bottom:1px solid var(--border-color); padding-bottom:10px; margin-bottom:14px;">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
             <span class="badge" style="background:#1f6feb;">${sheet.chapter}</span>
-            <span style="font-size:11px; color:var(--text-muted);">${formatISTDate(sheet.timestamp || Date.now())}</span>
+            <span style="font-size:11px; color:var(--text-muted); font-family:var(--font-mono);">ID: ${sheet.id}</span>
           </div>
           <h1 style="font-size:22px; font-weight:800; color:#fff; margin-top:8px;">${sheet.title}</h1>
-          ${sheet.subtitle ? `<div style="font-size:13px; color:var(--accent-cyan); font-family:var(--font-mono); margin-top:2px;">${sheet.subtitle}</div>` : ''}
+          ${sheet.subtitle ? `<div style="font-size:13px; color:var(--accent-cyan); font-family:var(--font-mono); margin-top:2px;">${sheet.subtitle}</div>` : ""}
         </div>
         ${tocHtml}
         ${imgHtml}
-        <div style="font-size:14.5px; line-height:1.75; color:var(--text-main);">${formatRichText(sheet.content)}</div>
-        
+        <div style="font-size:calc(14.5px * var(--reader-font-scale)); line-height:1.78; color:var(--text-reading);">${formatRichText(sheet.content)}</div>
+
         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:28px; padding-top:14px; border-top:1px solid var(--border-color);">
-          <button class="btn btn-secondary" onclick="CGL_OS.navCompStudioSheet(-1)">[ â† ] Previous Sheet</button>
+          <button class="btn btn-secondary" onclick="CGL_OS.navCompStudioSheet(-1)">[ \u2190 ] Previous Sheet</button>
           <span style="font-size:12px; font-weight:700; color:var(--text-muted);">${activeCompSheetIndex + 1} / ${currentCompSheets.length}</span>
-          <button class="btn btn-secondary" onclick="CGL_OS.navCompStudioSheet(1)">Next Sheet [ â†’ ]</button>
+          <button class="btn btn-secondary" onclick="CGL_OS.navCompStudioSheet(1)">Next Sheet [ \u2192 ]</button>
         </div>
       `;
     }
@@ -6204,7 +6894,7 @@ const CGL_OS = (() => {
     textarea.focus();
   }
 
-  async function launchCurrentSheetQuestionsDrill() {
+  async function launchCurrentSheetQuestionsDrill(openInDojo = false) {
     const sheet = currentCompSheets[activeCompSheetIndex];
     if (!sheet) return;
 
@@ -6216,13 +6906,17 @@ const CGL_OS = (() => {
       return;
     }
 
-    const instance = await MockService.generate({
-      title: `Sheet Practice: ${sheet.title}`,
-      explicitQuestionIds: linked.map(q => q.id),
-      count: Math.min(25, linked.length),
-      mode: "RANDOM"
-    });
-    await MockService.launchMockSession(instance);
+    if (openInDojo) {
+      await openDojoSessionWithQuestions(linked, `Sheet Dojo: ${sheet.title}`, `**${sheet.title}:** ${sheet.subtitle || ""}`);
+    } else {
+      const instance = await MockService.generate({
+        title: `Sheet Practice: ${sheet.title}`,
+        explicitQuestionIds: linked.map(q => q.id),
+        count: Math.min(25, linked.length),
+        mode: "RANDOM"
+      });
+      await MockService.launchMockSession(instance);
+    }
   }
 
   function openCompendiumStudio() {
@@ -6230,6 +6924,7 @@ const CGL_OS = (() => {
       safeSetDisplay("compendium-fullscreen-view", "none");
     });
     safeSetDisplay("compendium-fullscreen-view", "flex");
+    initCompendiumRecallTapHandler();
     handleCompStudioSubjectChange(activeCompSubject || "QA");
   }
 
@@ -6325,7 +7020,7 @@ const CGL_OS = (() => {
   function triggerOmniResearchDrawer(q) {
     if (!q) return;
     const queryText = (q.subtopic || q.method || q.chapter).replace(/_/g, " ");
-    safeSetText("omni-research-query-sub", `${q.subject} â€¢ ${q.chapter}`);
+    safeSetText("omni-research-query-sub", `${q.subject} \u2022 ${q.chapter}`);
     safeSetText("omni-research-prompt-preview", q.questionText.slice(0, 160) + "...");
 
     const wikiUrl = `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(queryText + " SSC CGL")}`;
@@ -6350,18 +7045,6 @@ const CGL_OS = (() => {
     if (m) m.classList.add("active");
   }
 
-  function jumpToConceptFromReview(conceptId) {
-    const q = activeExam.questions[activeExam.currentQuestionIndex];
-    openCompendiumToSheet(conceptId, q.subject, q.chapter);
-  }
-
-  function jumpToConceptFromDojo() {
-    if (!dojoExam) return;
-    const q = dojoExam.questions[dojoExam.currentIndex];
-    const targetCId = (Array.isArray(q.conceptIds) && q.conceptIds.length > 0) ? q.conceptIds[0] : q.conceptId;
-    openCompendiumToSheet(targetCId, q.subject, q.chapter);
-  }
-
   function openOmniSearchModal() {
     pushHistoryState("modal-comp-omni-search");
     const m = document.getElementById("modal-comp-omni-search");
@@ -6384,7 +7067,8 @@ const CGL_OS = (() => {
     }
 
     const allDossiers = await ConceptService.getAll();
-    const results = allDossiers.filter(d => 
+    const results = allDossiers.filter(d =>
+      (d.id && d.id.toLowerCase().includes(term)) ||
       (d.title && d.title.toLowerCase().includes(term)) ||
       (d.subtitle && d.subtitle.toLowerCase().includes(term)) ||
       (d.chapter && d.chapter.toLowerCase().includes(term)) ||
@@ -6405,10 +7089,11 @@ const CGL_OS = (() => {
       div.style.cursor = "pointer";
       div.innerHTML = `
         <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-          <span class="badge" style="background:#1f6feb;">${res.subject} â€¢ ${res.chapter}</span>
+          <span class="badge" style="background:#1f6feb;">${res.subject} \u2022 ${res.chapter}</span>
+          <span style="font-size:10px; font-family:var(--font-mono); color:var(--text-muted);">${res.id}</span>
         </div>
         <b style="font-size:14px; color:#fff;">${res.title}</b>
-        <div style="font-size:11px; color:var(--accent-cyan); font-family:var(--font-mono); margin-bottom:4px;">${res.subtitle || ''}</div>
+        <div style="font-size:11px; color:var(--accent-cyan); font-family:var(--font-mono); margin-bottom:4px;">${res.subtitle || ""}</div>
         <div style="font-size:12px; color:var(--text-muted); max-height:40px; overflow:hidden; text-overflow:ellipsis;">${res.content.slice(0, 100)}...</div>
       `;
       div.addEventListener("click", () => {
@@ -6421,7 +7106,7 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * SECTION 26: SYNAPSE KNOWLEDGE EXPLORER
+   * SECTION 26: SYNAPSE KNOWLEDGE EXPLORER (WITH DOJO & TIMED DRILL LAUNCH)
    * ========================================================================== */
   async function openSynapseGraphModal() {
     synapseCurrentLevel = "SUBJECTS";
@@ -6447,17 +7132,17 @@ const CGL_OS = (() => {
     const taxonomy = await TaxonomyService.getTaxonomy();
 
     const breadcrumb = document.createElement("div");
-    breadcrumb.style.cssText = "display:flex; align-items:center; gap:8px; font-size:12px; margin-bottom:12px; color:var(--accent-cyan);";
+    breadcrumb.style.cssText = "display:flex; align-items:center; gap:8px; font-size:12px; margin-bottom:12px; color:var(--accent-cyan); flex-wrap:wrap;";
     breadcrumb.innerHTML = `
       <span style="cursor:pointer;" onclick="CGL_OS.setSynapseLevel('SUBJECTS')">All Subjects</span>
-      ${synapseActiveSubject ? ` âž” <span style="cursor:pointer;" onclick="CGL_OS.setSynapseLevel('CHAPTERS', '${synapseActiveSubject}')">${synapseActiveSubject}</span>` : ''}
-      ${synapseActiveChapter ? ` âž” <b>${synapseActiveChapter}</b>` : ''}
+      ${synapseActiveSubject ? ` \u2794 <span style="cursor:pointer;" onclick="CGL_OS.setSynapseLevel('CHAPTERS', '${synapseActiveSubject}')">${synapseActiveSubject}</span>` : ""}
+      ${synapseActiveChapter ? ` \u2794 <b>${synapseActiveChapter}</b>` : ""}
     `;
     rootContainer.appendChild(breadcrumb);
 
     if (synapseCurrentLevel === "SUBJECTS") {
       const grid = document.createElement("div");
-      grid.style.cssText = "display:grid; grid-template-columns:1fr 1fr; gap:10px;";
+      grid.style.cssText = "display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:10px;";
       Object.keys(taxonomy).forEach(sKey => {
         const sub = taxonomy[sKey];
         const qCount = allQs.filter(q => q.subject === sKey).length;
@@ -6472,7 +7157,7 @@ const CGL_OS = (() => {
             <span class="badge" style="background:#1f6feb;">${sKey}</span>
           </div>
           <div style="font-size:11px; color:var(--text-muted); margin-top:8px;">
-            ${sub.chapters.length} Chapters â€¢ ${qCount} Questions â€¢ ${cCount} Sheets
+            ${sub.chapters.length} Chapters \u2022 ${qCount} Questions \u2022 ${cCount} Sheets
           </div>
         `;
         tile.onclick = () => setSynapseLevel("CHAPTERS", sKey);
@@ -6491,13 +7176,14 @@ const CGL_OS = (() => {
         row.className = "tree-node-row";
         row.style.marginBottom = "6px";
         row.innerHTML = `
-          <div style="overflow:hidden;" onclick="CGL_OS.setSynapseLevel('CONCEPTS', '${synapseActiveSubject}', '${chap}')">
+          <div style="overflow:hidden; flex:1;" onclick="CGL_OS.setSynapseLevel('CONCEPTS', '${synapseActiveSubject}', '${chap}')">
             <b style="color:#fff; font-size:13px;">${chap}</b>
-            <div style="font-size:10.5px; color:var(--text-muted);">${chapQs.length} Qs â€¢ ${chapSheets.length} Living Sheets</div>
+            <div style="font-size:10.5px; color:var(--text-muted);">${chapQs.length} Qs \u2022 ${chapSheets.length} Living Sheets</div>
           </div>
-          <div style="display:flex; gap:6px;">
-            <button class="btn btn-secondary" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.launchDirectChapterDrill('${synapseActiveSubject}', '${chap}')">âš¡ Drill</button>
-            <button class="btn btn-cyan" style="padding:2px 8px; font-size:11px;" onclick="CGL_OS.setSynapseLevel('CONCEPTS', '${synapseActiveSubject}', '${chap}')">Explore âž”</button>
+          <div style="display:flex; gap:5px; flex-wrap:wrap;">
+            <button class="btn btn-emerald" style="padding:2px 8px; font-size:10.5px;" onclick="CGL_OS.launchDirectChapterDrill('${synapseActiveSubject}', '${chap}', true)">\uD83E\uDDD8 Dojo</button>
+            <button class="btn btn-secondary" style="padding:2px 8px; font-size:10.5px;" onclick="CGL_OS.launchDirectChapterDrill('${synapseActiveSubject}', '${chap}', false)">\u26A1 Timed</button>
+            <button class="btn btn-cyan" style="padding:2px 8px; font-size:10.5px;" onclick="CGL_OS.setSynapseLevel('CONCEPTS', '${synapseActiveSubject}', '${chap}')">Sheets \u2794</button>
           </div>
         `;
         list.appendChild(row);
@@ -6508,10 +7194,13 @@ const CGL_OS = (() => {
       const chapQs = allQs.filter(q => q.subject === synapseActiveSubject && q.chapter === synapseActiveChapter);
 
       const header = document.createElement("div");
-      header.style.cssText = "display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;";
+      header.style.cssText = "display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:6px;";
       header.innerHTML = `
         <span style="font-weight:700; color:#fff;">${synapseActiveChapter} Inventory (${chapQs.length} Qs, ${chapSheets.length} Sheets)</span>
-        <button class="btn" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.launchDirectChapterDrill('${synapseActiveSubject}', '${synapseActiveChapter}')">âš¡ Drill Entire Chapter (${chapQs.length} Qs)</button>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-emerald" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.launchDirectChapterDrill('${synapseActiveSubject}', '${synapseActiveChapter}', true)">\uD83E\uDDD8 Dojo Chapter</button>
+          <button class="btn" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.launchDirectChapterDrill('${synapseActiveSubject}', '${synapseActiveChapter}', false)">\u26A1 Timed Chapter (${chapQs.length} Qs)</button>
+        </div>
       `;
       rootContainer.appendChild(header);
 
@@ -6521,14 +7210,15 @@ const CGL_OS = (() => {
         item.style.padding = "10px";
         item.style.marginBottom = "8px";
         item.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
             <div>
-              <b style="color:var(--accent-cyan); font-size:13px;">ðŸ“– ${sheet.title}</b>
-              <div style="font-size:11px; color:var(--text-muted);">${sheet.subtitle || ''}</div>
+              <b style="color:var(--accent-cyan); font-size:13px;">\uD83D\uDCD6 ${sheet.title}</b>
+              <div style="font-size:11px; color:var(--text-muted);">${sheet.subtitle || ""}</div>
             </div>
-            <div style="display:flex; gap:6px;">
-              <button class="btn btn-secondary" style="padding:3px 8px; font-size:10px;" onclick="CGL_OS.openCompendiumToSheet('${sheet.id}', '${synapseActiveSubject}', '${synapseActiveChapter}')">Read</button>
-              <button class="btn btn-cyan" style="padding:3px 8px; font-size:10px;" onclick="CGL_OS.launchDirectSheetDrill('${sheet.id}', '${synapseActiveSubject}', '${synapseActiveChapter}')">Drill</button>
+            <div style="display:flex; gap:5px;">
+              <button class="btn btn-secondary" style="padding:3px 8px; font-size:10px;" onclick="CGL_OS.openCompendiumToSheet('${sheet.id}', '${synapseActiveSubject}', '${synapseActiveChapter}')">Read Sheet</button>
+              <button class="btn btn-emerald" style="padding:3px 8px; font-size:10px;" onclick="CGL_OS.launchDirectSheetDrill('${sheet.id}', '${synapseActiveSubject}', '${synapseActiveChapter}', true)">\uD83E\uDDD8 Dojo</button>
+              <button class="btn btn-cyan" style="padding:3px 8px; font-size:10px;" onclick="CGL_OS.launchDirectSheetDrill('${sheet.id}', '${synapseActiveSubject}', '${synapseActiveChapter}', false)">\u26A1 Drill</button>
             </div>
           </div>
         `;
@@ -6544,7 +7234,7 @@ const CGL_OS = (() => {
     renderSynapseExplorer();
   }
 
-  async function launchDirectChapterDrill(subKey, chap) {
+  async function launchDirectChapterDrill(subKey, chap, openInDojo = false) {
     const modal = document.getElementById("modal-synapse-tree");
     if (modal) modal.classList.remove("active");
     const instance = await MockService.generate({
@@ -6552,12 +7242,21 @@ const CGL_OS = (() => {
       subject: subKey,
       chapter: chap,
       count: 25,
-      mode: "RANDOM"
+      mode: "RANDOM",
+      shuffleOptions: true
     });
-    await MockService.launchMockSession(instance);
+    if (!instance.questions || instance.questions.length === 0) {
+      alert(`Zero questions currently banked in ${chap}.`);
+      return;
+    }
+    if (openInDojo) {
+      await openDojoSessionWithQuestions(instance.questions, `${chap} Dojo Clinic`);
+    } else {
+      await MockService.launchMockSession(instance);
+    }
   }
 
-  async function launchDirectSheetDrill(conceptId, subject, chapter) {
+  async function launchDirectSheetDrill(conceptId, subject, chapter, openInDojo = false) {
     const modal = document.getElementById("modal-synapse-tree");
     if (modal) modal.classList.remove("active");
     const linkedQs = await ConceptService.getLinkedQuestions(conceptId, chapter);
@@ -6565,18 +7264,24 @@ const CGL_OS = (() => {
       alert(`No questions linked to sheet ${conceptId}.`);
       return;
     }
-    const instance = await MockService.generate({
-      title: `Sheet Practice: ${conceptId}`,
-      explicitQuestionIds: linkedQs.map(q => q.id),
-      count: linkedQs.length,
-      mode: "RANDOM"
-    });
-    await MockService.launchMockSession(instance);
+    if (openInDojo) {
+      await openDojoSessionWithQuestions(linkedQs, `Sheet Dojo: ${conceptId}`);
+    } else {
+      const instance = await MockService.generate({
+        title: `Sheet Practice: ${conceptId}`,
+        explicitQuestionIds: linkedQs.map(q => q.id),
+        count: linkedQs.length,
+        mode: "RANDOM"
+      });
+      await MockService.launchMockSession(instance);
+    }
   }
 
   /* ==========================================================================
-   * SECTION 27: DASHBOARD & ACTIVE COMMAND CENTER CONTROLLER
-   * Live Trap Heat-Bar Render & Dynamic ERI Telemetry Binds
+   * SECTION 27: DASHBOARD & DAILY AUTOPILOT ROUTINE CONTROLLER
+   * Upgraded:
+   * - Priority Queue in launchContinueTrainingDrill (Mistake Debt -> Neglect -> Unseen)
+   * - Unified Neglect Index (Nc) across Dashboard & Chapter Inspector
    * ========================================================================== */
   async function renderDashboard() {
     const allQs = await getAllRecords("store_questions");
@@ -6584,8 +7289,8 @@ const CGL_OS = (() => {
     const weakChapters = await PerformanceService.getWeakChapters();
     const neglect = await PerformanceService.calculateNeglect();
     const completedAttempts = await PerformanceService.getHistoricalAttempts();
+    const perfMap = await PerformanceService.getQuestionPerformanceMap();
 
-    // 1. Top 4 Battlefield HUD Tiles
     safeSetText("dash-stat-questions", allQs.length);
     safeSetText("dash-stat-accuracy", metrics.totalMocks > 0 ? `${metrics.accuracy}%` : "--");
     safeSetText("dash-stat-weak", weakChapters.length);
@@ -6593,45 +7298,50 @@ const CGL_OS = (() => {
     const mins = Math.floor(((metrics.totalStudyTimeSec || 0) % 3600) / 60);
     safeSetText("dash-stat-time", `${hrs}h ${mins}m`);
 
-    // 2. Continue Training Card
+    // Calculate Mistake Debt Count for Daily Autopilot Card
+    const mistakeDebtCount = allQs.filter(q => perfMap[q.id] && perfMap[q.id].lastWasIncorrect).length;
+    const starredCount = allQs.filter(q => q.bookmarked).length;
+
     if (completedAttempts.length === 0) {
       safeSetText("dash-continue-title", "Baseline Calibration Needed");
       safeSetText("dash-continue-sub", "Zero completed tests detected. Tap to run diagnostic onboarding mock.");
+    } else if (mistakeDebtCount > 0 || starredCount > 0) {
+      safeSetText("dash-continue-title", `Daily Priority Queue (${mistakeDebtCount} Mistake Debts \u2022 ${starredCount} Starred)`);
+      safeSetText("dash-continue-sub", `Combines unresolved mistakes, ${neglect ? neglect.chapter + " decay" : "weak chapters"}, and unseen problems`);
     } else if (weakChapters.length > 0) {
       const targetWeak = weakChapters[0];
-      safeSetText("dash-continue-title", `${targetWeak.chapter} â€” Weakness Drill`);
+      safeSetText("dash-continue-title", `${targetWeak.chapter} \u2014 Weakness Drill`);
       safeSetText("dash-continue-sub", `Current accuracy: ${targetWeak.accuracy}% (${targetWeak.wrong} incorrect answers recorded)`);
     } else {
-      safeSetText("dash-continue-title", "Comprehensive Practice â€” Daily Sprint");
+      safeSetText("dash-continue-title", "Comprehensive Practice \u2014 Daily Sprint");
       safeSetText("dash-continue-sub", "All syllabus chapters currently within nominal accuracy bands");
     }
 
-    // 3. Left Column: Your Weak Areas
     const weakListContainer = document.getElementById("dash-weak-areas-list");
     if (weakListContainer) {
       weakListContainer.innerHTML = "";
       if (completedAttempts.length === 0) {
         weakListContainer.innerHTML = `<p style="font-size:11.5px; color:var(--text-muted); padding:10px 0;">Awaiting baseline diagnostic telemetry.</p>`;
       } else if (weakChapters.length === 0) {
-        weakListContainer.innerHTML = `<p style="font-size:12px; color:var(--status-green); padding:10px 0;">âœ“ Zero weak chapters detected! Excellent mastery.</p>`;
+        weakListContainer.innerHTML = `<p style="font-size:12px; color:var(--status-green); padding:10px 0;">\u2713 Zero weak chapters detected! Excellent mastery.</p>`;
       } else {
         weakChapters.slice(0, 4).forEach((w, i) => {
-          const colorIcon = i === 0 ? "ðŸ”´" : (i === 1 ? "ðŸŸ " : "ðŸŸ¡");
+          const colorIcon = i === 0 ? "\uD83D\uDD34" : (i === 1 ? "\uD83D\uDFE0" : "\uD83D\uDFE1");
           const row = document.createElement("div");
           row.className = "weak-item-row";
+          row.style.cursor = "pointer";
           row.innerHTML = `
             <span>${colorIcon} <b>${w.chapter}</b></span>
             <span style="font-family:var(--font-mono); color:var(--status-red);">${w.accuracy}% (${w.attempted}Q)</span>
           `;
+          row.onclick = () => openChapterInspector(w.subject, w.chapter);
           weakListContainer.appendChild(row);
         });
       }
     }
 
-    // 4. Right Column: Recent Performance (Subject Mastery Batteries)
     renderDashboardSubjectBatteries(completedAttempts);
 
-    // 5. Classic HUD Dial & KPIs
     safeSetText("kpi-total-mocks", metrics.totalMocks);
     safeSetText("kpi-global-acc", metrics.totalMocks > 0 ? `${metrics.accuracy}%` : "--");
     safeSetText("kpi-avg-speed", metrics.totalMocks > 0 ? `${metrics.avgSpeed}s` : "--");
@@ -6652,25 +7362,20 @@ const CGL_OS = (() => {
       eriTier.innerText = metrics.eri >= 80 ? "Tier-1 Formidable" : (metrics.eri >= 65 ? "Competitive Form" : "Calibrating");
     }
 
-    // Live Dynamic ERI Breakdown Subtext Spans Binding
     safeSetText("eri-sub-acc", `Acc: ${metrics.accComp}/50`);
     safeSetText("eri-sub-vel", `Vel: ${metrics.velComp}/30`);
     safeSetText("eri-sub-exp", `Exp: ${metrics.consistencyComp}/20`);
 
-    // Render Cognitive Trap Heat Bar & Legend
     renderDashboardTrapHeatBar(completedAttempts);
 
-    // 6. Neglect Warning
     const negAlert = document.getElementById("dash-neglect-alert");
     if (negAlert) {
       if (neglect) {
         negAlert.style.display = "flex";
-        safeSetText("dash-neglect-text", neglect.isNever
-          ? `${neglect.chapter} has NEVER been tested in completed mocks.`
-          : `${neglect.chapter} untouched for ${neglect.days} days.`);
+        safeSetText("dash-neglect-text", `${neglect.chapter} untouched for ${neglect.days} days.`);
         const drillBtn = document.getElementById("btn-neglect-drill");
         if (drillBtn) {
-          drillBtn.onclick = () => launchDirectChapterDrill(neglect.subject, neglect.chapter);
+          drillBtn.onclick = () => launchDirectChapterDrill(neglect.subject, neglect.chapter, false);
         }
       } else {
         negAlert.style.display = "none";
@@ -6717,7 +7422,7 @@ const CGL_OS = (() => {
 
     if (totalTraps === 0) {
       heatBar.innerHTML = `<div style="width:100%; height:100%; background:rgba(16,185,129,0.2); display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--status-green);">Zero cognitive trap penalties recorded. Clean execution!</div>`;
-      legend.innerHTML = `<span style="font-size:10px; color:var(--status-green);">Clean Decision Trail â€¢ No Traps</span>`;
+      legend.innerHTML = `<span style="font-size:10px; color:var(--status-green);">Clean Decision Trail \u2022 No Traps</span>`;
       return;
     }
 
@@ -6730,34 +7435,95 @@ const CGL_OS = (() => {
       seg.className = "trap-heat-seg";
       seg.style.width = `${pct}%`;
       seg.style.backgroundColor = color;
-      seg.title = `${trap.replace(/_/g, ' ')}: ${count} (${pct}%)`;
+      seg.title = `${trap.replace(/_/g, " ")}: ${count} (${pct}%)`;
       seg.onclick = () => openTrapClinicModal(trap);
       heatBar.appendChild(seg);
 
       const leg = document.createElement("div");
       leg.className = "trap-legend-pill";
-      leg.innerHTML = `<span style="width:7px; height:7px; border-radius:50%; background:${color};"></span><span>${trap.replace(/_/g, ' ')} (${count})</span>`;
+      leg.innerHTML = `<span style="width:7px; height:7px; border-radius:50%; background:${color};"></span><span>${trap.replace(/_/g, " ")} (${count})</span>`;
       leg.onclick = () => openTrapClinicModal(trap);
       legend.appendChild(leg);
     });
   }
 
-  async function launchContinueTrainingDrill() {
+  /**
+   * DAILY AUTOPILOT PRIORITY QUEUE:
+   * Automatically builds a 20-question session combining:
+   * 1. Unresolved Mistake Debts & Starred Doubts (up to 8 Qs)
+   * 2. Neglect Decay / Weakest Chapter (up to 6 Qs)
+   * 3. Unseen Progression Questions (remaining slots)
+   */
+  async function launchContinueTrainingDrill(openInDojo = false) {
     const completed = await PerformanceService.getHistoricalAttempts();
-    if (completed.length === 0) {
-      // COLD-START ROUTER: Display Baseline Calibration Modal
+    if (completed.length === 0 && !openInDojo) {
       pushHistoryState("modal-onboarding-baseline");
       const modal = document.getElementById("modal-onboarding-baseline");
       if (modal) modal.classList.add("active");
       return;
     }
 
+    const allQs = await getAllRecords("store_questions");
+    const perfMap = await PerformanceService.getQuestionPerformanceMap();
+    const neglect = await PerformanceService.calculateNeglect();
     const weaks = await PerformanceService.getWeakChapters();
-    if (weaks.length > 0) {
-      launchDirectChapterDrill(weaks[0].subject, weaks[0].chapter);
+
+    const selectedQueue = [];
+    const usedIds = new Set();
+    const targetCount = 20;
+
+    // 1. Mistake Debts & Starred Questions
+    const debtPool = MockService.shuffle(allQs.filter(q => (perfMap[q.id] && perfMap[q.id].lastWasIncorrect) || q.bookmarked));
+    for (const q of debtPool) {
+      if (selectedQueue.length >= 8) break;
+      if (!q.parentPassageId && !usedIds.has(q.id)) {
+        selectedQueue.push(MockService.permuteQuestionOptions(q));
+        usedIds.add(q.id);
+      }
+    }
+
+    // 2. Neglect Decay or Weakest Chapter Questions
+    const focusChapter = neglect ? neglect.chapter : (weaks.length > 0 ? weaks[0].chapter : null);
+    if (focusChapter) {
+      const chapPool = MockService.shuffle(allQs.filter(q => q.chapter === focusChapter && !usedIds.has(q.id)));
+      for (const q of chapPool) {
+        if (selectedQueue.length >= 14) break;
+        if (!q.parentPassageId) {
+          selectedQueue.push(MockService.permuteQuestionOptions(q));
+          usedIds.add(q.id);
+        }
+      }
+    }
+
+    // 3. Unseen Progression Backfill
+    const unseenPool = MockService.shuffle(allQs.filter(q => (!perfMap[q.id] || perfMap[q.id].attempts === 0) && !usedIds.has(q.id)));
+    for (const q of unseenPool) {
+      if (selectedQueue.length >= targetCount) break;
+      if (!q.parentPassageId) {
+        selectedQueue.push({ ...q });
+        usedIds.add(q.id);
+      }
+    }
+
+    // 4. General Random Backfill if needed
+    if (selectedQueue.length < targetCount) {
+      const anyPool = MockService.shuffle(allQs.filter(q => !usedIds.has(q.id)));
+      for (const q of anyPool) {
+        if (selectedQueue.length >= targetCount) break;
+        selectedQueue.push(MockService.permuteQuestionOptions(q));
+        usedIds.add(q.id);
+      }
+    }
+
+    if (selectedQueue.length === 0) {
+      alert("Question bank is currently empty.");
+      return;
+    }
+
+    if (openInDojo) {
+      await openDojoSessionWithQuestions(selectedQueue, "Daily Autopilot Dojo Clinic");
     } else {
-      const inst = await MockService.generate({ mode: "RANDOM", count: 25 });
-      await MockService.launchMockSession(inst);
+      await compileAndLaunchArena("Daily Autopilot Priority Sprint", selectedQueue, Math.max(10, Math.round(selectedQueue.length * 0.8)), false);
     }
   }
 
@@ -6769,7 +7535,8 @@ const CGL_OS = (() => {
       title: "Diagnostic Baseline Mock (12 Qs)",
       count: 12,
       durationMin: 10,
-      mode: "RANDOM"
+      mode: "RANDOM",
+      allowFallbackPadding: true
     });
     await MockService.launchMockSession(inst);
   }
@@ -6802,10 +7569,10 @@ const CGL_OS = (() => {
       div.innerHTML = `
         <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:2px;">
           <span style="font-weight:700;">${TAXONOMY[subKey].name} (${subKey})</span>
-          <span style="font-family:var(--font-mono); color:${acc >= 80 ? 'var(--status-green)' : (acc >= 60 ? 'var(--status-amber)' : 'var(--text-muted)')};">${subAtt > 0 ? `${acc}% (${subAtt} Qs)` : '0%'}</span>
+          <span style="font-family:var(--font-mono); color:${acc >= 80 ? "var(--status-green)" : (acc >= 60 ? "var(--status-amber)" : "var(--text-muted)")};">${subAtt > 0 ? `${acc}% (${subAtt} Qs)` : "0%"}</span>
         </div>
         <div class="battery-bar-container">
-          <div class="battery-bar-fill" style="width:${acc}%; background:${acc >= 80 ? 'var(--status-green)' : (acc >= 60 ? 'var(--status-amber)' : 'var(--accent-blue)')};"></div>
+          <div class="battery-bar-fill" style="width:${acc}%; background:${acc >= 80 ? "var(--status-green)" : (acc >= 60 ? "var(--status-amber)" : "var(--accent-blue)")};"></div>
         </div>
       `;
       div.addEventListener("click", () => openSubjectDiagnosticModal(subKey));
@@ -6827,8 +7594,8 @@ const CGL_OS = (() => {
     blueprints.forEach(bp => {
       const pill = document.createElement("button");
       pill.className = "anchor-pill";
-      const icon = bp.type === "FIXED_PAPER" ? "ðŸ“Œ" : "âš¡";
-      pill.innerHTML = `<span>${icon} ${bp.title}</span><span style="opacity:0.6; font-size:9px;" onclick="event.stopPropagation(); CGL_OS.deleteSavedPreset('${bp.id}')">âœ•</span>`;
+      const icon = bp.type === "FIXED_PAPER" ? "\uD83D\uDCCC" : "\u26A1";
+      pill.innerHTML = `<span>${icon} ${bp.title}</span><span style="opacity:0.6; font-size:9px;" onclick="event.stopPropagation(); CGL_OS.deleteSavedPreset('${bp.id}')">\u2715</span>`;
       pill.onclick = () => launchSavedPreset(bp.id);
       pillsContainer.appendChild(pill);
     });
@@ -6846,6 +7613,8 @@ const CGL_OS = (() => {
     const sorted = completed.slice().sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
     sorted.slice(0, 3).forEach(att => {
+      const posM = att.positiveMarks !== undefined ? att.positiveMarks : 2.0;
+      const negM = att.negativeMarks !== undefined ? att.negativeMarks : 0.5;
       const secScores = {};
       if (att.questions && Array.isArray(att.questions) && att.userResponses) {
         att.questions.forEach(q => {
@@ -6853,8 +7622,8 @@ const CGL_OS = (() => {
           if (!secScores[secName]) secScores[secName] = 0;
           const resp = att.userResponses[q.id];
           if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
-            if (resp.selectedOption === q.correctIndex) secScores[secName] += 2.0;
-            else secScores[secName] -= 0.5;
+            if (resp.selectedOption === q.correctIndex) secScores[secName] += posM;
+            else secScores[secName] -= negM;
           }
         });
       }
@@ -6864,10 +7633,10 @@ const CGL_OS = (() => {
       card.innerHTML = `
         <div class="ticket-header">
           <div>
-            <div style="display:flex; align-items:center; gap:6px;">
-              <b style="font-size:14px; color:#fff;">${att.title || 'SSC CGL Mock'}</b>
-              ${att.attemptNumber > 1 ? `<span class="badge" style="background:#8957e5; font-size:9px;">Attempt ${att.attemptNumber}</span>` : ''}
-              <span class="badge-slot slot-${(att.diurnalSlot || 'morning').toLowerCase()}">${att.diurnalSlot || 'DAY'}</span>
+            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+              <b style="font-size:14px; color:#fff;">${att.title || "SSC CGL Mock"}</b>
+              ${att.attemptNumber > 1 ? `<span class="badge" style="background:#8957e5; font-size:9px;">Attempt ${att.attemptNumber}</span>` : ""}
+              <span class="badge-slot slot-${(att.diurnalSlot || "morning").toLowerCase()}">${att.diurnalSlot || "DAY"}</span>
             </div>
             <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">${att.timeIST || formatISTDate(att.timestamp)}</div>
           </div>
@@ -6876,12 +7645,12 @@ const CGL_OS = (() => {
           </div>
         </div>
         <div class="ticket-pills-row">
-          ${Object.keys(secScores).map(k => `<span class="ticket-sec-pill"><b>${k}:</b> ${secScores[k].toFixed(1)}</span>`).join('')}
+          ${Object.keys(secScores).map(k => `<span class="ticket-sec-pill"><b>${k}:</b> ${secScores[k].toFixed(1)}</span>`).join("")}
           <span class="ticket-sec-pill" style="color:var(--status-red);">Traps: ${att.q4Traps || 0}</span>
         </div>
         <div class="ticket-actions-bar">
-          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.exportMockByIdJson('${att.sessionId}')">ðŸ“¥ Export</button>
-          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--status-green);" onclick="CGL_OS.reattemptMock('${att.sessionId}')">ðŸ” Re-attempt</button>
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--accent-cyan);" onclick="CGL_OS.exportMockByIdJson('${att.sessionId}')">\uD83D\uDCE5 Export</button>
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; color:var(--status-green);" onclick="CGL_OS.reattemptMock('${att.sessionId}')">\uD83D\uDD01 Re-attempt</button>
           <button class="btn btn-secondary" style="padding:4px 10px; font-size:11px;" onclick="CGL_OS.openMockReview('${att.sessionId}')">Inspect Solutions</button>
         </div>
       `;
@@ -6896,8 +7665,7 @@ const CGL_OS = (() => {
     if (!list) return;
     list.innerHTML = "";
 
-    const attempts = await getAllRecords("store_attempts");
-    const completed = attempts.filter(a => a.completed);
+    const completed = await PerformanceService.getHistoricalAttempts();
 
     Object.keys(TAXONOMY).forEach(subKey => {
       const sub = TAXONOMY[subKey];
@@ -6925,7 +7693,7 @@ const CGL_OS = (() => {
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <div>
             <div style="font-weight:700;">${sub.name} (${subKey})</div>
-            <div style="font-size:11px; color:var(--text-muted);">${sub.chapters.length} Standard Chapters</div>
+            <div style="font-size:11px; color:var(--text-muted);">${sub.chapters.length} Standard Chapters \u2022 Target Par: ${getSubjectThresholds(subKey).parSec}s/Q</div>
           </div>
           <div style="text-align:right;">
             <span class="badge" style="background:#151a24; color:#38bdf8;">
@@ -6948,28 +7716,14 @@ const CGL_OS = (() => {
     if (!list) return;
     list.innerHTML = "";
 
-    const attempts = await getAllRecords("store_attempts");
-    const completed = attempts.filter(a => a.completed);
     const allQuestions = await getAllRecords("store_questions");
+    const allConcepts = await ConceptService.getAll();
 
-    sub.chapters.forEach(chap => {
-      let chapAtt = 0, chapCor = 0, chapSec = 0;
-      completed.forEach(c => {
-        if (c.questions && Array.isArray(c.questions)) {
-          c.questions.forEach(q => {
-            if (q.chapter === chap) {
-              const resp = (c.userResponses && typeof c.userResponses === "object") ? c.userResponses[q.id] : null;
-              if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
-                chapAtt++;
-                chapSec += (resp.timeSpentSec || 0);
-                if (resp.selectedOption === q.correctIndex) chapCor++;
-              }
-            }
-          });
-        }
-      });
-
+    for (const chap of sub.chapters) {
+      const cStats = await PerformanceService.getChapterStats(subKey, chap);
       const totalInBank = allQuestions.filter(q => q.chapter === chap).length;
+      const totalSheets = allConcepts.filter(c => c.chapter === chap).length;
+
       const div = document.createElement("div");
       div.className = "card";
       div.style.padding = "12px";
@@ -6981,43 +7735,48 @@ const CGL_OS = (() => {
           <div>
             <div style="font-weight:700; font-family:var(--font-mono); font-size:13px;">${chap}</div>
             <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
-              Bank: ${totalInBank} Qs â€¢ ${chapAtt > 0 ? `Speed: ${Math.round(chapSec / chapAtt)}s` : "No solve data"}
+              Bank: ${totalInBank} Qs \u2022 ${totalSheets} Sheets \u2022 ${cStats.attempted > 0 ? `Speed: ${cStats.avgSpeed}s \u2022 Nc: ${cStats.neglectIndex}` : "No solve data"}
             </div>
           </div>
           <div style="text-align:right;">
-            <span class="badge" style="background:${chapAtt > 0 ? '#1b4d2e' : '#151a24'}; color:${chapAtt > 0 ? '#4ade80' : '#8b949e'};">
-              ${chapAtt > 0 ? `Acc: ${Math.round((chapCor / chapAtt) * 100)}%` : "Unattempted"}
+            <span class="badge" style="background:${cStats.attempted > 0 ? "#1b4d2e" : "#151a24"}; color:${cStats.attempted > 0 ? "#4ade80" : "#8b949e"};">
+              ${cStats.attempted > 0 ? `Acc: ${cStats.accuracy}%` : "Unattempted"}
             </span>
           </div>
         </div>
       `;
-      div.addEventListener("click", () => openChapterInspector(subKey, chap, chapAtt, chapCor, chapSec));
+      div.addEventListener("click", () => openChapterInspector(subKey, chap));
       list.appendChild(div);
-    });
+    }
   }
 
-  async function openChapterInspector(subKey, chap, attCount, corCount, secCount) {
+  async function openChapterInspector(subKey, chap) {
     safeSetText("insp-chapter-title", chap);
     safeSetText("insp-subject-title", TAXONOMY[subKey] ? TAXONOMY[subKey].name : subKey);
 
-    const acc = attCount > 0 ? Math.round((corCount / attCount) * 100) : 0;
-    const avgSpeed = attCount > 0 ? Math.round(secCount / attCount) : 0;
-    safeSetText("insp-acc", attCount > 0 ? `${acc}%` : "--");
-    safeSetText("insp-speed", attCount > 0 ? `${avgSpeed}s` : "--");
+    const cStats = await PerformanceService.getChapterStats(subKey, chap);
+    safeSetText("insp-acc", cStats.attempted > 0 ? `${cStats.accuracy}%` : "--");
+    safeSetText("insp-speed", cStats.attempted > 0 ? `${cStats.avgSpeed}s` : "--");
+    safeSetText("insp-nc", cStats.neglectIndex);
 
-    const nc = attCount > 0 ? Math.max(0, (1 - (attCount / 50))).toFixed(2) : "1.00";
-    safeSetText("insp-nc", nc);
+    const dojoBtn = document.getElementById("btn-launch-chapter-dojo");
+    if (dojoBtn) {
+      dojoBtn.onclick = () => {
+        const m = document.getElementById("modal-chapter-inspector");
+        if (m) m.classList.remove("active");
+        launchDirectChapterDrill(subKey, chap, true);
+      };
+    }
 
     const blitzBtn = document.getElementById("btn-launch-chapter-blitz");
     if (blitzBtn) {
       blitzBtn.onclick = () => {
         const m = document.getElementById("modal-chapter-inspector");
         if (m) m.classList.remove("active");
-        launchConfiguredMockDirect(subKey, chap, 5, 5);
+        launchConfiguredMockDirect(subKey, chap, 10, 8);
       };
     }
 
-    // CHAPTER INSPECTOR HISTORICAL VULNERABILITIES POPULATION
     const vulnList = document.getElementById("insp-vulnerability-list");
     if (vulnList) {
       vulnList.innerHTML = "";
@@ -7040,14 +7799,14 @@ const CGL_OS = (() => {
       if (errorMap.length === 0) {
         vulnList.innerHTML = `<span style="color:var(--status-green);">Zero recorded mistakes in ${chap}.</span>`;
       } else {
-        errorMap.slice(-5).forEach(err => {
+        errorMap.slice(-6).forEach(err => {
           const div = document.createElement("div");
           div.style.padding = "6px 0";
           div.style.borderBottom = "1px solid var(--border-color)";
           div.innerHTML = `
             <div style="display:flex; justify-content:space-between; color:#f87171; font-weight:700;">
               <span>${err.q.id}</span>
-              <span>#${err.resp.errorTag || 'UNCLASSIFIED'} (${err.resp.timeSpentSec || 0}s)</span>
+              <span>#${err.resp.errorTag || "UNCLASSIFIED"} (${err.resp.timeSpentSec || 0}s)</span>
             </div>
             <div style="color:var(--text-muted); font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
               ${err.q.questionText}
@@ -7064,366 +7823,8 @@ const CGL_OS = (() => {
   }
 
   /* ==========================================================================
-   * SECTION 28: FLASHCARD VAULT & ANKI TSV EXPORT ENGINE
-   * Carousel Image Bleed Bug Resolved
-   * ========================================================================== */
-  async function renderVault() {
-    await renderVaultTagPills();
-    const flashcards = await getAllRecords("store_flashcards");
-    const container = document.getElementById("flashcard-list-container");
-    if (!container) return;
-    container.innerHTML = "";
-
-    safeSetText("vault-count-total", flashcards.length);
-    let diagramCount = 0, extraCount = 0;
-    flashcards.forEach(f => {
-      if (f.frontImageUrl || f.backImageUrl) diagramCount++;
-      if (f.extra && f.extra.trim()) extraCount++;
-    });
-    safeSetText("vault-count-diagrams", diagramCount);
-    safeSetText("vault-count-extra", extraCount);
-
-    const filterSub = document.getElementById("vault-deck-filter-sub")?.value || "ALL";
-
-    const filtered = flashcards.filter(f => {
-      if (filterSub !== "ALL" && f.subject !== filterSub) return false;
-      if (vaultActiveTag !== "ALL" && (!Array.isArray(f.tags) || !f.tags.includes(vaultActiveTag))) return false;
-      if (vaultSearchQuery) {
-        const inFront = f.front.toLowerCase().includes(vaultSearchQuery);
-        const inBack = f.back.toLowerCase().includes(vaultSearchQuery);
-        const inExtra = (f.extra || "").toLowerCase().includes(vaultSearchQuery);
-        if (!inFront && !inBack && !inExtra) return false;
-      }
-      return true;
-    });
-
-    if (filtered.length === 0) {
-      container.innerHTML = `<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:16px;">Zero flashcards match current criteria.</div>`;
-      return;
-    }
-
-    filtered.forEach(f => {
-      const tile = document.createElement("div");
-      tile.className = "vault-compact-tile";
-      tile.innerHTML = `
-        <div class="vault-compact-header" onclick="this.parentElement.classList.toggle('open')">
-          <div style="overflow:hidden; padding-right:8px;">
-            <div style="display:flex; align-items:center; gap:6px; margin-bottom:2px;">
-              <span class="badge" style="background:#151a24; color:var(--accent-cyan); font-size:10px;">${f.subject} â€¢ ${f.chapter}</span>
-              <span class="anki-type-tag">${f.cardType || 'BASIC'}</span>
-            </div>
-            <div style="font-size:12.5px; font-weight:600; color:#fff; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">
-              ${f.front.replace(/\$+/g, '').slice(0, 75)}...
-            </div>
-          </div>
-          <span style="font-size:12px; color:var(--text-muted); font-family:var(--font-mono);">â–¼</span>
-        </div>
-        <div class="vault-compact-drawer">
-          <div style="font-size:14px; line-height:1.6; color:#fff; margin-bottom:8px;"><b>Prompt:</b><br>${formatRichText(f.front)}</div>
-          <div style="font-size:13.5px; line-height:1.6; color:var(--accent-cyan); margin-bottom:8px;"><b>Answer:</b><br>${formatRichText(f.back)}</div>
-          ${f.extra ? `<div class="callout-box" style="margin-top:6px; font-size:12px;"><b>Notes:</b><br>${formatRichText(f.extra)}</div>` : ''}
-          <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:8px;">
-            <button class="btn btn-secondary" style="padding:2px 8px; font-size:10px;" onclick="CGL_OS.openFlashcardEditorModal(false, '${f.id}')">Edit</button>
-            <button class="btn btn-danger" style="padding:2px 8px; font-size:10px;" onclick="CGL_OS.deleteCurrentEditingFlashcard('${f.id}')">Delete</button>
-          </div>
-        </div>
-      `;
-      container.appendChild(tile);
-    });
-  }
-
-  async function renderVaultTagPills() {
-    const container = document.getElementById("vault-tag-scroll-pills");
-    if (!container) return;
-    container.innerHTML = "";
-
-    const flashcards = await getAllRecords("store_flashcards");
-    const allTags = new Set();
-    flashcards.forEach(f => {
-      (f.tags || []).forEach(t => allTags.add(t));
-    });
-
-    const createPill = (label, tagVal) => {
-      const btn = document.createElement("button");
-      btn.className = "anchor-pill" + (vaultActiveTag === tagVal ? " active" : "");
-      btn.innerText = label;
-      btn.onclick = () => {
-        vaultActiveTag = tagVal;
-        renderVaultTagPills();
-        renderVault();
-      };
-      return btn;
-    };
-
-    container.appendChild(createPill("All Tags", "ALL"));
-    allTags.forEach(tag => {
-      container.appendChild(createPill(`#${tag}`, tag));
-    });
-  }
-
-  function handleVaultSearchInput(val) {
-    vaultSearchQuery = val.trim().toLowerCase();
-    renderVault();
-  }
-
-  function renderFlashcardList() {
-    renderVault();
-  }
-
-  function toggleVaultCardAccordion(id) {
-    const tile = document.getElementById(`vault-tile-${id}`);
-    if (tile) tile.classList.toggle("open");
-  }
-
-  async function launchUntimedQuickCarousel() {
-    const flashcards = await getAllRecords("store_flashcards");
-    const filterSub = document.getElementById("vault-deck-filter-sub")?.value || "ALL";
-    const filtered = flashcards.filter(f => filterSub === "ALL" || f.subject === filterSub);
-
-    if (filtered.length === 0) {
-      alert("No cards in vault matching this selection.");
-      return;
-    }
-
-    activeVaultDeck = filtered;
-    activeVaultIndex = 0;
-    activeVaultFlipped = false;
-
-    pushNavLayer("modal-flashcard-study", () => {
-      const m = document.getElementById("modal-flashcard-study");
-      if (m) m.classList.remove("active");
-    });
-    const m = document.getElementById("modal-flashcard-study");
-    if (m) m.classList.add("active");
-    renderCurrentVaultCard();
-  }
-
-  function renderCurrentVaultCard() {
-    const card = activeVaultDeck[activeVaultIndex];
-    if (!card) return;
-
-    activeVaultFlipped = false;
-    safeSetText("fc-study-progress", `Card ${activeVaultIndex + 1} of ${activeVaultDeck.length}`);
-    safeSetText("fc-card-chapter", `${card.subject} â€¢ ${card.chapter}`);
-    safeSetText("fc-card-type-tag", card.cardType || (card.extra ? 'BASIC_EXTRA' : 'BASIC'));
-    safeSetHtml("fc-card-body", formatRichText(card.front));
-
-    const fBox = document.getElementById("fc-card-front-img-box");
-    if (fBox) {
-      if (card.frontImageUrl && card.frontImageUrl.trim().length > 0) {
-        fBox.style.display = "block";
-        fBox.innerHTML = `<img src="${card.frontImageUrl}" alt="Front Diagram">`;
-      } else {
-        fBox.style.display = "none";
-        fBox.innerHTML = "";
-      }
-    }
-
-    const bBox = document.getElementById("fc-card-back-img-box");
-    if (bBox) {
-      bBox.style.display = "none";
-      bBox.innerHTML = "";
-    }
-
-    safeSetText("fc-card-cue", "[ TAP TO REVEAL ]");
-  }
-
-  function flipStudyFlashcard() {
-    if (activeVaultFlipped) return;
-    const card = activeVaultDeck[activeVaultIndex];
-    if (!card) return;
-
-    activeVaultFlipped = true;
-
-    // FLASHCARD IMAGE BLEED FIX: Hide front image when back is revealed!
-    const fBox = document.getElementById("fc-card-front-img-box");
-    if (fBox) fBox.style.display = "none";
-
-    const bBox = document.getElementById("fc-card-back-img-box");
-    if (bBox) {
-      if (card.backImageUrl && card.backImageUrl.trim().length > 0) {
-        bBox.style.display = "block";
-        bBox.innerHTML = `<img src="${card.backImageUrl}" alt="Back Proof">`;
-      } else {
-        bBox.style.display = "none";
-        bBox.innerHTML = "";
-      }
-    }
-
-    let extraHtml = "";
-    if (card.extra && card.extra.trim().length > 0) {
-      extraHtml = `<div class="callout-box" style="margin-top:10px; font-size:12px;"><b>Notes:</b><br>${formatRichText(card.extra)}</div>`;
-    }
-
-    safeSetHtml("fc-card-body", `
-      <div style="color:var(--text-muted); font-size:12px; margin-bottom:8px;">${formatRichText(card.front)}</div>
-      <hr style="border:0; border-top:1px solid var(--border-color); margin:8px 0;">
-      <div style="font-weight:700; color:#fff;">${formatRichText(card.back)}</div>
-      ${extraHtml}
-    `);
-    safeSetText("fc-card-cue", "Revealed. Rate above or navigate below.");
-  }
-
-  function navStudyCard(step) {
-    if (activeVaultDeck.length === 0) return;
-    activeVaultIndex += step;
-    if (activeVaultIndex < 0) activeVaultIndex = activeVaultDeck.length - 1;
-    if (activeVaultIndex >= activeVaultDeck.length) activeVaultIndex = 0;
-    renderCurrentVaultCard();
-  }
-
-  function openAnkiExportModal() {
-    pushHistoryState("modal-anki-export");
-    const m = document.getElementById("modal-anki-export");
-    if (m) m.classList.add("active");
-  }
-
-  async function generateAndDownloadAnkiTsv() {
-    const sub = document.getElementById("anki-export-subject")?.value || "ALL";
-    const fieldMapping = document.getElementById("anki-export-fields")?.value || "THREE_FIELD";
-    const deckName = document.getElementById("anki-export-deck-name")?.value.trim() || "SSC CGL 2026";
-    const convertMath = document.getElementById("anki-convert-mathjax")?.checked ?? true;
-    const includeImages = document.getElementById("anki-include-data-images")?.checked ?? true;
-
-    const allCards = await getAllRecords("store_flashcards");
-    const pool = sub === "ALL" ? allCards : allCards.filter(c => c.subject === sub);
-
-    if (pool.length === 0) {
-      alert("Zero cards match the chosen Anki export criteria.");
-      return;
-    }
-
-    let tsv = `#separator:Tab\n#html:true\n#deck:${deckName}\n#notetype:CGL-Master-Card\n`;
-    tsv += fieldMapping === "THREE_FIELD" ? `#columns:Front\tBack\tExtra\tTags\n` : `#columns:Front\tBack\tTags\n`;
-
-    pool.forEach(c => {
-      let frontText = convertMath ? convertKatexToAnkiMathJax(c.front) : c.front;
-      let backText = convertMath ? convertKatexToAnkiMathJax(c.back) : c.back;
-      let extraText = c.extra ? (convertMath ? convertKatexToAnkiMathJax(c.extra) : c.extra) : "";
-
-      frontText = frontText.replace(/\n/g, "<br>").replace(/\t/g, " ");
-      backText = backText.replace(/\n/g, "<br>").replace(/\t/g, " ");
-      extraText = extraText.replace(/\n/g, "<br>").replace(/\t/g, " ");
-
-      if (includeImages) {
-        if (c.frontImageUrl) frontText += `<br><img src="${c.frontImageUrl}">`;
-        if (c.backImageUrl) backText += `<br><img src="${c.backImageUrl}">`;
-      }
-
-      const tags = (Array.isArray(c.tags) ? c.tags : []).join(' ') + ` ${c.subject} ${c.chapter}`;
-      tsv += fieldMapping === "THREE_FIELD" ? `${frontText}\t${backText}\t${extraText}\t${tags}\n` : `${frontText}\t${backText}<br>${extraText}\t${tags}\n`;
-    });
-
-    await downloadFileResilient(`Anki_${sub}_Export_${Date.now()}.txt`, "text/tab-separated-values", tsv);
-    const m = document.getElementById("modal-anki-export");
-    if (m) m.classList.remove("active");
-  }
-
-  async function openFlashcardEditorModal(isNew = true, cardId = null) {
-    currentFcFrontImgBase64 = "";
-    currentFcBackImgBase64 = "";
-
-    if (isNew) {
-      safeSetText("flashcard-editor-title", "Add New Card to Vault");
-      safeSetValue("edit-fc-id", "fc_" + Date.now());
-      safeSetValue("edit-fc-subject", "QA");
-      safeSetValue("edit-fc-chapter", "QA_PERCENTAGE");
-      safeSetValue("edit-fc-type", "BASIC_EXTRA");
-      safeSetValue("edit-fc-front", "");
-      safeSetValue("edit-fc-front-img-url", "");
-      safeSetValue("edit-fc-front-img-file", "");
-      safeSetValue("edit-fc-back", "");
-      safeSetValue("edit-fc-back-img-url", "");
-      safeSetValue("edit-fc-back-img-file", "");
-      safeSetValue("edit-fc-extra", "");
-      safeSetValue("edit-fc-tags", "");
-      safeSetDisplay("btn-delete-fc", "none");
-    } else {
-      const card = await getRecord("store_flashcards", cardId);
-      if (!card) return;
-      safeSetText("flashcard-editor-title", "Edit Vault Card");
-      safeSetValue("edit-fc-id", card.id);
-      safeSetValue("edit-fc-subject", card.subject);
-      safeSetValue("edit-fc-chapter", card.chapter);
-      safeSetValue("edit-fc-type", card.cardType || (card.extra ? "BASIC_EXTRA" : "BASIC"));
-      safeSetValue("edit-fc-front", card.front);
-      safeSetValue("edit-fc-front-img-url", card.frontImageUrl || "");
-      safeSetValue("edit-fc-front-img-file", "");
-      safeSetValue("edit-fc-back", card.back);
-      safeSetValue("edit-fc-back-img-url", card.backImageUrl || "");
-      safeSetValue("edit-fc-back-img-file", "");
-      safeSetValue("edit-fc-extra", card.extra || "");
-      safeSetValue("edit-fc-tags", Array.isArray(card.tags) ? card.tags.join(', ') : "");
-      safeSetDisplay("btn-delete-fc", "block");
-    }
-
-    pushHistoryState("modal-flashcard-editor");
-    const m = document.getElementById("modal-flashcard-editor");
-    if (m) m.classList.add("active");
-  }
-
-  async function handleFlashcardFrontImageUpload(input) {
-    if (input.files && input.files[0]) {
-      currentFcFrontImgBase64 = await compressImageFile(input.files[0]);
-    }
-  }
-
-  async function handleFlashcardBackImageUpload(input) {
-    if (input.files && input.files[0]) {
-      currentFcBackImgBase64 = await compressImageFile(input.files[0]);
-    }
-  }
-
-  async function saveFlashcardEditor() {
-    const id = document.getElementById("edit-fc-id")?.value;
-    const subject = document.getElementById("edit-fc-subject")?.value;
-    const chapter = document.getElementById("edit-fc-chapter")?.value.trim().toUpperCase();
-    const cardType = document.getElementById("edit-fc-type")?.value;
-    const front = document.getElementById("edit-fc-front")?.value.trim();
-    const back = document.getElementById("edit-fc-back")?.value.trim();
-    const extra = document.getElementById("edit-fc-extra")?.value.trim();
-    const frontUrl = document.getElementById("edit-fc-front-img-url")?.value.trim();
-    const backUrl = document.getElementById("edit-fc-back-img-url")?.value.trim();
-    const tagsRaw = document.getElementById("edit-fc-tags")?.value.trim();
-
-    if (!front || !back || !chapter) {
-      alert("Front Prompt, Back Target Fact, and Chapter are required.");
-      return;
-    }
-
-    const existing = await getRecord("store_flashcards", id);
-    const cardObj = {
-      id: id,
-      cardType: cardType,
-      subject: subject,
-      chapter: chapter,
-      front: front,
-      frontImageUrl: currentFcFrontImgBase64 || frontUrl || (existing ? existing.frontImageUrl : ""),
-      back: back,
-      backImageUrl: currentFcBackImgBase64 || backUrl || (existing ? existing.backImageUrl : ""),
-      extra: extra,
-      tags: tagsRaw ? tagsRaw.split(',').map(t => t.trim()) : ["Manual"]
-    };
-
-    await putRecord("store_flashcards", cardObj);
-    const m = document.getElementById("modal-flashcard-editor");
-    if (m) m.classList.remove("active");
-    renderVault();
-  }
-
-  async function deleteCurrentEditingFlashcard(id = null) {
-    const targetId = id || document.getElementById("edit-fc-id")?.value;
-    if (confirm("Permanently delete this card from the vault?")) {
-      await deleteRecordFromStore("store_flashcards", targetId);
-      const m = document.getElementById("modal-flashcard-editor");
-      if (m) m.classList.remove("active");
-      renderVault();
-    }
-  }
-
-  /* ==========================================================================
-   * SECTION 29: PUBLISHING PRINT ENGINE & DATA EXTRACTION MATRIX
-   * Resilient 3-Tier Download Pipeline & Crash-Proof Hierarchical Sorter
+   * SECTION 28 & 29: PUBLISHING PRINT ENGINE, 1-TAP AI BIOPSY & DATA MATRIX
+   * Vault Decommissioned; Universal Exports Relocated to Tab 3 Console
    * ========================================================================== */
   async function openPrintConfigModal() {
     await updatePrintChapters();
@@ -7434,7 +7835,7 @@ const CGL_OS = (() => {
   }
 
   async function populatePrintMockDropdown() {
-    const attempts = await getAllRecords("store_attempts");
+    const attempts = await PerformanceService.getHistoricalAttempts();
     const select = document.getElementById("print-mock-select");
     if (!select) return;
     select.innerHTML = "";
@@ -7461,7 +7862,10 @@ const CGL_OS = (() => {
     chapSelect.innerHTML = `<option value="ALL">All Chapters</option>`;
 
     const allQs = await getAllRecords("store_questions");
-    const chaps = [...new Set(allQs.filter(q => sub === "ALL" || q.subject === sub).map(q => q.chapter))];
+    const allConcepts = await ConceptService.getAll();
+    const qChaps = allQs.filter(q => sub === "ALL" || q.subject === sub).map(q => q.chapter);
+    const cChaps = allConcepts.filter(c => sub === "ALL" || c.subject === sub).map(c => c.chapter);
+    const chaps = [...new Set([...qChaps, ...cChaps])];
 
     chaps.forEach(c => {
       const opt = document.createElement("option");
@@ -7471,10 +7875,6 @@ const CGL_OS = (() => {
     });
   }
 
-  /**
-   * CRASH-PROOF HIERARCHICAL SORTER:
-   * Defensive fallbacks prevent TypeError: Cannot read properties of undefined (reading 'localeCompare')
-   */
   function sortQuestionsHierarchical(questions) {
     const subOrder = ["QA", "REAS", "ENG", "GA"];
     return questions.slice().sort((a, b) => {
@@ -7532,7 +7932,7 @@ const CGL_OS = (() => {
         const subName = TAXONOMY[s] ? TAXONOMY[s].name : s;
         tocHtml += `<div style="font-weight:bold; margin-top:8px; font-size:11pt;">${secCounter++}. ${subName} (${s})</div>`;
         Object.keys(tocMap[s]).forEach(c => {
-          tocHtml += `<div style="padding-left:14px; font-weight:600; color:#333; margin-top:3px;">â€¢ ${c}</div>`;
+          tocHtml += `<div style="padding-left:14px; font-weight:600; color:#333; margin-top:3px;">\u2022 ${c}</div>`;
           tocMap[s][c].forEach(title => {
             tocHtml += `<div class="print-toc-item" style="padding-left:28px;"><span>${title}</span><span style="color:#777;">Engineering Sheet</span></div>`;
           });
@@ -7567,7 +7967,7 @@ const CGL_OS = (() => {
           content += `<div class="print-chapter-title">Chapter: ${curChap}</div>`;
         }
 
-        let img = sheet.imageUrl ? `<div style="text-align:center; margin:8px 0;"><img src="${sheet.imageUrl}" style="max-height:160px; max-width:85%;"></div>` : '';
+        let img = sheet.imageUrl ? `<div style="text-align:center; margin:8px 0;"><img src="${sheet.imageUrl}" style="max-height:160px; max-width:85%;"></div>` : "";
 
         content += `
           <div class="print-comp-entry">
@@ -7575,7 +7975,7 @@ const CGL_OS = (() => {
               <b style="font-size:12pt;">${sheet.title}</b>
               <span style="font-size:9pt; color:#666;">${sheet.chapter}</span>
             </div>
-            ${sheet.subtitle ? `<div style="font-size:9.5pt; font-style:italic; color:#444; margin-bottom:6px;">${sheet.subtitle}</div>` : ''}
+            ${sheet.subtitle ? `<div style="font-size:9.5pt; font-style:italic; color:#444; margin-bottom:6px;">${sheet.subtitle}</div>` : ""}
             <div>${formatRichText(sheet.content)}</div>
             ${img}
           </div>
@@ -7607,16 +8007,16 @@ const CGL_OS = (() => {
           content += `<div style="column-span:all; font-weight:800; font-size:13pt; border-bottom:1.5pt solid #000; margin:12px 0 8px 0; text-transform:uppercase;">${TAXONOMY[curSub] ? TAXONOMY[curSub].name : curSub}</div>`;
         }
 
-        let passage = q.passageText ? `<div class="q-passage-container" style="font-size:8.5pt; padding:6px; margin-bottom:6px;"><b>Passage:</b> ${formatRichText(q.passageText)}</div>` : '';
-        let img = q.imageUrl ? `<br><img src="${q.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
+        let passage = q.passageText ? `<div class="q-passage-container" style="font-size:8.5pt; padding:6px; margin-bottom:6px;"><b>Passage:</b> ${formatRichText(q.passageText)}</div>` : "";
+        let img = q.imageUrl ? `<br><img src="${q.imageUrl}" style="max-height:120px; max-width:100%;">` : "";
         content += `
           <div class="print-question">
             ${passage}
             <strong>Q${idx + 1}.</strong> ${formatRichText(q.questionText)}${img}<br>
             <div style="margin-top:4px;">
-              ${q.options.map((opt, i) => `(${i + 1}) ${formatRichText(opt)} &nbsp; `).join('')}
+              ${q.options.map((opt, i) => `(${i + 1}) ${formatRichText(opt)} &nbsp; `).join("")}
             </div>
-            ${ansMode === "INLINE" ? `<div style="font-size:9pt; margin-top:6px; color:#222; background:#f4f4f4; padding:4px;"><b>Correct: Option ${q.correctIndex + 1}</b><br><i>${formatRichText(q.explanation || '')}</i></div>` : ''}
+            ${ansMode === "INLINE" ? `<div style="font-size:9pt; margin-top:6px; color:#222; background:#f4f4f4; padding:4px;"><b>Correct: Option ${q.correctIndex + 1}</b><br><i>${formatRichText(q.explanation || "")}</i></div>` : ""}
           </div>
         `;
       });
@@ -7626,16 +8026,16 @@ const CGL_OS = (() => {
       if (ansMode === "APPENDIX") {
         content += `
           <div class="print-appendix">
-            <h2 style="font-size:16pt; font-weight:900; margin-bottom:12px; text-transform:uppercase;">Appendix: Answer Keys & Step-by-Step Solutions</h2>
+            <h2 style="font-size:16pt; font-weight:900; margin-bottom:12px; text-transform:uppercase;">Appendix: Answer Keys &amp; Step-by-Step Solutions</h2>
             <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:8px; margin-bottom:18px; font-size:10pt;">
-              ${pool.map((q, idx) => `<div><b>Q${idx + 1}:</b> Opt ${q.correctIndex + 1}</div>`).join('')}
+              ${pool.map((q, idx) => `<div><b>Q${idx + 1}:</b> Opt ${q.correctIndex + 1}</div>`).join("")}
             </div>
             <hr style="margin-bottom:14px;">
             ${pool.map((q, idx) => `
               <div style="font-size:9.5pt; margin-bottom:10px; page-break-inside:avoid; break-inside:avoid;">
-                <b>Q${idx + 1} Explanation:</b><br>${formatRichText(q.explanation || 'No method registered.')}
+                <b>Q${idx + 1} Explanation:</b><br>${formatRichText(q.explanation || "No method registered.")}
               </div>
-            `).join('')}
+            `).join("")}
           </div>
         `;
       }
@@ -7660,50 +8060,20 @@ const CGL_OS = (() => {
       targetMock.questions.forEach((q, idx) => {
         const resp = targetMock.userResponses && targetMock.userResponses[q.id] ? targetMock.userResponses[q.id] : {};
         const isCor = resp.selectedOption === q.correctIndex;
-        let passage = q.passageText ? `<div class="q-passage-container" style="font-size:8.5pt; padding:6px; margin-bottom:6px;"><b>Passage:</b> ${formatRichText(q.passageText)}</div>` : '';
-        let img = q.imageUrl ? `<br><img src="${q.imageUrl}" style="max-height:120px; max-width:100%;">` : '';
+        let passage = q.passageText ? `<div class="q-passage-container" style="font-size:8.5pt; padding:6px; margin-bottom:6px;"><b>Passage:</b> ${formatRichText(q.passageText)}</div>` : "";
+        let img = q.imageUrl ? `<br><img src="${q.imageUrl}" style="max-height:120px; max-width:100%;">` : "";
 
         content += `
           <div class="print-question">
             ${passage}
             <strong>Q${idx + 1}.</strong> ${formatRichText(q.questionText)}${img}<br>
             <div style="margin-top:4px;">
-              ${q.options.map((opt, i) => `(${i + 1}) ${formatRichText(opt)} &nbsp; `).join('')}
+              ${q.options.map((opt, i) => `(${i + 1}) ${formatRichText(opt)} &nbsp; `).join("")}
             </div>
-            <div style="font-size:9pt; margin-top:6px; background:#f4f4f4; padding:6px; border-left:3px solid ${isCor ? '#238636' : '#da3633'};">
-              <b>Your Pick:</b> Option ${resp.selectedOption !== null && resp.selectedOption !== undefined ? resp.selectedOption + 1 : 'None'} (${isCor ? 'âœ“ Correct' : 'âœ— Incorrect'}) | <b>Time:</b> ${resp.timeSpentSec || 0}s<br>
-              <b>Key:</b> Option ${q.correctIndex + 1} | <i>${formatRichText(q.explanation || '')}</i>
+            <div style="font-size:9pt; margin-top:6px; background:#f4f4f4; padding:6px; border-left:3px solid ${isCor ? "#238636" : "#da3633"};">
+              <b>Your Pick:</b> Option ${resp.selectedOption !== null && resp.selectedOption !== undefined ? resp.selectedOption + 1 : "None"} (${isCor ? "\u2713 Correct" : "\u2717 Incorrect"}) | <b>Time:</b> ${resp.timeSpentSec || 0}s<br>
+              <b>Key:</b> Option ${q.correctIndex + 1} | <i>${formatRichText(q.explanation || "")}</i>
             </div>
-          </div>
-        `;
-      });
-
-      content += `</div>`;
-      root.innerHTML = content;
-    } else if (pType === "FLASHCARDS") {
-      const flashcards = await getAllRecords("store_flashcards");
-      let pool = sub === "ALL" ? flashcards : flashcards.filter(f => f.subject === sub);
-
-      let content = `
-        <div class="print-book-cover">
-          <div class="print-book-title">SSC CGL Flashcard Vault Compendium</div>
-          <div class="print-book-meta">
-            Scope: ${sub} &nbsp;|&nbsp; Generated: ${timestampIST} &nbsp;|&nbsp; Total Cards: ${pool.length}
-          </div>
-        </div>
-        <div class="print-dual-col">
-      `;
-
-      pool.forEach((f, idx) => {
-        let fImg = f.frontImageUrl ? `<br><img src="${f.frontImageUrl}" style="max-height:100px; max-width:100%;">` : '';
-        let bImg = f.backImageUrl ? `<br><img src="${f.backImageUrl}" style="max-height:100px; max-width:100%;">` : '';
-
-        content += `
-          <div class="print-question">
-            <strong>Card ${idx + 1}. [${f.subject} â€¢ ${f.chapter}]</strong> (${f.cardType || 'BASIC'})<br>
-            <b>Prompt:</b> ${formatRichText(f.front)}${fImg}<br>
-            <div style="font-size:9.5pt; margin-top:4px;"><b>Answer:</b> ${formatRichText(f.back)}${bImg}</div>
-            ${f.extra ? `<div style="font-size:9pt; color:#444; margin-top:2px;"><b>Extra:</b> ${formatRichText(f.extra)}</div>` : ''}
           </div>
         `;
       });
@@ -7745,9 +8115,11 @@ const CGL_OS = (() => {
         sessionId: mockObj.sessionId,
         title: mockObj.title,
         attemptNumber: mockObj.attemptNumber || 1,
+        positiveMarks: mockObj.positiveMarks || 2.0,
+        negativeMarks: mockObj.negativeMarks !== undefined ? mockObj.negativeMarks : 0.5,
         finalScore: mockObj.finalScore,
-        accuracyPercent: mockObj.correctCount + mockObj.incorrectCount > 0 
-          ? Math.round((mockObj.correctCount / (mockObj.correctCount + mockObj.incorrectCount)) * 100) 
+        accuracyPercent: mockObj.correctCount + mockObj.incorrectCount > 0
+          ? Math.round((mockObj.correctCount / (mockObj.correctCount + mockObj.incorrectCount)) * 100)
           : 0
       },
       attemptData: mockObj
@@ -7771,23 +8143,6 @@ const CGL_OS = (() => {
     };
 
     await downloadFileResilient(`cgl_knowledge_compendium_${now}.json`, "application/json", JSON.stringify(payload, null, 2));
-  }
-
-  async function exportFlashcardVaultJson() {
-    const cards = await getAllRecords("store_flashcards");
-    const now = Date.now();
-    const payload = {
-      cgl_os_vault_export: {
-        engine: "SSC_CGL_INTELLIGENCE_OS",
-        schemaVersion: DB_VERSION,
-        exportedAtEpoch: now,
-        exportedAtIST: formatISTDate(now),
-        totalCards: cards.length
-      },
-      cards: cards
-    };
-
-    await downloadFileResilient(`cgl_flashcard_vault_${now}.json`, "application/json", JSON.stringify(payload, null, 2));
   }
 
   async function exportCurrentSelectedStoreJson() {
@@ -7825,7 +8180,6 @@ const CGL_OS = (() => {
 
   async function exportDossierInternal(sub, timeframe, filter, encoding, isGlobalMaster = false) {
     const allAttempts = await getAllRecords("store_attempts");
-    const allFlashcards = await getAllRecords("store_flashcards");
     const consultations = await getAllRecords("store_ai_consultations");
 
     const now = Date.now();
@@ -7834,10 +8188,10 @@ const CGL_OS = (() => {
     else if (timeframe === "15D") cutoff = now - (15 * 24 * 60 * 60 * 1000);
     else if (timeframe === "30D") cutoff = now - (30 * 24 * 60 * 60 * 1000);
 
-    const filteredAttempts = allAttempts.filter(a => a.completed && a.timestamp >= cutoff);
+    const filteredAttempts = allAttempts.filter(a => a.completed && a.mockType !== "STUDY_VIEW" && a.timestamp >= cutoff);
     const exposureMap = {};
 
-    allAttempts.filter(a => a.completed).sort((a, b) => a.timestamp - b.timestamp).forEach(att => {
+    allAttempts.filter(a => a.completed && a.mockType !== "STUDY_VIEW").sort((a, b) => a.timestamp - b.timestamp).forEach(att => {
       if (att.questions && Array.isArray(att.questions) && att.userResponses) {
         att.questions.forEach(q => {
           if (sub === "ALL" || q.subject === sub) {
@@ -7877,9 +8231,10 @@ const CGL_OS = (() => {
         att.questions.forEach(q => {
           if (sub === "ALL" || q.subject === sub) {
             const resp = att.userResponses[q.id];
+            const trapThreshold = getSubjectThresholds(q.subject).trapSec;
             if (resp && resp.selectedOption !== null && resp.selectedOption !== undefined) {
               const isCor = resp.selectedOption === q.correctIndex ? 1 : 0;
-              const isTrap = (resp.timeSpentSec > 90 && isCor === 0) || (resp.isPanicSlip) || (resp.switches > 0 && isCor === 0);
+              const isTrap = (resp.timeSpentSec > trapThreshold && isCor === 0) || (resp.isPanicSlip) || (resp.switches > 0 && isCor === 0);
 
               if (filter === "ALL" || (filter === "TRAPS_ONLY" && isTrap) || (filter === "PANIC_ONLY" && resp.isPanicSlip)) {
                 telemetryRows.push({
@@ -7907,9 +8262,7 @@ const CGL_OS = (() => {
       }
     });
 
-    const scopedFlashcards = allFlashcards.filter(f => sub === "ALL" || f.subject === sub);
     let telemetryPayload;
-
     if (encoding === "HYBRID_CSV") {
       let csv = "mockId,mockIST,slot,qId,subject,chapter,sel,cor,t,sw,panic,tag\n";
       telemetryRows.forEach(r => {
@@ -7935,15 +8288,14 @@ const CGL_OS = (() => {
       candidateProfile: {
         target: "SSC CGL 2026 Tier 1 & Tier 2 Master Preparation",
         scopedAttemptsEvaluated: filteredAttempts.length,
-        scopedTelemetryCount: telemetryRows.length,
-        vaultCardCount: scopedFlashcards.length
+        scopedTelemetryCount: telemetryRows.length
       },
       questionExposuresAndSpacing: exposureMap,
       telemetryData: telemetryPayload,
       decisionTrails: decisionTrails
     };
 
-    const filename = isGlobalMaster 
+    const filename = isGlobalMaster
       ? `cgl_master_forensic_dossier_360_${now}.json`
       : `cgl_forensic_dossier_${sub}_${timeframe}_${now}.json`;
 
@@ -7955,9 +8307,8 @@ const CGL_OS = (() => {
     const allAttempts = await getAllRecords("store_attempts");
     const allQuestions = await getAllRecords("store_questions");
     const allConcepts = await ConceptService.getAll();
-    const allFlashcards = await getAllRecords("store_flashcards");
     const consultations = await getAllRecords("store_ai_consultations");
-    const completedAttempts = allAttempts.filter(a => a.completed);
+    const completedAttempts = allAttempts.filter(a => a.completed && a.mockType !== "STUDY_VIEW");
 
     const masterPackage = {
       cgl_os_master_handoff: {
@@ -7971,14 +8322,12 @@ const CGL_OS = (() => {
       runtimeManifest: {
         masterQuestionCount: allQuestions.length,
         completedMocksCount: completedAttempts.length,
-        cardVaultCount: allFlashcards.length,
         livingSheetsCount: allConcepts.length,
         consultationsCount: consultations.length,
         taxonomy: TAXONOMY
       },
       knowledgeCompendium: allConcepts,
       masterQuestionBank: sortQuestionsHierarchical(allQuestions),
-      flashcardVault: allFlashcards,
       recentConsultations: consultations.slice(-10)
     };
 
@@ -8016,8 +8365,6 @@ const CGL_OS = (() => {
       openEditQuestionModal(rec);
     } else if (sName === "store_concepts") {
       openCompendiumToSheet(rec.id, rec.subject, rec.chapter);
-    } else if (sName === "store_flashcards") {
-      openFlashcardEditorModal(false, rec.id);
     } else {
       activeInspectedJsonString = JSON.stringify(rec, null, 2);
       safeSetText("db-inspect-modal-title", `${sName} Record`);
@@ -8048,19 +8395,11 @@ const CGL_OS = (() => {
     }
   }
 
-  async function wipeFlashcardStore() {
-    if (confirm("Permanently clear all cards from the Vault?")) {
-      await clearStore("store_flashcards");
-      alert("Card vault wiped.");
-      renderVault();
-    }
-  }
-
   async function factoryResetAll() {
     if (confirm("WARNING: Complete factory reset will wipe user stores and restore clean defaults! Export Full Backup first!")) {
       const storeKeys = [
-        "store_questions", "store_attempts", "store_flashcards", 
-        "store_concepts", "store_notes", "store_saved_mocks", 
+        "store_questions", "store_attempts", "store_flashcards",
+        "store_concepts", "store_notes", "store_saved_mocks",
         "store_ai_consultations", "store_active_session", "store_config"
       ];
       for (const sName of storeKeys) {
@@ -8075,6 +8414,90 @@ const CGL_OS = (() => {
     }
   }
 
+  /**
+   * 1-TAP COMPACT AI BIOPSY GENERATOR:
+   * Extracts only failed, slow, option-switched, and starred questions from
+   * the current mock alongside the candidate's rolling clinical memory.
+   */
+  async function generateCompactBiopsyPayload(att) {
+    const consultations = await getAllRecords("store_ai_consultations");
+    const allCanonical = await getAllRecords("store_questions");
+    const canonMap = {};
+    allCanonical.forEach(cq => { canonMap[cq.id] = cq; });
+
+    const criticalQuestions = [];
+    const cleanSolvedIds = [];
+
+    (att.questions || []).forEach(q => {
+      const liveQ = canonMap[q.id] ? { ...q, ...canonMap[q.id] } : q;
+      const r = (att.userResponses && att.userResponses[q.id]) ? att.userResponses[q.id] : {};
+      const isAtt = r.selectedOption !== null && r.selectedOption !== undefined;
+      const isCor = isAtt && r.selectedOption === q.correctIndex;
+      const parSec = getSubjectThresholds(q.subject).parSec;
+      const isSlow = (r.timeSpentSec || 0) > parSec * 1.35;
+      const hasSwitch = (r.switches || 0) > 0;
+      const isStarred = !!liveQ.bookmarked;
+
+      if (!isCor || isSlow || hasSwitch || isStarred) {
+        criticalQuestions.push({
+          id: q.id,
+          subject: q.subject,
+          chapter: q.chapter,
+          subtopic: liveQ.subtopic || "",
+          method: liveQ.method || "",
+          conceptIds: liveQ.conceptIds || (liveQ.conceptId ? [liveQ.conceptId] : []),
+          bookmarked: isStarred,
+          outcome: isCor ? "CORRECT_BUT_FLAGGED" : (isAtt ? "INCORRECT" : "UNATTEMPTED"),
+          userSelectedOptionIndex: isAtt ? r.selectedOption : null,
+          userSelectedOptionText: isAtt && q.options[r.selectedOption] ? q.options[r.selectedOption] : null,
+          correctOptionIndex: q.correctIndex,
+          correctOptionText: q.options[q.correctIndex],
+          timeSpentSec: r.timeSpentSec || 0,
+          targetParSec: parSec,
+          switches: r.switches || 0,
+          decisionTrail: r.decisionTrail || [],
+          errorTag: r.errorTag || "UNCLASSIFIED",
+          questionText: q.questionText,
+          options: q.options,
+          explanation: liveQ.explanation || q.explanation || "",
+          candidateAnnotation: liveQ.annotation || ""
+        });
+      } else {
+        cleanSolvedIds.push({ id: q.id, chapter: q.chapter, t: r.timeSpentSec || 0 });
+      }
+    });
+
+    return {
+      action: "AI_COMPACT_MOCK_BIOPSY",
+      mockSummary: {
+        sessionId: att.sessionId,
+        title: att.title,
+        attemptNumber: att.attemptNumber || 1,
+        timestampIST: att.timeIST || formatISTDate(att.timestamp),
+        diurnalSlot: att.diurnalSlot || getDiurnalSlot(att.timestamp),
+        markingScheme: `+${att.positiveMarks || 2.0} / -${att.negativeMarks !== undefined ? att.negativeMarks : 0.5}`,
+        finalScore: att.finalScore,
+        correctCount: att.correctCount,
+        incorrectCount: att.incorrectCount,
+        penaltyDrag: att.penaltyDrag,
+        switchDelta: att.switchDelta,
+        q4Traps: att.q4Traps
+      },
+      rollingClinicalMemory: consultations.length > 0 ? consultations[consultations.length - 1] : null,
+      criticalQuestionsForBiopsy: criticalQuestions,
+      cleanFastSolvedSummary: cleanSolvedIds
+    };
+  }
+
+  async function copyCompactBiopsyToClipboard() {
+    if (!activeReviewAttempt) return;
+    const biopsyObj = await generateCompactBiopsyPayload(activeReviewAttempt);
+    const jsonStr = JSON.stringify(biopsyObj, null, 2);
+    navigator.clipboard.writeText(jsonStr)
+      .then(() => alert(`1-Tap AI Biopsy copied (${biopsyObj.criticalQuestionsForBiopsy.length} critical questions + Rolling Clinical Memory)! Paste directly into Gemini.`))
+      .catch(() => downloadFileResilient(`cgl_biopsy_${activeReviewAttempt.sessionId}.json`, "application/json", jsonStr));
+  }
+
   function openAiExportModal() {
     if (!activeReviewAttempt) return;
     pushHistoryState("modal-ai-export");
@@ -8084,12 +8507,15 @@ const CGL_OS = (() => {
   }
 
   async function updateAiExportPreview() {
-    const mode = document.getElementById("ai-export-mode")?.value || "LEAN_GEM";
+    const mode = document.getElementById("ai-export-mode")?.value || "COMPACT_BIOPSY";
     const att = activeReviewAttempt;
     if (!att) return;
     let payload = "";
 
-    if (mode === "LEAN_GEM") {
+    if (mode === "COMPACT_BIOPSY") {
+      const biopsyObj = await generateCompactBiopsyPayload(att);
+      payload = JSON.stringify(biopsyObj, null, 2);
+    } else if (mode === "LEAN_GEM") {
       payload = JSON.stringify({
         action: "FEEDBACK_AUDIT",
         mockTitle: att.title,
@@ -8113,12 +8539,12 @@ const CGL_OS = (() => {
       }, null, 2);
     } else if (mode === "DEEP_AUDIT") {
       payload = JSON.stringify({
-        meta: { 
-          title: att.title, 
+        meta: {
+          title: att.title,
           attemptNumber: att.attemptNumber || 1,
-          timestampIST: att.timeIST, 
-          diurnalSlot: att.diurnalSlot, 
-          finalScore: att.finalScore 
+          timestampIST: att.timeIST,
+          diurnalSlot: att.diurnalSlot,
+          finalScore: att.finalScore
         },
         questions: att.questions.map(q => {
           const r = att.userResponses && att.userResponses[q.id] ? att.userResponses[q.id] : {};
@@ -8140,12 +8566,13 @@ const CGL_OS = (() => {
         })
       }, null, 2);
     } else if (mode === "LONGITUDINAL") {
-      const allAtt = await getAllRecords("store_attempts");
-      const flashcards = await getAllRecords("store_flashcards");
-      payload = `# SSC CGL Strategic Telemetry Audit\n` +
-        `â€¢ Generated at: ${formatISTDate(Date.now())}\n` +
-        `â€¢ Completed Standard Mocks: ${allAtt.length}\n` +
-        `â€¢ Vault Flashcards Registered: ${flashcards.length}\n`;
+      const global = await PerformanceService.calculateGlobalMetrics();
+      const weak = await PerformanceService.getWeakChapters();
+      payload = JSON.stringify({
+        generatedAtIST: formatISTDate(Date.now()),
+        globalMetrics: global,
+        weakChapters: weak
+      }, null, 2);
     }
 
     safeSetValue("ai-export-preview", payload);
@@ -8206,15 +8633,15 @@ const CGL_OS = (() => {
         txt += `--- CHAPTER: ${curChapter} ---\n\n`;
       }
 
-      const pInfo = q.parentPassageId ? ` | PASSAGE_SET: ${q.parentPassageId} (${q.setOrder}/${q.setTotal})` : '';
-      txt += `[RECORD ${idx + 1}] ID: ${q.id} | TOPIC: ${q.subtopic || 'General'} | METHOD: ${q.method || 'General'}${pInfo} | CONCEPTS: ${(q.conceptIds || [q.conceptId]).filter(Boolean).join(', ') || 'None'}\n`;
+      const pInfo = q.parentPassageId ? ` | PASSAGE_SET: ${q.parentPassageId} (${q.setOrder}/${q.setTotal})` : "";
+      txt += `[RECORD ${idx + 1}] ID: ${q.id} | TOPIC: ${q.subtopic || "General"} | METHOD: ${q.method || "General"}${pInfo} | CONCEPTS: ${(q.conceptIds || [q.conceptId]).filter(Boolean).join(", ") || "None"}\n`;
       if (q.passageText) txt += `PASSAGE: ${q.passageText}\n`;
       txt += `QUESTION: ${q.questionText}\n`;
       q.options.forEach((opt, oIdx) => {
         txt += `  (${oIdx + 1}) ${opt}\n`;
       });
       txt += `CORRECT OPTION: ${q.correctIndex + 1}\n`;
-      txt += `EXPLANATION: ${q.explanation || 'None'}\n\n`;
+      txt += `EXPLANATION: ${q.explanation || "None"}\n\n`;
     });
 
     await downloadFileResilient(`cgl_master_bank_gem_pack_${Date.now()}.txt`, "text/plain", txt);
@@ -8222,73 +8649,50 @@ const CGL_OS = (() => {
     if (m) m.classList.remove("active");
   }
 
-  async function exportCleanMarkdownFlashcards() {
-    const flashcards = await getAllRecords("store_flashcards");
-    let md = `# SSC CGL Flashcard Vault Export\nGenerated on: ${formatISTDate(Date.now())}\nTotal Cards: ${flashcards.length}\n\n`;
-
-    flashcards.forEach(f => {
-      md += `### [${f.subject} â€¢ ${f.chapter}] ${f.id} (${f.cardType || 'BASIC'})\n`;
-      md += `**Prompt (Front):**\n${f.front}\n\n`;
-      md += `**Answer (Back):**\n${f.back}\n\n`;
-      if (f.extra) md += `**Extra Notes:**\n${f.extra}\n\n`;
-      md += `---\n\n`;
-    });
-
-    await downloadFileResilient(`CGL_Flashcards_${Date.now()}.md`, "text/markdown", md);
-  }
-
   async function copyLiveSystemManifestToClipboard() {
     const questions = await getAllRecords("store_questions");
     const attempts = await getAllRecords("store_attempts");
-    const flashcards = await getAllRecords("store_flashcards");
     const concepts = await ConceptService.getAll();
     const consultations = await getAllRecords("store_ai_consultations");
 
-    const manifest = `# SSC CGL Intelligence OS - Live Runtime Introspection Manifest
+    const manifest = `# SSC CGL Intelligence OS - Live Runtime Introspection Manifest (V6.0)
 Generated at: ${formatISTDate(Date.now())}
 Target Candidate: Ankit Kumar (SSC CGL 2026 Tier 1 & Tier 2 Master Preparation)
 
 ## 1. Live Telemetry Metrics
 - Master Question Pool: ${questions.length}
-- Completed Mocks: ${attempts.filter(a => a.completed).length}
-- Card Vault Inventory: ${flashcards.length}
+- Completed Mocks: ${attempts.filter(a => a.completed && a.mockType !== "STUDY_VIEW").length}
 - Living Knowledge Sheets: ${concepts.length}
 - Clinical Consultations Logged: ${consultations.length}
 
 ## 2. Active System Taxonomy & Chapters
 ${JSON.stringify(TAXONOMY, null, 2)}
 
-## 3. Supported JSON Action Contracts
-- CREATE_MOCK (Supports ephemeral: true, explicit IDs, or inline questions)
-- SEARCH_QUESTIONS
-- SEARCH_CONCEPTS
-- CREATE_QUESTION
-- UPDATE_QUESTION
-- DELETE_QUESTION
-- CREATE_CONCEPT
-- UPDATE_CONCEPT
-- DELETE_CONCEPT
-- SAVE_AI_INSIGHT (Persistent AI finding memory)
-- SAVE_AI_PLAN (Multi-step remediation plan)
-- GET_AI_CONTEXT (Bidirectional preparation context)
-- INGEST_AND_ASSEMBLE_COMPLETE_MOCK (Dynamic subject scoping)
-- CREATE_AND_SAVE_FIXED_MOCK
-- EXECUTE_AI_CONSULTATION_BUNDLE
-- INGEST_AND_LAUNCH_MOCK (Supports ephemeral testing)
-- BATCH_INGEST_FLASHCARDS
-- BATCH_INGEST_COMPENDIUM
-- BATCH_INGEST_QUESTIONS
-- REQUEST_HISTORICAL_DUMP
-- SAVE_MOCK_PRESET
-- MODIFY_TAXONOMY
-- RAW_DB_OPERATION
+## 3. Supported JSON Action Contracts (Single or Batch Array)
+- CREATE_MOCK / CREATE_AND_SAVE_FIXED_MOCK (Supports ephemeral: true, remediatesQuestionId, positiveMarks, negativeMarks, shuffleOptions)
+- LAUNCH_DOJO (Opens Untimed Dojo Clinic with custom questions, explicit IDs, or chapter/method filters)
+- GET_SYSTEM_STATS
+- GET_CHAPTER_BLUEPRINT (Compact index of sheet IDs, titles, and question archetypes in a chapter)
+- AUDIT_DATA_INTEGRITY (Detects duplicates, broken concept links, citation leaks, and taxonomy orphans)
+- CLEANUP_COMPENDIUM_STORE (Deduplicates twin sheets, strips citation tags, fixes World Geography chapter tags)
+- BULK_PATCH_RECORDS (Mass update questions or sheets by ID list or filter)
+- SET_UI_CONFIG / INJECT_CUSTOM_CSS (Persistent runtime customization via store_config)
+- RUN_SANDBOX_QUERY (Declarative filter, groupBy, and projection over any store)
+- SEARCH_QUESTIONS / SEARCH_CONCEPTS / FETCH_QUESTIONS / FETCH_STORE_RECORDS / VERIFY_QUESTION_EXISTS
+- CREATE_QUESTION / UPDATE_QUESTION / DELETE_QUESTION
+- CREATE_CONCEPT / UPDATE_CONCEPT / DELETE_CONCEPT
+- SAVE_AI_INSIGHT / SAVE_AI_PLAN / GET_AI_CONTEXT
+- INGEST_AND_ASSEMBLE_COMPLETE_MOCK / INGEST_AND_LAUNCH_MOCK / AI_PRESCRIBE_REMEDY
+- EXECUTE_AI_CONSULTATION_BUNDLE / BATCH_COMMANDS
+- BATCH_INGEST_COMPENDIUM / BATCH_INGEST_QUESTIONS
+- REQUEST_HISTORICAL_DUMP / SAVE_MOCK_PRESET / MODIFY_TAXONOMY / RAW_DB_OPERATION
 `;
     navigator.clipboard.writeText(manifest);
-    alert("Live AI Introspection Manifest copied to clipboard!");
+    alert("Live AI Introspection Manifest (V6.0) copied to clipboard!");
   }
 
   /* ==========================================================================
-   * SECTION 30: GLOBAL SEARCH, GESTURES, BOOTSTRAP & API EXPORT
+   * SECTION 30: GLOBAL SEARCH, 3-TAB GESTURES, BOOTSTRAP & API EXPORT
    * ========================================================================== */
   function openGlobalSearchModal() {
     pushHistoryState("modal-global-search");
@@ -8331,9 +8735,12 @@ ${JSON.stringify(TAXONOMY, null, 2)}
         div.className = "card";
         div.style.padding = "10px";
         div.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-            <span class="badge" style="background:#1f6feb;">${q.subject} â€¢ ${q.chapter}</span>
-            <button class="btn btn-secondary" style="padding:2px 8px; font-size:10px;" onclick="CGL_OS.launchSingleQuestionPractice('${q.id}')">âš¡ Solve</button>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; flex-wrap:wrap; gap:6px;">
+            <span class="badge" style="background:#1f6feb;">${q.subject} \u2022 ${q.chapter} (${q.id})</span>
+            <div style="display:flex; gap:5px;">
+              <button class="btn btn-emerald" style="padding:2px 8px; font-size:10px;" onclick="CGL_OS.launchSingleQuestionDojo('${q.id}')">\uD83E\uDDD8 Dojo</button>
+              <button class="btn btn-secondary" style="padding:2px 8px; font-size:10px;" onclick="CGL_OS.launchSingleQuestionPractice('${q.id}')">\u26A1 Timed</button>
+            </div>
           </div>
           <div style="font-size:13px; line-height:1.5; color:#fff;">${formatRichText(q.questionText)}</div>
         `;
@@ -8353,10 +8760,10 @@ ${JSON.stringify(TAXONOMY, null, 2)}
         div.style.padding = "10px";
         div.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-            <b style="font-size:13.5px; color:#fff;">ðŸ“– ${c.title}</b>
+            <b style="font-size:13.5px; color:#fff;">\uD83D\uDCD6 ${c.title}</b>
             <button class="btn btn-secondary" style="padding:2px 8px; font-size:10px;" onclick="CGL_OS.openCompendiumToSheet('${c.id}', '${c.subject}', '${c.chapter}')">Read Sheet</button>
           </div>
-          <div style="font-size:11px; color:var(--text-muted);">${c.subtitle || ''}</div>
+          <div style="font-size:11px; color:var(--text-muted);">${c.subtitle || ""}</div>
         `;
         list.appendChild(div);
       });
@@ -8374,16 +8781,11 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     if (targetNavBtn) targetNavBtn.classList.add("active");
 
     if (tId === "tab-dashboard") renderDashboard();
-    if (tId === "tab-dojo") {
-      updateDojoChapters();
-      renderPracticeQuestionsTable();
-    }
+    if (tId === "tab-dojo") renderPracticeQuestionsTable();
     if (tId === "tab-console") refreshDbInspector();
-    if (tId === "tab-vault") renderVault();
   }
 
   function initGestureControllers() {
-    // 1. Hardware Back-Button & Modal History Pop
     window.addEventListener("popstate", () => {
       if (navStack.length > 0) {
         popNavLayer();
@@ -8408,13 +8810,13 @@ ${JSON.stringify(TAXONOMY, null, 2)}
       }
     });
 
-    // 2. Pure Horizontal Swipe in Mocks (#exam-arena)
     const arenaEl = document.getElementById("exam-arena");
     if (arenaEl) {
       let touchStartX = 0;
       let touchStartY = 0;
 
       arenaEl.addEventListener("touchstart", (e) => {
+        if (scratchpadActive) return;
         if (e.touches.length === 1) {
           touchStartX = e.touches[0].clientX;
           touchStartY = e.touches[0].clientY;
@@ -8422,17 +8824,15 @@ ${JSON.stringify(TAXONOMY, null, 2)}
       }, { passive: true });
 
       arenaEl.addEventListener("touchend", (e) => {
+        if (scratchpadActive) return;
         if (e.changedTouches.length === 1 && activeExam) {
           const deltaX = e.changedTouches[0].clientX - touchStartX;
           const deltaY = e.changedTouches[0].clientY - touchStartY;
 
-          // Pure horizontal swipe: horizontal displacement > 55px and 2x vertical movement
           if (Math.abs(deltaX) > 55 && Math.abs(deltaX) > 2.0 * Math.abs(deltaY)) {
             if (deltaX < 0) {
-              // Swipe Left -> Next Question
               document.getElementById("btn-q-save-next")?.click();
             } else {
-              // Swipe Right -> Previous Question
               document.getElementById("btn-q-prev")?.click();
             }
           }
@@ -8440,22 +8840,19 @@ ${JSON.stringify(TAXONOMY, null, 2)}
       }, { passive: true });
     }
 
-    // 3. Pure Horizontal Swipe for Switching Root Navigation Tabs
     const viewportRoot = document.getElementById("app-viewport-root");
     if (viewportRoot) {
       let rootStartX = 0;
       let rootStartY = 0;
-      const tabs = ["tab-dashboard", "tab-dojo", "tab-console", "tab-vault"];
+      const tabs = ["tab-dashboard", "tab-dojo", "tab-console"];
 
       viewportRoot.addEventListener("touchstart", (e) => {
-        // Disallow tab swipes if a modal or fullscreen arena is open
         const isModalOpen = document.querySelector(".modal-overlay.active");
         const isArenaOpen = arenaEl && arenaEl.style.display === "flex";
         if (isModalOpen || isArenaOpen) return;
 
-        // Disallow if touch starts inside horizontally scrollable containers
         const target = e.target;
-        if (target && target.closest("#dash-blueprints-pills, .comp-tabs-bar, .vault-tag-scroll, .table-responsive, .matrix-chip-grid")) {
+        if (target && target.closest("#dash-blueprints-pills, .comp-tabs-bar, .table-responsive, .matrix-chip-grid")) {
           return;
         }
 
@@ -8481,10 +8878,8 @@ ${JSON.stringify(TAXONOMY, null, 2)}
             if (currentIdx === -1) return;
 
             if (deltaX < 0 && currentIdx < tabs.length - 1) {
-              // Swipe Left -> Next Tab
               switchTab(tabs[currentIdx + 1]);
             } else if (deltaX > 0 && currentIdx > 0) {
-              // Swipe Right -> Previous Tab
               switchTab(tabs[currentIdx - 1]);
             }
           }
@@ -8493,6 +8888,25 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     }
   }
 
+  async function hydratePersistedUiConfig() {
+    const scaleRec = await getRecord("store_config", "reader_font_scale");
+    if (scaleRec && typeof scaleRec.value === "number") {
+      readerFontScale = scaleRec.value;
+      document.documentElement.style.setProperty("--reader-font-scale", String(readerFontScale));
+    }
+    const parRec = await getRecord("store_config", "subject_par_config");
+    if (parRec && parRec.value && typeof parRec.value === "object") {
+      SUBJECT_PAR_CONFIG = { ...SUBJECT_PAR_CONFIG, ...parRec.value };
+    }
+    const heroRec = await getRecord("store_config", "hero_subtitle");
+    if (heroRec && typeof heroRec.value === "string") {
+      safeSetText("dash-hero-sub", heroRec.value);
+    }
+    const cssRec = await getRecord("store_config", "custom_css_overrides");
+    if (cssRec && typeof cssRec.value === "string" && cssRec.value.trim()) {
+      await COMMAND_REGISTRY.INJECT_CUSTOM_CSS({ css: cssRec.value });
+    }
+  }
 
   async function initializeApplication() {
     const shield = document.getElementById("pause-shield");
@@ -8500,11 +8914,10 @@ ${JSON.stringify(TAXONOMY, null, 2)}
 
     try {
       await getDB();
+      await hydratePersistedUiConfig();
       initUniversalEngagementTracker();
       await syncAllTaxonomyDropdowns();
       await renderDashboard();
-      await updateDojoChapters();
-      await renderVault();
       initGestureControllers();
 
       const savedSessionRec = await getRecord("store_active_session", "current_session");
@@ -8524,7 +8937,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     initializeApplication();
   }
 
-  // --- Complete Public API Export ---
+  // --- Complete Public API Export (V6.0) ---
   return {
     TaxonomyService,
     QuestionService,
@@ -8536,6 +8949,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     switchTab,
     pushNavLayer,
     popNavLayer,
+    adjustReaderFontScale,
 
     handlePracticeSearchInput,
     handlePracticeSubjectChange,
@@ -8544,10 +8958,13 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     selectAllVisiblePractice,
     renderPracticeQuestionsTable,
     togglePracticeStemExpansion,
+    toggleQuestionStarFromPractice,
     navPracticePage,
     launchPracticeSelectedSession,
+    launchDojoFromPracticeSelection,
     buildMockFromPracticeSelection,
     launchSingleQuestionPractice,
+    launchSingleQuestionDojo,
     launchSeeQuestions,
 
     openNewQuestionCreatorModal,
@@ -8555,6 +8972,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     submitNewQuestionCreator,
     syncNewQuestionChapterSelect,
     openEditQuestionModal,
+    openEditCurrentArenaQuestion,
     openEditCurrentDojoQuestion,
     handleQuestionImageUpload,
     saveQuestionEditor,
@@ -8562,6 +8980,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     duplicateCurrentEditingQuestionFromId,
     deleteCurrentEditingQuestion,
 
+    handleMarkingPresetChange,
     setMockStrategy,
     updateBuilderChapters,
     handleBuilderChapterSelectChange,
@@ -8580,6 +8999,7 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     saveCurrentPresetAction,
     launchSavedPreset,
     deleteSavedPreset,
+    launchConfiguredDojo,
     launchConfiguredMock,
 
     requestEndSectionEarly,
@@ -8589,10 +9009,17 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     enterFullScreenReviewArena,
     exitReviewArena,
     toggleExamPalette,
+    toggleCurrentArenaQuestionStar,
+
+    toggleScratchpadCanvas,
+    setScratchpadMode,
+    undoScratchpadStroke,
+    clearScratchpadCanvas,
 
     openCompendiumStudio,
     closeCompendiumStudio,
     openCompendiumToSheet,
+    toggleCompendiumRecallMode,
     handleCompStudioSubjectChange,
     handleCompStudioChapterChange,
     renderCompStudioSheets,
@@ -8610,8 +9037,6 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     openOmniResearchForCurrentQuestion,
     openOmniResearchForDojoQuestion,
     triggerOmniResearchDrawer,
-    jumpToConceptFromReview,
-    jumpToConceptFromDojo,
     openOmniSearchModal,
     executeOmniSearch,
     openGlobalSearchModal,
@@ -8623,14 +9048,15 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     launchDirectChapterDrill,
     launchDirectSheetDrill,
 
-    updateDojoChapters,
-    updateDojoMethods,
-    launchFilteredDojo,
+    openDojoSessionWithQuestions,
+    launchWeakAreasDojo,
+    launchDojoFromMockMistakes,
     exitDojoArena,
     navDojoArena,
     toggleDojoMethod,
     autoSaveDojoAnnotation,
     toggleDojoPalette,
+    toggleCurrentDojoQuestionStar,
 
     openMockReview,
     switchReviewAttempt,
@@ -8651,25 +9077,6 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     openChapterMergeModal,
     deleteSubjectAction,
     syncEditorChapterDropdown,
-    syncFlashcardChapterDropdown,
-
-    renderVault,
-    renderVaultTagPills,
-    handleVaultSearchInput,
-    renderFlashcardList,
-    toggleVaultCardAccordion,
-    launchUntimedQuickCarousel,
-    renderCurrentVaultCard,
-    flipStudyFlashcard,
-    navStudyCard,
-    openAnkiExportModal,
-    generateAndDownloadAnkiTsv,
-    openFlashcardEditorModal,
-    handleFlashcardFrontImageUpload,
-    handleFlashcardBackImageUpload,
-    saveFlashcardEditor,
-    deleteCurrentEditingFlashcard,
-    wipeFlashcardStore,
 
     openPrintConfigModal,
     populatePrintMockDropdown,
@@ -8679,6 +9086,10 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     sortQuestionsHierarchical,
 
     executeConsoleCommand,
+    pasteAndExecuteClipboardCommand,
+    runConsoleQuickAction,
+    copyCompactAiContextToClipboard,
+    copyCompactBiopsyToClipboard,
     loadSamplePayload,
     copyLiveSystemManifestToClipboard,
     openAiExportModal,
@@ -8687,7 +9098,6 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     openMasterLedgerExportModal,
     downloadLedgerJson,
     downloadLedgerMarkdown,
-    exportCleanMarkdownFlashcards,
     openBackupRestoreModal,
     handleBackupFileSelect,
     executeHydrationRestore,
@@ -8695,7 +9105,6 @@ ${JSON.stringify(TAXONOMY, null, 2)}
     exportCurrentReviewMockJson,
     exportMockByIdJson,
     exportKnowledgeBankJson,
-    exportFlashcardVaultJson,
     exportCurrentSelectedStoreJson,
     exportScopedForensicDossier,
     exportGlobalMasterDossier,
@@ -8712,5 +9121,4 @@ ${JSON.stringify(TAXONOMY, null, 2)}
   };
 })();
 
-// Re-bind to global window anchor
 window.CGL_OS = CGL_OS;
