@@ -5653,7 +5653,8 @@ const CGL_OS = (() => {
 
     safeSetText("practice-filtered-count", filtered.length);
 
-    const totalPages = Math.ceil(filtered.length / PRACTICE_PAGE_SIZE) || 1;
+    const rawPages = Math.ceil(filtered.length / PRACTICE_PAGE_SIZE);
+    const totalPages = rawPages > 0 ? rawPages : 1;
     if (practiceCurrentPage < 1) practiceCurrentPage = 1;
     if (practiceCurrentPage > totalPages) practiceCurrentPage = totalPages;
 
@@ -5667,7 +5668,7 @@ const CGL_OS = (() => {
     container.innerHTML = "";
 
     if (pagedSlice.length === 0) {
-      container.innerHTML = `<div style="text-align:center; padding:40px 14px; color:var(--text-muted); font-size:12.5px;">No questions match current criteria. Adjust filters or author a new question.</div>`;
+      container.innerHTML = '<div style="text-align:center; padding:40px 14px; color:var(--text-muted); font-size:12.5px;">No questions match current criteria. Adjust filters or author a new question.</div>';
       return;
     }
 
@@ -5675,31 +5676,48 @@ const CGL_OS = (() => {
       const pStats = perfMap[q.id];
       const attempts = pStats ? pStats.attempts : 0;
       const acc = attempts > 0 ? Math.round((pStats.correct / attempts) * 100) : 0;
-      let statusBadge = `<span class="badge" style="background:#151a24; color:var(--text-muted);">Unseen</span>`;
+      let statusBadge = '<span class="badge" style="background:#151a24; color:var(--text-muted);">Unseen</span>';
       if (attempts > 0) {
-        if (acc >= 80 && !pStats.lastWasIncorrect) statusBadge = `<span class="badge" style="background:rgba(16,185,129,0.2); color:var(--status-green);">\uD83D\uDFE2 ${acc}% (${attempts}A)</span>`;
-        else if (acc >= 60 && !pStats.lastWasIncorrect) statusBadge = `<span class="badge" style="background:rgba(245,158,11,0.2); color:var(--status-amber);">\uD83D\uDFE1 ${acc}% (${attempts}A)</span>`;
-        else statusBadge = `<span class="badge" style="background:rgba(244,63,94,0.2); color:var(--status-red);">\uD83D\uDD34 ${acc}% (${attempts}A)</span>`;
+        if (acc >= 80 && !pStats.lastWasIncorrect) {
+          statusBadge = '<span class="badge" style="background:rgba(16,185,129,0.2); color:var(--status-green);">\uD83D\uDFE2 ' + acc + '% (' + attempts + 'A)</span>';
+        } else if (acc >= 60 && !pStats.lastWasIncorrect) {
+          statusBadge = '<span class="badge" style="background:rgba(245,158,11,0.2); color:var(--status-amber);">\uD83D\uDFE1 ' + acc + '% (' + attempts + 'A)</span>';
+        } else {
+          statusBadge = '<span class="badge" style="background:rgba(244,63,94,0.2); color:var(--status-red);">\uD83D\uDD34 ' + acc + '% (' + attempts + 'A)</span>';
+        }
       }
 
       const isChecked = practiceSelectedIds.has(q.id);
-      const stemDomId = `practice-stem-${practiceCurrentPage}-${idx}`;
+      const stemDomId = "practice-stem-" + practiceCurrentPage + "-" + idx;
       const card = document.createElement("div");
       card.className = "practice-q-card" + (isChecked ? " selected" : "");
       card.dataset.id = q.id;
 
+      const setOrd = q.setOrder ? q.setOrder : 1;
+      const setTot = q.setTotal ? q.setTotal : 1;
+      const passageBadgeHtml = q.parentPassageId
+        ? '<span class="q-passage-set-badge">SET ' + setOrd + '/' + setTot + '</span>'
+        : "";
+
+      const methodLabel = q.method ? q.method : (q.subtopic ? q.subtopic : "General");
+      const diffLabel = q.difficulty ? q.difficulty : "MEDIUM";
+      const sourceLabel = q.source ? q.source : "Manual";
+      const checkedAttr = isChecked ? "checked" : "";
+      const starClass = q.bookmarked ? "starred" : "";
+      const starIcon = q.bookmarked ? "\u2605" : "\u2606";
+
       card.innerHTML = `
-        <input type="checkbox" class="practice-checkbox" data-id="${q.id}" ${isChecked ? "checked" : ""} onchange="CGL_OS.togglePracticeQuestionSelection('${q.id}', this.checked)">
+        <input type="checkbox" class="practice-checkbox" data-id="${q.id}" ${checkedAttr} onchange="CGL_OS.togglePracticeQuestionSelection('${q.id}', this.checked)">
         <div class="practice-q-main">
           <div class="practice-q-header">
             <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
               <span class="practice-q-id">${q.id}</span>
               <span class="badge" style="background:#1f6feb;">${q.subject} \u2022 ${q.chapter}</span>
-              ${q.parentPassageId ? `<span class="q-passage-set-badge">SET ${q.setOrder \vert{}\vert{} 1}/${q.setTotal || 1}</span>` : ""}
+              ${passageBadgeHtml}
               ${statusBadge}
             </div>
             <div class="practice-q-actions">
-              <button class="star-flag-btn ${q.bookmarked ? "starred" : ""}" style="padding:2px 6px; font-size:10px;" onclick="CGL_OS.toggleQuestionStarFromPractice('${q.id}')" title="Star / Bookmark">${q.bookmarked ? "\u2605" : "\u2606"}</button>
+              <button class="star-flag-btn ${starClass}" style="padding:2px 6px; font-size:10px;" onclick="CGL_OS.toggleQuestionStarFromPractice('${q.id}')" title="Star / Bookmark">${starIcon}</button>
               <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px;" onclick="CGL_OS.QuestionService.get('${q.id}').then(q => CGL_OS.openEditQuestionModal(q))">Edit</button>
               <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px; color:var(--accent-cyan);" onclick="CGL_OS.duplicateCurrentEditingQuestionFromId('${q.id}')">Clone</button>
               <button class="btn btn-emerald" style="padding:2px 8px; font-size:10px; font-weight:700;" onclick="CGL_OS.launchSingleQuestionDojo('${q.id}')" title="Untimed Active Recall in Dojo">\uD83E\uDDD8 Dojo</button>
@@ -5709,14 +5727,15 @@ const CGL_OS = (() => {
           <div id="${stemDomId}" class="practice-q-stem">${formatRichText(q.questionText)}</div>
           <span id="toggle-${stemDomId}" class="practice-q-stem-toggle" onclick="CGL_OS.togglePracticeStemExpansion('${stemDomId}')">[ Read Full Stem \u25BC ]</span>
           <div class="practice-q-footer">
-            <span>Method: <b>${q.method || q.subtopic || "General"}</b> (${q.difficulty || "MEDIUM"})</span>
-            <span>Source: <i>${q.source || "Manual"}</i></span>
+            <span>Method: <b>${methodLabel}</b> (${diffLabel})</span>
+            <span>Source: <i>${sourceLabel}</i></span>
           </div>
         </div>
       `;
       container.appendChild(card);
     });
   }
+
 
 
   async function duplicateCurrentEditingQuestionFromId(id) {
