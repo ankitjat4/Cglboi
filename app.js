@@ -4584,13 +4584,20 @@ const CGL_OS = (() => {
         })
       };
     },
-
     // 1E. Forensic Data Integrity & Duplicate/Orphan Auditor
     AUDIT_DATA_INTEGRITY: async () => {
       const allQs = await getAllRecords("store_questions");
       const allConcepts = await ConceptService.getAll();
+      const taxonomy = await TaxonomyService.getTaxonomy();
       const conceptIdSet = new Set(allConcepts.map(c => c.id));
-      const orphans = await TaxonomyService.getOrphanedContent();
+
+      const validChaptersBySub = {};
+      Object.keys(taxonomy).forEach(sKey => {
+        validChaptersBySub[sKey] = new Set(taxonomy[sKey].chapters || []);
+      });
+
+      const orphanQuestions = allQs.filter(q => !validChaptersBySub[q.subject] || !validChaptersBySub[q.subject].has(q.chapter));
+      const orphanConcepts = allConcepts.filter(c => !validChaptersBySub[c.subject] || !validChaptersBySub[c.subject].has(c.chapter));
 
       const unlinkedQuestions = [];
       const brokenConceptLinks = [];
@@ -4645,11 +4652,12 @@ const CGL_OS = (() => {
         duplicateSheetCandidates,
         sheetsWithCitationLeaks,
         taxonomyOrphans: {
-          questions: orphans.questions.map(q => ({ id: q.id, subject: q.subject, chapter: q.chapter })),
-          concepts: orphans.concepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.chapter }))
+          questions: orphanQuestions.map(q => ({ id: q.id, subject: q.subject, chapter: q.chapter })),
+          concepts: orphanConcepts.map(c => ({ id: c.id, subject: c.subject, chapter: c.chapter }))
         }
       };
     },
+
 
     // 1F. Automated Compendium Sanitizer, Deduplicator & Geo Taxonomy Fixer
     CLEANUP_COMPENDIUM_STORE: async () => {
@@ -5709,6 +5717,7 @@ const CGL_OS = (() => {
       container.appendChild(card);
     });
   }
+
 
   async function duplicateCurrentEditingQuestionFromId(id) {
     try {
